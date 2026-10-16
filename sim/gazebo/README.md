@@ -55,17 +55,30 @@ uv run --no-project --python /usr/bin/python3 \
   /opt/ros/jazzy/bin/ros2 launch nano_c_slam_gazebo bridge.launch.py
 ```
 
-In a third terminal, exercise the simulated flight-command path and bridge topics:
+In a third terminal, run the repository's measured-odometry takeoff, hover, and
+landing mission. It publishes velocity commands directly to the Gazebo bridge:
 
 ```sh
 source /opt/ros/jazzy/setup.bash
 source ~/Work/crazyswarm2_gazebo/install/local_setup.bash
 export PYTHONPATH="$HOME/Work/crazyflie-firmware/build:$PYTHONPATH"
 uv run --no-project --python /usr/bin/python3 \
-  /opt/ros/jazzy/bin/ros2 run crazyflie_examples hello_world --ros-args -p use_sim_time:=True
+  /opt/ros/jazzy/bin/ros2 run nano_c_slam_gazebo sim_mission --ros-args \
+  -p use_sim_time:=True
 ```
 
-Then inspect telemetry with `ros2 topic echo /nano_c_slam/sim/cf1/ranges_mm` and `ros2 topic echo /nano_c_slam/sim/uwb_pairwise_range_m`. This verifies the upstream simulated flight-command path and this bridge's sensor topics; it does not validate Nano-C-SLAM mapping or the embedded firmware.
+The mission takes off to 0.5 m, hovers for three seconds, and lands using fresh
+odometry. To fly all three vehicles together, run this in place of `sim_mission`:
+
+```sh
+uv run --no-project --python /usr/bin/python3 \
+  /opt/ros/jazzy/bin/ros2 launch nano_c_slam_gazebo swarm_mission.launch.py
+```
+
+Then inspect telemetry with `ros2 topic echo /nano_c_slam/sim/cf1/ranges_mm` and
+`ros2 topic echo /nano_c_slam/sim/uwb_pairwise_range_m`. This exercises the
+repository's velocity-command mission and sensor adapters; it does not validate
+Nano-C-SLAM mapping or the embedded firmware.
 
 The pure sensor conversion and flight-sequence tests run without ROS or flight hardware:
 
