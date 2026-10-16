@@ -1,6 +1,6 @@
 # Reproduction status
 
-Tested on macOS (Apple Silicon) on 2026-10-16. The repository's pinned submodules and `changes.patch` were used. No hardware flight or mapping accuracy result was reproduced.
+Tested on macOS (Apple Silicon) on 2026-10-16. The repository's pinned submodules and `changes.patch` were used. Gazebo and ROS 2 SITL ran natively on macOS. No hardware flight or mapping-accuracy result was reproduced.
 
 ## STM32 firmware
 
@@ -20,9 +20,9 @@ Runtime buffers are fixed-size. The STM32 tracks up to 30 scan poses and queues 
 
 ## GAP9 firmware
 
-The local GAP9 SDK at `~/Work/da3_gap9/third_party/gap_sdk_private` reports release 5.20.4. Its Make flow refers to absent FreeRTOS rules, but the SDK's CMake integration successfully builds the full application through `scripts/build_gap9_firmware.sh` (Docker + `uv`). This compiles the same PMSIS/FreeRTOS components from source without patching the SDK checkout. The successful ELF reports 58,934 bytes text, 522,816 data, 56,708 BSS; linker placement uses 634,992 B L2 shared (40.37%) and 117,596 B L1 (89.72%). L1 headroom is tight. The SDK emits a `pi_assert` implicit declaration warning from its own `udma_core.h` include chain.
+The local GAP9 SDK at `~/Work/da3_gap9/third_party/gap_sdk_private` reports release 5.20.4. The direct Make flow refers to absent FreeRTOS rules. The existing full firmware ELF was previously built through the SDK CMake integration in `scripts/build_gap9_firmware.sh` (Docker + `uv`), without modifying the SDK checkout. It reports 58,934 bytes text, 522,816 data, and 56,708 BSS; linker placement uses 634,992 B L2 shared (40.37%) and 117,596 B L1 (89.72%). L1 headroom is tight. The SDK emits a `pi_assert` implicit declaration warning from its own `udma_core.h` include chain. At the latest check, Docker could not connect to the configured `colima-act-ci` daemon, so rebuilding is currently unavailable.
 
-The SDK's native GVSOC runtime is available locally on macOS. `bash scripts/run_gap9_gvsoc_smoke.sh` builds an SDK-linked ROM/XIP smoke target and runs the ICP SVD kernel on the GAP9 model. The captured result in `artifacts/gap9_gvsoc_evidence/report.json` observes the expected singular values (3.000, 2.000). A separate synthetic mapping-core target executes the owned GAP9 point-cloud, ICP loop-closure, and pose-graph optimization code under GVSOC. Run it with:
+The native GVSOC launcher is available locally on macOS, and the existing `BUILD-gvsoc` ELF ran the ICP SVD kernel on the GAP9 model. The tracked result in `artifacts/gap9_gvsoc_evidence/report.json` observes the expected singular values (3.000, 2.000). This is kernel-only evidence. A separate mapping-core target and capture script exist, but the mapping ELF and `artifacts/gap9_gvsoc_evidence/mapping_report.json` are absent in the current checkout, so a successful full mapping run is not established here. The compiler at `~/Work/da3_gap9/deploy/gap_riscv_toolchain/bin/riscv32-unknown-elf-gcc` is a Linux x86-64 binary, while this Mac is Apple Silicon; the documented build requires the unavailable Docker daemon.
 
 ```sh
 bash scripts/build_gap9_firmware.sh
@@ -31,11 +31,13 @@ GAP9_GVSOC_EXPECTED_MARKER='NANO_C_SLAM_GVSOC:mapping_ok poses=60 scans=3 map_po
 bash scripts/run_gap9_gvsoc_smoke.sh
 ```
 
-The mapping-core result is captured in `artifacts/gap9_gvsoc_evidence/mapping_report.json`. It verifies deterministic synthetic data only; it does not establish sensor, SPI, flight, or mapping-accuracy behavior. The complete firmware also reaches `main()` and opens the cluster in this virtual model, then waits for the STM32 SPI packet. GVSOC has no STM32/SPI stimulus in this setup, so that wait is expected. Neither smoke establishes hardware timing or flight safety.
+When a compatible build environment is available, the command above builds and runs the deterministic mapping-core target. A successful result would verify synthetic poses only; it would not establish sensor, SPI, flight, or mapping-accuracy behavior. The complete firmware ELF was also observed reaching `main()` and opening the cluster in this virtual model, then waiting for the STM32 SPI packet. GVSOC has no STM32/SPI stimulus in this setup, so that wait is expected. Neither smoke establishes hardware timing or flight safety.
 
 ## Gazebo SITL
 
-`sim/gazebo/` contains a ROS 2 bridge for the four-ray Crazyswarm2 Gazebo backend. Pure sensor-conversion tests pass without ROS. The current macOS setup has Gazebo tooling but lacks ROS 2 Jazzy and Gazebo Harmonic, so the documented end-to-end SITL launch and topic check have not been run. The bridge supplies four-ray ranges and ideal pairwise distances from simulator ground truth; it does not run the embedded firmware or emulate hardware ToF/UWB interfaces. See [sim/gazebo/README.md](sim/gazebo/README.md).
+`sim/gazebo/` contains a ROS 2 bridge for the four-ray Crazyswarm2 Gazebo backend. ROS 2 Jazzy and Gazebo Harmonic ran natively on macOS using the setup documented in [sim/gazebo/README.md](sim/gazebo/README.md). The bounded square mission completed takeoff, mapping-path flight, hover, and landing; a separate 150-sample replay passed through the host C mapping core using the Gazebo 3.49 m lidar range. Its report, `artifacts/gazebo_mapping_sitl/cf1_native_gazebo_mapping_path.json`, is explicitly historical and not firmware-faithful because the mapper then used a broader range cutoff.
+
+The current host replay applies the firmware's 1.4 m loop-closure scan cutoff. A repeated native Gazebo capture returned no projected points under that limit and failed safely. The deterministic host fixture uses 0.9–1.2 m readings and passes with 60 poses, three scans, 240 map points, and two ICP constraints; a 1.5 m-only fixture is rejected. Gazebo inputs remain a four-ray lidar and ideal simulated odometry, and this host runner does not execute the GAP9 firmware or emulate hardware ToF/UWB interfaces.
 
 ## Python demo
 
