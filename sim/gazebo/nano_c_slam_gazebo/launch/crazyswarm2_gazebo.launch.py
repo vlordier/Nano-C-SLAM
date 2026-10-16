@@ -5,7 +5,7 @@ from pathlib import Path
 import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import ExecuteProcess, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution
 from launch_ros.actions import Node
@@ -31,6 +31,7 @@ def generate_launch_description() -> LaunchDescription:
             )
         }.items(),
     )
+    gazebo_gui = ExecuteProcess(cmd=["gz", "sim", "-g"], output="screen")
 
     gz_bridge = Node(
         package="ros_gz_bridge",
@@ -80,5 +81,5 @@ def generate_launch_description() -> LaunchDescription:
     )
 
     return LaunchDescription(
-        [gazebo, gz_bridge, odom_tf, crazyflie_server, sensor_bridge]
+        [gazebo, gazebo_gui, gz_bridge, odom_tf, crazyflie_server, sensor_bridge]
     )

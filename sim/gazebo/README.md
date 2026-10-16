@@ -75,12 +75,12 @@ uv run --locked python -m unittest tests.test_gazebo_sensor_model
 
 ## Native macOS (Homebrew ROS 2 Jazzy)
 
-The Linux instructions above are the supported upstream path. A native Apple Silicon macOS setup also works with the Homebrew ROS 2 Jazzy tap, but it needs Python 3.11 and a few temporary library-name compatibility links because the tap's ROS binaries were built against older Homebrew library ABIs. The helper below creates and removes those links for the duration of the simulation. Do not run Homebrew upgrades while it is running.
+The Linux instructions above are the supported upstream path. On macOS, use the Gazebo Harmonic build already installed at `~/Work/gz-macOS/ws/install`; it provides the working native Gazebo server and desktop GUI. ROS 2 Jazzy still comes from the Homebrew tap and needs Python 3.11. The helper temporarily exposes the older Abseil ABI required by the prebuilt ROS bridge, then restores Homebrew when Gazebo exits. Do not run Homebrew upgrades while the helper is running.
 
 Install Python 3.11.9 from [python.org](https://www.python.org/downloads/release/python-3119/) (the final 3.11 macOS installer), then install the ROS 2 Jazzy formula and its dependencies as described by [idesign0/homebrew-ros2](https://github.com/idesign0/homebrew-ros2). The Homebrew formula's Python is not compatible with the prebuilt ROS bindings; use the python.org interpreter below. Install the remaining libraries and the historical Abseil bottle:
 
 ```sh
-brew install ffmpeg@8 ogre2.3 libusb
+brew install libusb
 brew tap-new vlordier/ros-compat
 brew extract --version=20260107.0 abseil vlordier/ros-compat
 brew install vlordier/ros-compat/abseil@20260107.0
@@ -120,7 +120,7 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
   '-DCMAKE_EXE_LINKER_FLAGS=-framework CoreFoundation -framework Security -framework IOKit'
 ```
 
-Launch the integrated Gazebo world, Crazyswarm2 SITL server, and Nano-C-SLAM sensor adapter from the repository root:
+Launch the integrated Gazebo world, Crazyswarm2 SITL server, Nano-C-SLAM sensor adapter, and the separate Gazebo desktop GUI from the repository root. The GUI process joins the running server, following the `gz-macOS` setup's documented `gz sim -s` / `gz sim -g` split:
 
 ```sh
 cd ~/Work/Nano-C-SLAM
@@ -148,4 +148,4 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
   ros2 topic echo /nano_c_slam/sim/uwb_pairwise_range_m
 ```
 
-This confirms native ROS 2, Gazebo, simulated flight commands, and synthetic bridge messages. The four-ray lidar and ideal odometry-derived ranges do not emulate the hardware ToF matrices or UWB ranging protocol, and this does not run GAP9 SLAM or validate mapping on hardware.
+This confirms native ROS 2, the `~/Work/gz-macOS` Gazebo build and desktop GUI, simulated flight commands, and synthetic bridge messages. The four-ray lidar and ideal odometry-derived ranges do not emulate the hardware ToF matrices or UWB ranging protocol, and this does not run GAP9 SLAM or validate mapping on hardware.
