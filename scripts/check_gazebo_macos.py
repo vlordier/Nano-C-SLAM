@@ -57,11 +57,32 @@ def _array_values(message: str) -> list[float]:
     raise RuntimeError("ROS message did not contain a data array")
 
 
-def check_telemetry(timeout_s: float = 8.0, drone: str = "cf1") -> None:
+def _odometry_timestamp_ns(message: str) -> int:
+    """Parse the ROS header timestamp from an odometry YAML message."""
+    stamp = re.search(
+        r"(?m)^\s*stamp:\s*\n\s*sec:\s*(\d+)\s*\n\s*nanosec:\s*(\d+)",
+        message,
+    )
+    if stamp is None:
+        raise RuntimeError("odometry message did not contain a valid header timestamp")
+    return int(stamp.group(1)) * 1_000_000_000 + int(stamp.group(2))
+
+
+def _require_odometry_progress(before_ns: int, after_ns: int) -> None:
+    """Reject a mission check if simulation time stopped advancing."""
+    if after_ns <= before_ns:
+        raise RuntimeError(
+            "odometry timestamp did not advance during the mission: "
+            f"{before_ns} -> {after_ns} ns"
+        )
+
+
+def check_telemetry(timeout_s: float = 8.0, drone: str = "cf1") -> int:
     """Require odometry, four finite lidar values, and pairwise range telemetry."""
     odometry = _read_topic(f"/{drone}/odom", timeout_s)
     if "position:" not in odometry or "z:" not in odometry:
         raise RuntimeError(f"/{drone}/odom did not contain a position")
+    timestamp_ns = _odometry_timestamp_ns(odometry)
 
     ranges = _array_values(
         _read_topic(f"/nano_c_slam/sim/{drone}/ranges_mm", timeout_s)
@@ -82,6 +103,7 @@ def check_telemetry(timeout_s: float = 8.0, drone: str = "cf1") -> None:
         f"Gazebo telemetry OK: /{drone}/odom, lidar={ranges} mm, "
         f"{len(pairwise)} pairwise ranges (m)"
     )
+    return timestamp_ns
 
 
 def run_mission(timeout_s: float = 45.0) -> None:
@@ -174,28 +196,34 @@ def main(args: Sequence[str] | None = None) -> int:
         parser.error("--drone must be a Crazyflie name such as cf1")
     if options.timeout <= 0 or not math.isfinite(options.timeout):
         parser.error("--timeout must be finite and positive")
-    if options.mission:
-        try:
+    try:
+        before_ns = _check_telemetry_until(options.timeout, options.drone)
+        if options.mission:
             run_mission(timeout_s=max(45.0, options.timeout))
-        except (RuntimeError, subprocess.TimeoutExpired, FileNotFoundError) as error:
-            print(f"Gazebo mission check failed: {error}", file=sys.stderr)
-            return 1
+            after_ns = _check_telemetry_until(options.timeout, options.drone)
+            _require_odometry_progress(before_ns, after_ns)
+            print("Gazebo odometry advanced across the mission")
+        return 0
+    except (RuntimeError, subprocess.TimeoutExpired, FileNotFoundError) as error:
+        print(f"Gazebo check failed: {error}", file=sys.stderr)
+        return 1
 
-    deadline = time.monotonic() + options.timeout
+
+def _check_telemetry_until(timeout_s: float, drone: str) -> int:
+    """Retry telemetry sampling until its wall-clock budget expires."""
+    deadline = time.monotonic() + timeout_s
     last_error: RuntimeError | subprocess.TimeoutExpired | FileNotFoundError | None = (
         None
     )
     while time.monotonic() < deadline:
         try:
-            check_telemetry(
-                timeout_s=max(0.1, deadline - time.monotonic()), drone=options.drone
+            return check_telemetry(
+                timeout_s=max(0.1, deadline - time.monotonic()), drone=drone
             )
-            return 0
         except (RuntimeError, subprocess.TimeoutExpired, FileNotFoundError) as error:
             last_error = error
             time.sleep(min(0.25, max(0.0, deadline - time.monotonic())))
-    print(f"Gazebo telemetry check failed: {last_error}", file=sys.stderr)
-    return 1
+    raise RuntimeError(f"telemetry check failed: {last_error}")
 
 
 if __name__ == "__main__":
