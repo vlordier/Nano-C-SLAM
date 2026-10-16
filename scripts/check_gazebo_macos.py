@@ -14,6 +14,7 @@ import sys
 import time
 from collections.abc import Sequence
 from contextlib import suppress
+from pathlib import Path
 
 
 def _read_topic(topic: str, timeout_s: float) -> str:
@@ -122,8 +123,17 @@ def _mission_command(ros2: str, drone: str) -> list[str]:
 
 
 def _valid_drone_name(drone: str) -> bool:
-    """Accept only simple Crazyflie identifiers used by the launch model."""
-    return re.fullmatch(r"cf[0-9]+", drone) is not None
+    """Accept only a drone configured in the Gazebo launch model."""
+    repository_root = str(Path(__file__).resolve().parents[1])
+    if repository_root not in sys.path:
+        sys.path.insert(0, repository_root)
+    from sim.gazebo.nano_c_slam_gazebo.mission_model import validate_drone_name
+
+    try:
+        validate_drone_name(drone)
+    except ValueError:
+        return False
+    return True
 
 
 def run_mission(timeout_s: float = 45.0, drone: str = "cf1") -> None:

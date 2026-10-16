@@ -3,23 +3,36 @@
 import unittest
 
 from sim.gazebo.nano_c_slam_gazebo.mission_model import (
+    SUPPORTED_DRONE_NAMES,
     MissionConfig,
     MissionPhase,
     MissionSequence,
     create_mission_config,
     validate_drone_name,
+    validate_drone_names,
 )
 
 
 class MissionSequenceTests(unittest.TestCase):
     def test_validates_drone_name_before_constructing_topics(self) -> None:
-        self.assertEqual(validate_drone_name("cf12"), "cf12")
-        for invalid_name in ("cf", "cf1/topic", "/cf1", "cf1;stop", 1):
+        self.assertEqual(validate_drone_name("cf3"), "cf3")
+        self.assertEqual(
+            validate_drone_names(list(SUPPORTED_DRONE_NAMES)), SUPPORTED_DRONE_NAMES
+        )
+        for invalid_name in ("cf", "cf2", "cf1/topic", "/cf1", "cf1;stop", 1):
             with (
                 self.subTest(invalid_name=invalid_name),
                 self.assertRaisesRegex(ValueError, "drone_name"),
             ):
                 validate_drone_name(invalid_name)
+
+    def test_rejects_invalid_or_duplicate_sensor_bridge_drones(self) -> None:
+        for invalid_names in ([], ["cf1", "cf1"], ["cf1", "cf2"], "cf1"):
+            with (
+                self.subTest(invalid_names=invalid_names),
+                self.assertRaises(ValueError),
+            ):
+                validate_drone_names(invalid_names)
 
     def test_builds_config_from_numeric_ros_parameters(self) -> None:
         self.assertEqual(

@@ -10,6 +10,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Float32MultiArray, MultiArrayDimension
 
+from .mission_model import SUPPORTED_DRONE_NAMES, validate_drone_names
 from .sensor_model import laser_scan_ranges_mm, pairwise_ranges_m
 
 
@@ -18,14 +19,10 @@ class SensorBridge(Node):
 
     def __init__(self) -> None:
         super().__init__("nano_c_slam_gazebo_sensor_bridge")
-        self.declare_parameter("drone_names", ["cf1", "cf3", "cf4"])
-        self._drone_names = tuple(
-            str(name) for name in self.get_parameter("drone_names").value
+        self.declare_parameter("drone_names", list(SUPPORTED_DRONE_NAMES))
+        self._drone_names = validate_drone_names(
+            self.get_parameter("drone_names").value
         )
-        if not self._drone_names or any(
-            not name.startswith("cf") for name in self._drone_names
-        ):
-            raise ValueError("drone_names must contain names such as cf1 and cf3")
 
         self._positions: dict[str, tuple[float, float, float]] = {}
         self._range_publishers = {

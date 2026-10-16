@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import math
-import re
 from dataclasses import dataclass
 from enum import Enum, auto
+
+SUPPORTED_DRONE_NAMES = ("cf1", "cf3", "cf4")
 
 
 class MissionPhase(Enum):
@@ -45,10 +46,21 @@ class MissionConfig:
 
 
 def validate_drone_name(value: object) -> str:
-    """Accept only Crazyflie identifiers used by the Gazebo launch model."""
-    if not isinstance(value, str) or re.fullmatch(r"cf[0-9]+", value) is None:
-        raise ValueError("drone_name must be a Crazyflie name such as cf1")
+    """Accept only Crazyflie names present in the Gazebo world."""
+    if not isinstance(value, str) or value not in SUPPORTED_DRONE_NAMES:
+        choices = ", ".join(SUPPORTED_DRONE_NAMES)
+        raise ValueError(f"drone_name must be one of: {choices}")
     return value
+
+
+def validate_drone_names(value: object) -> tuple[str, ...]:
+    """Validate the sensor bridge's configured set of world drones."""
+    if not isinstance(value, (list, tuple)) or not value:
+        raise ValueError("drone_names must be a nonempty list of Crazyflie names")
+    names = tuple(validate_drone_name(name) for name in value)
+    if len(names) != len(set(names)):
+        raise ValueError("drone_names must not contain duplicates")
+    return names
 
 
 def create_mission_config(

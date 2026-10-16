@@ -8,8 +8,7 @@ from launch.actions import ExecuteProcess, IncludeLaunchDescription, TimerAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution
 from launch_ros.actions import Node
-
-DRONE_NAMES = ["cf1", "cf3", "cf4"]
+from nano_c_slam_gazebo.mission_model import SUPPORTED_DRONE_NAMES
 
 
 def generate_launch_description() -> LaunchDescription:
@@ -52,7 +51,7 @@ def generate_launch_description() -> LaunchDescription:
         package="ros_gz_crazyflie_control",
         executable="odom_tf_publisher",
         name="odom_tf_publisher",
-        parameters=[{"drone_names": DRONE_NAMES, "use_sim_time": True}],
+        parameters=[{"drone_names": list(SUPPORTED_DRONE_NAMES), "use_sim_time": True}],
         output="screen",
     )
 
