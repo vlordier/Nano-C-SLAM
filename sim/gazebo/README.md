@@ -72,3 +72,80 @@ The pure conversion tests run without ROS or flight hardware:
 ```sh
 uv run --locked python -m unittest tests.test_gazebo_sensor_model
 ```
+
+## Native macOS (Homebrew ROS 2 Jazzy)
+
+The Linux instructions above are the supported upstream path. A native Apple Silicon macOS setup also works with the Homebrew ROS 2 Jazzy tap, but it needs Python 3.11 and a few temporary library-name compatibility links because the tap's ROS binaries were built against older Homebrew library ABIs. The helper below creates and removes those links for the duration of the simulation. Do not run Homebrew upgrades while it is running.
+
+Install Python 3.11.9 from [python.org](https://www.python.org/downloads/release/python-3119/) (the final 3.11 macOS installer), then install the ROS 2 Jazzy formula and its dependencies as described by [idesign0/homebrew-ros2](https://github.com/idesign0/homebrew-ros2). The Homebrew formula's Python is not compatible with the prebuilt ROS bindings; use the python.org interpreter below. Install the remaining libraries and the historical Abseil bottle:
+
+```sh
+brew install ffmpeg@8 ogre2.3 libusb
+brew tap-new vlordier/ros-compat
+brew extract --version=20260107.0 abseil vlordier/ros-compat
+brew install vlordier/ros-compat/abseil@20260107.0
+uv pip install --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
+  'empy==3.3.4' 'lark==1.1.1' catkin_pkg netifaces osrf-pycommon PyYAML packaging \
+  psutil typeguard jinja2 lxml numpy argcomplete colcon-common-extensions rowan \
+  nicegui cflib transforms3d
+```
+
+Clone the Crazyswarm2 Gazebo backend and build the Crazyflie firmware bindings (the latter provide the Python module expected by Crazyswarm2):
+
+```sh
+git clone --recursive https://github.com/prakash-aryan/crazyswarm2_gazebo.git \
+  ~/Work/crazyswarm2_gazebo
+cd ~/Work/crazyswarm2_gazebo/src/crazyswarm2
+git submodule update --init --recursive
+cd ~/Work/Nano-C-SLAM/crazyflie-firmware
+make cf2_defconfig
+uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
+  make bindings_python PYTHON=/Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11
+```
+
+Build the ROS workspace and this repository's bridge. The native build excludes `motion_capture_tracking` (not needed by the Gazebo backend). Homebrew libusb does not ship CMake metadata, so this repository supplies a tiny `libusbConfig.cmake`; the C++ driver still builds against Homebrew's libusb. Eigen's Homebrew include path is passed explicitly:
+
+```sh
+cd ~/Work/crazyswarm2_gazebo
+export PATH=/Library/Frameworks/Python.framework/Versions/3.11/bin:$PATH
+export CXXFLAGS='-I/opt/homebrew/opt/eigen/include/eigen3'
+source /opt/homebrew/opt/ros2-jazzy/setup.zsh
+uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
+  colcon build --base-paths src "$HOME/Work/Nano-C-SLAM/sim/gazebo/nano_c_slam_gazebo" \
+  --packages-skip motion_capture_tracking \
+  --cmake-args -DCMAKE_BUILD_TYPE=Release \
+  -DPython3_EXECUTABLE=/Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
+  -DCMAKE_CXX_FLAGS=-I/opt/homebrew/opt/eigen/include/eigen3 \
+  -Dlibusb_DIR="$HOME/Work/Nano-C-SLAM/scripts/macos" \
+  '-DCMAKE_EXE_LINKER_FLAGS=-framework CoreFoundation -framework Security -framework IOKit'
+```
+
+Launch the integrated Gazebo world, Crazyswarm2 SITL server, and Nano-C-SLAM sensor adapter from the repository root:
+
+```sh
+cd ~/Work/Nano-C-SLAM
+./scripts/run_gazebo_macos.sh
+```
+
+In a second terminal, run the example mission (takeoff, hover, then land):
+
+```sh
+source /opt/homebrew/opt/ros2-jazzy/setup.zsh
+source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
+export PYTHONPATH="$HOME/Work/Nano-C-SLAM/crazyflie-firmware/build${PYTHONPATH:+:$PYTHONPATH}"
+uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
+  ros2 run crazyflie_examples hello_world --ros-args -p use_sim_time:=True
+```
+
+Check sensor output while the first terminal is running:
+
+```sh
+source /opt/homebrew/opt/ros2-jazzy/setup.zsh
+source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
+uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
+  ros2 topic echo /nano_c_slam/sim/cf1/ranges_mm
+uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
+  ros2 topic echo /nano_c_slam/sim/uwb_pairwise_range_m
+```
+
+This confirms native ROS 2, Gazebo, simulated flight commands, and synthetic bridge messages. The four-ray lidar and ideal odometry-derived ranges do not emulate the hardware ToF matrices or UWB ranging protocol, and this does not run GAP9 SLAM or validate mapping on hardware.
