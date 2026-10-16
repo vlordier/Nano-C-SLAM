@@ -11,6 +11,8 @@
 #ifndef POINT_CLOUD_H
 #define POINT_CLOUD_H
 
+#include <stdbool.h>
+
 #include "../icp/icp.h"
 #include "pmsis.h"
 
@@ -82,8 +84,9 @@ void pcl_optimize(slam_job_t *job_info);
  * entries in the array
  * @param from_id Start extracting from this id
  * @param nr_of_poses How many poses to extract starting from the given id
+ * @return True when the requested pose range exists and was copied.
  */
-void pcl_to_poses(float *x, int16_t from_id, int16_t nr_of_poses);
+bool pcl_to_poses(float *x, int16_t from_id, int16_t nr_of_poses);
 
 /**
  * @brief Get the number of poses in the pose table.

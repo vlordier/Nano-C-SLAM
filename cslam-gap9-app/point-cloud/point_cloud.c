@@ -245,11 +245,14 @@ static int pcl_reduce(float *x, int16_t *pose_nr, int16_t *scan_poses,
     return 1;
 }
 
-void pcl_to_poses(float *x, int16_t from_id, int16_t nr_of_poses) {
-    if (nr_of_poses <= 0) return;
+bool pcl_to_poses(float *x, int16_t from_id, int16_t nr_of_poses) {
+    if (x == NULL || from_id < 0 || nr_of_poses <= 0 ||
+        from_id > pose_counter || nr_of_poses > pose_counter - from_id)
+        return false;
     for (int16_t i = from_id; i < from_id + nr_of_poses; i++) {
         memcpy(&x[3 * (i - from_id)], p_cloud[i].pos, 3 * sizeof(float));
     }
+    return true;
 }
 
 static void pcl_update(float *x, int16_t from_id, int16_t nr_of_poses) {

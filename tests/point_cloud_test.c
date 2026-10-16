@@ -69,6 +69,20 @@ int main(void) {
         pcl_add_augmented_pose(pose);
     }
 
+    float requested_poses[6] = {-1, -1, -1, -1, -1, -1};
+    CHECK(pcl_to_poses(requested_poses, 1, 2));
+    CHECK(requested_poses[0] == positions[1]);
+    CHECK(requested_poses[3] == positions[2]);
+
+    float rejected_poses[3] = {-1, -1, -1};
+    CHECK(!pcl_to_poses(rejected_poses, -1, 1));
+    CHECK(rejected_poses[0] == -1);
+    CHECK(!pcl_to_poses(rejected_poses, 4, 2));
+    CHECK(rejected_poses[0] == -1);
+    CHECK(!pcl_to_poses(rejected_poses, 0, -1));
+    CHECK(rejected_poses[0] == -1);
+    CHECK(!pcl_to_poses(NULL, 0, 1));
+
     float correction[3] = {0};
     pcl_add_constraint(2, 4, correction);
     CHECK(constraints[0].fromIdx == 2 && constraints[0].toIdx == 4);

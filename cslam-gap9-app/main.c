@@ -122,8 +122,9 @@ void slam_loop() {
             if (spi_decode_pose_req(spi_buf, pose_request) == SPI_OK) {
                 int16_t from_id = pose_request[0];
                 int16_t nr_of_poses = pose_request[1];
-                if (nr_of_poses > 100) break;
-                pcl_to_poses(requested_poses, from_id, nr_of_poses);
+                if (nr_of_poses > 100 ||
+                    !pcl_to_poses(requested_poses, from_id, nr_of_poses))
+                    break;
 
                 spi_send_blocking((uint8_t *)requested_poses,
                                   3 * sizeof(float) * nr_of_poses);
