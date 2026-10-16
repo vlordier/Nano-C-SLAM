@@ -18,6 +18,7 @@ import os
 
 NR_OF_DRONES = int(sys.argv[1])
 
+os.makedirs("logs", exist_ok=True)
 folders = [f for f in os.listdir("logs/") if os.path.isdir(os.path.join("logs/", f))]
 folder_idx = len(folders)
 while os.path.exists("logs/log" + str(folder_idx) + "/"):

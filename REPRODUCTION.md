@@ -27,7 +27,7 @@ The demo imports with Python 3.12, `cflib` 0.1.34, and NumPy 2.5.4:
 ```sh
 uv venv --python 3.12 .venv
 uv pip install --python .venv/bin/python cflib==0.1.34 numpy==2.5.4
-.venv/bin/python -m py_compile cslam-stm32-app/run_demo.py
+uv run --no-project --python .venv/bin/python python -m py_compile cslam-stm32-app/run_demo.py
 ```
 
-The runtime requires a Crazyradio and configured drones. `cflib.crtp.scan_interfaces()` found no Crazyradio on the test machine, so the mission was not started.
+The runtime requires a Crazyradio and configured drones. From `cslam-stm32-app/`, `uv run --no-project --python ../.venv/bin/python run_demo.py 2` now reaches the radio connection step, then exits because no Crazyradio is attached. No flight was started.
