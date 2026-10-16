@@ -10,7 +10,7 @@
 
 #include "pmsis.h"
 
-void cl_memcpy_from_l2(void *l1_dest, void *l2_src, int32_t size) {
+void cl_memcpy_from_l2(void *l1_dest, const void *l2_src, int32_t size) {
     pi_cl_dma_copy_t copy;
     copy.dir = PI_CL_DMA_DIR_EXT2LOC;
     copy.merge = 0;

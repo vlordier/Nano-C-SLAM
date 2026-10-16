@@ -56,36 +56,11 @@ static icp_point_t matpointmul(const float r[4], const icp_point_t p) {
     return out;
 }
 
-static void compute_correspondences(const icp_points_t *P,
-                                    const icp_points_t *Q, float error_bound,
-                                    int16_t cor_P[], int16_t cor_Q[]) {
-    ASSERT(P->num <= SIZE_POINTS, "Scan size exceeded!");
-    ASSERT(Q->num <= SIZE_POINTS, "Scan size exceeded!");
-    int16_t p_num = (int16_t)P->num;
-    int16_t q_num = (int16_t)Q->num;
-    memset(cor_Q, 0, Q->num * sizeof(int16_t));
-    // memset(cor_P, 0, P->num * sizeof(int16_t));
-    for (int16_t i = 0; i < p_num; ++i) {
-        float min_dist = error_bound;
-        int16_t chosen_idx = -1;
-        icp_point_t cur_point = P->items[i];
-        for (int16_t j = 0; j < q_num; ++j) {
-            float dist = points_dist_squared(cur_point, Q->items[j]);
-            if (dist < min_dist) {
-                min_dist = dist;
-                chosen_idx = j;
-            }
-        }
-        cor_P[i] = chosen_idx;
-        if (chosen_idx != -1) cor_Q[chosen_idx]++;
-    }
-}
-
 /////////////////////////
 
 typedef struct {
-    icp_points_t *P;
-    icp_points_t *Q;
+    const icp_points_t *P;
+    const icp_points_t *Q;
     float error_bound;
     int16_t *cor_P;
     int16_t *cor_Q;
@@ -178,13 +153,15 @@ static void center_data_P(const icp_points_t *points, const int16_t *cor,
                           icp_point_t *center, icp_points_t *centered) {
     float x = 0;
     float y = 0;
+    size_t matched = 0;
     for (int16_t i = 0; i < (int16_t)points->num; ++i) {
         if (cor[i] < 0) continue;
         x += points->items[i].x;
         y += points->items[i].y;
+        matched++;
     }
-    x /= (float)points->num;
-    y /= (float)points->num;
+    x /= (float)matched;
+    y /= (float)matched;
     for (int16_t i = 0; i < (int16_t)points->num; i++) {
         if (cor[i] < 0) continue;
         centered->items[i].x = points->items[i].x - x;
@@ -288,9 +265,15 @@ void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
          float error_bound, float *result, icp_job_t *job) {
 
     memset(job, 0, sizeof(icp_job_t));
+    memset(result, 0, 3 * sizeof(float));
+    job->error = INFINITY;
     uint32_t t_start = pi_time_get_us();
 
-    if ((Q->num == 0) || (P->num == 0)) return;
+    if (Q->num == 0 || P->num == 0 || Q->num > SIZE_POINTS ||
+        P->num > SIZE_POINTS || max_iterations <= 0) {
+        job->has_nan = 1;
+        return;
+    }
 
     // Allocate additional memory
     icp_points_t *P_copy = (icp_points_t *)&cloud0;
@@ -305,10 +288,18 @@ void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
 
     float t_a[9] = H_ZERO, t_b[9] = H_ZERO;
     float *next = t_a, *prev = t_b;
-    for (int16_t iteration = 0; iteration < max_iterations; iteration++) {
+    for (int iteration = 0; iteration < max_iterations; iteration++) {
         // Compute correspondences
         compute_correspondences_parallel(P_copy, Q, error_bound, cor_P, cor_Q);
-        // compute_correspondences(P_copy, Q, error_bound, cor_P, cor_Q);
+        int16_t matched = 0;
+        for (size_t i = 0; i < P_copy->num; i++) {
+            if (cor_P[i] >= 0) matched++;
+        }
+        if (matched == 0) {
+            job->has_nan = 1;
+            job->error = INFINITY;
+            return;
+        }
 
         // Center the data for P and Q (based on correspondences)
         icp_point_t center_of_P, center_of_Q;
@@ -347,15 +338,13 @@ void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
 
         // Compute ICP error
         float icp_error = 0.0f;
-        int16_t error_count = 0;
         for (size_t i = 0; i < P_copy->num; ++i) {
             int16_t j = cor_P[i];
             if (j < 0) continue;
 
             icp_error += points_dist_squared(P_copy->items[i], Q->items[j]);
-            error_count++;
         }
-        job->error = icp_error / (float)error_count;
+        job->error = icp_error / (float)matched;
     }
 
     // Write transform result
@@ -366,7 +355,8 @@ void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
     uint32_t t_stop = pi_time_get_us();
     job->time_ms = (uint16_t)(t_stop - t_start) / 1000;
 
-    if (isnan(result[0]) || isnan(result[1]) || isnan(result[2])) {
+    if (!isfinite(result[0]) || !isfinite(result[1]) ||
+        !isfinite(result[2]) || !isfinite(job->error)) {
         job->has_nan = 1;
     }
 }

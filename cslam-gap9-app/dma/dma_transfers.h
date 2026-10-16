@@ -20,7 +20,7 @@
  * @param l2_src Source address in L2
  * @param size Number of bytes to copy
  **/
-void cl_memcpy_from_l2(void *l1_dest, void *l2_src, int32_t size);
+void cl_memcpy_from_l2(void *l1_dest, const void *l2_src, int32_t size);
 
 /**
  * Transfers a number of bytes from the L1 CL to L2 FC.

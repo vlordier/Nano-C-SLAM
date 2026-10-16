@@ -30,7 +30,7 @@ typedef struct {
 typedef struct {
     float error;
     int16_t time_ms;
-    int16_t has_nan;
+    int16_t has_nan; // Nonzero when alignment is invalid or non-finite.
 } icp_job_t;
 
 static inline float point_norm(icp_point_t p) {
