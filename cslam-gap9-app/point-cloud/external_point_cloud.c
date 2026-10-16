@@ -143,7 +143,7 @@ void add_external_constraint(ext_scan_t *ext_scan, int16_t cur_scan_id,
     v2t(cur_pose, CUR_T);
     v2t(icp_res, ICP_T);
 
-    matinv_3x3(REF_T, REF_INV_T);
+    if (!matinv_3x3(REF_T, REF_INV_T)) return;
     matmul_3x3(REF_INV_T, ICP_T, T);
     matmul_3x3(T, CUR_T, T);
 
@@ -163,7 +163,7 @@ void add_external_constraint(ext_scan_t *ext_scan, int16_t cur_scan_id,
     v2t(pose0, POSE0_T);
 
     matmul_3x3(ICP_T, CUR_T, CUR_ROT_T);
-    matinv_3x3(CUR_ROT_T, CUR_ROT_T);
+    if (!matinv_3x3(CUR_ROT_T, CUR_ROT_T)) return;
     matmul_3x3(CUR_ROT_T, POSE0_T, CUR_ROT_T);
 
     t2v(CUR_ROT_T, c.z);
@@ -262,7 +262,7 @@ void update_external_constraints() {
                 v2t(ext_const_table[i].t, T);
                 v2t(pose_upd.pos, REF_NEW_T); // ref_pos_new
                 matmul_3x3(REF_NEW_T, T, T);
-                matinv_3x3(T, T);
+                if (!matinv_3x3(T, T)) break;
                 matmul_3x3(T, POSE0_T, T);
 
                 float updated_z[3];

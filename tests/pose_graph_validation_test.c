@@ -5,6 +5,7 @@
 #include "../cslam-gap9-app/slam/cholesky.h"
 #include "../cslam-gap9-app/slam/graph-based-slam.h"
 #include "../cslam-gap9-app/slam/rcm/rcm-sparse-matrix.h"
+#include "../cslam-gap9-app/slam/utils_math.h"
 
 void insert_element(csr *mat, int16_t n, int16_t row, int16_t col, float value) {
     (void)mat;
@@ -67,6 +68,15 @@ void transpose_lower_triangular_in_place(csr *mat, int16_t n) {
     } while (0)
 
 int main(void) {
+    float singular[3][3] = {{1, 2, 3}, {2, 4, 6}, {0, 0, 0}};
+    float inverse[3][3] = {{7, 7, 7}, {7, 7, 7}, {7, 7, 7}};
+    CHECK(!matinv_3x3(singular, inverse));
+    CHECK(inverse[0][0] == 7.0f && inverse[2][2] == 7.0f);
+    float rigid[3][3] = {{0, -1, 2}, {1, 0, 3}, {0, 0, 1}};
+    CHECK(matinv_3x3(rigid, rigid));
+    CHECK(fabsf(rigid[0][2] + 3.0f) < 1.0e-6f);
+    CHECK(fabsf(rigid[1][2] - 2.0f) < 1.0e-6f);
+
     float poses[6] = {0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f};
     measurement odometry[1] = {{{1.0f, 0.0f, 0.0f}}};
     constraint edge = {.fromIdx = 0, .toIdx = 2, .z = {1.0f, 0.0f, 0.0f}};

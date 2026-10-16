@@ -1,24 +1,33 @@
 #include "utils_math.h"
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 
-void matinv_3x3(float A[3][3], float A_inv[3][3]) {
+bool matinv_3x3(float A[3][3], float A_inv[3][3]) {
     float det = 0.0f;
     int i, j;
     for (i = 0; i < 3; i++)
         det = det + (A[0][i] * (A[1][(i + 1) % 3] * A[2][(i + 2) % 3] -
                                 A[1][(i + 2) % 3] * A[2][(i + 1) % 3]));
 
+    if (!isfinite(det) || fabsf(det) <= 1.0e-8f) return false;
+
     float A_copy[3][3];
     memcpy(A_copy, A, 9 * sizeof(float));
 
+    float inverse[3][3];
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++)
-            A_inv[j][i] = ((A_copy[(i + 1) % 3][(j + 1) % 3] *
-                            A_copy[(i + 2) % 3][(j + 2) % 3]) -
-                           (A_copy[(i + 1) % 3][(j + 2) % 3] *
-                            A_copy[(i + 2) % 3][(j + 1) % 3])) /
-                          det;
+            inverse[j][i] = ((A_copy[(i + 1) % 3][(j + 1) % 3] *
+                              A_copy[(i + 2) % 3][(j + 2) % 3]) -
+                             (A_copy[(i + 1) % 3][(j + 2) % 3] *
+                              A_copy[(i + 2) % 3][(j + 1) % 3])) /
+                            det;
+    for (i = 0; i < 3; ++i)
+        for (j = 0; j < 3; ++j)
+            if (!isfinite(inverse[i][j])) return false;
+    memcpy(A_inv, inverse, sizeof(inverse));
+    return true;
 }
 
 void matmul_3x3(float A[3][3], float B[3][3], float R[3][3]) {

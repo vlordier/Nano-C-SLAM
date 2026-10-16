@@ -87,8 +87,12 @@ void linearize_pose_pose_constraint(float *x1, float *x2, float *z,
     v2t(x1, Xi);
     v2t(x2, Xj);
 
-    matinv_3x3(Zij, Zij);
-    matinv_3x3(Xi, Xi);
+    if (!matinv_3x3(Zij, Zij) || !matinv_3x3(Xi, Xi)) {
+        memset(A, 0, 9 * sizeof(float));
+        memset(B, 0, 9 * sizeof(float));
+        memset(e, 0, 3 * sizeof(float));
+        return;
+    }
     matmul_3x3(Zij, Xi, Xi);
     matmul_3x3(Xi, Xj, Xi);
 

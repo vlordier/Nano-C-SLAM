@@ -1,13 +1,15 @@
 #ifndef UTILS_MATH_H
 #define UTILS_MATH_H
 
+#include <stdbool.h>
+
 /**
  * Inverts a 3x3 matrix.
  *
  * @param A Input 3x3 matrix
  * @param B Output inverse - 3x3 matrix
  **/
-void matinv_3x3(float A[3][3], float A_inv[3][3]);
+bool matinv_3x3(float A[3][3], float A_inv[3][3]);
 
 /**
  * Multiplies two 3x3 matrices. R = A * B.
