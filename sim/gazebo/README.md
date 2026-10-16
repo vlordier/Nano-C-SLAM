@@ -138,6 +138,17 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
   ros2 run nano_c_slam_gazebo sim_mission --ros-args -p use_sim_time:=True
 ```
 
+To fly all three Crazyflies in the world at once, run the swarm launch instead:
+
+```sh
+source /opt/homebrew/opt/ros2-jazzy/setup.zsh
+source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
+export GZ_PARTITION="nano_c_slam_$(id -u)"
+export ROS_DOMAIN_ID=42
+uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
+  ros2 launch nano_c_slam_gazebo swarm_mission.launch.py
+```
+
 The mission process exits after it sends its final zero-velocity command on a
 successful landing. It remains alive after a phase timeout so the vehicle stays
 under a zero-velocity hold command until you stop it.
