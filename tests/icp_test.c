@@ -60,6 +60,29 @@ void cl_memcpy_to_l2(void *dest, void *src, int32_t size) {
 }
 
 int main(void) {
+    icp_points_t reference_pair = {
+        .num = 2,
+        .items = {{0.0f, 0.0f}, {1.0f, 0.0f}},
+    };
+    icp_points_t moved_pair = {
+        .num = 2,
+        .items = {{0.1f, 0.0f}, {0.9f, 0.0f}},
+    };
+    int16_t correspondence_p[SIZE_POINTS] = {99};
+    int16_t correspondence_q[SIZE_POINTS] = {99};
+    CHECK(compute_correspondences_parallel(&moved_pair, &reference_pair, 0.04f,
+                                           correspondence_p, correspondence_q));
+    CHECK(correspondence_p[0] == 0 && correspondence_p[1] == 1);
+    CHECK(correspondence_q[0] == 1 && correspondence_q[1] == 1);
+    correspondence_p[0] = 99;
+    correspondence_q[0] = 99;
+    moved_pair.num = SIZE_POINTS + 1;
+    CHECK(!compute_correspondences_parallel(&moved_pair, &reference_pair, 0.04f,
+                                            correspondence_p, correspondence_q));
+    CHECK(correspondence_p[0] == 99 && correspondence_q[0] == 99);
+    CHECK(!compute_correspondences_parallel(&reference_pair, &reference_pair, INFINITY,
+                                            correspondence_p, correspondence_q));
+
     icp_points_t reference = {.num = 1, .items = {{0, 0}}};
     icp_points_t moved = {.num = 0};
     float result[3] = {1, 1, 1};
@@ -83,6 +106,11 @@ int main(void) {
     CHECK(fabsf(result[1]) < 0.0001f);
 
     icp(&reference, &moved, 0, 0.4f, result, &job);
+    CHECK(job.has_nan && isinf(job.error));
+
+    icp(&reference, &moved, 1, NAN, result, &job);
+    CHECK(job.has_nan && isinf(job.error));
+    icp(NULL, &moved, 1, 0.4f, result, &job);
     CHECK(job.has_nan && isinf(job.error));
 
     moved.num = SIZE_POINTS + 1;

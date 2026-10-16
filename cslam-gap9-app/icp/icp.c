@@ -106,16 +106,17 @@ void master_core_delegate_correspondences(void *args) {
     P->num = job_fc->P->num;
     Q->num = job_fc->Q->num;
 
-    // DMA transfers - fetch data from l2
+    ASSERT(P->num <= SIZE_POINTS, "Scan size exceeded!");
+    ASSERT(Q->num <= SIZE_POINTS, "Scan size exceeded!");
+    int16_t p_num = (int16_t)P->num;
+    int16_t q_num = (int16_t)Q->num;
+
+    // DMA transfers - fetch data from l2 only after validating their lengths.
     cl_memcpy_from_l2(P->items, job_fc->P->items,
                       job_fc->P->num * sizeof(icp_point_t));
     cl_memcpy_from_l2(Q->items, job_fc->Q->items,
                       job_fc->Q->num * sizeof(icp_point_t));
 
-    ASSERT(P->num <= SIZE_POINTS, "Scan size exceeded!");
-    ASSERT(Q->num <= SIZE_POINTS, "Scan size exceeded!");
-    int16_t p_num = (int16_t)P->num;
-    int16_t q_num = (int16_t)Q->num;
     memset(cor_Q_cl, 0, sizeof(cor_Q_cl));
     // memset(cor_P_cl, 0, sizeof(cor_P_cl));
 
@@ -125,13 +126,18 @@ void master_core_delegate_correspondences(void *args) {
         for (int16_t k = 1; k < NUM_CORES; k++)
             cor_Q_cl[0][j] += cor_Q_cl[k][j];
 
-    cl_memcpy_to_l2(cor_P, cor_P_cl, p_num * sizeof(int16_t));
-    cl_memcpy_to_l2(cor_Q, cor_Q_cl[0], q_num * sizeof(int16_t));
+    cl_memcpy_to_l2(job_fc->cor_P, cor_P_cl, p_num * sizeof(int16_t));
+    cl_memcpy_to_l2(job_fc->cor_Q, cor_Q_cl[0], q_num * sizeof(int16_t));
 }
 
-void compute_correspondences_parallel(const icp_points_t *P,
+bool compute_correspondences_parallel(const icp_points_t *P,
                                       const icp_points_t *Q, float error_bound,
                                       int16_t cor_P[], int16_t cor_Q[]) {
+    if (P == NULL || Q == NULL || cor_P == NULL || cor_Q == NULL ||
+        P->num == 0 || Q->num == 0 || P->num > SIZE_POINTS ||
+        Q->num > SIZE_POINTS || !isfinite(error_bound) || error_bound <= 0)
+        return false;
+
     fabric_job job_fc = {
         .P = P,
         .Q = Q,
@@ -146,6 +152,7 @@ void compute_correspondences_parallel(const icp_points_t *P,
                         &job_fc),
         &task_block_illegal);
     pi_evt_wait(&task_block_illegal);
+    return true;
 }
 
 static void center_data_P(const icp_points_t *points, const int16_t *cor,
@@ -263,13 +270,15 @@ void svd(const float in[4], float u[4], float sigma[4], float v[4]) {
 void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
          float error_bound, float *result, icp_job_t *job) {
 
+    if (job == NULL || result == NULL) return;
     memset(job, 0, sizeof(icp_job_t));
     memset(result, 0, 3 * sizeof(float));
     job->error = INFINITY;
     uint32_t t_start = pi_time_get_us();
 
-    if (Q->num == 0 || P->num == 0 || Q->num > SIZE_POINTS ||
-        P->num > SIZE_POINTS || max_iterations <= 0) {
+    if (Q == NULL || P == NULL || Q->num == 0 || P->num == 0 ||
+        Q->num > SIZE_POINTS || P->num > SIZE_POINTS || max_iterations <= 0 ||
+        !isfinite(error_bound) || error_bound <= 0) {
         job->has_nan = 1;
         return;
     }
@@ -291,7 +300,12 @@ void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
     float *next = t_a, *prev = t_b;
     for (int iteration = 0; iteration < max_iterations; iteration++) {
         // Compute correspondences
-        compute_correspondences_parallel(P_copy, Q, error_bound, cor_P, cor_Q);
+        if (!compute_correspondences_parallel(P_copy, Q, error_bound, cor_P,
+                                              cor_Q)) {
+            job->has_nan = 1;
+            job->error = INFINITY;
+            return;
+        }
         int16_t matched = 0;
         for (size_t i = 0; i < P_copy->num; i++) {
             if (cor_P[i] >= 0) matched++;

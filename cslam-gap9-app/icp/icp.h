@@ -9,6 +9,7 @@
 #define SLAM_FIRMWARE_ICP_H
 
 #include <math.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -54,7 +55,17 @@ void svd(const float in[4], float u[4], float sigma[4], float v[4]);
 void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
          float error_bound, float *rotation, icp_job_t *job);
 
-void compute_correspondences_parallel(const icp_points_t *P,
+/**
+ * Compute nearest-neighbor correspondences on the cluster.
+ *
+ * @param P Points to match from, with at most SIZE_POINTS entries.
+ * @param Q Reference points, with at most SIZE_POINTS entries.
+ * @param error_bound Maximum accepted squared distance.
+ * @param cor_P Output reference index for each P point, or -1 if unmatched.
+ * @param cor_Q Output number of P points matched to each Q point.
+ * @return True if the request was valid and correspondences were computed.
+ */
+bool compute_correspondences_parallel(const icp_points_t *P,
                                       const icp_points_t *Q, float error_bound,
                                       int16_t cor_P[], int16_t cor_Q[]);
 
