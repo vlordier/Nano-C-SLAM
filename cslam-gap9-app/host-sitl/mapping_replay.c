@@ -9,6 +9,7 @@
 
 #define MAX_REPLAY_POSES 170
 #define MAX_LIDAR_RANGE_MM 3490
+#define MAPPING_RANGE_LIMIT_MM 1400
 
 uint8_t verbose = 0;
 static slam_job_t last_slam_job;
@@ -24,7 +25,7 @@ static int fail(const char *message) {
 
 static void process_scan_window(int start_id) {
     pcl_extract_scan((int16_t)start_id, (int16_t)(start_id + 20), &current_scan,
-                     MAX_LIDAR_RANGE_MM);
+                     MAPPING_RANGE_LIMIT_MM);
     if (current_scan.num == 0) return;
 
     if (previous_scan_start >= 0 && previous_scan.num > 0) {
@@ -48,7 +49,7 @@ static int emit_map(void) {
     if (pose_count <= 0) return fail("no poses were accepted");
 
     icp_points_t map = {0};
-    pcl_extract_scan(0, pose_count, &map, 3490);
+    pcl_extract_scan(0, pose_count, &map, MAPPING_RANGE_LIMIT_MM);
     if (map.num == 0) return fail("map contains no projected lidar points");
 
     float *poses = calloc((size_t)pose_count * 3, sizeof(*poses));

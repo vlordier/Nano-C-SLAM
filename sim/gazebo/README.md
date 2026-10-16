@@ -204,7 +204,9 @@ repository root.
 With Gazebo and the sensor bridge running, start the collector in one terminal
 before launching the mission in another. It samples fresh odometry and the
 four-ray range topic at 10 Hz, then builds and runs the owned C point-cloud,
-ICP, and pose-graph code on the captured data:
+ICP, and pose-graph code on the captured data. The mapper discards returns
+above the firmware loop-closure limit of 1.4 m, even though Gazebo's lidar can
+report out to 3.49 m:
 
 ```sh
 cd ~/Work/Nano-C-SLAM
@@ -236,10 +238,9 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
 ```
 
 Pass `--mapping-path` to the collector when launching the mission with
-`mapping_path:=True`; the report records raw x/y odometry bounds and cumulative
-horizontal travel so spatial excitation can be checked. Build the host replay
-before flight and pass `--reuse-binary` to avoid compiling while Gazebo is
-running:
+`mapping_path:=True`; the report records raw odometry/range samples, x/y bounds,
+and cumulative horizontal travel. Build the host replay before flight and pass
+`--reuse-binary` to avoid compiling while Gazebo is running:
 
 ```sh
 scripts/build_host_mapping_sitl.sh
@@ -249,9 +250,14 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
 ```
 
 Run the collector concurrently to capture the spatial telemetry and replay it
-through the host mapping core. The optional path improves spatial excitation;
-its sensors and mapping execution retain the same simulation and host-only
-limitations described below.
+through the host mapping core. If the world does not produce enough returns
+inside 1.4 m, the collector reports that no map points were projected. The
+saved `cf1_native_gazebo_mapping_path.json` is an earlier broad-range baseline
+that used 3.49 m and must not be treated as firmware-faithful. The deterministic
+host fixture in `tests/test_gazebo_mapping_sitl.py` uses 0.9–1.2 m readings and
+checks three scans, 240 map points, and two ICP constraints under the firmware
+limit. The optional path improves spatial excitation; sensors remain simulated
+and mapping execution remains host-only.
 
 This is host execution of the repository's GAP9 point-cloud, ICP, and graph
 optimization C modules. PMSIS cluster calls run through serial CPU stubs. The

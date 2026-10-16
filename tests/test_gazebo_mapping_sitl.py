@@ -138,6 +138,23 @@ class NativeMappingReplayTests(unittest.TestCase):
         assert isinstance(graph_size, int)
         self.assertGreaterEqual(graph_size, 2)
 
+    def test_drops_ranges_beyond_firmware_loop_closure_limit(self) -> None:
+        samples = [
+            MappingSample(index, index * 100, 0.0, 0.0, 0.0, (1500, 1500, 1500, 1500))
+            for index in range(40)
+        ]
+        result = subprocess.run(  # noqa: S603 -- built fixture executable
+            [str(self.binary)],
+            input="\n".join(sample.to_record() for sample in samples) + "\n",
+            capture_output=True,
+            check=False,
+            text=True,
+            timeout=30,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("no projected lidar points", result.stderr)
+
     def test_runs_the_same_embedded_scan_and_optimization_path_as_gvsoc(self) -> None:
         executable = REPOSITORY_ROOT / "cslam-gap9-app/BUILD-host/gap9_mapping_smoke"
         result = subprocess.run(  # noqa: S603 -- built repository fixture

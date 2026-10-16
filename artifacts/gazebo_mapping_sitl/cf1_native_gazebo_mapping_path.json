@@ -2901,5 +2901,7 @@
     "landing_altitude_m": 0.098,
     "path_complete": true,
     "verification_source": "ROS sim_mission process log from the same capture run"
-  }
+  },
+  "mapping_range_limit_mm": 3490,
+  "mapping_range_limit_note": "Historical broad-range baseline; subsequent firmware-fidelity work uses 1400 mm. This artifact is not representative of the current cutoff."
 }

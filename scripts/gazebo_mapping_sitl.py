@@ -291,9 +291,8 @@ def main(args: list[str] | None = None) -> int:
         "claim_boundary": (
             "Gazebo four-ray lidar and simulated odometry replayed through the "
             "Nano-C-SLAM C mapping/ICP/pose-graph modules with CPU PMSIS stubs; "
-            "the host adapter forms ICP constraints using the Gazebo 3.49 m range "
-            "instead of the firmware loop-closure helper's 1.4 m cutoff; not GAP9 "
-            "GVSOC, real 8x8 ToF, UWB, or hardware validation."
+            "the replay applies the firmware loop-closure helper's 1.4 m scan "
+            "cutoff; not GAP9 GVSOC, real 8x8 ToF, UWB, or hardware validation."
         ),
         "drone": options.drone,
         "simulator": "Gazebo Harmonic Crazyswarm2 swarm world",
@@ -318,6 +317,8 @@ def main(args: list[str] | None = None) -> int:
                 value for sample in samples for value in sample.ranges_mm if value >= 0
             ),
         },
+        "mapping_range_limit_mm": 1400,
+        "input_samples": [sample.to_record() for sample in samples],
         "tof_projection": "one four-ray reading per direction in central ToF column",
         "mapping": mapping,
     }
