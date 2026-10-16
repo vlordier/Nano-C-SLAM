@@ -213,7 +213,7 @@ source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
 export GZ_PARTITION="nano_c_slam_$(id -u)"
 export ROS_DOMAIN_ID=42
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
-  python scripts/gazebo_mapping_sitl.py --drone cf1 --samples 60 \
+  python scripts/gazebo_mapping_sitl.py --drone cf1 --samples 150 --mapping-path \
   --output /tmp/nano-c-slam-gazebo-map.json
 ```
 
@@ -223,6 +223,35 @@ reports success only when it obtains finite map points and a successfully
 optimized graph. The JSON report contains optimized poses and projected map
 points. On Linux, use the ROS and workspace setup paths from the Linux section
 and replace the Python path with `/usr/bin/python3`.
+
+For a bounded spatial mapping pass, enable the optional square path. It moves
+0.25 m along each side at no more than 0.25 m/s, holds at the target altitude,
+then performs the configured hover and landing. The square is relative to the
+measured takeoff position and each waypoint has an eight-second timeout:
+
+```sh
+uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
+  ros2 run nano_c_slam_gazebo sim_mission --ros-args \
+  -p use_sim_time:=True -p mapping_path:=True
+```
+
+Pass `--mapping-path` to the collector when launching the mission with
+`mapping_path:=True`; the report records raw x/y odometry bounds and cumulative
+horizontal travel so spatial excitation can be checked. Build the host replay
+before flight and pass `--reuse-binary` to avoid compiling while Gazebo is
+running:
+
+```sh
+scripts/build_host_mapping_sitl.sh
+uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
+  python scripts/gazebo_mapping_sitl.py --drone cf1 --samples 150 \
+  --mapping-path --reuse-binary --output /tmp/nano-c-slam-gazebo-map.json
+```
+
+Run the collector concurrently to capture the spatial telemetry and replay it
+through the host mapping core. The optional path improves spatial excitation;
+its sensors and mapping execution retain the same simulation and host-only
+limitations described below.
 
 This is host execution of the repository's GAP9 point-cloud, ICP, and graph
 optimization C modules. PMSIS cluster calls run through serial CPU stubs. The

@@ -10,9 +10,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from scripts.gazebo_mapping_sitl import _parse_args
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
     MappingSample,
     quaternion_yaw,
+    summarize_sample_path,
     validate_mapping_result,
 )
 
@@ -37,6 +39,13 @@ def _deterministic_samples(count: int) -> list[MappingSample]:
 
 
 class MappingSampleTests(unittest.TestCase):
+    def test_mapping_capture_cli_labels_path_and_reuses_prebuilt_runner(self) -> None:
+        options = _parse_args(["--mapping-path", "--reuse-binary"])
+
+        self.assertTrue(options.mapping_path)
+        self.assertTrue(options.reuse_binary)
+        self.assertEqual(options.samples, 60)
+
     def test_serializes_pose_and_four_range_readings(self) -> None:
         sample = MappingSample(4, 250, 1.25, -0.5, 0.75, (1000, -1, 850, 1200))
 
@@ -55,6 +64,24 @@ class MappingSampleTests(unittest.TestCase):
         self.assertAlmostEqual(
             quaternion_yaw(0, 0, math.sin(yaw / 2), math.cos(yaw / 2)), yaw
         )
+
+    def test_summarizes_horizontal_odometry_excitation(self) -> None:
+        samples = [
+            MappingSample(0, 0, 0.0, 0.0, 0.0, (100, 100, 100, 100)),
+            MappingSample(1, 100, 0.3, 0.0, 0.0, (100, 100, 100, 100)),
+            MappingSample(2, 200, 0.3, 0.4, 0.0, (100, 100, 100, 100)),
+        ]
+
+        self.assertEqual(
+            summarize_sample_path(samples),
+            {
+                "x_bounds_m": [0.0, 0.3],
+                "y_bounds_m": [0.0, 0.4],
+                "horizontal_path_length_m": 0.7,
+            },
+        )
+        with self.assertRaisesRegex(ValueError, "at least one"):
+            summarize_sample_path([])
 
     def test_rejects_mapping_without_two_valid_scan_windows(self) -> None:
         report = {

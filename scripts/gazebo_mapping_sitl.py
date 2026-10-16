@@ -27,6 +27,7 @@ if str(REPOSITORY_ROOT) not in sys.path:
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
     MappingSample,
     quaternion_yaw,
+    summarize_sample_path,
     validate_mapping_result,
 )
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
@@ -87,6 +88,16 @@ def _parse_args(args: list[str] | None) -> argparse.Namespace:
         help="number of fresh 10 Hz samples (minimum 40 for two 20-pose scans)",
     )
     parser.add_argument("--timeout", type=float, default=60.0)
+    parser.add_argument(
+        "--mapping-path",
+        action="store_true",
+        help="record that sim_mission was launched with mapping_path:=True",
+    )
+    parser.add_argument(
+        "--reuse-binary",
+        action="store_true",
+        help="use the already-built host executable to avoid compiling during flight",
+    )
     parser.add_argument(
         "--output",
         type=Path,
@@ -266,7 +277,8 @@ def _run_mapping(binary: Path, samples: list[MappingSample]) -> dict[str, object
 def main(args: list[str] | None = None) -> int:
     options = _parse_args(args)
     binary = options.binary.resolve()
-    _build_host_runner(binary)
+    if not options.reuse_binary:
+        _build_host_runner(binary)
     if not binary.is_file():
         raise FileNotFoundError(f"host mapping executable was not built: {binary}")
 
@@ -292,6 +304,8 @@ def main(args: list[str] | None = None) -> int:
         ],
         "input_sample_count": len(samples),
         "input_frequency_hz": 10,
+        "mapping_path_enabled": options.mapping_path,
+        "input_horizontal_path": summarize_sample_path(samples),
         "input_sim_time_ms": {
             "start": samples[0].timestamp_ms,
             "end": samples[-1].timestamp_ms,

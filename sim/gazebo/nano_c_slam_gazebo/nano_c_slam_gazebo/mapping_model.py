@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Sequence
 from dataclasses import dataclass
+from itertools import pairwise
 
 
 @dataclass(frozen=True)
@@ -49,6 +51,29 @@ def quaternion_yaw(x: float, y: float, z: float, w: float) -> float:
     if math.hypot(math.hypot(x, y), math.hypot(z, w)) < 1e-12:
         raise ValueError("odometry quaternion must be nonzero")
     return math.atan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z))
+
+
+def summarize_sample_path(samples: Sequence[MappingSample]) -> dict[str, object]:
+    """Summarize raw horizontal odometry to make spatial excitation auditable."""
+    if not samples:
+        raise ValueError("at least one mapping sample is required")
+    for sample in samples:
+        sample.to_record()
+    path_length_m = sum(
+        math.hypot(current.x_m - previous.x_m, current.y_m - previous.y_m)
+        for previous, current in pairwise(samples)
+    )
+    return {
+        "x_bounds_m": [
+            min(sample.x_m for sample in samples),
+            max(sample.x_m for sample in samples),
+        ],
+        "y_bounds_m": [
+            min(sample.y_m for sample in samples),
+            max(sample.y_m for sample in samples),
+        ],
+        "horizontal_path_length_m": path_length_m,
+    }
 
 
 def validate_mapping_result(

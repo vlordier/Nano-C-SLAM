@@ -96,33 +96,35 @@ class MissionSequence:
         now_s: float,
         altitude_m: float | None,
         odometry_stamp_s: float | None = None,
+        *,
+        hold_hover: bool = False,
     ) -> float:
         if self.phase in (MissionPhase.COMPLETE, MissionPhase.FAILED):
             return 0.0
         if not math.isfinite(now_s):
-            return self._fail("simulation time is not finite")
+            return self.fail("simulation time is not finite")
         if self._last_now_s is not None and now_s < self._last_now_s:
-            return self._fail("simulation time moved backwards")
+            return self.fail("simulation time moved backwards")
         self._last_now_s = now_s
         if altitude_m is not None and not math.isfinite(altitude_m):
-            return self._fail("odometry altitude is not finite")
+            return self.fail("odometry altitude is not finite")
         if odometry_stamp_s is not None:
             if not math.isfinite(odometry_stamp_s):
-                return self._fail("odometry timestamp is not finite")
+                return self.fail("odometry timestamp is not finite")
             if (
                 self._last_odometry_stamp_s is not None
                 and odometry_stamp_s < self._last_odometry_stamp_s
             ):
-                return self._fail("odometry timestamp moved backwards")
+                return self.fail("odometry timestamp moved backwards")
             self._last_odometry_stamp_s = odometry_stamp_s
         if self.phase is MissionPhase.WAITING and altitude_m is None:
             return 0.0
         if altitude_m is None:
-            return self._fail("odometry altitude is unavailable")
+            return self.fail("odometry altitude is unavailable")
         if odometry_stamp_s is None:
-            return self._fail("odometry timestamp is unavailable")
+            return self.fail("odometry timestamp is unavailable")
         if now_s - odometry_stamp_s > self.config.odometry_timeout_s:
-            return self._fail("odometry data is stale")
+            return self.fail("odometry data is stale")
         if self.phase is MissionPhase.WAITING:
             self.phase = MissionPhase.TAKEOFF
             self._phase_started_s = now_s
@@ -134,10 +136,13 @@ class MissionSequence:
                 self._phase_started_s = now_s
                 return 0.0
             if self._timed_out(now_s):
-                return self._fail("takeoff phase timed out")
+                return self.fail("takeoff phase timed out")
             return self.config.vertical_speed_m_s
 
         if self.phase is MissionPhase.HOVER:
+            if hold_hover:
+                self._hover_started_s = now_s
+                return 0.0
             hover_started_s = self._hover_started_s
             if hover_started_s is None:
                 raise RuntimeError("hover phase started without an entry timestamp")
@@ -152,12 +157,13 @@ class MissionSequence:
                 self.phase = MissionPhase.COMPLETE
                 return 0.0
             if self._timed_out(now_s):
-                return self._fail("landing phase timed out")
+                return self.fail("landing phase timed out")
             return -self.config.vertical_speed_m_s
 
         return 0.0
 
-    def _fail(self, reason: str) -> float:
+    def fail(self, reason: str) -> float:
+        """Stop the mission safely and retain a diagnostic failure reason."""
         self.phase = MissionPhase.FAILED
         self.failure_reason = reason
         return 0.0

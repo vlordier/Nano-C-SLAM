@@ -10,6 +10,7 @@ from nav_msgs.msg import Odometry
 from rclpy.node import Node
 from std_msgs.msg import Bool
 
+from .mapping_path import MappingPath
 from .mission_model import (
     MissionPhase,
     MissionSequence,
@@ -26,17 +27,21 @@ class SimMission(Node):
         self.declare_parameter("drone_name", "cf1")
         self.declare_parameter("hover_height_m", 0.5)
         self.declare_parameter("hover_duration_s", 3.0)
+        self.declare_parameter("mapping_path", False)
         self._drone_name = validate_drone_name(self.get_parameter("drone_name").value)
-        sequence = MissionSequence(
-            config=create_mission_config(
-                self.get_parameter("hover_height_m").value,
-                self.get_parameter("hover_duration_s").value,
-            )
+        config = create_mission_config(
+            self.get_parameter("hover_height_m").value,
+            self.get_parameter("hover_duration_s").value,
         )
+        self._mapping_path_enabled = bool(self.get_parameter("mapping_path").value)
+        sequence = MissionSequence(config=config)
         self._sequence = sequence
         self._altitude_m: float | None = None
+        self._position_xy_m: tuple[float, float] | None = None
         self._odometry_stamp_s: float | None = None
         self._last_phase = MissionPhase.WAITING
+        self._mapping_path: MappingPath | None = None
+        self._mapping_path_finished = False
         self._publisher = self.create_publisher(
             Twist, f"/{self._drone_name}/cmd_vel", 10
         )
@@ -57,6 +62,8 @@ class SimMission(Node):
 
     def _on_odometry(self, message: Odometry) -> None:
         self._altitude_m = float(message.pose.pose.position.z)
+        position = message.pose.pose.position
+        self._position_xy_m = (float(position.x), float(position.y))
         stamp = message.header.stamp
         self._odometry_stamp_s = float(stamp.sec) + float(stamp.nanosec) / 1e9
 
@@ -65,17 +72,47 @@ class SimMission(Node):
             self._publish_zero_command()
             if self._sequence.phase is MissionPhase.COMPLETE:
                 self._timer.cancel()
+            elif self._sequence.failure_reason is not None:
+                self.get_logger().error(
+                    f"{self._drone_name} mission failed: "
+                    f"{self._sequence.failure_reason}"
+                )
+                self._timer.cancel()
             return
 
         enabled = Bool()
         enabled.data = True
         self._enable_publisher.publish(enabled)
         command = Twist()
+        now_s = self.get_clock().now().nanoseconds / 1e9
         command.linear.z = self._sequence.step(
-            self.get_clock().now().nanoseconds / 1e9,
+            now_s,
             self._altitude_m,
             self._odometry_stamp_s,
+            hold_hover=self._mapping_path_enabled and not self._mapping_path_finished,
         )
+        if self._sequence.phase is MissionPhase.HOVER and self._mapping_path_enabled:
+            if self._position_xy_m is None:
+                self._sequence.fail("odometry position is unavailable")
+            elif self._mapping_path is None:
+                self._mapping_path = MappingPath(
+                    *self._position_xy_m,
+                    now_s,
+                )
+                self.get_logger().info(
+                    "Starting bounded square mapping path at measured position"
+                )
+            else:
+                command.linear.x, command.linear.y = self._mapping_path.step(
+                    now_s, *self._position_xy_m
+                )
+                if self._mapping_path.failure_reason is not None:
+                    self._sequence.fail(self._mapping_path.failure_reason)
+                elif self._mapping_path.complete and not self._mapping_path_finished:
+                    self._mapping_path_finished = True
+                    self.get_logger().info(
+                        "Mapping path complete; beginning configured hover interval"
+                    )
         self._publisher.publish(command)
         if self._sequence.phase is self._last_phase:
             return
@@ -109,7 +146,10 @@ def main(args: Sequence[str] | None = None) -> None:
     node: SimMission | None = None
     try:
         node = SimMission()
-        while rclpy.ok() and node._sequence.phase is not MissionPhase.COMPLETE:
+        while rclpy.ok() and node._sequence.phase not in (
+            MissionPhase.COMPLETE,
+            MissionPhase.FAILED,
+        ):
             rclpy.spin_once(node, timeout_sec=0.1)
     except KeyboardInterrupt:
         pass

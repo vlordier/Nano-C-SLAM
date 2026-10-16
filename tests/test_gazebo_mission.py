@@ -2,6 +2,9 @@
 
 import unittest
 
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_path import (
+    MappingPath,
+)
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     SUPPORTED_DRONE_NAMES,
     MissionConfig,
@@ -120,6 +123,15 @@ class MissionSequenceTests(unittest.TestCase):
         self.assertIs(mission.phase, MissionPhase.FAILED)
         self.assertEqual(mission.failure_reason, "takeoff phase timed out")
 
+    def test_external_path_failure_is_terminal_and_zero_command(self) -> None:
+        mission = MissionSequence()
+
+        self.assertEqual(mission.fail("mapping waypoint timed out"), 0.0)
+
+        self.assertIs(mission.phase, MissionPhase.FAILED)
+        self.assertEqual(mission.failure_reason, "mapping waypoint timed out")
+        self.assertEqual(mission.step(1.0, 0.0, 1.0), 0.0)
+
     def test_already_airborne_mission_moves_to_hover_and_landing(self) -> None:
         mission = MissionSequence(MissionConfig(hover_duration_s=0.5))
 
@@ -127,6 +139,66 @@ class MissionSequenceTests(unittest.TestCase):
         self.assertIs(mission.phase, MissionPhase.HOVER)
         self.assertEqual(mission.step(2.5, 0.6, 2.5), -0.5)
         self.assertIs(mission.phase, MissionPhase.LAND)
+
+    def test_mapping_path_holds_hover_timer_until_route_finishes(self) -> None:
+        mission = MissionSequence(MissionConfig(hover_duration_s=2.0))
+        mission.step(0.0, 0.0, 0.0)
+        mission.step(0.1, 0.5, 0.1)
+
+        self.assertEqual(mission.step(1.0, 0.5, 1.0, hold_hover=True), 0.0)
+        self.assertEqual(mission.step(5.0, 0.5, 5.0, hold_hover=True), 0.0)
+
+        self.assertEqual(mission.step(6.9, 0.5, 6.9), 0.0)
+        self.assertIs(mission.phase, MissionPhase.HOVER)
+        self.assertEqual(mission.step(7.0, 0.5, 7.0), -0.5)
+
+
+class MappingPathTests(unittest.TestCase):
+    def test_tracks_square_with_bounded_world_frame_commands(self) -> None:
+        path = MappingPath(2.0, -1.0, 0.0)
+
+        command = path.step(0.1, 2.0, -1.0)
+        self.assertAlmostEqual(command[0], 0.2)
+        self.assertAlmostEqual(command[1], 0.0)
+
+        self.assertEqual(path.step(1.0, 2.25, -1.0), (0.0, 0.0))
+        self.assertEqual(path.waypoint_index, 1)
+        command = path.step(1.1, 2.25, -1.0)
+        self.assertAlmostEqual(command[0], 0.0)
+        self.assertAlmostEqual(command[1], 0.2)
+
+    def test_completes_only_after_all_waypoints_are_reached(self) -> None:
+        offsets = ((0.1, 0.0),)
+        path = MappingPath(0.0, 0.0, 0.0, offsets_m=offsets)
+
+        path.step(0.1, 0.0, 0.0)
+        self.assertFalse(path.complete)
+        self.assertEqual(path.step(0.2, 0.1, 0.0), (0.0, 0.0))
+        self.assertTrue(path.complete)
+        self.assertEqual(path.step(0.3, 10.0, 10.0), (0.0, 0.0))
+
+    def test_fails_safe_on_timeout_regression_and_non_finite_odometry(self) -> None:
+        timed_out = MappingPath(0.0, 0.0, 0.0, waypoint_timeout_s=1.0)
+        self.assertEqual(timed_out.step(1.0, 0.0, 0.0), (0.0, 0.0))
+        self.assertIn("timed out", timed_out.failure_reason or "")
+
+        regressed = MappingPath(0.0, 0.0, 0.0)
+        regressed.step(1.0, 0.0, 0.0)
+        self.assertEqual(regressed.step(0.5, 0.0, 0.0), (0.0, 0.0))
+        self.assertIn("backwards", regressed.failure_reason or "")
+
+        invalid = MappingPath(0.0, 0.0, 0.0)
+        self.assertEqual(invalid.step(0.1, float("nan"), 0.0), (0.0, 0.0))
+        self.assertIn("non-finite", invalid.failure_reason or "")
+
+    def test_rejects_unbounded_or_invalid_paths(self) -> None:
+        for options in (
+            {"offsets_m": ()},
+            {"offsets_m": ((0.6, 0.0),)},
+            {"waypoint_timeout_s": float("inf")},
+        ):
+            with self.subTest(options=options), self.assertRaises(ValueError):
+                MappingPath(0.0, 0.0, 0.0, **options)
 
 
 if __name__ == "__main__":
