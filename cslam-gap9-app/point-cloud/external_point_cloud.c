@@ -16,37 +16,47 @@
 #include "transformations.h"
 #include "utils_array.h"
 #include "utils_math.h"
+#include <stdio.h>
+#include <string.h>
 
 #define MAX_SCANS (20)
+#define MAX_POSE_UPDATES (200)
+#define MAX_EXTERNAL_CONSTRAINTS (50)
 
 PI_L2 icp_points_t ref_ext_scan, cur_self_scan;
 
 // Table storing the external scans (as batches of 20 external augmented poses)
 ext_scan_t ext_scan_table[MAX_SCANS];
-static int16_t ext_scan_table_idx;
+static int16_t ext_scan_table_idx = -1;
 static int16_t ext_aug_pose_idx = 0;
+static int16_t ext_drop_remaining = 0;
 
 // Table storing the pose updates
-static ext_pose_upd_t ext_pose_upd_table[200];
+static ext_pose_upd_t ext_pose_upd_table[MAX_POSE_UPDATES];
 static int16_t ext_pose_upd_cnt = 0;
 
 // Table storing the validated external constraints (inter-drone loop closures)
-static ext_const_info_t ext_const_table[50];
+static ext_const_info_t ext_const_table[MAX_EXTERNAL_CONSTRAINTS];
 static uint16_t ext_const_cnt = 0;
 
 static icp_job_t icp_job = {0};
 
-static uint8_t print_en = 0;
 extern uint8_t verbose;
 
 void add_pose_upd_to_buf(ext_pose_upd_t pose_upd) {
+    if (ext_pose_upd_cnt >= MAX_POSE_UPDATES) return;
     ext_pose_upd_table[ext_pose_upd_cnt++] = pose_upd;
 }
 
 void reset_pose_upd_buf() { ext_pose_upd_cnt = 0; }
 
 void add_ext_aug_pose_to_buf(ext_aug_pose_t ext_pose) {
+    if (ext_drop_remaining > 0) {
+        ext_drop_remaining--;
+        return;
+    }
     if (ext_aug_pose_idx == 0) {
+        ext_scan_table_idx = -1;
         for (int16_t i = 0; i < MAX_SCANS; i++) {
             if (ext_scan_table[i].taken == 0) {
                 ext_scan_table_idx = i;
@@ -55,12 +65,17 @@ void add_ext_aug_pose_to_buf(ext_aug_pose_t ext_pose) {
                 break;
             }
         }
+        if (ext_scan_table_idx < 0) {
+            // Keep the next batch aligned if a slot opens mid-scan.
+            ext_drop_remaining = EXT_SCAN_POSE_COUNT - 1;
+            return;
+        }
     }
 
     ext_scan_table[ext_scan_table_idx].ext_aug_poses[ext_aug_pose_idx] =
         ext_pose;
     ext_aug_pose_idx++;
-    if (ext_aug_pose_idx == 20) {
+    if (ext_aug_pose_idx == EXT_SCAN_POSE_COUNT) {
         ext_aug_pose_idx = 0;
         ext_scan_table[ext_scan_table_idx].taken = 1;
         // printf("Added scan %d to table\n", ext_scan_table_idx);
@@ -86,6 +101,7 @@ constraint get_ext_constraint(int16_t idx) {
 
 void add_external_constraint(ext_scan_t *ext_scan, int16_t cur_scan_id,
                              float *icp_res) {
+    if (ext_const_cnt >= MAX_EXTERNAL_CONSTRAINTS) return;
     ext_const_info_t c = {0};
     c.from_drone = ext_scan->from_drone;
     c.ref_pose_id = ext_scan->pose_id;
@@ -137,6 +153,7 @@ void add_external_constraint(ext_scan_t *ext_scan, int16_t cur_scan_id,
 }
 
 void force_external_constraint(int16_t pose_id, float *z) {
+    if (ext_const_cnt >= MAX_EXTERNAL_CONSTRAINTS) return;
     ext_const_info_t c = {0};
     c.cur_pose_id = pose_id;
     c.z[0] = z[0];
@@ -155,6 +172,7 @@ uint8_t is_matched_with_external(uint16_t int_pose_id) {
 }
 
 void check_for_external_constraints() {
+    if (ext_const_cnt >= MAX_EXTERNAL_CONSTRAINTS) return;
     for (int16_t i = 0; i < MAX_SCANS;
          i++) { // Loop through the external scan register
         if (!ext_scan_table[i].taken) continue;
@@ -180,6 +198,7 @@ void check_for_external_constraints() {
                 get_external_scan(i, &ref_ext_scan, 1400);
                 pcl_extract_scan(cur_scan_id, cur_scan_id + 20, &cur_self_scan,
                                  1400);
+                if (ref_ext_scan.num == 0 || cur_self_scan.num == 0) continue;
 
                 float icp_res[3];
                 icp(&ref_ext_scan, &cur_self_scan, 25, 0.4f, icp_res, &icp_job);
@@ -188,11 +207,11 @@ void check_for_external_constraints() {
                 if ((icp_job.has_nan == 0) && (icp_job.error < 0.01)) {
                     add_external_constraint(&ext_scan_table[i], cur_scan_id,
                                             icp_res);
-                    ext_scan_table[i].taken = 1;
                     if (verbose)
                         printf("Created Ext constraint %d -> %d\n", cur_scan_id,
                                ext_scan_table[i].pose_id);
                     ext_scan_table[i].taken = 0;
+                    if (ext_const_cnt >= MAX_EXTERNAL_CONSTRAINTS) return;
                     break;
                 }
             }
@@ -238,8 +257,11 @@ void get_external_scan(int16_t ext_scan_idx, icp_points_t *points,
     const float step = -((float)M_PI_4) / 8;
 
     points->num = 0;
+    if (ext_scan_idx < 0 || ext_scan_idx >= MAX_SCANS ||
+        !ext_scan_table[ext_scan_idx].taken)
+        return;
 
-    for (int16_t pose_id = 0; pose_id < 20; pose_id++) {
+    for (int16_t pose_id = 0; pose_id < EXT_SCAN_POSE_COUNT; pose_id++) {
 
         float frame_x =
             ext_scan_table[ext_scan_idx].ext_aug_poses[pose_id].pos[0];
@@ -276,6 +298,7 @@ void get_external_scan(int16_t ext_scan_idx, icp_points_t *points,
                     .y = frame_y + dist_x * sinf(dir_yaw) +
                          dist_y * cosf(dir_yaw),
                 };
+                if (points->num >= SIZE_POINTS) return;
                 points->items[points->num++] = p;
             }
         }

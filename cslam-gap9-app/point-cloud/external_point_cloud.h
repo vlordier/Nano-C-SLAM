@@ -11,6 +11,8 @@
 #ifndef EXTERNAL_POINT_CLOUD_H
 #define EXTERNAL_POINT_CLOUD_H
 
+#define EXT_SCAN_POSE_COUNT (20)
+
 #include "graph-based-slam.h"
 #include "icp.h"
 #include "point_cloud.h"
@@ -26,7 +28,7 @@ typedef struct {
     uint8_t taken;
     int16_t from_drone;
     int32_t pose_id;
-    ext_aug_pose_t ext_aug_poses[20];
+    ext_aug_pose_t ext_aug_poses[EXT_SCAN_POSE_COUNT];
 } ext_scan_t;
 
 typedef struct {
@@ -47,6 +49,7 @@ typedef struct {
  * @brief Stores an external augmented pose received from other drone. The
  * external augmented poses come in batches of 20. Once all 20 were received,
  * the external scan can be computed (and matched it with an internal scan).
+ * If the scan table is full, the entire incoming batch is discarded.
  *
  * @param ext_pose The external augmented pose
  */

@@ -85,6 +85,7 @@ void check_internal_constraints(uint16_t cur_pose_id) {
         if (distance < 1.2f) {
             pcl_extract_scan(cur_pose_id, cur_pose_id + 20, &cur_scan, 1400);
             pcl_extract_scan(ref_pose_id, ref_pose_id + 20, &ref_scan, 1400);
+            if (cur_scan.num == 0 || ref_scan.num == 0) continue;
 
             float icp_res[3];
             icp_job_t icp_job = {0};
