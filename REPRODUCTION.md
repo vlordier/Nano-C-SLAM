@@ -20,18 +20,18 @@ Runtime buffers are fixed-size. The STM32 tracks up to 30 scan poses and queues 
 
 ## GAP9 firmware
 
-The local GAP9 SDK at `~/Work/da3_gap9/third_party/gap_sdk_private` reports release 5.20.4. The direct Make flow refers to absent FreeRTOS rules. The existing full firmware ELF was previously built through the SDK CMake integration in `scripts/build_gap9_firmware.sh` (Docker + `uv`), without modifying the SDK checkout. It reports 58,934 bytes text, 522,816 data, and 56,708 BSS; linker placement uses 634,992 B L2 shared (40.37%) and 117,596 B L1 (89.72%). L1 headroom is tight. The SDK emits a `pi_assert` implicit declaration warning from its own `udma_core.h` include chain. At the latest check, Docker could not connect to the configured `colima-act-ci` daemon, so rebuilding is currently unavailable.
+The local GAP9 SDK at `~/Work/da3_gap9/third_party/gap_sdk_private` reports release 5.20.4. The direct Make flow refers to absent FreeRTOS rules. On 2026-10-17, the SDK CMake build completed through the x86_64 `colima-act-ci` VM using Docker-over-SSH and `uv`, without modifying the SDK checkout. The current firmware reports 62,486 bytes text, 526,920 data, and 56,700 BSS; linker placement uses 642,640 B L2 shared (40.86%) and 117,612 B L1 (89.73%). L1 headroom is tight. The SDK emits a `pi_assert` implicit declaration warning from its own `udma_core.h` include chain.
 
-The native GVSOC launcher is available locally on macOS, and the existing `BUILD-gvsoc` ELF ran the ICP SVD kernel on the GAP9 model. The tracked result in `artifacts/gap9_gvsoc_evidence/report.json` observes the expected singular values (3.000, 2.000). This is kernel-only evidence. A separate mapping-core target and capture script exist, but the mapping ELF and `artifacts/gap9_gvsoc_evidence/mapping_report.json` are absent in the current checkout, so a successful full mapping run is not established here. The compiler at `~/Work/da3_gap9/deploy/gap_riscv_toolchain/bin/riscv32-unknown-elf-gcc` is a Linux x86-64 binary, while this Mac is Apple Silicon; the documented build requires the unavailable Docker daemon.
+The native GVSOC launcher is available locally on macOS, and the tracked result in `artifacts/gap9_gvsoc_evidence/report.json` observes the expected ICP SVD singular values (3.000, 2.000). This is kernel-only evidence. The full firmware, the SVD smoke, and the mapping-core smoke all compiled successfully with the SDK 5.20.4 toolchain in the x86_64 Colima VM. The full firmware uses 89.73% of L1; the mapping smoke uses 579,872 B of L2 shared and 117,612 B of L1. The mapping ELF has not yet been run in native GVSOC, and `mapping_report.json` is not present, so end-to-end GVSOC mapping is not established. The Mac's filesystem ran out of space during the attempt to retain the ELF in a persistent build directory; the build script now places container outputs in the ignored `.build-gap9-container/` directory so a subsequent incremental build can preserve them.
 
 ```sh
-bash scripts/build_gap9_firmware.sh
+DOCKER_HOST=ssh://colima-act-ci bash scripts/build_gap9_firmware.sh
 GAP9_GVSOC_ELF="$PWD/cslam-gap9-app/BUILD-gvsoc-mapping/nano_c_slam_gvsoc_mapping_smoke" \
 GAP9_GVSOC_EXPECTED_MARKER='NANO_C_SLAM_GVSOC:mapping_ok poses=60 scans=3 map_points=240 optimized=60 graph=3 has_nan=0' \
 bash scripts/run_gap9_gvsoc_smoke.sh
 ```
 
-When a compatible build environment is available, the command above builds and runs the deterministic mapping-core target. A successful result would verify synthetic poses only; it would not establish sensor, SPI, flight, or mapping-accuracy behavior. The complete firmware ELF was also observed reaching `main()` and opening the cluster in this virtual model, then waiting for the STM32 SPI packet. GVSOC has no STM32/SPI stimulus in this setup, so that wait is expected. Neither smoke establishes hardware timing or flight safety.
+The build command uses four jobs by default (`GAP9_BUILD_JOBS` can override this). A successful mapping run verifies the deterministic synthetic pose/scan fixture only; it does not establish sensor, SPI, flight, or mapping-accuracy behavior. The complete firmware ELF was also observed reaching `main()` and opening the cluster in this virtual model, then waiting for the STM32 SPI packet. GVSOC has no STM32/SPI stimulus in this setup, so that wait is expected. Neither smoke establishes hardware timing or flight safety.
 
 ## Gazebo SITL
 

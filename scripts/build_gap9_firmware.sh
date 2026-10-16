@@ -26,6 +26,10 @@ docker run --rm --platform linux/amd64 \
 export PATH=/toolchain/bin:$PATH
 export GAP_SDK_HOME=/gap_sdk
 export GAP_RISCV_GCC_TOOLCHAIN=/toolchain
+BUILD_ROOT=/project/.build-gap9-container
+BUILD_JOBS="${GAP9_BUILD_JOBS:-4}"
+mkdir -p "$BUILD_ROOT"
+git config --global --add safe.directory /gap_sdk
 git -C /gap_sdk describe --abbrev=0 --tags --match "release*" >/dev/null
 set +u
 source /gap_sdk/configs/gap9_v2.sh
@@ -54,30 +58,33 @@ SDK_PYTHON_ARGS=(
     --with xxhash
 )
 uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
-    cmake -S /project/cslam-gap9-app -B /project/cslam-gap9-app/BUILD \
+    cmake -S /project/cslam-gap9-app -B "$BUILD_ROOT/BUILD" \
     -DCMAKE_BUILD_TYPE=Release
 uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
-    cmake --build /project/cslam-gap9-app/BUILD --target nano_c_slam_gap9 -j1
-test -s /project/cslam-gap9-app/BUILD/nano_c_slam_gap9
-riscv32-unknown-elf-size /project/cslam-gap9-app/BUILD/nano_c_slam_gap9
+    cmake --build "$BUILD_ROOT/BUILD" --target nano_c_slam_gap9 "-j$BUILD_JOBS"
+test -s "$BUILD_ROOT/BUILD/nano_c_slam_gap9"
+riscv32-unknown-elf-size "$BUILD_ROOT/BUILD/nano_c_slam_gap9"
 uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
-    cmake -S /project/cslam-gap9-app -B /project/cslam-gap9-app/BUILD-gvsoc \
+    cmake -S /project/cslam-gap9-app -B "$BUILD_ROOT/BUILD-gvsoc" \
     -DCMAKE_BUILD_TYPE=Release -DNANO_C_SLAM_GVSOC_SMOKE=ON \
     -DKCONFIG_CONFIG=/project/tests/gap9_gvsoc_sdk.config
 uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
-    cmake --build /project/cslam-gap9-app/BUILD-gvsoc --target nano_c_slam_gvsoc_smoke -j1
-test -s /project/cslam-gap9-app/BUILD-gvsoc/nano_c_slam_gvsoc_smoke
-riscv32-unknown-elf-size /project/cslam-gap9-app/BUILD-gvsoc/nano_c_slam_gvsoc_smoke
+    cmake --build "$BUILD_ROOT/BUILD-gvsoc" --target nano_c_slam_gvsoc_smoke "-j$BUILD_JOBS"
+test -s "$BUILD_ROOT/BUILD-gvsoc/nano_c_slam_gvsoc_smoke"
+riscv32-unknown-elf-size "$BUILD_ROOT/BUILD-gvsoc/nano_c_slam_gvsoc_smoke"
 uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
-    cmake -S /project/cslam-gap9-app -B /project/cslam-gap9-app/BUILD-gvsoc-mapping \
+    cmake -S /project/cslam-gap9-app -B "$BUILD_ROOT/BUILD-gvsoc-mapping" \
     -DCMAKE_BUILD_TYPE=Release -DNANO_C_SLAM_GVSOC_MAPPING_SMOKE=ON \
     -DKCONFIG_CONFIG=/project/tests/gap9_gvsoc_sdk.config
 uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
-    cmake --build /project/cslam-gap9-app/BUILD-gvsoc-mapping \
-    --target nano_c_slam_gvsoc_mapping_smoke -j1
-test -s /project/cslam-gap9-app/BUILD-gvsoc-mapping/nano_c_slam_gvsoc_mapping_smoke
+    cmake --build "$BUILD_ROOT/BUILD-gvsoc-mapping" \
+    --target nano_c_slam_gvsoc_mapping_smoke "-j$BUILD_JOBS"
+test -s "$BUILD_ROOT/BUILD-gvsoc-mapping/nano_c_slam_gvsoc_mapping_smoke"
 riscv32-unknown-elf-size \
+    "$BUILD_ROOT/BUILD-gvsoc-mapping/nano_c_slam_gvsoc_mapping_smoke"
+mkdir -p /project/cslam-gap9-app/BUILD-gvsoc-mapping
+cp "$BUILD_ROOT/BUILD-gvsoc-mapping/nano_c_slam_gvsoc_mapping_smoke" \
     /project/cslam-gap9-app/BUILD-gvsoc-mapping/nano_c_slam_gvsoc_mapping_smoke
 '
 
-echo "GAP9 firmware ELF: $ROOT/cslam-gap9-app/BUILD/nano_c_slam_gap9"
+echo "GAP9 firmware ELF: $ROOT/.build-gap9-container/BUILD/nano_c_slam_gap9"
