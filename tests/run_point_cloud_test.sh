@@ -47,3 +47,9 @@ cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
     cslam-gap9-app/slam/utils_math.c \
     "$linker_gc" -lm -o /tmp/pose_graph_validation_test
 /tmp/pose_graph_validation_test
+
+cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
+    -Itests/stubs -Icslam-gap9-app/slam \
+    tests/sparse_matrix_bounds_test.c cslam-gap9-app/slam/sparse-matrix.c \
+    "$linker_gc" -lm -o /tmp/sparse_matrix_bounds_test
+/tmp/sparse_matrix_bounds_test

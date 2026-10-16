@@ -19,6 +19,11 @@
 
 extern csr sp_mat1;
 
+static int valid_index(const csr *mat, int16_t N, int16_t i, int16_t j) {
+    return mat != NULL && N > 0 && N <= MAX_SIZE && i >= 0 && i < N && j >= 0 &&
+           j < N;
+}
+
 void move_array_safe(char *dest, const char *src, size_t n) {
     while (n > 0) {
         n--;
@@ -27,8 +32,9 @@ void move_array_safe(char *dest, const char *src, size_t n) {
 }
 
 void insert_element(csr *mat, int16_t N, int16_t i, int16_t j, float value) {
-    if (fabs(value) < NZ_THRESHOLD) return;
-    ASSERT(mat->nz_cnt + 1 <= MAX_SIZE_SP_MAT, "Sparse matrix is full");
+    if (!valid_index(mat, N, i, j) || !isfinite(value) ||
+        fabsf(value) < NZ_THRESHOLD)
+        return;
 
     // If we have a dense matrix with elemetns of coordinates (i, j), we call as
     // order the value i*N + j.
@@ -59,6 +65,8 @@ void insert_element(csr *mat, int16_t N, int16_t i, int16_t j, float value) {
             }
         }
 
+        if (mat->nz_cnt >= MAX_SIZE_SP_MAT - 1) return;
+
         // Shift the data array and the column index array one position to the
         // right and make space for the new element
         move_array_safe((char *)&(mat->data[k_last + 1]),
@@ -79,6 +87,7 @@ void insert_element(csr *mat, int16_t N, int16_t i, int16_t j, float value) {
 
     // The element to be added has a higher order than any previously added
     // element so it is added "to the end of the csr arrays"
+    if (mat->nz_cnt >= MAX_SIZE_SP_MAT - 1) return;
     mat->nz_cnt++;
     mat->data[mat->nz_cnt] = value;
     mat->col_idx[mat->nz_cnt] = j;
@@ -94,6 +103,7 @@ void insert_element(csr *mat, int16_t N, int16_t i, int16_t j, float value) {
 }
 
 void add_to_element(csr *mat, int16_t N, int16_t i, int16_t j, float value) {
+    if (!valid_index(mat, N, i, j) || !isfinite(value)) return;
     int32_t row_start = mat->row_ptr[i];
     int32_t row_end = mat->row_ptr[i + 1];
 
@@ -107,6 +117,7 @@ void add_to_element(csr *mat, int16_t N, int16_t i, int16_t j, float value) {
 }
 
 int16_t already_added(csr *mat, int16_t N, int16_t i, int16_t j) {
+    if (!valid_index(mat, N, i, j)) return 0;
     int32_t row_start = mat->row_ptr[i];
     int32_t row_end = mat->row_ptr[i + 1];
 
@@ -122,6 +133,7 @@ int16_t already_added(csr *mat, int16_t N, int16_t i, int16_t j) {
 }
 
 float get_element(csr *mat, int16_t N, int16_t i, int16_t j) {
+    if (!valid_index(mat, N, i, j)) return 0.0f;
     int32_t row_start = mat->row_ptr[i];
     int32_t row_end = mat->row_ptr[i + 1];
 
@@ -138,6 +150,7 @@ float get_element(csr *mat, int16_t N, int16_t i, int16_t j) {
 }
 
 float get_element_sym(csr *mat, int16_t N, int16_t i, int16_t j) {
+    if (!valid_index(mat, N, i, j)) return 0.0f;
     if (i < j) {
         int16_t aux = i;
         i = j;
@@ -178,6 +191,7 @@ void transpose_lower_triangular(csr *mat, csr *mat_tr, int16_t N) {
 }
 
 void init_sp_mat(csr *mat) {
+    if (mat == NULL) return;
     mat->nz_cnt = 0;
     mat->max_line = 0;
     mat->max_order = 0;
