@@ -1,7 +1,7 @@
 import math
 import unittest
 
-from sim.gazebo.nano_c_slam_gazebo.sensor_model import (
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.sensor_model import (
     laser_scan_ranges_mm,
     pairwise_ranges_m,
     validate_odometry_timestamps,

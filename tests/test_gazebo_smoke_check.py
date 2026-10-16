@@ -65,6 +65,13 @@ cf1 completed takeoff, hover, and landing at altitude 0.06 m
                 "completed takeoff, hover, and landing at altitude 0.5 m",
             )
 
+    def test_accepts_safe_landing_when_drone_starts_airborne(self) -> None:
+        output = """mission phase: hover at altitude 0.6 m
+mission phase: land at altitude 0.6 m
+completed takeoff, hover, and landing at altitude 0.08 m
+"""
+        self.assertEqual(_mission_landing_altitude(0, output), 0.08)
+
     def test_rejects_misordered_phases_and_below_ground_completion(self) -> None:
         with self.assertRaisesRegex(RuntimeError, "expected "):
             _mission_landing_altitude(

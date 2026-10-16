@@ -127,7 +127,9 @@ def _valid_drone_name(drone: str) -> bool:
     repository_root = str(Path(__file__).resolve().parents[1])
     if repository_root not in sys.path:
         sys.path.insert(0, repository_root)
-    from sim.gazebo.nano_c_slam_gazebo.mission_model import validate_drone_name
+    from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
+        validate_drone_name,
+    )
 
     try:
         validate_drone_name(drone)
@@ -172,12 +174,18 @@ def _signal_process_group(process_id: int, signal_number: int) -> None:
 
 def _mission_landing_altitude(returncode: int, output: str) -> float:
     """Require all mission phases and a successful landing near ground level."""
-    required_phases = ("takeoff", "hover", "land")
+    allowed_phases = (
+        ("takeoff", "hover", "land"),
+        ("hover", "land"),  # The drone was already at hover height on startup.
+    )
     phases = re.findall(r"mission phase: (takeoff|hover|land)\b", output)
-    if returncode or phases != list(required_phases):
+    if returncode or tuple(phases) not in allowed_phases:
         detail = f"mission exited {returncode}"
-        if phases != list(required_phases):
-            detail += f" with phases {phases}; expected {list(required_phases)}"
+        if tuple(phases) not in allowed_phases:
+            detail += (
+                f" with phases {phases}; expected takeoff, hover, land, "
+                "or hover, land when already airborne"
+            )
         raise RuntimeError(f"{detail}\n{output.strip()}")
     completion = re.search(
         r"completed takeoff, hover, and landing at altitude (-?\d+(?:\.\d+)?) m",

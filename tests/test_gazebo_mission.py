@@ -2,7 +2,7 @@
 
 import unittest
 
-from sim.gazebo.nano_c_slam_gazebo.mission_model import (
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     SUPPORTED_DRONE_NAMES,
     MissionConfig,
     MissionPhase,
