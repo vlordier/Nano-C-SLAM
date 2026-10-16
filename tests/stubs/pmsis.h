@@ -21,6 +21,8 @@ uint32_t pi_time_get_us(void);
 void pi_time_wait_us(uint32_t us);
 int pi_core_id(void);
 void pi_cl_team_barrier(void);
+void pi_cl_team_critical_enter(void);
+void pi_cl_team_critical_exit(void);
 void pi_cl_team_fork(int cores, void (*entry)(void *), void *arg);
 void pi_evt_sig_init(pi_evt_t *evt);
 void pi_evt_wait(pi_evt_t *evt);

@@ -10,6 +10,7 @@ log/
 
 # STM32 build output
 cslam-stm32-app/build/
+cslam-gap9-app/BUILD-host/
 
 # Object files
 *.o

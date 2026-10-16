@@ -179,7 +179,7 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
   ros2 topic echo /nano_c_slam/sim/uwb_pairwise_range_m
 ```
 
-This confirms native ROS 2, the `~/Work/gz-macOS` Gazebo build and desktop GUI, simulated flight commands, and synthetic bridge messages. The four-ray lidar and ideal odometry-derived ranges do not emulate the hardware ToF matrices or UWB ranging protocol, and this does not run GAP9 SLAM or validate mapping on hardware.
+This confirms native ROS 2, the `~/Work/gz-macOS` Gazebo build and desktop GUI, simulated flight commands, and synthetic bridge messages. The four-ray lidar and ideal odometry-derived ranges do not emulate the hardware ToF matrices or UWB ranging protocol. The mapping-core replay below exercises the owned C SLAM implementation on the host; neither procedure runs the GAP9 firmware entry point or validates mapping on hardware.
 
 To verify that the native ROS graph and all telemetry streams are live without
 starting another mission, source the same ROS and workspace setup files and run:
@@ -198,3 +198,40 @@ before and after a complete takeoff-hover-land cycle. It verifies phase order,
 near-ground completion, and advancing odometry timestamps. It exits nonzero
 with a diagnostic if flight or telemetry fails. Run it from the Nano-C-SLAM
 repository root.
+
+### Replay Gazebo data through the Nano-C-SLAM mapping core
+
+With Gazebo and the sensor bridge running, start the collector in one terminal
+before launching the mission in another. It samples fresh odometry and the
+four-ray range topic at 10 Hz, then builds and runs the owned C point-cloud,
+ICP, and pose-graph code on the captured data:
+
+```sh
+cd ~/Work/Nano-C-SLAM
+source /opt/homebrew/opt/ros2-jazzy/setup.zsh
+source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
+export GZ_PARTITION="nano_c_slam_$(id -u)"
+export ROS_DOMAIN_ID=42
+uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
+  python scripts/gazebo_mapping_sitl.py --drone cf1 --samples 60 \
+  --output /tmp/nano-c-slam-gazebo-map.json
+```
+
+In a second terminal, run the single-drone mission from the previous section.
+The collector requires at least 40 samples (two 20-pose scan windows) and
+reports success only when it obtains finite map points and a successfully
+optimized graph. The JSON report contains optimized poses and projected map
+points. On Linux, use the ROS and workspace setup paths from the Linux section
+and replace the Python path with `/usr/bin/python3`.
+
+This is host execution of the repository's GAP9 point-cloud, ICP, and graph
+optimization C modules. PMSIS cluster calls run through serial CPU stubs. The
+host adapter forms scan constraints with the Gazebo lidar's 3.49 m range; the
+firmware's internal scan-matching helper currently filters at 1.4 m, below the
+2.23 m ranges measured in this world. The replay therefore validates the
+mapping core and graph optimization, but does not execute GAP9 `main.c`, SPI,
+the on-board loop-closure policy, 8x8 ToF matrices, UWB, or flight firmware.
+One successful native macOS run is preserved in
+[`artifacts/gazebo_mapping_sitl/cf1_native_gazebo.json`](../../artifacts/gazebo_mapping_sitl/cf1_native_gazebo.json):
+60 captured poses, three scan windows, two ICP constraints, 240 map points, and
+a finite three-node optimized graph.
