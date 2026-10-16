@@ -29,6 +29,8 @@ jobs:
         run: |
           cc -std=c11 -Wall -Wextra -Werror tests/pose_update_packet_test.c -lm -o /tmp/pose_update_packet_test
           /tmp/pose_update_packet_test
+      - name: Test GAP9 pose graph on host
+        run: sh tests/run_point_cloud_test.sh
 
   stm32:
     runs-on: ubuntu-24.04
@@ -41,7 +43,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-arm-none-eabi
       - name: Apply pinned firmware patch
-        run: git -C crazyflie-firmware apply ../changes.patch
+        run: |
+          if ! git -C crazyflie-firmware apply --reverse --check ../changes.patch; then
+            git -C crazyflie-firmware apply ../changes.patch
+          fi
       - name: Build STM32 firmware
         working-directory: cslam-stm32-app
         run: make all

@@ -1,0 +1,97 @@
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define CHECK(condition)                                                       \
+  do {                                                                         \
+    if (!(condition)) {                                                        \
+      fprintf(stderr, "check failed at line %d: %s\n", __LINE__, #condition);  \
+      abort();                                                                 \
+    }                                                                          \
+  } while (0)
+
+#include "../cslam-gap9-app/point-cloud/external_point_cloud.h"
+#include "../cslam-gap9-app/point-cloud/point_cloud.h"
+#include "../cslam-gap9-app/slam/graph-based-slam.h"
+
+extern constraint constraints[];
+
+uint8_t verbose;
+static int main_graph_calls;
+
+uint32_t pi_time_get_us(void) { return 1000; }
+uint16_t external_constraints_count(void) { return 0; }
+constraint get_ext_constraint(int16_t idx) {
+  (void)idx;
+  constraint c = {0};
+  return c;
+}
+
+static int compare_pose_ids(const void *a, const void *b) {
+  int16_t left = *(const int16_t *)a;
+  int16_t right = *(const int16_t *)b;
+  return (left > right) - (left < right);
+}
+
+void delete_duplicates_and_sort(int16_t *ids, int16_t count, int16_t *unique) {
+  qsort(ids, count, sizeof(*ids), compare_pose_ids);
+  *unique = 0;
+  for (int16_t i = 0; i < count; i++) {
+    if (*unique == 0 || ids[i] != ids[*unique - 1])
+      ids[(*unique)++] = ids[i];
+  }
+}
+
+void measurement_from_poses(float *from, float *to, float *z) {
+  for (int i = 0; i < 3; i++)
+    z[i] = to[i] - from[i];
+}
+
+void ls_slam(float *poses, constraint *edges, int16_t pose_count,
+             int16_t edge_count) {
+  (void)poses;
+  CHECK(edge_count == 1);
+  if (pose_count == 3 && edges[0].fromIdx == 1 && edges[0].toIdx == 2)
+    main_graph_calls++;
+}
+
+int main(void) {
+  const float positions[] = {0, 0.1f, 1, 1.1f, 2};
+  for (int i = 0; i < 5; i++) {
+    pcl_pose_t pose = {.id = i, .pos = {positions[i], 0, 0}};
+    for (int dir = 0; dir < 4; dir++)
+      for (int col = 0; col < 8; col++)
+        pose.tof[dir][col] = 100;
+    pcl_add_augmented_pose(pose);
+  }
+
+  float correction[3] = {0};
+  pcl_add_constraint(2, 4, correction);
+  CHECK(constraints[0].fromIdx == 2 && constraints[0].toIdx == 4);
+  slam_job_t job;
+  pcl_optimize(&job);
+  pcl_optimize(&job);
+  CHECK(main_graph_calls == 2);
+  CHECK(constraints[0].fromIdx == 2 && constraints[0].toIdx == 4);
+
+  pcl_pose_t pose = {.tof = {{100}}};
+  for (int i = 5; i < 30; i++) {
+    for (int dir = 0; dir < 4; dir++)
+      for (int col = 0; col < 8; col++)
+        pose.tof[dir][col] = 100;
+    pcl_add_augmented_pose(pose);
+  }
+  icp_points_t points;
+  pcl_extract_scan(0, 30, &points, 1400);
+  CHECK(points.num == SIZE_POINTS);
+  pcl_extract_scan(-1, 30, &points, 1400);
+  CHECK(points.num == 0);
+
+  for (int i = 0; i < 60; i++)
+    pcl_add_constraint(2, 4, correction);
+  for (int i = 30; i < 3010; i++)
+    pcl_add_augmented_pose(pose);
+  CHECK(pcl_get_pose_count() == 3000);
+  return 0;
+}

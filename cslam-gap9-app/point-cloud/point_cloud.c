@@ -24,14 +24,17 @@
 #define MAX_FLIGH_TIME_S (300)
 
 #define MAX_CONSTRAINTS (50)
+#define MAX_SUBGRAPH_POSES \
+    ((int)(sizeof(x_subgraph) / sizeof(x_subgraph[0]) / 3))
 
 PI_L2 pcl_pose_t p_cloud[TOF_FREQ_HZ * MAX_FLIGH_TIME_S];
 static int32_t pose_counter = 0;
 
 PI_L2 float x[MAX_SIZE];
 PI_L2 int16_t pose_map[MAX_SIZE];
-PI_L2 float x_subgraph[(MAX_SIZE / 3)];
+PI_L2 float x_subgraph[MAX_SIZE];
 PI_L2 constraint constraints[MAX_CONSTRAINTS];
+PI_L2 static constraint optimization_constraints[MAX_CONSTRAINTS];
 static int32_t constr_counter = 0;
 
 static uint16_t int_scan_pose_ids[100];
@@ -56,6 +59,10 @@ void print_poses() {
 }
 
 void add_scan_pose_id(uint16_t pose_id) {
+    if (pose_id >= pose_counter ||
+        int_scan_pose_cnt >=
+            sizeof(int_scan_pose_ids) / sizeof(int_scan_pose_ids[0]))
+        return;
     check_internal_constraints(pose_id);
     int_scan_pose_ids[int_scan_pose_cnt++] = pose_id;
 }
@@ -99,6 +106,7 @@ void check_internal_constraints(uint16_t cur_pose_id) {
 }
 
 void pcl_add_augmented_pose(pcl_pose_t pose) {
+    if (pose_counter >= (int32_t)(sizeof(p_cloud) / sizeof(p_cloud[0]))) return;
     p_cloud[pose_counter] = pose;
     pose_counter++;
 }
@@ -113,6 +121,7 @@ void pcl_extract_scan(int16_t start_id, int16_t end_id, icp_points_t *points,
 
     points->num = 0;
 
+    if (start_id < 0 || end_id > pose_counter || start_id >= end_id) return;
     for (int16_t pose_id = start_id; pose_id < end_id; pose_id++) {
 
         float frame_x = p_cloud[pose_id].pos[0];
@@ -145,6 +154,7 @@ void pcl_extract_scan(int16_t start_id, int16_t end_id, icp_points_t *points,
                     .y = frame_y + dist_x * sinf(dir_yaw) +
                          dist_y * cosf(dir_yaw),
                 };
+                if (points->num >= SIZE_POINTS) return;
                 points->items[points->num++] = p;
             }
         }
@@ -170,6 +180,8 @@ static constraint comp_constr(float *icp_res, float *ref_pose, float *cur_pose,
 }
 
 void pcl_add_constraint(int16_t from_node, int16_t to_node, float *icp) {
+    if (constr_counter >= MAX_CONSTRAINTS || from_node < 0 || to_node < 0 ||
+        from_node >= pose_counter || to_node >= pose_counter) return;
     constraint c = comp_constr(icp, p_cloud[to_node].pos,
                                p_cloud[from_node].pos, to_node, from_node);
     c.external = 0;
@@ -180,6 +192,7 @@ void pcl_add_constraint(int16_t from_node, int16_t to_node, float *icp) {
 }
 
 void pcl_add_external_constraint(constraint c) {
+    if (constr_counter >= MAX_CONSTRAINTS) return;
     constraints[constr_counter] = c;
     constr_counter++;
 }
@@ -197,19 +210,20 @@ static inline float abs_val(float val) {
 
 // Creates a sparse graph out of the complete graph. This graph is firstly
 // optimized, and then the subgraphs.
-static void pcl_reduce(float *x, int16_t *pose_nr, int16_t *scan_poses,
-                       int16_t scan_pose_nr) {
+static int pcl_reduce(float *x, int16_t *pose_nr, int16_t *scan_poses,
+                      int16_t scan_pose_nr) {
     int16_t pose_idx = 0;
     int16_t scan_idx = 0;
     float last_pose[3];
     pose_map[0] = 0;
     memcpy(x, p_cloud[0].pos, 3 * sizeof(float));
     memcpy(last_pose, p_cloud[0].pos, 3 * sizeof(float));
-    if (scan_poses[scan_idx] == 0) scan_idx++;
+    if (scan_pose_nr > 0 && scan_poses[scan_idx] == 0) scan_idx++;
     for (int16_t i = 1; i < pose_counter; i++) {
-        if (i == scan_poses[scan_idx] && (scan_idx < scan_pose_nr)) {
+        if (scan_idx < scan_pose_nr && i == scan_poses[scan_idx]) {
             scan_idx++;
             pose_idx++;
+            if (pose_idx >= MAX_POSES) return 0;
             memcpy(&x[3 * pose_idx], p_cloud[i].pos, 3 * sizeof(float));
             memcpy(last_pose, p_cloud[i].pos, 3 * sizeof(float));
             pose_map[pose_idx] = i;
@@ -218,6 +232,7 @@ static void pcl_reduce(float *x, int16_t *pose_nr, int16_t *scan_poses,
             if (dist > 0.8f ||
                 (abs_val(p_cloud[i].pos[2] - last_pose[2]) > 0.4)) {
                 pose_idx++;
+                if (pose_idx >= MAX_POSES) return 0;
                 memcpy(&x[3 * pose_idx], p_cloud[i].pos, 3 * sizeof(float));
                 memcpy(last_pose, p_cloud[i].pos, 3 * sizeof(float));
                 pose_map[pose_idx] = i;
@@ -225,6 +240,7 @@ static void pcl_reduce(float *x, int16_t *pose_nr, int16_t *scan_poses,
         }
     }
     *pose_nr = pose_idx + 1;
+    return 1;
 }
 
 void pcl_to_poses(float *x, int16_t from_id, int16_t nr_of_poses) {
@@ -276,46 +292,64 @@ void pcl_optimize(slam_job_t *job) {
 
     uint32_t t_start = pi_time_get_us();
 
-    int32_t constr_counter_internal = constr_counter;
+    int32_t optimization_count = constr_counter;
+    memcpy(optimization_constraints, constraints,
+           optimization_count * sizeof(constraint));
 
     // Add external constraints
     int16_t ext_const_cnt = external_constraints_count();
     for (int16_t i = 0; i < ext_const_cnt; i++) {
+        if (optimization_count >= MAX_CONSTRAINTS) break;
         constraint c = get_ext_constraint(i);
-        constraints[constr_counter++] = c;
+        optimization_constraints[optimization_count++] = c;
         // printf("External from %d to %d: %.3f %.3f %.3f\n", c.fromIdx,
         // c.toIdx, c.z[0], c.z[1], c.z[2]);
     }
 
-    if (constr_counter == 0) return;
+    if (optimization_count == 0 || pose_counter == 0) return;
 
-    int16_t scan_poses_list[2 * constr_counter];
-    for (int16_t i = 0; i < constr_counter; i++) {
-        scan_poses_list[2 * i] = constraints[i].toIdx;
-        scan_poses_list[2 * i + 1] = constraints[i].fromIdx;
+    int16_t scan_poses_list[2 * MAX_CONSTRAINTS];
+    for (int16_t i = 0; i < optimization_count; i++) {
+        if (optimization_constraints[i].toIdx < 0 ||
+            optimization_constraints[i].toIdx >= pose_counter ||
+            optimization_constraints[i].fromIdx < 0 ||
+            optimization_constraints[i].fromIdx >= pose_counter) return;
+        scan_poses_list[2 * i] = optimization_constraints[i].toIdx;
+        scan_poses_list[2 * i + 1] = optimization_constraints[i].fromIdx;
     }
 
     int16_t scan_pose_nr;
-    delete_duplicates_and_sort(scan_poses_list, 2 * constr_counter,
+    delete_duplicates_and_sort(scan_poses_list, 2 * optimization_count,
                                &scan_pose_nr);
 
     int16_t pose_nr;
-    pcl_reduce(x, &pose_nr, scan_poses_list, scan_pose_nr);
+    if (!pcl_reduce(x, &pose_nr, scan_poses_list, scan_pose_nr)) return;
 
-    for (int i = 0; i < scan_pose_nr; i++) {
+    for (int i = 0; i < pose_nr - 1; i++) {
+        if (pose_map[i + 1] - pose_map[i] + 1 > MAX_SUBGRAPH_POSES) return;
+    }
+    if (pose_counter - pose_map[pose_nr - 1] > MAX_SUBGRAPH_POSES) return;
+
+    for (int i = 0; i < optimization_count; i++) {
+        int16_t to_pose = optimization_constraints[i].toIdx;
+        int16_t from_pose = optimization_constraints[i].fromIdx;
+        int to_found = 0;
+        int from_found = 0;
         for (int j = 0; j < pose_nr; j++) {
-            if (pose_map[j] == constraints[i].toIdx) {
-                constraints[i].toIdx = j;
+            if (pose_map[j] == to_pose) {
+                optimization_constraints[i].toIdx = j;
+                to_found = 1;
             }
-            if (pose_map[j] == constraints[i].fromIdx) {
-                constraints[i].fromIdx = j;
-                break;
+            if (pose_map[j] == from_pose) {
+                optimization_constraints[i].fromIdx = j;
+                from_found = 1;
             }
         }
+        if (!to_found || !from_found) return;
     }
 
     job->main_graph_size = pose_nr;
-    ls_slam(x, constraints, pose_nr, constr_counter);
+    ls_slam(x, optimization_constraints, pose_nr, optimization_count);
 
     for (int i = 0; i < pose_nr - 1; i++) {
         // Build subgraph
@@ -364,8 +398,6 @@ void pcl_optimize(slam_job_t *job) {
         x_subgraph[3 * j + 2] -= offset[2];
     }
     pcl_update(x_subgraph, from_pose_id, subgraph_size);
-
-    constr_counter = constr_counter_internal;
 
     for (int16_t i = 0; i < pose_counter; i++) {
         if (isnan(p_cloud[i].pos[0]) || isnan(p_cloud[i].pos[1]) ||
