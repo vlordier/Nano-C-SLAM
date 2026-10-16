@@ -111,6 +111,22 @@ class NativeMappingReplayTests(unittest.TestCase):
         assert isinstance(graph_size, int)
         self.assertGreaterEqual(graph_size, 2)
 
+    def test_runs_the_same_embedded_scan_and_optimization_path_as_gvsoc(self) -> None:
+        executable = REPOSITORY_ROOT / "cslam-gap9-app/BUILD-host/gap9_mapping_smoke"
+        result = subprocess.run(  # noqa: S603 -- built repository fixture
+            [str(executable)],
+            capture_output=True,
+            check=True,
+            text=True,
+            timeout=30,
+        )
+
+        self.assertIn(
+            "NANO_C_SLAM_GVSOC:mapping_ok poses=60 scans=3 map_points=240 "
+            "optimized=60 graph=3 has_nan=0",
+            result.stdout,
+        )
+
     def test_rejects_malformed_replay_input(self) -> None:
         result = subprocess.run(  # noqa: S603 -- built fixture executable
             [str(self.binary)],

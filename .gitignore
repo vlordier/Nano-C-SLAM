@@ -11,6 +11,7 @@ log/
 # STM32 build output
 cslam-stm32-app/build/
 cslam-gap9-app/BUILD-host/
+cslam-gap9-app/BUILD-gvsoc-mapping/
 
 # Object files
 *.o

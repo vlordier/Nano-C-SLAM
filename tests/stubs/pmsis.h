@@ -9,6 +9,9 @@
 struct pi_device {
     int unused;
 };
+struct pi_cluster_conf {
+    int unused;
+};
 struct pi_cluster_task {
     void (*entry)(void *);
     void *arg;

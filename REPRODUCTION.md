@@ -22,7 +22,16 @@ Runtime buffers are fixed-size. The STM32 tracks up to 30 scan poses and queues 
 
 The local GAP9 SDK at `~/Work/da3_gap9/third_party/gap_sdk_private` reports release 5.20.4. Its Make flow refers to absent FreeRTOS rules, but the SDK's CMake integration successfully builds the full application through `scripts/build_gap9_firmware.sh` (Docker + `uv`). This compiles the same PMSIS/FreeRTOS components from source without patching the SDK checkout. The successful ELF reports 58,934 bytes text, 522,816 data, 56,708 BSS; linker placement uses 634,992 B L2 shared (40.37%) and 117,596 B L1 (89.72%). L1 headroom is tight. The SDK emits a `pi_assert` implicit declaration warning from its own `udma_core.h` include chain.
 
-The SDK's native GVSOC runtime is available locally on macOS. `bash scripts/run_gap9_gvsoc_smoke.sh` now builds an SDK-linked ROM/XIP smoke target and runs the ICP SVD kernel on the GAP9 model. The captured result in `artifacts/gap9_gvsoc_evidence/report.json` observes the expected singular values (3.000, 2.000). This does not establish end-to-end ICP correspondence behavior, pose-graph SLAM, SPI/ToF/UWB operation, or hardware timing. A separate run of the complete firmware reaches `main()` but fails when opening/running the cluster in this virtual model; the smoke report does not hide that limitation.
+The SDK's native GVSOC runtime is available locally on macOS. `bash scripts/run_gap9_gvsoc_smoke.sh` builds an SDK-linked ROM/XIP smoke target and runs the ICP SVD kernel on the GAP9 model. The captured result in `artifacts/gap9_gvsoc_evidence/report.json` observes the expected singular values (3.000, 2.000). A separate synthetic mapping-core target executes the owned GAP9 point-cloud, ICP loop-closure, and pose-graph optimization code under GVSOC. Run it with:
+
+```sh
+bash scripts/build_gap9_firmware.sh
+GAP9_GVSOC_ELF="$PWD/cslam-gap9-app/BUILD-gvsoc-mapping/nano_c_slam_gvsoc_mapping_smoke" \
+GAP9_GVSOC_EXPECTED_MARKER='NANO_C_SLAM_GVSOC:mapping_ok poses=60 scans=3 map_points=240 optimized=60 graph=3 has_nan=0' \
+bash scripts/run_gap9_gvsoc_smoke.sh
+```
+
+The mapping-core result is captured in `artifacts/gap9_gvsoc_evidence/mapping_report.json`. It verifies deterministic synthetic data only; it does not establish sensor, SPI, flight, or mapping-accuracy behavior. The complete firmware also reaches `main()` and opens the cluster in this virtual model, then waits for the STM32 SPI packet. GVSOC has no STM32/SPI stimulus in this setup, so that wait is expected. Neither smoke establishes hardware timing or flight safety.
 
 ## Gazebo SITL
 
