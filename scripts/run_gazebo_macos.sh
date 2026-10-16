@@ -29,19 +29,39 @@ fi
 
 temporary_dir="$(mktemp -d "${TMPDIR:-/tmp}/nano-c-slam-ros2.XXXXXX")"
 abseil_original_target="$(readlink "$abseil_opt")"
-cleanup() {
+abseil_original_path="$abseil_original_target"
+if [[ "$abseil_original_path" != /* ]]; then
+    abseil_original_path="$(dirname "$abseil_opt")/$abseil_original_path"
+fi
+if [[ ! -d "$abseil_original_path/lib" ]]; then
+    abseil_cellar="$(brew --cellar abseil)"
+    abseil_version="$(brew list --versions abseil | awk '{print $2}')"
+    abseil_original_path="$abseil_cellar/$abseil_version"
+    if [[ -z "$abseil_original_path" || ! -d "$abseil_original_path/lib" ]]; then
+        rm -rf "$temporary_dir"
+        echo "Could not locate the installed Abseil libraries under $abseil_cellar." >&2
+        exit 1
+    fi
+    abseil_original_target="../Cellar/abseil/${abseil_original_path##*/}"
     ln -sfn "$abseil_original_target" "$abseil_opt"
+fi
+abseil_swapped=0
+cleanup() {
+    if [[ "$abseil_swapped" -eq 1 ]]; then
+        ln -sfn "$abseil_original_target" "$abseil_opt" || true
+    fi
     rm -rf "$temporary_dir"
 }
 trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
-current_abseil_target="$(cd "$(dirname "$abseil_opt")/$abseil_original_target" && pwd -P)"
+current_abseil_target="$(cd "$abseil_original_path" && pwd -P)"
 mkdir -p "$temporary_dir/abseil/lib"
 for library in "$abseil_old"/lib/*.dylib "$current_abseil_target"/lib/*.dylib; do
     ln -sfn "$library" "$temporary_dir/abseil/lib/${library##*/}"
 done
+abseil_swapped=1
 ln -sfn "$temporary_dir/abseil" "$abseil_opt"
 export PATH="/Library/Frameworks/Python.framework/Versions/3.11/bin:$ros_prefix/bin:$gz_install/bin:$PATH"
 set +u
@@ -65,12 +85,14 @@ export GZ_RENDERING_RESOURCE_PATH="$gz_install/share/gz/gz-rendering8"
 export GZ_GUI_PLUGIN_PATH="$gz_install/lib/gz-sim-8/plugins/gui:$gz_install/lib/gz-gui-8/plugins"
 export QML2_IMPORT_PATH="$gz_install/lib/gz-sim-8/plugins/gui"
 export GZ_PARTITION="${NANO_C_SLAM_GZ_PARTITION:-nano_c_slam_${UID:-$(id -u)}}"
+export ROS_DOMAIN_ID="${NANO_C_SLAM_ROS_DOMAIN_ID:-42}"
 export GZ_DISCOVERY_MULTICAST_IP="${GZ_DISCOVERY_MULTICAST_IP:-239.255.0.17}"
 export GZ_DISCOVERY_MSG_PORT="${GZ_DISCOVERY_MSG_PORT:-42327}"
 export GZ_DISCOVERY_SRV_PORT="${GZ_DISCOVERY_SRV_PORT:-42328}"
 
 printf 'Gazebo: %s\n' "$(command -v gz)"
 printf 'Gazebo partition: %s\n' "$GZ_PARTITION"
+printf 'ROS domain ID: %s\n' "$ROS_DOMAIN_ID"
 printf 'Gazebo GUI will join after the server starts.\n'
 
 uv run --no-project --python "$python311" ros2 launch \

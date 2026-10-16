@@ -1,6 +1,6 @@
 import unittest
 
-from scripts.check_gazebo_macos import _array_values
+from scripts.check_gazebo_macos import _array_values, _mission_landing_altitude
 
 
 class GazeboSmokeCheckTests(unittest.TestCase):
@@ -16,6 +16,25 @@ class GazeboSmokeCheckTests(unittest.TestCase):
             _array_values("layout: {}\n")
         with self.assertRaisesRegex(RuntimeError, "invalid numeric"):
             _array_values("data:\n- not-a-number\n")
+
+    def test_accepts_only_a_complete_mission_that_lands_near_ground(self) -> None:
+        output = """cf1 mission phase: takeoff at altitude 0.1 m
+cf1 mission phase: hover at altitude 0.5 m
+cf1 mission phase: land at altitude 0.5 m
+cf1 completed takeoff, hover, and landing at altitude 0.06 m
+"""
+        self.assertEqual(_mission_landing_altitude(0, output), 0.06)
+
+    def test_rejects_incomplete_or_high_landing(self) -> None:
+        with self.assertRaisesRegex(RuntimeError, "before phases: land"):
+            _mission_landing_altitude(1, "mission phase: takeoff\nmission phase: hover")
+        with self.assertRaisesRegex(RuntimeError, "above the ground"):
+            _mission_landing_altitude(
+                0,
+                "mission phase: takeoff\nmission phase: hover\n"
+                "mission phase: land\n"
+                "completed takeoff, hover, and landing at altitude 0.5 m",
+            )
 
 
 if __name__ == "__main__":

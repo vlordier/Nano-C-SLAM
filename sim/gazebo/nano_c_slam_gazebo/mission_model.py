@@ -19,7 +19,8 @@ class MissionPhase(Enum):
 @dataclass(frozen=True)
 class MissionConfig:
     hover_height_m: float = 0.5
-    landing_height_m: float = 0.08
+    # Treat 10 cm above ground as landed to avoid settling/contact oscillation.
+    landing_height_m: float = 0.1
     hover_duration_s: float = 3.0
     vertical_speed_m_s: float = 0.5
     phase_timeout_s: float = 15.0

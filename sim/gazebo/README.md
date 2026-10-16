@@ -1,6 +1,6 @@
 # Gazebo SITL
 
-This integration uses the Gazebo Harmonic Crazyflie world from [`crazyswarm2_gazebo`](https://github.com/prakash-aryan/crazyswarm2_gazebo), with ROS 2 Jazzy. The world provides Crazyflie physics, velocity control, odometry, and a four-ray multiranger scan. On macOS the launcher uses that workspace's `control_services` velocity controller and keeps the world's default physics engine. We tested the Crazyswarm2 `hello_world` service path as well, but its calls were acknowledged while Gazebo odometry showed no altitude change, so the native macOS demo uses measured-altitude velocity control instead.
+This integration uses the Gazebo Harmonic Crazyflie world from [`crazyswarm2_gazebo`](https://github.com/prakash-aryan/crazyswarm2_gazebo), with ROS 2 Jazzy. The world provides Crazyflie physics, velocity control, odometry, and a four-ray multiranger scan. The native macOS mission uses measured odometry and publishes velocity commands directly to the existing `/cf1/cmd_vel` Gazebo bridge; this avoids the upstream `control_services` relay's internal flight-state cutoff. The launch keeps the world's default physics engine. We tested the Crazyswarm2 `hello_world` service path as well, but its calls were acknowledged while Gazebo odometry showed no altitude change.
 
 The `nano_c_slam_gazebo` ROS package adds two telemetry topics:
 
@@ -120,22 +120,27 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
   '-DCMAKE_EXE_LINKER_FLAGS=-framework CoreFoundation -framework Security -framework IOKit'
 ```
 
-Launch the integrated Gazebo world, ROS-Gazebo bridge, Crazyflie velocity controller, Nano-C-SLAM sensor adapter, and the separate Gazebo desktop GUI from the repository root. The GUI process joins the running server, following the `gz-macOS` setup's documented `gz sim -s` / `gz sim -g` split. Server-side sensor rendering uses the same Metal headless-rendering flags as the working `~/Work` macOS Gazebo launch. macOS may still show a separate blank `OgreWindow(0)_0`: it is OGRE's auxiliary 1×1 render window for sensors, not the Gazebo viewport. Use the **Gazebo Sim** window for the scene. This helper window is associated with an upstream macOS Cocoa threading limitation in the sensor renderer:
+Launch the integrated Gazebo world, ROS-Gazebo bridge, Nano-C-SLAM sensor adapter, and the separate Gazebo desktop GUI from the repository root. The helper sets ROS domain 42 to keep this graph separate from other local ROS projects. The GUI process joins the running server, following the `gz-macOS` setup's documented `gz sim -s` / `gz sim -g` split. Server-side sensor rendering uses the same Metal headless-rendering flags as the working `~/Work` macOS Gazebo launch. macOS may still show a separate blank `OgreWindow(0)_0`: it is OGRE's auxiliary 1×1 render window for sensors, not the Gazebo viewport. Use the **Gazebo Sim** window for the scene. This helper window is associated with an upstream macOS Cocoa threading limitation in the sensor renderer:
 
 ```sh
 cd ~/Work/Nano-C-SLAM
 ./scripts/run_gazebo_macos.sh
 ```
 
-In a second terminal, run the single-drone example mission (takeoff to 0.5 m, hover for 3 seconds, then land). The mission continuously enables the Gazebo controller, waits for measured odometry at each phase, and stops with an error if takeoff or landing exceeds its timeout:
+In a second terminal, run the single-drone example mission (takeoff to 0.5 m, hover for 3 seconds, then land). The mission continuously enables the simulated Crazyflie, sends vertical velocity commands through the Gazebo bridge, uses measured odometry at each phase, and stops with an error if takeoff or landing exceeds its timeout:
 
 ```sh
 source /opt/homebrew/opt/ros2-jazzy/setup.zsh
 source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
 export GZ_PARTITION="nano_c_slam_$(id -u)"
+export ROS_DOMAIN_ID=42
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
   ros2 run nano_c_slam_gazebo sim_mission --ros-args -p use_sim_time:=True
 ```
+
+The mission process exits after it sends its final zero-velocity command on a
+successful landing. It remains alive after a phase timeout so the vehicle stays
+under a zero-velocity hold command until you stop it.
 
 Check sensor output while the first terminal is running:
 
@@ -143,6 +148,7 @@ Check sensor output while the first terminal is running:
 source /opt/homebrew/opt/ros2-jazzy/setup.zsh
 source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
 export GZ_PARTITION="nano_c_slam_$(id -u)"
+export ROS_DOMAIN_ID=42
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
   ros2 topic echo /nano_c_slam/sim/cf1/ranges_mm
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
@@ -158,10 +164,12 @@ starting another mission, source the same ROS and workspace setup files and run:
 source /opt/homebrew/opt/ros2-jazzy/setup.zsh
 source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
 export GZ_PARTITION="nano_c_slam_$(id -u)"
+export ROS_DOMAIN_ID=42
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
-  python scripts/check_gazebo_macos.py --timeout 20
+  python scripts/check_gazebo_macos.py --timeout 20 --mission
 ```
 
-The check waits for `/cf1/odom`, validates the four lidar values and the
-pairwise ranges, and exits nonzero with a diagnostic if the graph is not
-publishing usable messages. Run it from the Nano-C-SLAM repository root.
+The check runs a complete takeoff-hover-land cycle, verifies the final altitude
+is near ground level, then validates `/cf1/odom`, the four lidar values, and
+pairwise ranges. It exits nonzero with a diagnostic if flight or telemetry
+fails. Run it from the Nano-C-SLAM repository root.

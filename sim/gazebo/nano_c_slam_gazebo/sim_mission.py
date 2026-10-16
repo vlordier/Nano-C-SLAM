@@ -34,7 +34,7 @@ class SimMission(Node):
         self._altitude_m: float | None = None
         self._last_phase = MissionPhase.WAITING
         self._publisher = self.create_publisher(
-            Twist, f"/{self._drone_name}/cmd_vel_nav", 10
+            Twist, f"/{self._drone_name}/cmd_vel", 10
         )
         self._enable_publisher = self.create_publisher(
             Bool, f"/{self._drone_name}/enable", 10
@@ -57,6 +57,8 @@ class SimMission(Node):
     def _step(self) -> None:
         if self._sequence.phase in (MissionPhase.COMPLETE, MissionPhase.FAILED):
             self._publish_zero_command()
+            if self._sequence.phase is MissionPhase.COMPLETE:
+                self._timer.cancel()
             return
 
         enabled = Bool()
@@ -99,7 +101,8 @@ def main(args: Sequence[str] | None = None) -> None:
     rclpy.init(args=args)
     node = SimMission()
     try:
-        rclpy.spin(node)
+        while rclpy.ok() and node._sequence.phase is not MissionPhase.COMPLETE:
+            rclpy.spin_once(node, timeout_sec=0.1)
     except KeyboardInterrupt:
         pass
     finally:

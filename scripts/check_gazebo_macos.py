@@ -5,11 +5,15 @@ from __future__ import annotations
 
 import argparse
 import math
+import os
+import re
 import shutil
+import signal
 import subprocess
 import sys
 import time
 from collections.abc import Sequence
+from contextlib import suppress
 
 
 def _read_topic(topic: str, timeout_s: float) -> str:
@@ -20,7 +24,7 @@ def _read_topic(topic: str, timeout_s: float) -> str:
     if ros2 is None:
         raise FileNotFoundError("ros2 was not found; source the ROS 2 setup first")
     result = subprocess.run(  # noqa: S603 -- executable is resolved and args are validated
-        [ros2, "topic", "echo", "--once", topic],
+        [ros2, "topic", "echo", "--no-daemon", "--once", topic],
         capture_output=True,
         check=False,
         text=True,
@@ -80,11 +84,88 @@ def check_telemetry(timeout_s: float = 8.0, drone: str = "cf1") -> None:
     )
 
 
+def run_mission(timeout_s: float = 45.0) -> None:
+    """Run one takeoff-hover-land cycle and require a low-altitude completion."""
+    ros2 = shutil.which("ros2")
+    if ros2 is None:
+        raise FileNotFoundError("ros2 was not found; source the ROS 2 setup first")
+    process = subprocess.Popen(  # noqa: S603 -- resolved executable and fixed args
+        [
+            ros2,
+            "run",
+            "nano_c_slam_gazebo",
+            "sim_mission",
+            "--ros-args",
+            "-p",
+            "use_sim_time:=True",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        start_new_session=True,
+    )
+    try:
+        output, _ = process.communicate(timeout=timeout_s)
+    except subprocess.TimeoutExpired as error:
+        _signal_process_group(process.pid, signal.SIGTERM)
+        try:
+            output, _ = process.communicate(timeout=3.0)
+        except subprocess.TimeoutExpired:
+            _signal_process_group(process.pid, signal.SIGKILL)
+            output, _ = process.communicate()
+        raise RuntimeError(
+            f"mission process timed out after {timeout_s:.1f} seconds\n{output.strip()}"
+        ) from error
+    final_altitude_m = _mission_landing_altitude(process.returncode, output)
+    print(f"Gazebo mission OK: takeoff, hover, land at {final_altitude_m:.3f} m")
+
+
+def _signal_process_group(process_id: int, signal_number: int) -> None:
+    """Stop the ROS CLI and its child node together, tolerating an exit race."""
+    with suppress(ProcessLookupError):
+        os.killpg(process_id, signal_number)
+
+
+def _mission_landing_altitude(returncode: int, output: str) -> float:
+    """Require all mission phases and a successful landing near ground level."""
+    required_phases = ("takeoff", "hover", "land")
+    missing = [
+        phase for phase in required_phases if f"mission phase: {phase}" not in output
+    ]
+    if returncode or missing:
+        detail = f"mission exited {returncode}"
+        if missing:
+            detail += f" before phases: {', '.join(missing)}"
+        raise RuntimeError(f"{detail}\n{output.strip()}")
+    completion = re.search(
+        r"completed takeoff, hover, and landing at altitude (-?\d+(?:\.\d+)?) m",
+        output,
+    )
+    if completion is None:
+        raise RuntimeError(
+            f"mission did not report successful completion\n{output.strip()}"
+        )
+    final_altitude_m = float(completion.group(1))
+    if final_altitude_m > 0.15:
+        raise RuntimeError(
+            f"mission completed above the ground threshold: {final_altitude_m:.3f} m"
+        )
+    return final_altitude_m
+
+
 def main(args: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--drone", default="cf1", help="Crazyflie name (default: cf1)")
     parser.add_argument(
-        "--timeout", type=float, default=8.0, help="timeout per topic read, in seconds"
+        "--timeout",
+        type=float,
+        default=8.0,
+        help="overall telemetry timeout, in seconds",
+    )
+    parser.add_argument(
+        "--mission",
+        action="store_true",
+        help="also run a complete takeoff-hover-land mission",
     )
     options = parser.parse_args(args)
     if not options.drone.startswith("cf") or any(
@@ -93,6 +174,13 @@ def main(args: Sequence[str] | None = None) -> int:
         parser.error("--drone must be a Crazyflie name such as cf1")
     if options.timeout <= 0 or not math.isfinite(options.timeout):
         parser.error("--timeout must be finite and positive")
+    if options.mission:
+        try:
+            run_mission(timeout_s=max(45.0, options.timeout))
+        except (RuntimeError, subprocess.TimeoutExpired, FileNotFoundError) as error:
+            print(f"Gazebo mission check failed: {error}", file=sys.stderr)
+            return 1
+
     deadline = time.monotonic() + options.timeout
     last_error: RuntimeError | subprocess.TimeoutExpired | FileNotFoundError | None = (
         None

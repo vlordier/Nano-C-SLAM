@@ -56,16 +56,6 @@ def generate_launch_description() -> LaunchDescription:
         output="screen",
     )
 
-    cf1_control = Node(
-        package="ros_gz_crazyflie_control",
-        executable="control_services",
-        name="cf1_control",
-        parameters=[
-            {"hover_height": 0.5, "robot_prefix": "/cf1", "use_sim_time": True}
-        ],
-        remappings=[("/cmd_vel", "/cf1/cmd_vel_nav")],
-        output="screen",
-    )
     sensor_bridge = Node(
         package="nano_c_slam_gazebo",
         executable="sensor_bridge",
@@ -80,7 +70,6 @@ def generate_launch_description() -> LaunchDescription:
             gazebo_gui_after_server,
             gz_bridge,
             odom_tf,
-            cf1_control,
             sensor_bridge,
         ]
     )
