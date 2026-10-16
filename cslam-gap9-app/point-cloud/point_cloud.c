@@ -270,11 +270,17 @@ bool pcl_to_poses(float *x, int16_t from_id, int16_t nr_of_poses) {
     return true;
 }
 
-static void pcl_update(float *x, int16_t from_id, int16_t nr_of_poses) {
-    if (nr_of_poses <= 0) return;
+static bool pcl_update(float *x, int16_t from_id, int16_t nr_of_poses) {
+    if (x == NULL || from_id < 0 || nr_of_poses <= 0 ||
+        from_id > pose_counter || nr_of_poses > pose_counter - from_id)
+        return false;
+    for (int16_t i = 0; i < 3 * nr_of_poses; ++i) {
+        if (!isfinite(x[i])) return false;
+    }
     for (int16_t i = from_id; i < from_id + nr_of_poses; i++) {
         memcpy(p_cloud[i].pos, &x[3 * (i - from_id)], 3 * sizeof(float));
     }
+    return true;
 }
 
 // void update_external_constraints() {
@@ -370,17 +376,28 @@ void pcl_optimize(slam_job_t *job) {
     }
 
     job->main_graph_size = pose_nr;
-    ls_slam(x, optimization_constraints, pose_nr, optimization_count);
+    if (!ls_slam(x, optimization_constraints, pose_nr, optimization_count)) {
+        job->has_nan = 1;
+        return;
+    }
 
     for (int i = 0; i < pose_nr - 1; i++) {
         // Build subgraph
         int16_t from_pose_id = pose_map[i];
         int16_t subgraph_size = pose_map[i + 1] - pose_map[i] + 1;
         if (subgraph_size == 2) {
+            if (!isfinite(x[3 * i]) || !isfinite(x[3 * i + 1]) ||
+                !isfinite(x[3 * i + 2])) {
+                job->has_nan = 1;
+                return;
+            }
             memcpy(p_cloud[pose_map[i]].pos, &x[3 * i], 3 * sizeof(float));
             continue;
         }
-        pcl_to_poses(x_subgraph, from_pose_id, subgraph_size);
+        if (!pcl_to_poses(x_subgraph, from_pose_id, subgraph_size)) {
+            job->has_nan = 1;
+            return;
+        }
 
         // Offset
         float offset[3];
@@ -401,13 +418,19 @@ void pcl_optimize(slam_job_t *job) {
         measurement_from_poses(&x[3 * (i + 1)], x_subgraph, c_sub.z);
         if (subgraph_size > job->max_subgraph_size)
             job->max_subgraph_size = subgraph_size;
-        ls_slam(x_subgraph, &c_sub, subgraph_size, 1);
-        pcl_update(x_subgraph, from_pose_id, subgraph_size - 1);
+        if (!ls_slam(x_subgraph, &c_sub, subgraph_size, 1) ||
+            !pcl_update(x_subgraph, from_pose_id, subgraph_size - 1)) {
+            job->has_nan = 1;
+            return;
+        }
     }
 
     int16_t from_pose_id = pose_map[pose_nr - 1];
     int16_t subgraph_size = pose_counter - from_pose_id;
-    pcl_to_poses(x_subgraph, from_pose_id, subgraph_size);
+    if (!pcl_to_poses(x_subgraph, from_pose_id, subgraph_size)) {
+        job->has_nan = 1;
+        return;
+    }
     float offset[3];
     offset[0] = x_subgraph[0] - x[3 * (pose_nr - 1) + 0];
     offset[1] = x_subgraph[1] - x[3 * (pose_nr - 1) + 1];
@@ -418,11 +441,14 @@ void pcl_optimize(slam_job_t *job) {
         x_subgraph[3 * j + 1] -= offset[1];
         x_subgraph[3 * j + 2] -= offset[2];
     }
-    pcl_update(x_subgraph, from_pose_id, subgraph_size);
+    if (!pcl_update(x_subgraph, from_pose_id, subgraph_size)) {
+        job->has_nan = 1;
+        return;
+    }
 
     for (int16_t i = 0; i < pose_counter; i++) {
-        if (isnan(p_cloud[i].pos[0]) || isnan(p_cloud[i].pos[1]) ||
-            isnan(p_cloud[i].pos[2])) {
+        if (!isfinite(p_cloud[i].pos[0]) || !isfinite(p_cloud[i].pos[1]) ||
+            !isfinite(p_cloud[i].pos[2])) {
             job->has_nan = 1;
             return;
         }

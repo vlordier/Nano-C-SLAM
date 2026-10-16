@@ -20,6 +20,7 @@ extern constraint constraints[];
 
 uint8_t verbose;
 static int main_graph_calls;
+static int fail_slam;
 
 uint32_t pi_time_get_us(void) {
     return 1000;
@@ -53,11 +54,12 @@ void measurement_from_poses(float *from, float *to, float *z) {
         z[i] = to[i] - from[i];
 }
 
-void ls_slam(float *poses, constraint *edges, int16_t pose_count, int16_t edge_count) {
+bool ls_slam(float *poses, constraint *edges, int16_t pose_count, int16_t edge_count) {
     (void)poses;
     CHECK(edge_count == 1);
-    if (pose_count == 3 && edges[0].fromIdx == 1 && edges[0].toIdx == 2)
+    if (!fail_slam && pose_count == 3 && edges[0].fromIdx == 1 && edges[0].toIdx == 2)
         main_graph_calls++;
+    return !fail_slam;
 }
 
 int main(void) {
@@ -103,6 +105,15 @@ int main(void) {
     pcl_optimize(&job);
     CHECK(main_graph_calls == 2);
     CHECK(constraints[0].fromIdx == 2 && constraints[0].toIdx == 4);
+
+    fail_slam = 1;
+    pcl_optimize(&job);
+    CHECK(job.has_nan);
+    CHECK(main_graph_calls == 2);
+    float after_failed_optimization[3];
+    CHECK(pcl_to_poses(after_failed_optimization, 2, 1));
+    CHECK(after_failed_optimization[0] == positions[2]);
+    fail_slam = 0;
 
     pcl_pose_t pose = {.tof = {{100}}};
     for (int i = 5; i < 30; i++) {

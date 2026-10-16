@@ -121,7 +121,7 @@ bool backward_substitution(csr *L, float *b, int N);
  * @param nr_of_poses Number of poses in the graph
  * @return nr_of_constr Number of loop closure constraints
  **/
-void ls_slam(float *x, constraint *constraints, int16_t nr_of_poses,
+bool ls_slam(float *x, constraint *constraints, int16_t nr_of_poses,
              int16_t nr_of_constr);
 
 /**

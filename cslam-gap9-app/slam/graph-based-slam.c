@@ -409,9 +409,10 @@ int16_t bandwidth_test(csr *mat, int N, int16_t *perm) {
     return bw_len;
 }
 
-void ls_slam(float *x, constraint *constraints, int16_t nr_of_poses,
+bool ls_slam(float *x, constraint *constraints, int16_t nr_of_poses,
              int16_t nr_of_constr) {
-    if (!valid_pose_graph(x, constraints, nr_of_poses, nr_of_constr)) return;
+    if (!valid_pose_graph(x, constraints, nr_of_poses, nr_of_constr))
+        return false;
 
     csr *H = &sp_mat0;
     memset(array0, 0, MAX_SIZE * sizeof(float));
@@ -435,12 +436,13 @@ void ls_slam(float *x, constraint *constraints, int16_t nr_of_poses,
         rcm_fast(H, perm, 3 * nr_of_poses);
 
         // Solve the linear equation system
-        if (!solve_for_x(H, b, perm, (int16_t)(3 * nr_of_poses))) return;
+        if (!solve_for_x(H, b, perm, (int16_t)(3 * nr_of_poses))) return false;
 
         // Update the poses
         for (int16_t i = 0; i < 3 * nr_of_poses; i++) {
-            if (!isfinite(x[i] + b[i])) return;
+            if (!isfinite(x[i] + b[i])) return false;
         }
         for (int16_t i = 0; i < 3 * nr_of_poses; i++) x[i] += b[i];
     }
+    return true;
 }
