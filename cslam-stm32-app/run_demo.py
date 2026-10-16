@@ -1,4 +1,4 @@
-import sys
+import argparse
 import time
 from datetime import datetime
 
@@ -16,7 +16,12 @@ import numpy as np
 import struct
 import os
 
-NR_OF_DRONES = int(sys.argv[1])
+parser = argparse.ArgumentParser(description="Run a Nano-C-SLAM drone mission")
+parser.add_argument("drone_count", type=int, help="number of drones (1 to 4)")
+args = parser.parse_args()
+if not 1 <= args.drone_count <= 4:
+    parser.error("drone_count must be between 1 and 4")
+NR_OF_DRONES = args.drone_count
 
 os.makedirs("logs", exist_ok=True)
 folders = [f for f in os.listdir("logs/") if os.path.isdir(os.path.join("logs/", f))]

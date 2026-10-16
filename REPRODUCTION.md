@@ -22,12 +22,11 @@ The local GAP9 SDK at `~/Work/da3_gap9/third_party/gap_sdk` reports release 5.20
 
 ## Python demo
 
-The demo imports with Python 3.12, `cflib` 0.1.34, and NumPy 2.5.4:
+The demo dependencies are pinned in `pyproject.toml` and `uv.lock`. The tested environment uses Python 3.12, `cflib` 0.1.34, and NumPy 2.5.4:
 
 ```sh
-uv venv --python 3.12 .venv
-uv pip install --python .venv/bin/python cflib==0.1.34 numpy==2.5.4
-uv run --no-project --python .venv/bin/python python -m py_compile cslam-stm32-app/run_demo.py
+uv sync --locked
+uv run --locked python -m py_compile cslam-stm32-app/run_demo.py
 ```
 
-The runtime requires a Crazyradio and configured drones. From `cslam-stm32-app/`, `uv run --no-project --python ../.venv/bin/python run_demo.py 2` now reaches the radio connection step, then exits because no Crazyradio is attached. No flight was started.
+The runtime requires a Crazyradio and configured drones. From `cslam-stm32-app/`, run `uv run --locked --project .. python run_demo.py 2`. This command reaches the radio connection step on the test machine, then exits because no Crazyradio is attached. No flight was started.
