@@ -22,6 +22,7 @@
 
 #include "config_params.h"
 #include "exploration.h"
+#include "pose_update_packet.h"
 #include "scan.h"
 #include "scan_manager.h"
 #include "spi_comm.h"
@@ -101,6 +102,7 @@ uwb_err_code_e uwb_4way_ranging_with_retry(uint8_t dest_id,
 uwb_err_code_e uwb_send_data_packet(uint8_t *data, uint8_t data_len,
                                     uint8_t dest_id, uint8_t attempts) {
     UWB_message data_msg = {0};
+    if (data_len > sizeof(data_msg.data)) return UWB_ERROR;
 
     // Define token message
     data_msg.ctrl = 0xDE;
@@ -111,23 +113,29 @@ uwb_err_code_e uwb_send_data_packet(uint8_t *data, uint8_t data_len,
     data_msg.data_len = data_len;
     memcpy(data_msg.data, data, data_len);
 
-    uint8_t rx_buffer_len;
+    uint8_t rx_buffer_len = 0;
     uint8_t rx_buffer[RX_BUF_LEN];
 
     for (uint8_t i = 0; i < attempts; i++) {
         uwb_err_code_e e =
             uwb_send_msg_wait_rsp(data_msg, 0, rx_buffer, &rx_buffer_len);
+        if (e != UWB_SUCCESS || rx_buffer_len < 7 ||
+            rx_buffer_len > sizeof(rx_buffer)) continue;
         UWB_message ack_message =
             uwb_message_from_array(rx_buffer, rx_buffer_len);
 
-        if (e == UWB_SUCCESS && ack_message.data[0] == data_len) {
+        if (ack_message.ctrl == 0xDE &&
+            ack_message.code == UWB_ACK2_RES_MSG &&
+            ack_message.src == dest_id && ack_message.dest == NODE_ID &&
+            ack_message.data_len == 1 && ack_message.data[0] == data_len) {
             return UWB_SUCCESS;
         }
     }
     return UWB_RX_TIMEOUT;
 }
 
-uint8_t is_token(uint8_t *array) {
+static uint8_t is_token(const uint8_t *array, uint8_t data_len) {
+    if (data_len < 5) return 0;
     char key[] = "TOKEN";
     int res = strncmp(array, key, 5);
     if (res == 0) {
@@ -147,7 +155,7 @@ uint8_t is_scan_pose(uint8_t data_len) {
 
 uwb_err_code_e pass_token(uint8_t target_id, uint8_t attempts) {
     UWB_message token_msg = {0};
-    uint8_t rx_buffer_len;
+    uint8_t rx_buffer_len = 0;
     uint8_t rx_buffer[RX_BUF_LEN];
 
     // Define token message
@@ -166,10 +174,18 @@ uwb_err_code_e pass_token(uint8_t target_id, uint8_t attempts) {
     for (uint8_t i = 0; i < attempts; i++) {
         uwb_err_code_e e =
             uwb_send_msg_wait_rsp(token_msg, 0, rx_buffer, &rx_buffer_len);
+        if (e != UWB_SUCCESS || rx_buffer_len < 7 ||
+            rx_buffer_len > sizeof(rx_buffer)) {
+            uwb_pkt_loss++;
+            vTaskDelay(M2T(RETRY_TIME_MS));
+            continue;
+        }
         UWB_message ack_message =
             uwb_message_from_array(rx_buffer, rx_buffer_len);
 
-        if (e == UWB_SUCCESS && ack_message.data_len == 1 &&
+        if (ack_message.ctrl == 0xDE &&
+            ack_message.code == UWB_ACK_RES_MSG &&
+            ack_message.data_len == 1 &&
             ack_message.data[0] == 'T' && ack_message.dest == NODE_ID &&
             ack_message.src == target_id) {
             return UWB_SUCCESS;
@@ -185,7 +201,7 @@ uwb_err_code_e pass_token(uint8_t target_id, uint8_t attempts) {
 
 uwb_err_code_e pass_token_with_opt(uint8_t target_id, uint8_t attempts) {
     UWB_message token_msg = {0};
-    uint8_t rx_buffer_len;
+    uint8_t rx_buffer_len = 0;
     uint8_t rx_buffer[RX_BUF_LEN];
 
     // Define token message
@@ -207,10 +223,18 @@ uwb_err_code_e pass_token_with_opt(uint8_t target_id, uint8_t attempts) {
     for (uint8_t i = 0; i < attempts; i++) {
         uwb_err_code_e e =
             uwb_send_msg_wait_rsp(token_msg, 0, rx_buffer, &rx_buffer_len);
+        if (e != UWB_SUCCESS || rx_buffer_len < 7 ||
+            rx_buffer_len > sizeof(rx_buffer)) {
+            uwb_pkt_loss++;
+            vTaskDelay(M2T(RETRY_TIME_MS));
+            continue;
+        }
         UWB_message ack_message =
             uwb_message_from_array(rx_buffer, rx_buffer_len);
 
-        if (e == UWB_SUCCESS && ack_message.data_len == 1 &&
+        if (ack_message.ctrl == 0xDE &&
+            ack_message.code == UWB_ACK_RES_MSG &&
+            ack_message.data_len == 1 &&
             ack_message.data[0] == 'T' && ack_message.dest == NODE_ID &&
             ack_message.src == target_id) {
             return UWB_SUCCESS;
@@ -229,6 +253,7 @@ float filter_dist(float x, float y_prev, float alpha) {
 }
 
 void update_inter_drone_dist(float range, uint8_t drone_id) {
+    if (drone_id >= NR_OF_NODES || !isfinite(range) || range <= 0.0f) return;
     float alpha = 0.4f;
     measurements[drone_id].range =
         filter_dist(range, measurements[drone_id].range, alpha);
@@ -236,6 +261,8 @@ void update_inter_drone_dist(float range, uint8_t drone_id) {
 }
 
 void update_inter_drone_pos(float x_source, float y_source, uint8_t drone_id) {
+    if (drone_id >= NR_OF_NODES || !isfinite(x_source) ||
+        !isfinite(y_source)) return;
     measurements[drone_id].x = x_source;
     measurements[drone_id].y = y_source;
 }
@@ -245,7 +272,8 @@ float get_min_dtd_dist() {
 
     for (uint8_t i = 0; i < NR_OF_NODES; i++) {
         uint32_t time_dif = xTaskGetTickCount() - measurements[i].time;
-        if (time_dif < 3000 && measurements[i].range < min && i != NODE_ID) {
+        if (measurements[i].time != 0 && time_dif < 3000 &&
+            measurements[i].range < min && i != NODE_ID) {
             min = measurements[i].range;
         }
     }
@@ -258,7 +286,7 @@ int8_t choose_left_right() {
 
     for (uint8_t i = 0; i < NR_OF_NODES; i++) {
         uint32_t time_dif = xTaskGetTickCount() - measurements[i].time;
-        if (time_dif < 3000 && i != NODE_ID) {
+        if (measurements[i].time != 0 && time_dif < 3000 && i != NODE_ID) {
             if (get_side_lr(measurements[i].x, measurements[i].y) == 0)
                 left++;
             else
@@ -282,7 +310,8 @@ void check_for_neigh_drones(zones_t *zones, float dist_threshold) {
         int32_t time_dif = xTaskGetTickCount() - measurements[i].time;
         float x_neigh = measurements[i].x;
         float y_neigh = measurements[i].y;
-        if (time_dif < 3000 && measurements[i].range < dist_threshold) {
+        if (measurements[i].time != 0 && time_dif < 3000 &&
+            measurements[i].range < dist_threshold) {
             check_all_sides(x_neigh, y_neigh, zones);
         }
     }
@@ -305,7 +334,7 @@ void uwb_send_scan_to_drone(uint8_t dest_id) {
 }
 
 void uwb_send_updated_poses(uint8_t dest_id) {
-    uint8_t buffer[113];
+    uint8_t buffer[POSE_UPDATE_PACKET_SIZE] = {0};
     uint8_t index = 1;
     DEBUG_PRINT("Scan pose count %d\n", scan_poses.count);
     for (int16_t i = 0; i < scan_poses.count; i++) {
@@ -319,8 +348,8 @@ void uwb_send_updated_poses(uint8_t dest_id) {
         memcpy(&buffer[index], poses, sizeof(poses));
         index += sizeof(poses);
 
-        if (index == 113 || i == scan_poses.count - 1) {
-            buffer[0] = (uint8_t)(index / 14);
+        if (index == POSE_UPDATE_PACKET_SIZE || i == scan_poses.count - 1) {
+            buffer[0] = (uint8_t)(index / POSE_UPDATE_ENTRY_SIZE);
             uwb_err_code_e e = uwb_send_data_packet((uint8_t *)buffer,
                                                     sizeof(buffer), dest_id, 3);
             if (e != UWB_SUCCESS) {
@@ -330,6 +359,7 @@ void uwb_send_updated_poses(uint8_t dest_id) {
                 DEBUG_PRINT("UWB: Sent %d pose upd!\n", buffer[0]);
             }
             index = 1;
+            memset(buffer, 0, sizeof(buffer));
         }
 
         vTaskDelay(M2T(2));
@@ -337,6 +367,10 @@ void uwb_send_updated_poses(uint8_t dest_id) {
 }
 
 void add_scan_pose(int16_t pose_id) {
+    if (scan_poses.count >= sizeof(scan_poses.poses) / sizeof(scan_poses.poses[0])) {
+        DEBUG_PRINT("Scan pose buffer full; dropping pose %d\n", pose_id);
+        return;
+    }
     scan_poses.poses[scan_poses.count] = pose_id;
     scan_poses.count++;
 }
@@ -399,35 +433,41 @@ void uwb_ranging_task(void *parameters) {
                 uint32_t range_mm = 0;
                 // Do ranging
                 uwb_err_code_e e = uwb_4way_ranging_with_retry(i, &range_mm, 4);
-                // Update the psoitions of drone i
-                update_inter_drone_dist((float)range_mm / 1000.0f, i);
+                if (e == UWB_SUCCESS)
+                    update_inter_drone_dist((float)range_mm / 1000.0f, i);
             }
 
             // 2. Check if there is a new internal scan and send it to other
             // drones
             if (is_new_scan_available()) {
-                for (uint8_t i = NODE_ID + 1; i < NR_OF_NODES; i++) {
-                    uwb_send_scan_to_drone(i);
-                    DEBUG_PRINT("UWB: Sent scan to D%d\n", i);
+                if (scan_poses.count >=
+                    sizeof(scan_poses.poses) / sizeof(scan_poses.poses[0])) {
+                    DEBUG_PRINT("Scan pose buffer full; scan not shared\n");
+                    unlock_scan_acquisition();
+                } else {
+                    for (uint8_t i = NODE_ID + 1; i < NR_OF_NODES; i++) {
+                        uwb_send_scan_to_drone(i);
+                        DEBUG_PRINT("UWB: Sent scan to D%d\n", i);
+                    }
+
+                    // Notify GAP9 about the scan
+                    aug_pose_t *aug_pose = get_pose_from_scan_buffer(0);
+                    spi_send_scan_info(aug_pose->id);
+                    DEBUG_PRINT("GAP9: Scan ID %d sent\n", aug_pose->id);
+
+                    // Decide if to perform graph optimization this round
+                    if ((scan_poses.count == 4 * opt_cnt - 1) && NODE_ID == 0) {
+                        opt_cnt++;
+                        optimize = 1;
+                        send_token_with_opt = 1;
+                    }
+
+                    // Store the id of the just acquired scan pose
+                    add_scan_pose(aug_pose->id);
+
+                    // Re-enable scan acquisition
+                    unlock_scan_acquisition();
                 }
-
-                // Notify GAP9 about the scan
-                aug_pose_t *aug_pose = get_pose_from_scan_buffer(0);
-                spi_send_scan_info(aug_pose->id);
-                DEBUG_PRINT("GAP9: Scan ID %d sent\n", aug_pose->id);
-
-                // Decide if to perform graph optimization this round
-                if ((scan_poses.count == 4 * opt_cnt - 1) && NODE_ID == 0) {
-                    opt_cnt++;
-                    optimize = 1;
-                    send_token_with_opt = 1;
-                }
-
-                // Store the id of the just acquired scan pose
-                add_scan_pose(aug_pose->id);
-
-                // Re-enable scan acquisition
-                unlock_scan_acquisition();
             }
 
             // 3. Check for received augmented poses and send them to GAP9
@@ -498,14 +538,20 @@ void uwb_ranging_task(void *parameters) {
             if (get_msg_from_queue(&uwb_msg, 1) == UWB_SUCCESS) {
                 token_rcv_time = 0;
                 // Received token and do optimization in the next loop
-                if (is_token(uwb_msg.data) && uwb_msg.dest == NODE_ID &&
-                    uwb_msg.data_len == 8) {
+                if (uwb_msg.code == UWB_ACK_MSG &&
+                    uwb_msg.src < NR_OF_NODES &&
+                    is_token(uwb_msg.data, uwb_msg.data_len) &&
+                    uwb_msg.dest == NODE_ID && uwb_msg.data_len == 8) {
                     token_rcv_time = xTaskGetTickCount();
                     optimize = 1;
-                } else if (is_token(uwb_msg.data) &&
+                } else if (uwb_msg.code == UWB_ACK_MSG &&
+                           uwb_msg.src < NR_OF_NODES &&
+                           is_token(uwb_msg.data, uwb_msg.data_len) &&
                            uwb_msg.dest == NODE_ID) { // Received token
                     token_rcv_time = xTaskGetTickCount();
-                } else if (uwb_msg.data_len == sizeof(aug_pose_t) &&
+                } else if (uwb_msg.code == UWB_ACK2_MSG &&
+                           uwb_msg.src < NR_OF_NODES &&
+                           uwb_msg.data_len == sizeof(aug_pose_t) &&
                            uwb_msg.dest == NODE_ID) { // Ext augmented pose
                     aug_pose_t *pose = (aug_pose_t *)uwb_msg.data;
 
@@ -514,17 +560,24 @@ void uwb_ranging_task(void *parameters) {
                     add_ext_aug_pose_to_gap9_buffer(ext_pose);
                 }
 
-                else if (uwb_msg.data_len == 113 &&
+                else if (uwb_msg.code == UWB_ACK2_MSG &&
+                         uwb_msg.src < NR_OF_NODES &&
+                         uwb_msg.data_len == POSE_UPDATE_PACKET_SIZE &&
                          uwb_msg.dest == NODE_ID) { // Updated ext poses
-                    uint8_t pose_count = uwb_msg.data[0];
-                    uint8_t *base = &uwb_msg.data[1];
-                    for (uint8_t i = 0; i < pose_count; i++) {
-                        int16_t pose_id = *(int16_t *)(base + 14 * i);
-                        int16_t drone_id = uwb_msg.src;
-                        float pose_upd[3];
-                        memcpy(pose_upd, base + 14 * i + 2, sizeof(pose_upd));
-                        add_pose_upd_to_gap9_buffer(pose_upd, pose_id,
-                                                    drone_id);
+                    uint8_t pose_count = pose_update_packet_count(
+                        uwb_msg.data, uwb_msg.data_len);
+                    if (pose_count > 0) {
+                        for (uint8_t i = 0; i < pose_count; i++) {
+                            int16_t pose_id;
+                            int16_t drone_id = uwb_msg.src;
+                            float pose_upd[3];
+                            if (!pose_update_packet_read(
+                                    uwb_msg.data, uwb_msg.data_len, i,
+                                    &pose_id, pose_upd))
+                                continue;
+                            add_pose_upd_to_gap9_buffer(pose_upd, pose_id,
+                                                        drone_id);
+                        }
                     }
                 }
             }

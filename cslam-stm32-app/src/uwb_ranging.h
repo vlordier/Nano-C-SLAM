@@ -62,7 +62,7 @@ int8_t choose_left_right();
  * @param data_len Length of the data array in bytes.
  * @param dest_id ID of the target UWB node.
  * @param attempts Number of re-attempts in case of failed transmission.
- * @return 1 - point is to the right, 0 to the left.
+ * @return UWB_SUCCESS on acknowledgement, or a UWB error code.
  */
 uwb_err_code_e uwb_send_data_packet(uint8_t *data, uint8_t data_len,
                                     uint8_t dest_id, uint8_t attempts);
@@ -84,7 +84,7 @@ void uwb_send_updated_poses(uint8_t dest_id);
 /**
  * @brief Add the id of the scan pose to the scan pose buffer.
  *
- * @param dest_id ID of the target UWB node.
+ * @param pose_id ID of the scan pose.
  */
 void add_scan_pose(int16_t pose_id);
 

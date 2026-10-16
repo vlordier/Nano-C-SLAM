@@ -117,11 +117,22 @@ aug_pose_t *get_pose_from_scan_buffer(uint8_t idx) {
 }
 
 void add_ext_aug_pose_to_gap9_buffer(ext_aug_pose_t *ext_aug_pose0) {
+    if (gap9_ext_aug_pose_buf.count >=
+        sizeof(gap9_ext_aug_pose_buf.poses) /
+            sizeof(gap9_ext_aug_pose_buf.poses[0])) {
+        DEBUG_PRINT("GAP9 external pose buffer full\n");
+        return;
+    }
     memcpy(&gap9_ext_aug_pose_buf.poses[gap9_ext_aug_pose_buf.count++],
            ext_aug_pose0, sizeof(ext_aug_pose_t));
 }
 
 void add_pose_upd_to_gap9_buffer(float *pose, int16_t id, int16_t drone_id) {
+    if (gap9_pose_buf.count >=
+        sizeof(gap9_pose_buf.poses) / sizeof(gap9_pose_buf.poses[0])) {
+        DEBUG_PRINT("GAP9 pose update buffer full\n");
+        return;
+    }
     gap9_pose_buf.drone_ids[gap9_pose_buf.count] = drone_id;
     gap9_pose_buf.ids[gap9_pose_buf.count] = id;
     memcpy(&gap9_pose_buf.poses[gap9_pose_buf.count++][0], pose,

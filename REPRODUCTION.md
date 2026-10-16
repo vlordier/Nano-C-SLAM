@@ -16,6 +16,8 @@ make all
 
 The build succeeds on this branch and produces `cslam-stm32-app/build/cf2.bin`. The linker reports 90% RAM and 95% CCM usage. The patch modifies files inside the pinned Crazyflie firmware submodule; it is required by the upstream build instructions and is not a submodule revision change.
 
+Runtime buffers are fixed-size. The STM32 tracks up to 30 scan poses and queues up to 100 external augmented poses or 200 pose updates between transfers to GAP9. When a buffer fills, new data is dropped and a debug message is emitted. Longer missions and larger swarms require a measured capacity plan.
+
 ## GAP9 firmware
 
 The local GAP9 SDK at `~/Work/da3_gap9/third_party/gap_sdk` reports release 5.20.4. With its `configs/gap9_evk_audio.sh` environment, `make all` stops before compilation: `utils/rules/pmsis_rules.mk` includes `rtos/pmsis/os/freeRTOS/vendors/gwt/rules/freeRTOS_rules.mk`, which is absent from that SDK checkout. The adjacent `gap_sdk_private` checkout also lacks this file. A compatible SDK revision or build configuration is still needed to reproduce the GAP9 binary.

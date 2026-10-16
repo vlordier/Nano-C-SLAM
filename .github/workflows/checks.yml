@@ -21,6 +21,15 @@ jobs:
       - run: uv run --locked python -c "import cflib, numpy"
       - run: uv run --locked python cslam-stm32-app/run_demo.py --help
 
+  protocol:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Test UWB pose update decoder
+        run: |
+          cc -std=c11 -Wall -Wextra -Werror tests/pose_update_packet_test.c -lm -o /tmp/pose_update_packet_test
+          /tmp/pose_update_packet_test
+
   stm32:
     runs-on: ubuntu-24.04
     steps:

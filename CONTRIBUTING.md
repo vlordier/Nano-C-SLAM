@@ -8,6 +8,8 @@ The checks available without flight hardware are:
 git submodule update --init --recursive
 uv sync --locked
 uv run --locked python -m py_compile cslam-stm32-app/run_demo.py
+cc -std=c11 -Wall -Wextra -Werror tests/pose_update_packet_test.c -lm -o /tmp/pose_update_packet_test
+/tmp/pose_update_packet_test
 cd crazyflie-firmware && git apply ../changes.patch && cd ..
 cd cslam-stm32-app && make all
 ```
