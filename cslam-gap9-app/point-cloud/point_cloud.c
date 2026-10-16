@@ -130,14 +130,19 @@ void pcl_extract_scan(int16_t start_id, int16_t end_id, icp_points_t *points,
     const float offsets[4] = {0.025f, -0.025f, 0.02f, -0.02f};
     const float step = -((float)M_PI_4) / 8;
 
+    if (points == NULL) return;
     points->num = 0;
 
-    if (start_id < 0 || end_id > pose_counter || start_id >= end_id) return;
+    if (start_id < 0 || end_id > pose_counter || start_id >= end_id ||
+        range_limit < 0)
+        return;
     for (int16_t pose_id = start_id; pose_id < end_id; pose_id++) {
 
         float frame_x = p_cloud[pose_id].pos[0];
         float frame_y = p_cloud[pose_id].pos[1];
         float frame_yaw = p_cloud[pose_id].pos[2];
+        if (!isfinite(frame_x) || !isfinite(frame_y) || !isfinite(frame_yaw))
+            continue;
 
         for (int dir = 0; dir < 4; dir++) {
 
@@ -165,6 +170,7 @@ void pcl_extract_scan(int16_t start_id, int16_t end_id, icp_points_t *points,
                     .y = frame_y + dist_x * sinf(dir_yaw) +
                          dist_y * cosf(dir_yaw),
                 };
+                if (!isfinite(p.x) || !isfinite(p.y)) continue;
                 if (points->num >= SIZE_POINTS) return;
                 points->items[points->num++] = p;
             }

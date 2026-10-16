@@ -116,11 +116,18 @@ int main(void) {
     CHECK(points.num == SIZE_POINTS);
     pcl_extract_scan(-1, 30, &points, 1400);
     CHECK(points.num == 0);
+    pcl_extract_scan(0, 31, &points, 1400);
+    CHECK(points.num == 0);
+    pcl_extract_scan(3, 3, &points, 1400);
+    CHECK(points.num == 0);
+    pcl_extract_scan(0, 30, &points, -1);
+    CHECK(points.num == 0);
+    pcl_extract_scan(0, 30, NULL, 1400);
 
     for (int i = 0; i < 60; i++)
         pcl_add_constraint(2, 4, correction);
     for (int i = 30; i < 3010; i++)
-        pcl_add_augmented_pose(pose);
+        CHECK(pcl_add_augmented_pose(pose) == (i < 3000));
     CHECK(pcl_get_pose_count() == 3000);
     return 0;
 }
