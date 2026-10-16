@@ -78,8 +78,8 @@ class SimMission(Node):
         )
         if self._sequence.phase is MissionPhase.FAILED:
             self.get_logger().error(
-                f"{self._drone_name} mission stopped after a phase timeout "
-                f"at altitude {altitude}"
+                f"{self._drone_name} mission failed: "
+                f"{self._sequence.failure_reason} at altitude {altitude}"
             )
         elif self._sequence.phase is MissionPhase.COMPLETE:
             self.get_logger().info(

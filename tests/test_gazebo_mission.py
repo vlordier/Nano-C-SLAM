@@ -30,10 +30,26 @@ class MissionSequenceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "below hover_height_m"):
             MissionConfig(hover_height_m=0.5, landing_height_m=0.5)
 
-    def test_non_finite_altitude_is_rejected(self) -> None:
+    def test_non_finite_altitude_fails_safe_with_zero_command(self) -> None:
         mission = MissionSequence()
-        with self.assertRaisesRegex(ValueError, "altitude_m must be finite"):
-            mission.step(0.0, float("nan"))
+        self.assertEqual(mission.step(0.0, float("nan")), 0.0)
+        self.assertIs(mission.phase, MissionPhase.FAILED)
+        self.assertEqual(mission.failure_reason, "odometry altitude is not finite")
+
+    def test_backward_simulation_time_fails_safe(self) -> None:
+        mission = MissionSequence()
+
+        self.assertEqual(mission.step(2.0, 0.0), 0.5)
+        self.assertEqual(mission.step(1.9, 0.0), 0.0)
+        self.assertIs(mission.phase, MissionPhase.FAILED)
+        self.assertEqual(mission.failure_reason, "simulation time moved backwards")
+
+    def test_non_finite_simulation_time_fails_safe(self) -> None:
+        mission = MissionSequence()
+
+        self.assertEqual(mission.step(float("nan"), 0.0), 0.0)
+        self.assertIs(mission.phase, MissionPhase.FAILED)
+        self.assertEqual(mission.failure_reason, "simulation time is not finite")
 
     def test_takeoff_timeout_stops_with_zero_command(self) -> None:
         mission = MissionSequence(MissionConfig(phase_timeout_s=1.0))
@@ -41,6 +57,7 @@ class MissionSequenceTests(unittest.TestCase):
         self.assertEqual(mission.step(0.0, 0.0), 0.5)
         self.assertEqual(mission.step(1.0, 0.0), 0.0)
         self.assertIs(mission.phase, MissionPhase.FAILED)
+        self.assertEqual(mission.failure_reason, "takeoff phase timed out")
 
     def test_already_airborne_mission_moves_to_hover_and_landing(self) -> None:
         mission = MissionSequence(MissionConfig(hover_duration_s=0.5))

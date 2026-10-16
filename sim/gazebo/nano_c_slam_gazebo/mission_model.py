@@ -48,12 +48,19 @@ class MissionSequence:
         self.phase = MissionPhase.WAITING
         self._hover_started_s: float | None = None
         self._phase_started_s: float | None = None
+        self._last_now_s: float | None = None
+        self.failure_reason: str | None = None
 
     def step(self, now_s: float, altitude_m: float | None) -> float:
+        if self.phase in (MissionPhase.COMPLETE, MissionPhase.FAILED):
+            return 0.0
         if not math.isfinite(now_s):
-            raise ValueError("now_s must be finite")
+            return self._fail("simulation time is not finite")
+        if self._last_now_s is not None and now_s < self._last_now_s:
+            return self._fail("simulation time moved backwards")
+        self._last_now_s = now_s
         if altitude_m is not None and not math.isfinite(altitude_m):
-            raise ValueError("altitude_m must be finite when available")
+            return self._fail("odometry altitude is not finite")
         if self.phase is MissionPhase.WAITING:
             if altitude_m is None:
                 return 0.0
@@ -67,8 +74,7 @@ class MissionSequence:
                 self._phase_started_s = now_s
                 return 0.0
             if self._timed_out(now_s):
-                self.phase = MissionPhase.FAILED
-                return 0.0
+                return self._fail("takeoff phase timed out")
             return self.config.vertical_speed_m_s
 
         if self.phase is MissionPhase.HOVER:
@@ -86,10 +92,14 @@ class MissionSequence:
                 self.phase = MissionPhase.COMPLETE
                 return 0.0
             if self._timed_out(now_s):
-                self.phase = MissionPhase.FAILED
-                return 0.0
+                return self._fail("landing phase timed out")
             return -self.config.vertical_speed_m_s
 
+        return 0.0
+
+    def _fail(self, reason: str) -> float:
+        self.phase = MissionPhase.FAILED
+        self.failure_reason = reason
         return 0.0
 
     def _timed_out(self, now_s: float) -> bool:
