@@ -11,6 +11,8 @@
 #ifndef GRAPH_BASED_SLAM_H
 #define GRAPH_BASED_SLAM_H
 
+#include <stdbool.h>
+
 #include "pmsis.h"
 #include "sparse-matrix.h"
 
@@ -69,7 +71,7 @@ void build_H_and_b(float *x, csr *H, float *b, measurement *measurements,
  * @param perm Permutation array containing the reordering information
  * @param size Dimension of the equation system: size = 3*nr_of_poses
  **/
-void solve_for_x(csr *H, float *b, int16_t *perm, int16_t size);
+bool solve_for_x(csr *H, float *b, int16_t *perm, int16_t size);
 
 /**
  * Computes a measurement out of two poses
@@ -98,7 +100,7 @@ void measurements_from_poses(float *x, measurement *measurements,
  * @param b array of dimension (N x 1).
  * @param N dimension of the equation system.
  **/
-void forward_substitution(csr *L, float *b, int N);
+bool forward_substitution(csr *L, float *b, int N);
 
 /**
  * Backward substitution. This function solves an equation system of the shape
@@ -108,7 +110,7 @@ void forward_substitution(csr *L, float *b, int N);
  * @param b array of dimension (N x 1).
  * @param N dimension of the equation system.
  **/
-void backward_substitution(csr *L, float *b, int N);
+bool backward_substitution(csr *L, float *b, int N);
 
 /**
  * Run least squares SLAM. This function optimizes a graph given its initial

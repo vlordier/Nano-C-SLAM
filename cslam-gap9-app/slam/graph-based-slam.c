@@ -248,47 +248,81 @@ void build_H_and_b(float *x, csr *H, float *b, measurement *measurements,
     }
 }
 
-void forward_substitution(csr *L, float *b, int N) {
+bool forward_substitution(csr *L, float *b, int N) {
+    if (L == NULL || b == NULL || N <= 0 || N > MAX_SIZE) return false;
+    for (int i = 0; i < N; ++i) {
+        float diagonal = get_element(L, N, i, i);
+        if (!isfinite(diagonal) || diagonal <= 0.0f || !isfinite(b[i]))
+            return false;
+    }
+
     float *sol = array1;
     memset(sol, 0, N * sizeof(float));
     sol[0] = b[0] / get_element(L, N, 0, 0);
+    if (!isfinite(sol[0])) return false;
     for (int i = 1; i < N; i++) {
         float sum = 0;
         for (int32_t k = L->row_ptr[i]; k < L->row_ptr[i + 1]; k++)
             if (i > L->col_idx[k]) sum += L->data[k] * sol[L->col_idx[k]];
         sol[i] = (1.0f / get_element(L, N, i, i)) * (b[i] - sum);
+        if (!isfinite(sol[i])) return false;
     }
 
     memcpy(b, sol, N * sizeof(float));
+    return true;
 }
 
-void backward_substitution(csr *L, float *b, int N) {
+bool backward_substitution(csr *L, float *b, int N) {
+    if (L == NULL || b == NULL || N <= 0 || N > MAX_SIZE) return false;
+    for (int i = 0; i < N; ++i) {
+        float diagonal = get_element(L, N, i, i);
+        if (!isfinite(diagonal) || diagonal <= 0.0f || !isfinite(b[i]))
+            return false;
+    }
+
     float *sol = array1;
     memset(sol, 0, N * sizeof(float));
     sol[N - 1] = b[N - 1] / get_element(L, N, N - 1, N - 1);
+    if (!isfinite(sol[N - 1])) return false;
     for (int i = N - 2; i >= 0; i--) {
         float sum = 0;
         for (int32_t k = L->row_ptr[i]; k < L->row_ptr[i + 1]; k++)
             if (i < L->col_idx[k]) sum += L->data[k] * sol[L->col_idx[k]];
         sol[i] = (1.0f / get_element(L, N, i, i)) * (b[i] - sum);
+        if (!isfinite(sol[i])) return false;
     }
 
     memcpy(b, sol, N * sizeof(float));
+    return true;
 }
 
-void solve_for_x(csr *H, float *b, int16_t *perm, int16_t size) {
-    if (H->nz_cnt + 1 > MAX_SIZE_SP_MAT) {
+bool solve_for_x(csr *H, float *b, int16_t *perm, int16_t size) {
+    if (H == NULL || b == NULL || perm == NULL || size <= 0 || size > MAX_SIZE)
+        return false;
+    for (int16_t i = 0; i < size; ++i) {
+        if (perm[i] < 0 || perm[i] >= size || !isfinite(b[i])) return false;
+        for (int16_t j = 0; j < i; ++j) {
+            if (perm[i] == perm[j]) return false;
+        }
+    }
+
+    if (H->nz_cnt < -1 || H->nz_cnt >= MAX_SIZE_SP_MAT) {
         printf("Input SpMat element overflow\n");
-        while (1) pi_time_wait_us(1000);
+        return false;
     }
 
     // Cholesky Decomposition
     cholesky_sparse_parallel(H, size, perm);
     // cholesky_sparse_fc_only(H, size, perm);
 
-    if (H->nz_cnt + 1 > MAX_SIZE_SP_MAT) {
+    if (H->nz_cnt < -1 || H->nz_cnt >= MAX_SIZE_SP_MAT) {
         printf("SpMat element overflow\n");
-        while (1) pi_time_wait_us(1000);
+        return false;
+    }
+
+    for (int16_t i = 0; i < size; ++i) {
+        float diagonal = get_element(H, size, i, i);
+        if (!isfinite(diagonal) || diagonal <= 0.0f) return false;
     }
 
     // Permute array
@@ -296,18 +330,22 @@ void solve_for_x(csr *H, float *b, int16_t *perm, int16_t size) {
 
     /* L * L.T * x = b;   we note L.T * x = y
        Solves L * y = b; */
-    forward_substitution(H, b, size);
+    if (!forward_substitution(H, b, size)) return false;
     float *y = b;
 
     // Solves L.T * x = y
     transpose_lower_triangular_in_place(H, size);
-    backward_substitution(H, y, size);
+    if (!backward_substitution(H, y, size)) return false;
     float *x = y;
 
     // Inverse permute the solution
     int16_t *permInv = array3;
     permutation_inverse(perm, permInv, size);
     permute_array(x, permInv, size);
+    for (int16_t i = 0; i < size; ++i) {
+        if (!isfinite(x[i])) return false;
+    }
+    return true;
 }
 
 void measurement_from_poses(float *x_from, float *x_to, float *z) {
@@ -397,9 +435,12 @@ void ls_slam(float *x, constraint *constraints, int16_t nr_of_poses,
         rcm_fast(H, perm, 3 * nr_of_poses);
 
         // Solve the linear equation system
-        solve_for_x(H, b, perm, 3 * nr_of_poses);
+        if (!solve_for_x(H, b, perm, (int16_t)(3 * nr_of_poses))) return;
 
         // Update the poses
+        for (int16_t i = 0; i < 3 * nr_of_poses; i++) {
+            if (!isfinite(x[i] + b[i])) return;
+        }
         for (int16_t i = 0; i < 3 * nr_of_poses; i++) x[i] += b[i];
     }
 }
