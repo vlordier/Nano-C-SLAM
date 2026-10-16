@@ -56,3 +56,10 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+.beads/proxieddb/
+*.gate.lock*
