@@ -22,6 +22,22 @@ uint8_t verbose;
 static int main_graph_calls;
 static int fail_slam;
 
+float euclidean_dist(float *a, float *b) {
+    (void)a;
+    (void)b;
+    return 0.0f;
+}
+
+void icp(const icp_points_t *q, const icp_points_t *p, int max_iterations,
+         float error_bound, float *result, icp_job_t *job) {
+    (void)q;
+    (void)p;
+    (void)max_iterations;
+    (void)error_bound;
+    (void)result;
+    (void)job;
+}
+
 uint32_t pi_time_get_us(void) {
     return 1000;
 }
@@ -65,7 +81,8 @@ bool ls_slam(float *poses, constraint *edges, int16_t pose_count, int16_t edge_c
 int main(void) {
     const float positions[] = {0, 0.1f, 1, 1.1f, 2};
     for (int i = 0; i < 5; i++) {
-        pcl_pose_t pose = {.id = i, .pos = {positions[i], 0, 0}};
+        pcl_pose_t pose = {.id = (int16_t)(i < 3 ? i : i + 1),
+                           .pos = {positions[i], 0, 0}};
         for (int dir = 0; dir < 4; dir++)
             for (int col = 0; col < 8; col++)
                 pose.tof[dir][col] = 100;
@@ -82,6 +99,14 @@ int main(void) {
     invalid_pose.tof[DIR_LEFT][3] = -2;
     CHECK(!pcl_add_augmented_pose(invalid_pose));
     CHECK(pcl_get_pose_count() == 5);
+
+    add_scan_pose_id(5);
+    CHECK(pcl_get_scan_pose_count() == 1);
+    CHECK(pcl_get_scan_pose_id(0) == 4);
+    add_scan_pose_id(5);
+    CHECK(pcl_get_scan_pose_count() == 1);
+    add_scan_pose_id(3);
+    CHECK(pcl_get_scan_pose_count() == 1);
 
     float requested_poses[6] = {-1, -1, -1, -1, -1, -1};
     CHECK(pcl_to_poses(requested_poses, 1, 2));
@@ -126,6 +151,7 @@ int main(void) {
 
     pcl_pose_t pose = {.tof = {{100}}};
     for (int i = 5; i < 30; i++) {
+        pose.id = (int16_t)(i + 1);
         for (int dir = 0; dir < 4; dir++)
             for (int col = 0; col < 8; col++)
                 pose.tof[dir][col] = 100;
@@ -146,8 +172,10 @@ int main(void) {
 
     for (int i = 0; i < 60; i++)
         pcl_add_constraint(2, 4, correction);
-    for (int i = 30; i < 3010; i++)
-        CHECK(pcl_add_augmented_pose(pose) == (i < 3000));
+    for (int i = 31; i < 3011; i++) {
+        pose.id = (int16_t)i;
+        CHECK(pcl_add_augmented_pose(pose) == (i <= 3000));
+    }
     CHECK(pcl_get_pose_count() == 3000);
     return 0;
 }

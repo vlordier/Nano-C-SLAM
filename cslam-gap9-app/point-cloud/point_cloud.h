@@ -46,8 +46,8 @@ typedef enum {
  *
  * @param pose The new augmented pose to be added containing the timestamp,
  * drone's (x,y,yaw) and the ToF line information from 4 sensors
- * @return True when the pose is finite, has valid range sentinels, and is
- * stored.
+ * @return True when the pose has a unique nonnegative ID, finite coordinates,
+ * valid range sentinels, and is stored.
  */
 bool pcl_add_augmented_pose(pcl_pose_t pose);
 
@@ -111,14 +111,15 @@ int16_t pcl_get_pose_count();
 void check_internal_constraints(uint16_t cur_pose_id);
 
 /**
- * @brief Add the scan pose ID to the history buffer.
+ * @brief Map an incoming STM32 pose ID to an internal pose-table index and add
+ * that index to the scan history.
  *
  * @param pose_id The ID of the scan pose
  */
 void add_scan_pose_id(uint16_t pose_id);
 
 /**
- * @brief Get the idx-th scan pose id stored.
+ * @brief Get the internal pose-table index for the idx-th stored scan pose.
  *
  * @param idx The index of the scan pose id in the buffer
  */

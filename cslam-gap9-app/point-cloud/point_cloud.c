@@ -15,6 +15,7 @@
 #include "pmsis.h"
 #include "utils_array.h"
 #include <math.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -59,15 +60,27 @@ void print_poses() {
 }
 
 void add_scan_pose_id(uint16_t pose_id) {
-    if (pose_id >= pose_counter ||
+    if (pose_id > INT16_MAX ||
         int_scan_pose_cnt >=
             sizeof(int_scan_pose_ids) / sizeof(int_scan_pose_ids[0]))
         return;
-    check_internal_constraints(pose_id);
-    int_scan_pose_ids[int_scan_pose_cnt++] = pose_id;
+    int16_t pose_index = -1;
+    for (int32_t i = 0; i < pose_counter; ++i) {
+        if (p_cloud[i].id == (int16_t)pose_id) {
+            pose_index = (int16_t)i;
+            break;
+        }
+    }
+    if (pose_index < 0) return;
+    for (uint16_t i = 0; i < int_scan_pose_cnt; ++i) {
+        if (int_scan_pose_ids[i] == (uint16_t)pose_index) return;
+    }
+    check_internal_constraints((uint16_t)pose_index);
+    int_scan_pose_ids[int_scan_pose_cnt++] = (uint16_t)pose_index;
 }
 
 void check_internal_constraints(uint16_t cur_pose_id) {
+    if (cur_pose_id >= pose_counter) return;
     float cur_pose[3];
     float ref_pose[3];
     pcl_to_poses(cur_pose, cur_pose_id, 1);
@@ -108,9 +121,12 @@ void check_internal_constraints(uint16_t cur_pose_id) {
 
 bool pcl_add_augmented_pose(pcl_pose_t pose) {
     if (pose_counter >= (int32_t)(sizeof(p_cloud) / sizeof(p_cloud[0])) ||
-        !isfinite(pose.pos[0]) || !isfinite(pose.pos[1]) ||
+        pose.id < 0 || !isfinite(pose.pos[0]) || !isfinite(pose.pos[1]) ||
         !isfinite(pose.pos[2]))
         return false;
+    for (int32_t i = 0; i < pose_counter; ++i) {
+        if (p_cloud[i].id == pose.id) return false;
+    }
     for (int direction = 0; direction < 4; direction++) {
         for (int column = 0; column < 8; column++) {
             if (pose.tof[direction][column] < -1) return false;
