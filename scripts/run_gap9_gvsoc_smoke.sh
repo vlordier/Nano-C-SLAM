@@ -1,82 +1,117 @@
 #!/usr/bin/env bash
-# The GAP SDK is an external path and is deliberately supplied by the caller.
-# shellcheck source=/dev/null
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SDK_ROOT="${GAP9_PRIVATE_SDK_ROOT:-$HOME/Work/da3_gap9/third_party/gap_sdk_private}"
+SDK_ROOT="${GAP9_SDK_ROOT:-$HOME/Work/da3_gap9/third_party/gap_sdk_private}"
 TOOLCHAIN_ROOT="${GAP9_TOOLCHAIN_ROOT:-$HOME/Work/da3_gap9/deploy/gap_riscv_toolchain}"
+STIMULUS_ROOT="${GAP9_STIMULUS_ROOT:-$HOME/Work/da3_gap9}"
 WORK_ROOT="${GAP9_GVSOC_WORK_ROOT:-${TMPDIR:-/tmp}/nano-c-slam-gvsoc}"
+BUILD_IMAGE="${GAP9_BUILD_IMAGE:-nano-c-slam-gap9-build:ubuntu22-uv0117}"
+GVSOC_LOG="$WORK_ROOT/gvsoc.log"
 
 if [[ "$(uname -s)" != Darwin ]]; then
-    echo "This local smoke path expects the macOS GVSOC launcher; use a Linux GVSOC SDK in a Linux container." >&2
+    echo "This workflow builds with Linux Docker and runs with the local macOS GVSOC runtime." >&2
     exit 2
 fi
+
+for required in \
+    "$SDK_ROOT/utils/gapy_v2/bin/gapy" \
+    "$SDK_ROOT/install/workstation/bin/gvsoc_launcher" \
+    "$SDK_ROOT/install/workstation/models/gap9/soc.dylib" \
+    "$TOOLCHAIN_ROOT/bin/riscv32-unknown-elf-gcc" \
+    "$TOOLCHAIN_ROOT/bin/riscv32-unknown-elf-objcopy"; do
+    [[ -e "$required" ]] || { echo "missing GAP9 GVSOC prerequisite: $required" >&2; exit 2; }
+done
 
 if [[ "$(file "$SDK_ROOT/install/workstation/bin/gvsoc_launcher")" != *"Mach-O"* ]]; then
     echo "expected a macOS GVSOC launcher in $SDK_ROOT" >&2
     exit 2
 fi
 
-for required in \
-    "$SDK_ROOT/utils/gapy_v2/bin/gapy" \
-    "$SDK_ROOT/install/workstation/models/gap9/soc.dylib" \
-    "$SDK_ROOT/install/workstation/lib/libpulpvp.dylib" \
-    "$TOOLCHAIN_ROOT/bin/riscv32-unknown-elf-gcc" \
-    "$TOOLCHAIN_ROOT/bin/riscv32-unknown-elf-objcopy"; do
-    [[ -e "$required" ]] || { echo "missing GAP9 GVSOC prerequisite: $required" >&2; exit 2; }
-done
-
 mkdir -p "$WORK_ROOT"
+if ! docker image inspect "$BUILD_IMAGE" >/dev/null 2>&1; then
+    docker build --platform linux/amd64 \
+        --file "$ROOT/scripts/Dockerfile.gap9-build" \
+        --tag "$BUILD_IMAGE" "$ROOT"
+fi
+
 docker run --rm --platform linux/amd64 \
-    -v "$ROOT:/project:ro" -v "$SDK_ROOT:/gap_sdk:ro" \
-    -v "$TOOLCHAIN_ROOT:/toolchain:ro" -v "$WORK_ROOT:/work" \
-    -w /work ubuntu:22.04 bash -lc '
-set -euo pipefail
-apt-get update -qq
-apt-get install -y -qq python3 python3-pip python3-kconfiglib python3-pyelftools python3-prettytable python3-pexpect python3-lz4 python3-rich python3-psutil python3-six libgmp-dev libmpfr-dev libmpc-dev libncurses5 libfdt-dev device-tree-compiler
-export PATH=/toolchain/bin:/gap_sdk/utils/bin:$PATH
-export GAP_SDK_HOME=/gap_sdk
-export GAP_RISCV_GCC_TOOLCHAIN=/toolchain
-export PYTHONPATH=/gap_sdk/utils/gapy_v2/bin:/gap_sdk/utils:/gap_sdk/install/workstation/python:/gap_sdk/gvsoc/gvsoc/models:/gap_sdk/gvsoc/gvsoc_gap:${PYTHONPATH:-}
+    -v "$ROOT:/project:ro" \
+    -v "$SDK_ROOT:/gap_sdk:ro" \
+    -v "$TOOLCHAIN_ROOT:/toolchain:ro" \
+    -v "$WORK_ROOT:/work" \
+    "$BUILD_IMAGE" bash -euo pipefail -c '
 cc=riscv32-unknown-elf-gcc
 objcopy=riscv32-unknown-elf-objcopy
+runtime=/gap_sdk/gvsoc/gvsoc/docs/developer_manual/tutorials/utils
 "$cc" -dumpmachine | grep -qx riscv32-unknown-elf
-"$cc" -march=rv32imfc -mabi=ilp32f -msoft-float -O2 -g -ffunction-sections \
-    -fdata-sections -nostartfiles -Wl,-e,main -Wl,--gc-sections \
+"$cc" -march=rv32imcxgap9 -mabi=ilp32 -O2 -g \
+    -fno-tree-loop-distribute-patterns -ffunction-sections -fdata-sections \
+    -I"$runtime" -T/project/tests/gap9_gvsoc_link.ld -nostartfiles -nostdlib \
+    -Wl,--gc-sections \
     -I/project/tests -I/project/tests/stubs -I/project/cslam-gap9-app/icp \
     -I/project/cslam-gap9-app/slam \
+    "$runtime/init.c" "$runtime/crt0.S" "$runtime/alloc.c" "$runtime/io.c" \
+    "$runtime/prf.c" "$runtime/string.c" "$runtime/fprintf.c" \
     /project/tests/gap9_gvsoc_smoke.c /project/cslam-gap9-app/icp/icp.c \
-    -Wl,--allow-multiple-definition -Wl,--defsym=stack=0x1c100000 \
-    -lm -lnosys -T /gap_sdk/gvsoc/gvsoc/docs/developer_manual/tutorials/utils/link.ld \
+    -Wl,--allow-multiple-definition -lm -lgcc \
     -o /work/nano_c_slam_gvsoc_smoke.elf
 "$objcopy" -O binary /work/nano_c_slam_gvsoc_smoke.elf /work/nano_c_slam_gvsoc_smoke.bin
 '
 
 ELF="$WORK_ROOT/nano_c_slam_gvsoc_smoke.elf"
-BIN="$WORK_ROOT/nano_c_slam_gvsoc_smoke.bin"
-echo "Built the GAP9-targeted Nano-C-SLAM ICP smoke ELF."
-echo "The local MacOS SDK has only Mach-O GVSOC libraries and launcher; the local Linux"
-echo "toolchain is only available in the Docker build container. A Linux GVSOC runtime"
-echo "is required to execute this ELF. Peripheral, ToF, SPI, UWB, and flight control"
-echo "are not simulated by this ICP-only harness."
-printf 'ELF: %s\nBinary: %s\n' "$ELF" "$BIN"
-
+LAYOUT="$WORK_ROOT/nano_c_slam_gvsoc_layout.json"
 if [[ "${NANO_C_SLAM_RUN_GVSOC:-0}" != "1" ]]; then
+    printf 'Built GAP9 ICP smoke ELF: %s\n' "$ELF"
+    echo "Set NANO_C_SLAM_RUN_GVSOC=1 to execute it with the installed macOS GVSOC runtime."
     exit 0
 fi
 
+for stimulus in chip.efuse_preload.data chip.soc.mram.bin; do
+    if [[ ! -e "$WORK_ROOT/$stimulus" ]]; then
+        [[ -e "$STIMULUS_ROOT/$stimulus" ]] || {
+            echo "missing GAP9 GVSOC stimulus: $STIMULUS_ROOT/$stimulus" >&2
+            exit 2
+        }
+        cp "$STIMULUS_ROOT/$stimulus" "$WORK_ROOT/$stimulus"
+    fi
+done
+# The installed private GAP9 model has a fixed XIP work-directory path.
+ln -sfn "$WORK_ROOT" /tmp/gvsoc_workdir
+
 set +u
+# shellcheck source=/dev/null
 source "$SDK_ROOT/configs/gap9_v2.sh"
 set -u
-export PATH="$SDK_ROOT/utils/gapy_v2/bin:$SDK_ROOT/utils/bin:$PATH"
 export PYTHONPATH="$SDK_ROOT/gvsoc/gvsoc/models:$SDK_ROOT/gvsoc/gvsoc_gap:$SDK_ROOT/install/workstation/python:$SDK_ROOT/utils:${PYTHONPATH:-}"
 export GVSOC_MODULES="$SDK_ROOT/gvsoc/gvsoc/models;$SDK_ROOT/gvsoc/gvsoc_gap"
+export PATH="$SDK_ROOT/install/workstation/bin:$SDK_ROOT/utils/gapy_v2/bin:$PATH"
 export DYLD_LIBRARY_PATH="$SDK_ROOT/install/workstation/lib:${DYLD_LIBRARY_PATH:-}"
+export DYLD_FALLBACK_LIBRARY_PATH="$SDK_ROOT/install/workstation/lib"
+export GAP9_REAL_GVSOC_LAUNCHER="$SDK_ROOT/install/workstation/bin/gvsoc_launcher"
+LAUNCHER_BIN="$WORK_ROOT/launcher-bin"
+mkdir -p "$LAUNCHER_BIN"
+ln -sf "$ROOT/scripts/gvsoc_tty_launcher.sh" "$LAUNCHER_BIN/gvsoc_launcher"
+export PATH="$LAUNCHER_BIN:$PATH"
 
 cd "$WORK_ROOT"
-"$SDK_ROOT/utils/gapy_v2/bin/gapy" --platform gvsoc --target gap9.gap9_v2 \
+uv run --project "$ROOT" --python 3.12 \
+    python "$ROOT/scripts/create_gap9_gvsoc_layout.py" "$ELF" "$LAYOUT"
+uv run --no-project --python 3.12 \
+    --with pycryptodome --with kconfiglib --with pyelftools \
+    --with prettytable --with pexpect --with lz4 --with rich \
+    --with psutil --with xxhash --with fdt --with six \
+    python "$ROOT/scripts/gapy_private_wrapper.py" \
+    "$SDK_ROOT/utils/gapy_v2/bin/gapy" \
+    --platform gvsoc --target gap9.gap9_v2 \
     --target-dir "$SDK_ROOT/gvsoc/gvsoc_gap" \
     --target-dir "$SDK_ROOT/gvsoc/gvsoc/models" \
     --model-dir "$SDK_ROOT/install/workstation/models" \
-    --binary "$ELF" --work-dir "$WORK_ROOT" run
+    --target-property boot.flash_device=mram \
+    --target-property boot.mode=flash \
+    --target-property boot.mode_on_pads=mram \
+    --flash-content "$LAYOUT@mram" \
+    --work-dir "$WORK_ROOT" image flash run 2>&1 | tee "$GVSOC_LOG"
+
+grep -q 'NANO_C_SLAM_GAP9:icp_ok' "$GVSOC_LOG"
+echo "GAP9 GVSOC ICP smoke passed; log: $GVSOC_LOG"

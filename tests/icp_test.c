@@ -33,11 +33,11 @@ void pi_cl_team_fork(int cores, void (*entry)(void *), void *arg) {
         entry(arg);
     }
 }
-void pi_task_block(pi_task_t *task) {
-    (void)task;
+void pi_evt_sig_init(pi_evt_t *evt) {
+    (void)evt;
 }
-void pi_task_wait_on(pi_task_t *task) {
-    (void)task;
+void pi_evt_wait(pi_evt_t *evt) {
+    (void)evt;
 }
 struct pi_cluster_task *pi_cluster_task(struct pi_cluster_task *task,
                                         void (*entry)(void *), void *arg) {
@@ -47,7 +47,7 @@ struct pi_cluster_task *pi_cluster_task(struct pi_cluster_task *task,
 }
 void pi_cluster_send_task_to_cl_async(struct pi_device *device,
                                       struct pi_cluster_task *task,
-                                      pi_task_t *completion) {
+                                      pi_evt_t *completion) {
     (void)device;
     (void)completion;
     task->entry(task->arg);

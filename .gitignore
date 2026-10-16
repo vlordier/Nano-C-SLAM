@@ -3,6 +3,7 @@
 __pycache__/
 .venv/
 logs/
+.beads/
 
 # STM32 build output
 cslam-stm32-app/build/

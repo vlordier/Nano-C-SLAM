@@ -22,11 +22,11 @@ void pi_cl_team_fork(int cores, void (*entry)(void *), void *arg) {
     (void)cores;
     entry(arg);
 }
-void pi_task_block(pi_task_t *task) {
-    (void)task;
+void pi_evt_sig_init(pi_evt_t *evt) {
+    (void)evt;
 }
-void pi_task_wait_on(pi_task_t *task) {
-    (void)task;
+void pi_evt_wait(pi_evt_t *evt) {
+    (void)evt;
 }
 struct pi_cluster_task *pi_cluster_task(struct pi_cluster_task *task,
                                         void (*entry)(void *), void *arg) {
@@ -36,7 +36,7 @@ struct pi_cluster_task *pi_cluster_task(struct pi_cluster_task *task,
 }
 void pi_cluster_send_task_to_cl_async(struct pi_device *device,
                                       struct pi_cluster_task *task,
-                                      pi_task_t *completion) {
+                                      pi_evt_t *completion) {
     (void)device;
     task->entry(task->arg);
     (void)completion;
@@ -71,10 +71,10 @@ int main(void) {
     icp(&current, &reference, 12, 0.4f, result, &job);
     if (job.has_nan || !isfinite(result[0]) || !isfinite(result[1]) ||
         !isfinite(result[2])) {
-        fputs("GAP9_GVSOC_SMOKE:FAIL non-finite ICP result\n", stderr);
-        return EXIT_FAILURE;
+        printf("NANO_C_SLAM_GAP9:icp_fail non-finite result\n");
+        return 1;
     }
     printf("NANO_C_SLAM_GAP9:icp_ok error=%f dx=%f dy=%f yaw=%f\n", job.error,
            result[0], result[1], result[2]);
-    return EXIT_SUCCESS;
+    return 0;
 }

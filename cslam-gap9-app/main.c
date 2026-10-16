@@ -159,4 +159,4 @@ int main_func(void) {
     return 0;
 }
 
-int main(void) { return pmsis_kickoff((void *)main_func); }
+int main(void) { return main_func(); }

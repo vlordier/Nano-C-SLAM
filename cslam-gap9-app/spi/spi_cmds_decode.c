@@ -38,7 +38,7 @@ spi_transfer_t spi_decode_pose(uint8_t *buffer, pcl_pose_t *pose) {
     memcpy(pose->tof, &buffer[TOF_OFFSET], 4 * 8 * sizeof(int16_t));
 
     uint32_t checksum = 0;
-    for (int16_t i = 0; i < sizeof(pcl_pose_t); i++)
+    for (size_t i = 0; i < sizeof(pcl_pose_t); i++)
         checksum += *((uint8_t *)pose + i);
 
     uint32_t checksum_stm32 = *((uint32_t *)&buffer[sizeof(pcl_pose_t) + 2]);
@@ -58,7 +58,7 @@ spi_transfer_t spi_decode_ext_pose(uint8_t *buffer, ext_aug_pose_t *pose) {
     memcpy(pose->tof, &buffer[TOF_OFFSET], 4 * 8 * sizeof(int16_t));
 
     uint32_t checksum = 0;
-    for (int16_t i = 0; i < sizeof(ext_aug_pose_t); i++)
+    for (size_t i = 0; i < sizeof(ext_aug_pose_t); i++)
         checksum += *((uint8_t *)pose + i);
 
     uint32_t checksum_stm32 =
@@ -79,7 +79,7 @@ spi_transfer_t spi_decode_ext_pose_upd(uint8_t *buffer,
     memcpy(pos_upd->pos, &buffer[ID_OFFSET + 4], 3 * sizeof(float));
 
     uint32_t checksum = 0;
-    for (int16_t i = 0; i < 3 * sizeof(float); i++)
+    for (size_t i = 0; i < 3 * sizeof(float); i++)
         checksum += *((uint8_t *)pos_upd->pos + i);
 
     uint32_t checksum_stm32 = *((uint32_t *)&buffer[18]);

@@ -16,7 +16,7 @@
 
 extern struct pi_device cluster_dev;
 static struct pi_cluster_task cl_task;
-static pi_task_t task_block_illegal;
+static pi_evt_t task_block_illegal;
 
 static const float identity_matrix[9] = {1, 0, 0, 0, 1, 0, 0, 0, 1};
 
@@ -139,13 +139,13 @@ void compute_correspondences_parallel(const icp_points_t *P,
         .cor_P = cor_P,
         .cor_Q = cor_Q,
     };
-    pi_task_block(&task_block_illegal);
+    pi_evt_sig_init(&task_block_illegal);
     pi_cluster_send_task_to_cl_async(
         &cluster_dev,
         pi_cluster_task(&cl_task, master_core_delegate_correspondences,
                         &job_fc),
         &task_block_illegal);
-    pi_task_wait_on(&task_block_illegal);
+    pi_evt_wait(&task_block_illegal);
 }
 
 static void center_data_P(const icp_points_t *points, const int16_t *cor,

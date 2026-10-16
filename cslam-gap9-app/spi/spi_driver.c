@@ -13,19 +13,16 @@
 
 static pi_device_t spi_slave;
 static struct pi_spi_conf spi_slave_conf;
-static pi_task_t send_task, receive_task, end_task;
-
 static void spi_slave_pad_init() {
-    pi_pad_set_function(SPI_SLAVE_PAD_SCK, SPI_SLAVE_PAD_FUNC);
-    pi_pad_set_function(SPI_SLAVE_PAD_CS0, SPI_SLAVE_PAD_FUNC);
-    pi_pad_set_function(SPI_SLAVE_PAD_SDO, SPI_SLAVE_PAD_FUNC);
-    pi_pad_set_function(SPI_SLAVE_PAD_SDI, SPI_SLAVE_PAD_FUNC);
+    pi_pad_function_set(SPI_SLAVE_PAD_SCK, SPI_SLAVE_PAD_FUNC);
+    pi_pad_function_set(SPI_SLAVE_PAD_CS0, SPI_SLAVE_PAD_FUNC);
+    pi_pad_function_set(SPI_SLAVE_PAD_SDO, SPI_SLAVE_PAD_FUNC);
+    pi_pad_function_set(SPI_SLAVE_PAD_SDI, SPI_SLAVE_PAD_FUNC);
 }
 
 static void spi_slave_init(pi_device_t *spi_slave,
                            struct pi_spi_conf *spi_slave_conf) {
-    pi_assert(spi_slave);
-    pi_assert(spi_slave_conf);
+    if (spi_slave == NULL || spi_slave_conf == NULL) return;
 
     pi_spi_conf_init(spi_slave_conf);
     spi_slave_conf->wordsize = SPI_SLAVE_WORDSIZE;

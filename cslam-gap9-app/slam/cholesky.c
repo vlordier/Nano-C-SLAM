@@ -17,7 +17,7 @@
 
 extern struct pi_device cluster_dev;
 static struct pi_cluster_task cl_task;
-static pi_task_t task_block_illegal;
+static pi_evt_t task_block_illegal;
 
 extern csr L_L1;
 extern csr H_L1;
@@ -188,10 +188,10 @@ void cholesky_sparse_parallel(csr *H, int16_t N, int16_t *perm) {
         .perm = perm,
         .size = N,
     };
-    pi_task_block(&task_block_illegal);
+    pi_evt_sig_init(&task_block_illegal);
     pi_cluster_send_task_to_cl_async(
         &cluster_dev,
         pi_cluster_task(&cl_task, master_core_delegate_cholesky, &job_fc),
         &task_block_illegal);
-    pi_task_wait_on(&task_block_illegal);
+    pi_evt_wait(&task_block_illegal);
 }
