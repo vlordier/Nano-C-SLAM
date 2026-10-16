@@ -1,8 +1,7 @@
-"""Launch Crazyswarm2 SITL, Gazebo, and Nano-C-SLAM telemetry on macOS."""
+"""Launch the Gazebo Crazyflie SITL world and Nano-C-SLAM telemetry on macOS."""
 
 from pathlib import Path
 
-import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import ExecuteProcess, IncludeLaunchDescription, TimerAction
@@ -14,21 +13,21 @@ DRONE_NAMES = ["cf1", "cf3", "cf4"]
 
 
 def generate_launch_description() -> LaunchDescription:
-    bringup_share = Path(get_package_share_directory("ros_gz_crazyflie_bringup"))
+    bringup_share = get_package_share_directory("ros_gz_crazyflie_bringup")
     gazebo_share = Path(get_package_share_directory("ros_gz_crazyflie_gazebo"))
-    sim_share = Path(get_package_share_directory("ros_gz_sim"))
-    crazyflie_share = Path(get_package_share_directory("crazyflie"))
+    sim_share = get_package_share_directory("ros_gz_sim")
 
     gazebo = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(str(sim_share / "launch" / "gz_sim.launch.py")),
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution([sim_share, "launch", "gz_sim.launch.py"])
+        ),
         launch_arguments={
             "gz_args": PathJoinSubstitution(
                 [
-                    str(gazebo_share),
+                    gazebo_share,
                     "worlds/crazyflie_swarm_world.sdf -r -s --headless-rendering "
                     "--render-engine-server=ogre2 "
-                    "--render-engine-server-api-backend=metal "
-                    "--physics-engine gz-physics-bullet-featherstone-plugin",
+                    "--render-engine-server-api-backend=metal",
                 ]
             )
         }.items(),
@@ -41,8 +40,8 @@ def generate_launch_description() -> LaunchDescription:
         executable="parameter_bridge",
         parameters=[
             {
-                "config_file": str(
-                    bringup_share / "config" / "ros_gz_crazyflie_swarm_bridge.yaml"
+                "config_file": PathJoinSubstitution(
+                    [bringup_share, "config", "ros_gz_crazyflie_swarm_bridge.yaml"]
                 ),
                 "use_sim_time": True,
             }
@@ -57,23 +56,15 @@ def generate_launch_description() -> LaunchDescription:
         output="screen",
     )
 
-    crazyflies = yaml.safe_load(
-        (crazyflie_share / "config/crazyflies.yaml").read_text()
-    )
-    server_params = yaml.safe_load(
-        (crazyflie_share / "config/server.yaml").read_text()
-    )["/crazyflie_server"]["ros__parameters"]
-    server_params["robot_description"] = (
-        crazyflie_share / "urdf/crazyflie_description.urdf"
-    ).read_text()
-
-    crazyflie_server = Node(
-        package="crazyflie_sim",
-        executable="crazyflie_server",
-        name="crazyflie_server",
-        parameters=[crazyflies, server_params, {"use_sim_time": True}],
+    cf1_control = Node(
+        package="ros_gz_crazyflie_control",
+        executable="control_services",
+        name="cf1_control",
+        parameters=[
+            {"hover_height": 0.5, "robot_prefix": "/cf1", "use_sim_time": True}
+        ],
+        remappings=[("/cmd_vel", "/cf1/cmd_vel_nav")],
         output="screen",
-        emulate_tty=True,
     )
     sensor_bridge = Node(
         package="nano_c_slam_gazebo",
@@ -89,7 +80,7 @@ def generate_launch_description() -> LaunchDescription:
             gazebo_gui_after_server,
             gz_bridge,
             odom_tf,
-            crazyflie_server,
+            cf1_control,
             sensor_bridge,
         ]
     )

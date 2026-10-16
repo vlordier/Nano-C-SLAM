@@ -25,9 +25,12 @@ setup(
     zip_safe=True,
     maintainer="vlordier",
     maintainer_email="vlordier@users.noreply.github.com",
-    description="ROS 2 telemetry bridge for the Crazyswarm2 Gazebo backend.",
+    description="ROS 2 telemetry and mission nodes for Crazyflie Gazebo SITL.",
     license="GPL-3.0-only",
     entry_points={
-        "console_scripts": ["sensor_bridge = nano_c_slam_gazebo.sensor_bridge:main"]
+        "console_scripts": [
+            "sensor_bridge = nano_c_slam_gazebo.sensor_bridge:main",
+            "sim_mission = nano_c_slam_gazebo.sim_mission:main",
+        ]
     },
 )

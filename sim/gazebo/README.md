@@ -1,13 +1,13 @@
-# Crazyswarm2 and Gazebo SITL
+# Gazebo SITL
 
-This integration uses the [Crazyswarm2 Gazebo backend](https://github.com/prakash-aryan/crazyswarm2_gazebo), which runs on Ubuntu 24.04 with ROS 2 Jazzy and Gazebo Harmonic. The upstream backend provides the Crazyflie physics, `cmd_vel` control path, odometry, and a four-ray multiranger scan.
+This integration uses the Gazebo Harmonic Crazyflie world from [`crazyswarm2_gazebo`](https://github.com/prakash-aryan/crazyswarm2_gazebo), with ROS 2 Jazzy. The world provides Crazyflie physics, velocity control, odometry, and a four-ray multiranger scan. On macOS the launcher uses that workspace's `control_services` velocity controller and keeps the world's default physics engine. We tested the Crazyswarm2 `hello_world` service path as well, but its calls were acknowledged while Gazebo odometry showed no altitude change, so the native macOS demo uses measured-altitude velocity control instead.
 
 The `nano_c_slam_gazebo` ROS package adds two telemetry topics:
 
 - `/nano_c_slam/sim/<drone>/ranges_mm`: four distances in `front,back,left,right` order, with `-1` for invalid readings.
 - `/nano_c_slam/sim/uwb_pairwise_range_m`: ideal 3D distances computed from Gazebo odometry. The `Float32MultiArray` dimension label identifies each pair.
 
-These are simulation adapters. The Gazebo lidar has four rays, while the hardware uses four 8x8 ToF matrices; the pairwise ranges use ground-truth simulator odometry, with no UWB noise, packet loss, or ranging protocol. The bridge does not run the GAP9 SLAM task or the STM32 firmware. The existing `cslam-stm32-app/run_demo.py` still uses `cflib` and a Crazyradio, so it cannot be run unchanged against Crazyswarm2's ROS 2 simulator.
+These are simulation adapters. The Gazebo lidar has four rays, while the hardware uses four 8x8 ToF matrices; the pairwise ranges use ground-truth simulator odometry, with no UWB noise, packet loss, or ranging protocol. The simulation does not run the GAP9 SLAM task or STM32 firmware. The existing `cslam-stm32-app/run_demo.py` still uses `cflib` and a Crazyradio, so it cannot be run unchanged against this ROS 2 simulator.
 
 ## Build
 
@@ -67,10 +67,10 @@ uv run --no-project --python /usr/bin/python3 \
 
 Then inspect telemetry with `ros2 topic echo /nano_c_slam/sim/cf1/ranges_mm` and `ros2 topic echo /nano_c_slam/sim/uwb_pairwise_range_m`. This verifies the upstream simulated flight-command path and this bridge's sensor topics; it does not validate Nano-C-SLAM mapping or the embedded firmware.
 
-The pure conversion tests run without ROS or flight hardware:
+The pure sensor conversion and flight-sequence tests run without ROS or flight hardware:
 
 ```sh
-uv run --locked python -m unittest tests.test_gazebo_sensor_model
+uv run --locked python -m unittest tests.test_gazebo_sensor_model tests.test_gazebo_mission
 ```
 
 ## Native macOS (Homebrew ROS 2 Jazzy)
@@ -120,21 +120,20 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
   '-DCMAKE_EXE_LINKER_FLAGS=-framework CoreFoundation -framework Security -framework IOKit'
 ```
 
-Launch the integrated Gazebo world, Crazyswarm2 SITL server, Nano-C-SLAM sensor adapter, and the separate Gazebo desktop GUI from the repository root. The GUI process joins the running server, following the `gz-macOS` setup's documented `gz sim -s` / `gz sim -g` split. Server-side sensor rendering uses the same Metal headless-rendering flags as the working `~/Work` macOS Gazebo launch. macOS may still show a separate blank `OgreWindow(0)_0`: it is OGRE's auxiliary 1×1 render window for sensors, not the Gazebo viewport. Use the **Gazebo Sim** window for the scene. This helper window is associated with an upstream macOS Cocoa threading limitation in the sensor renderer:
+Launch the integrated Gazebo world, ROS-Gazebo bridge, Crazyflie velocity controller, Nano-C-SLAM sensor adapter, and the separate Gazebo desktop GUI from the repository root. The GUI process joins the running server, following the `gz-macOS` setup's documented `gz sim -s` / `gz sim -g` split. Server-side sensor rendering uses the same Metal headless-rendering flags as the working `~/Work` macOS Gazebo launch. macOS may still show a separate blank `OgreWindow(0)_0`: it is OGRE's auxiliary 1×1 render window for sensors, not the Gazebo viewport. Use the **Gazebo Sim** window for the scene. This helper window is associated with an upstream macOS Cocoa threading limitation in the sensor renderer:
 
 ```sh
 cd ~/Work/Nano-C-SLAM
 ./scripts/run_gazebo_macos.sh
 ```
 
-In a second terminal, run the example mission (takeoff, hover, then land):
+In a second terminal, run the single-drone example mission (takeoff to 0.5 m, hover for 3 seconds, then land). The mission continuously enables the Gazebo controller, waits for measured odometry at each phase, and stops with an error if takeoff or landing exceeds its timeout:
 
 ```sh
 source /opt/homebrew/opt/ros2-jazzy/setup.zsh
 source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
-export PYTHONPATH="$HOME/Work/Nano-C-SLAM/crazyflie-firmware/build${PYTHONPATH:+:$PYTHONPATH}"
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
-  ros2 run crazyflie_examples hello_world --ros-args -p use_sim_time:=True
+  ros2 run nano_c_slam_gazebo sim_mission --ros-args -p use_sim_time:=True
 ```
 
 Check sensor output while the first terminal is running:
