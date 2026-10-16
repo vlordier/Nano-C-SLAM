@@ -16,6 +16,16 @@ extern ext_scan_t ext_scan_table[20];
 
 int main(void) {
     ext_aug_pose_t pose = {.drone_id = 7};
+    pose.id = 0;
+    pose.pos[0] = NAN;
+    add_ext_aug_pose_to_buf(pose);
+    CHECK(!ext_scan_table[0].taken);
+    pose.pos[0] = 0.0f;
+    pose.tof[DIR_FRONT][0] = -2;
+    add_ext_aug_pose_to_buf(pose);
+    CHECK(!ext_scan_table[0].taken);
+    pose.tof[DIR_FRONT][0] = 0;
+
     for (int scan = 0; scan < 20; scan++) {
         pose.id = scan;
         for (int sample = 0; sample < 20; sample++)
@@ -44,6 +54,9 @@ int main(void) {
     CHECK(points.num == 0);
     get_external_scan(20, &points, 1400);
     CHECK(points.num == 0);
+    get_external_scan(5, &points, -1);
+    CHECK(points.num == 0);
+    get_external_scan(5, NULL, 1400);
     get_external_scan(5, &points, 1400);
     CHECK(points.num == 640);
 
@@ -52,6 +65,8 @@ int main(void) {
         force_external_constraint(i, z);
     CHECK(external_constraints_count() == 50);
     CHECK(get_ext_constraint(49).fromIdx == 49);
+    CHECK(get_ext_constraint(-1).fromIdx == 0);
+    CHECK(get_ext_constraint(50).fromIdx == 0);
 
     ext_pose_upd_t update = {0};
     for (int i = 0; i < 250; i++)

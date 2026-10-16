@@ -16,6 +16,7 @@
 #include "transformations.h"
 #include "utils_array.h"
 #include "utils_math.h"
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -43,14 +44,28 @@ static icp_job_t icp_job = {0};
 
 extern uint8_t verbose;
 
+static int finite_pose(const float pose[3]) {
+    return isfinite(pose[0]) && isfinite(pose[1]) && isfinite(pose[2]);
+}
+
 void add_pose_upd_to_buf(ext_pose_upd_t pose_upd) {
-    if (ext_pose_upd_cnt >= MAX_POSE_UPDATES) return;
+    if (ext_pose_upd_cnt >= MAX_POSE_UPDATES || pose_upd.pose_id < 0 ||
+        pose_upd.drone_id < 0 || !finite_pose(pose_upd.pos))
+        return;
     ext_pose_upd_table[ext_pose_upd_cnt++] = pose_upd;
 }
 
 void reset_pose_upd_buf() { ext_pose_upd_cnt = 0; }
 
 void add_ext_aug_pose_to_buf(ext_aug_pose_t ext_pose) {
+    if (ext_pose.id < 0 || ext_pose.drone_id < 0 || !finite_pose(ext_pose.pos))
+        return;
+    for (int direction = 0; direction < 4; ++direction) {
+        for (int column = 0; column < 8; ++column) {
+            if (ext_pose.tof[direction][column] < -1) return;
+        }
+    }
+
     if (ext_drop_remaining > 0) {
         ext_drop_remaining--;
         return;
@@ -93,6 +108,7 @@ uint16_t external_constraints_count() { return ext_const_cnt; }
 
 constraint get_ext_constraint(int16_t idx) {
     constraint c = {0};
+    if (idx < 0 || idx >= ext_const_cnt) return c;
     c.fromIdx = ext_const_table[idx].cur_pose_id;
     c.toIdx = 0;
     memcpy(c.z, ext_const_table[idx].z, 3 * sizeof(float));
@@ -101,7 +117,11 @@ constraint get_ext_constraint(int16_t idx) {
 
 void add_external_constraint(ext_scan_t *ext_scan, int16_t cur_scan_id,
                              float *icp_res) {
-    if (ext_const_cnt >= MAX_EXTERNAL_CONSTRAINTS) return;
+    if (ext_const_cnt >= MAX_EXTERNAL_CONSTRAINTS || ext_scan == NULL ||
+        icp_res == NULL || !ext_scan->taken || ext_scan->from_drone < 0 ||
+        ext_scan->pose_id < 0 || cur_scan_id < 0 ||
+        !finite_pose(ext_scan->ext_aug_poses[0].pos) || !finite_pose(icp_res))
+        return;
     ext_const_info_t c = {0};
     c.from_drone = ext_scan->from_drone;
     c.ref_pose_id = ext_scan->pose_id;
@@ -116,7 +136,8 @@ void add_external_constraint(ext_scan_t *ext_scan, int16_t cur_scan_id,
     float ref_pose[3];
 
     memcpy(ref_pose, ext_scan->ext_aug_poses[0].pos, 3 * sizeof(float));
-    pcl_to_poses(cur_pose, cur_scan_id, 1);
+    if (!pcl_to_poses(cur_pose, cur_scan_id, 1) || !finite_pose(cur_pose))
+        return;
 
     v2t(ref_pose, REF_T);
     v2t(cur_pose, CUR_T);
@@ -137,7 +158,7 @@ void add_external_constraint(ext_scan_t *ext_scan, int16_t cur_scan_id,
     float pose0[3];
     float POSE0_T[3][3];
 
-    pcl_to_poses(pose0, 0, 1);
+    if (!pcl_to_poses(pose0, 0, 1) || !finite_pose(pose0)) return;
 
     v2t(pose0, POSE0_T);
 
@@ -147,13 +168,17 @@ void add_external_constraint(ext_scan_t *ext_scan, int16_t cur_scan_id,
 
     t2v(CUR_ROT_T, c.z);
 
+    if (!finite_pose(c.t) || !finite_pose(c.z)) return;
+
     ext_const_table[ext_const_cnt++] = c;
 
     if (verbose) printf("z: %.2f, %.2f, %.2f\n", c.z[0], c.z[1], c.z[2]);
 }
 
 void force_external_constraint(int16_t pose_id, float *z) {
-    if (ext_const_cnt >= MAX_EXTERNAL_CONSTRAINTS) return;
+    if (ext_const_cnt >= MAX_EXTERNAL_CONSTRAINTS || pose_id < 0 || z == NULL ||
+        !finite_pose(z))
+        return;
     ext_const_info_t c = {0};
     c.cur_pose_id = pose_id;
     c.z[0] = z[0];
@@ -229,7 +254,9 @@ void update_external_constraints() {
                 float POSE0_T[3][3];
                 float REF_NEW_T[3][3];
                 float T[3][3];
-                pcl_to_poses(pose0, 0, 1);
+                if (!finite_pose(pose_upd.pos) || !pcl_to_poses(pose0, 0, 1) ||
+                    !finite_pose(pose0))
+                    break;
 
                 v2t(pose0, POSE0_T);
                 v2t(ext_const_table[i].t, T);
@@ -238,7 +265,10 @@ void update_external_constraints() {
                 matinv_3x3(T, T);
                 matmul_3x3(T, POSE0_T, T);
 
-                t2v(T, ext_const_table[i].z);
+                float updated_z[3];
+                t2v(T, updated_z);
+                if (finite_pose(updated_z))
+                    memcpy(ext_const_table[i].z, updated_z, sizeof(updated_z));
                 // if (verbose) printf("Adjusted ext pose %d to %.2f %.2f
                 // %.2f\n", ext_const_table[i].ref_pose_id,
                 // ext_const_table[i].z[0], ext_const_table[i].z[1],
@@ -256,8 +286,9 @@ void get_external_scan(int16_t ext_scan_idx, icp_points_t *points,
     const float offsets[4] = {0.025f, -0.025f, 0.02f, -0.02f};
     const float step = -((float)M_PI_4) / 8;
 
+    if (points == NULL) return;
     points->num = 0;
-    if (ext_scan_idx < 0 || ext_scan_idx >= MAX_SCANS ||
+    if (ext_scan_idx < 0 || ext_scan_idx >= MAX_SCANS || range_limit < 0 ||
         !ext_scan_table[ext_scan_idx].taken)
         return;
 
@@ -269,6 +300,8 @@ void get_external_scan(int16_t ext_scan_idx, icp_points_t *points,
             ext_scan_table[ext_scan_idx].ext_aug_poses[pose_id].pos[1];
         float frame_yaw =
             ext_scan_table[ext_scan_idx].ext_aug_poses[pose_id].pos[2];
+        if (!isfinite(frame_x) || !isfinite(frame_y) || !isfinite(frame_yaw))
+            continue;
 
         for (int dir = 0; dir < 4; dir++) {
 
@@ -298,6 +331,7 @@ void get_external_scan(int16_t ext_scan_idx, icp_points_t *points,
                     .y = frame_y + dist_x * sinf(dir_yaw) +
                          dist_y * cosf(dir_yaw),
                 };
+                if (!isfinite(p.x) || !isfinite(p.y)) continue;
                 if (points->num >= SIZE_POINTS) return;
                 points->items[points->num++] = p;
             }
