@@ -45,8 +45,10 @@ typedef enum {
  *
  * @param pose The new augmented pose to be added containing the timestamp,
  * drone's (x,y,yaw) and the ToF line information from 4 sensors
+ * @return True when the pose is finite, has valid range sentinels, and is
+ * stored.
  */
-void pcl_add_augmented_pose(pcl_pose_t pose);
+bool pcl_add_augmented_pose(pcl_pose_t pose);
 
 /**
  * @brief Transform a scan from pose table entries to a point cloud.

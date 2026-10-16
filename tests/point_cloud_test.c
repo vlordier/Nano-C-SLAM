@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -66,8 +67,19 @@ int main(void) {
         for (int dir = 0; dir < 4; dir++)
             for (int col = 0; col < 8; col++)
                 pose.tof[dir][col] = 100;
-        pcl_add_augmented_pose(pose);
+        if (i == 0)
+            pose.tof[DIR_FRONT][0] = -1;
+        CHECK(pcl_add_augmented_pose(pose));
     }
+
+    pcl_pose_t invalid_pose = {0};
+    invalid_pose.pos[1] = NAN;
+    CHECK(!pcl_add_augmented_pose(invalid_pose));
+    CHECK(pcl_get_pose_count() == 5);
+    invalid_pose.pos[1] = 0;
+    invalid_pose.tof[DIR_LEFT][3] = -2;
+    CHECK(!pcl_add_augmented_pose(invalid_pose));
+    CHECK(pcl_get_pose_count() == 5);
 
     float requested_poses[6] = {-1, -1, -1, -1, -1, -1};
     CHECK(pcl_to_poses(requested_poses, 1, 2));
@@ -97,7 +109,7 @@ int main(void) {
         for (int dir = 0; dir < 4; dir++)
             for (int col = 0; col < 8; col++)
                 pose.tof[dir][col] = 100;
-        pcl_add_augmented_pose(pose);
+        CHECK(pcl_add_augmented_pose(pose));
     }
     icp_points_t points;
     pcl_extract_scan(0, 30, &points, 1400);

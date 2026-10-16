@@ -14,6 +14,7 @@
 #include "graph-based-slam.h"
 #include "pmsis.h"
 #include "utils_array.h"
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -106,10 +107,19 @@ void check_internal_constraints(uint16_t cur_pose_id) {
     }
 }
 
-void pcl_add_augmented_pose(pcl_pose_t pose) {
-    if (pose_counter >= (int32_t)(sizeof(p_cloud) / sizeof(p_cloud[0]))) return;
+bool pcl_add_augmented_pose(pcl_pose_t pose) {
+    if (pose_counter >= (int32_t)(sizeof(p_cloud) / sizeof(p_cloud[0])) ||
+        !isfinite(pose.pos[0]) || !isfinite(pose.pos[1]) ||
+        !isfinite(pose.pos[2]))
+        return false;
+    for (int direction = 0; direction < 4; direction++) {
+        for (int column = 0; column < 8; column++) {
+            if (pose.tof[direction][column] < -1) return false;
+        }
+    }
     p_cloud[pose_counter] = pose;
     pose_counter++;
+    return true;
 }
 
 int16_t pcl_get_pose_count() { return pose_counter; }
