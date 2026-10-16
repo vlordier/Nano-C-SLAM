@@ -11,6 +11,8 @@
 #ifndef SPI_CMDS_H
 #define SPI_CMDS_H
 
+#include <stddef.h>
+
 #include "external_point_cloud.h"
 #include "pmsis.h"
 #include "point_cloud.h"
@@ -39,33 +41,41 @@ typedef enum spi_transfer {
  * @brief Transforms an SPI packet into the corresponding augmented pose.
  *
  * @param buffer The SPI packet as array
+ * @param buffer_size Available bytes in the SPI packet buffer
  * @param pose Pointer to where to store the pose
  * @return Status of the operation
  */
-spi_transfer_t spi_decode_pose(uint8_t *buffer, pcl_pose_t *pose);
+spi_transfer_t spi_decode_pose(const uint8_t *buffer, size_t buffer_size,
+                               pcl_pose_t *pose);
 
 /**
  * @brief Transforms an SPI packet into the corresponding scan information.
  *
  * @param buffer The SPI packet as array
+ * @param buffer_size Available bytes in the SPI packet buffer
  * @param scan_info Two-entries array containing the ids of the two poses for
  * which a loop closure constraint should be derived
  * @return Status of the operation
  */
-spi_transfer_t spi_decode_scan_info(uint8_t *buffer, int16_t *scan_info);
+spi_transfer_t spi_decode_scan_info(const uint8_t *buffer, size_t buffer_size,
+                                    int16_t *scan_info);
 
 /**
  * @brief Requests a batch of poses (x, y, yaw) from the STM32.
  *
  * @param buffer The SPI packet as array
+ * @param buffer_size Available bytes in the SPI packet buffer
  * @param pose_request Pose request information: how many poses to fetch and
  * from which id
  * @return Status of the operation
  */
-spi_transfer_t spi_decode_pose_req(uint8_t *buffer, int16_t *pose_request);
+spi_transfer_t spi_decode_pose_req(const uint8_t *buffer, size_t buffer_size,
+                                   int16_t *pose_request);
 
-spi_transfer_t spi_decode_ext_pose(uint8_t *buffer, ext_aug_pose_t *pose);
-spi_transfer_t spi_decode_ext_pose_upd(uint8_t *buffer,
+spi_transfer_t spi_decode_ext_pose(const uint8_t *buffer, size_t buffer_size,
+                                   ext_aug_pose_t *pose);
+spi_transfer_t spi_decode_ext_pose_upd(const uint8_t *buffer,
+                                       size_t buffer_size,
                                        ext_pose_upd_t *pos_upd);
 
 #endif

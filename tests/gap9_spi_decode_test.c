@@ -41,7 +41,7 @@ static void test_pose_packet_round_trip(void) {
     packet[SPI_PKT_SIZE - 1] = 'E';
 
     pcl_pose_t actual;
-    CHECK(spi_decode_pose(packet, &actual) == SPI_OK);
+    CHECK(spi_decode_pose(packet, SPI_PKT_SIZE, &actual) == SPI_OK);
     CHECK(actual.id == expected.id);
     CHECK(actual.timestamp == expected.timestamp);
     CHECK(memcmp(actual.pos, expected.pos, sizeof(expected.pos)) == 0);
@@ -52,11 +52,22 @@ static void test_pose_packet_rejects_wrong_command_and_checksum(void) {
     uint8_t packet[SPI_PKT_SIZE] = {0};
     pcl_pose_t pose = {0};
     packet[1] = SCAN_CMD;
-    CHECK(spi_decode_pose(packet, &pose) == SPI_WRONG_CMD);
+    packet[0] = 'S';
+    packet[SPI_PKT_SIZE - 1] = 'E';
+    CHECK(spi_decode_pose(packet, SPI_PKT_SIZE, &pose) == SPI_WRONG_CMD);
 
     packet[1] = POSE_CMD;
     packet[2] = 1;
-    CHECK(spi_decode_pose(packet, &pose) == SPI_CHECKSUM_ERR);
+    pose.id = 99;
+    CHECK(spi_decode_pose(packet, SPI_PKT_SIZE, &pose) == SPI_CHECKSUM_ERR);
+    CHECK(pose.id == 99);
+    CHECK(spi_decode_pose(packet, SPI_PKT_SIZE - 1, &pose) == SPI_ERR);
+    packet[0] = 0;
+    CHECK(spi_decode_pose(packet, SPI_PKT_SIZE, &pose) == SPI_ERR);
+    CHECK(spi_decode_pose(NULL, SPI_PKT_SIZE, &pose) == SPI_ERR);
+    packet[0] = 'S';
+    packet[SPI_PKT_SIZE - 1] = 'E';
+    CHECK(spi_decode_pose(packet, SPI_PKT_SIZE, NULL) == SPI_ERR);
 }
 
 static void test_external_pose_packet_round_trip(void) {
@@ -80,7 +91,7 @@ static void test_external_pose_packet_round_trip(void) {
     packet[SPI_PKT_SIZE - 1] = 'E';
 
     ext_aug_pose_t actual;
-    CHECK(spi_decode_ext_pose(packet, &actual) == SPI_OK);
+    CHECK(spi_decode_ext_pose(packet, SPI_PKT_SIZE, &actual) == SPI_OK);
     CHECK(actual.id == expected.id);
     CHECK(actual.drone_id == expected.drone_id);
     CHECK(memcmp(actual.pos, expected.pos, sizeof(expected.pos)) == 0);
@@ -105,7 +116,7 @@ static void test_external_pose_update_packet_round_trip(void) {
     packet[SPI_PKT_SIZE - 1] = 'E';
 
     ext_pose_upd_t actual;
-    CHECK(spi_decode_ext_pose_upd(packet, &actual) == SPI_OK);
+    CHECK(spi_decode_ext_pose_upd(packet, SPI_PKT_SIZE, &actual) == SPI_OK);
     CHECK(actual.pose_id == pose_id);
     CHECK(actual.drone_id == drone_id);
     CHECK(memcmp(actual.pos, position, sizeof(position)) == 0);
@@ -119,9 +130,10 @@ static void test_scan_and_pose_request_packets(void) {
     memcpy(&packet[4], &scan_checksum, sizeof(scan_checksum));
     packet[0] = 'S';
     packet[1] = SCAN_CMD;
+    packet[SPI_PKT_SIZE - 1] = 'E';
 
     int16_t scan_info[2] = {0};
-    CHECK(spi_decode_scan_info(packet, scan_info) == SPI_OK);
+    CHECK(spi_decode_scan_info(packet, SPI_PKT_SIZE, scan_info) == SPI_OK);
     CHECK(scan_info[0] == scan_id);
 
     memset(packet, 0, sizeof(packet));
@@ -135,9 +147,10 @@ static void test_scan_and_pose_request_packets(void) {
     memcpy(&packet[6], &request_checksum, sizeof(request_checksum));
     packet[0] = 'S';
     packet[1] = POSE_REQ_CMD;
+    packet[SPI_PKT_SIZE - 1] = 'E';
 
     int16_t pose_request[2] = {0};
-    CHECK(spi_decode_pose_req(packet, pose_request) == SPI_OK);
+    CHECK(spi_decode_pose_req(packet, SPI_PKT_SIZE, pose_request) == SPI_OK);
     CHECK(pose_request[0] == first_pose);
     CHECK(pose_request[1] == pose_count);
 }

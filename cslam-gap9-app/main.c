@@ -64,19 +64,21 @@ void slam_loop() {
         switch (cmd) {
         case POSE_CMD: // Received augmented pose: timestamp + id + pose value +
                        // 4 x ToF
-            if (spi_decode_pose(spi_buf, &pose0) == SPI_OK) {
+            if (spi_decode_pose(spi_buf, SPI_PKT_SIZE, &pose0) == SPI_OK) {
                 pcl_add_augmented_pose(pose0);
             }
             break;
 
         case EXT_POSE_CMD: // Received external augmented pose
-            if (spi_decode_ext_pose(spi_buf, &ext_pose0) == SPI_OK) {
+            if (spi_decode_ext_pose(spi_buf, SPI_PKT_SIZE, &ext_pose0) ==
+                SPI_OK) {
                 add_ext_aug_pose_to_buf(ext_pose0);
             }
             break;
 
         case UPD_EXT_POSE_CMD: // Received external pose update
-            if (spi_decode_ext_pose_upd(spi_buf, &ext_pose_upd0) == SPI_OK) {
+            if (spi_decode_ext_pose_upd(spi_buf, SPI_PKT_SIZE,
+                                        &ext_pose_upd0) == SPI_OK) {
                 add_pose_upd_to_buf(ext_pose_upd0);
                 // printf("Pose %d from %d: %.1f %.1f %.1f\n",
                 // ext_pose_upd0.pose_id, ext_pose_upd0.drone_id,
@@ -86,7 +88,8 @@ void slam_loop() {
             break;
 
         case SCAN_CMD: // New internal scan
-            if (spi_decode_scan_info(spi_buf, scan_info) == SPI_OK) {
+            if (spi_decode_scan_info(spi_buf, SPI_PKT_SIZE, scan_info) ==
+                SPI_OK) {
                 set_cf_gpio(1); // GAP9 busy
                 int16_t scan_pose_id = scan_info[0];
                 add_scan_pose_id(scan_pose_id);
@@ -119,7 +122,8 @@ void slam_loop() {
             break;
 
         case POSE_REQ_CMD: // Send poses back to STM32
-            if (spi_decode_pose_req(spi_buf, pose_request) == SPI_OK) {
+            if (spi_decode_pose_req(spi_buf, SPI_PKT_SIZE, pose_request) ==
+                SPI_OK) {
                 int16_t from_id = pose_request[0];
                 int16_t nr_of_poses = pose_request[1];
                 if (nr_of_poses > 100 ||

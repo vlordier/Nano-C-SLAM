@@ -17,6 +17,16 @@
 
 #include "spi_cmds_decode.h"
 
+_Static_assert(sizeof(pcl_pose_t) + 6 <= SPI_PKT_SIZE,
+               "pose packet exceeds SPI frame size");
+_Static_assert(sizeof(ext_aug_pose_t) + 6 <= SPI_PKT_SIZE,
+               "external pose packet exceeds SPI frame size");
+
+static int valid_frame(const uint8_t *buffer, size_t buffer_size) {
+    return buffer != NULL && buffer_size >= SPI_PKT_SIZE && buffer[0] == 'S' &&
+           buffer[SPI_PKT_SIZE - 1] == 'E';
+}
+
 static int16_t read_int16(const uint8_t *buffer, size_t offset) {
     int16_t value;
     memcpy(&value, &buffer[offset], sizeof(value));
@@ -45,71 +55,85 @@ static uint32_t read_uint32(const uint8_t *buffer, size_t offset) {
         CHECKSUM
         'E'
 */
-spi_transfer_t spi_decode_pose(uint8_t *buffer, pcl_pose_t *pose) {
+spi_transfer_t spi_decode_pose(const uint8_t *buffer, size_t buffer_size,
+                               pcl_pose_t *pose) {
+    if (!valid_frame(buffer, buffer_size) || pose == NULL) return SPI_ERR;
     uint8_t cmd_type = buffer[CMD_OFFSET];
     if (cmd_type != POSE_CMD) return SPI_WRONG_CMD;
 
-    memset(pose, 0, sizeof(pcl_pose_t));
-    pose->id = read_int16(buffer, ID_OFFSET);
-    pose->timestamp = read_int32(buffer, TIMESTAMP_OFFSET);
-    memcpy(pose->pos, &buffer[POS_OFFSET], 3 * sizeof(float));
-    memcpy(pose->tof, &buffer[TOF_OFFSET], 4 * 8 * sizeof(int16_t));
+    pcl_pose_t decoded;
+    memset(&decoded, 0, sizeof(decoded));
+    decoded.id = read_int16(buffer, ID_OFFSET);
+    decoded.timestamp = read_int32(buffer, TIMESTAMP_OFFSET);
+    memcpy(decoded.pos, &buffer[POS_OFFSET], sizeof(decoded.pos));
+    memcpy(decoded.tof, &buffer[TOF_OFFSET], sizeof(decoded.tof));
 
     uint32_t checksum = 0;
-    for (size_t i = 0; i < sizeof(pcl_pose_t); i++)
-        checksum += *((uint8_t *)pose + i);
+    for (size_t i = 0; i < sizeof(decoded); i++)
+        checksum += ((const uint8_t *)&decoded)[i];
 
-    uint32_t checksum_stm32 = read_uint32(buffer, sizeof(pcl_pose_t) + 2);
+    uint32_t checksum_stm32 = read_uint32(buffer, sizeof(decoded) + 2);
     if (checksum != checksum_stm32) return SPI_CHECKSUM_ERR;
 
+    *pose = decoded;
     return SPI_OK;
 }
 
-spi_transfer_t spi_decode_ext_pose(uint8_t *buffer, ext_aug_pose_t *pose) {
+spi_transfer_t spi_decode_ext_pose(const uint8_t *buffer, size_t buffer_size,
+                                   ext_aug_pose_t *pose) {
+    if (!valid_frame(buffer, buffer_size) || pose == NULL) return SPI_ERR;
     uint8_t cmd_type = buffer[CMD_OFFSET];
     if (cmd_type != EXT_POSE_CMD) return SPI_WRONG_CMD;
 
-    memset(pose, 0, sizeof(ext_aug_pose_t));
-    pose->id = read_int16(buffer, ID_OFFSET);
-    pose->drone_id = read_int32(buffer, DRONE_ID_OFFSET);
-    memcpy(pose->pos, &buffer[POS_OFFSET], 3 * sizeof(float));
-    memcpy(pose->tof, &buffer[TOF_OFFSET], 4 * 8 * sizeof(int16_t));
+    ext_aug_pose_t decoded;
+    memset(&decoded, 0, sizeof(decoded));
+    decoded.id = read_int16(buffer, ID_OFFSET);
+    decoded.drone_id = read_int32(buffer, DRONE_ID_OFFSET);
+    memcpy(decoded.pos, &buffer[POS_OFFSET], sizeof(decoded.pos));
+    memcpy(decoded.tof, &buffer[TOF_OFFSET], sizeof(decoded.tof));
 
     uint32_t checksum = 0;
-    for (size_t i = 0; i < sizeof(ext_aug_pose_t); i++)
-        checksum += *((uint8_t *)pose + i);
+    for (size_t i = 0; i < sizeof(decoded); i++)
+        checksum += ((const uint8_t *)&decoded)[i];
 
-    uint32_t checksum_stm32 = read_uint32(buffer, sizeof(ext_aug_pose_t) + 2);
+    uint32_t checksum_stm32 = read_uint32(buffer, sizeof(decoded) + 2);
     if (checksum != checksum_stm32) return SPI_CHECKSUM_ERR;
 
+    *pose = decoded;
     return SPI_OK;
 }
 
-spi_transfer_t spi_decode_ext_pose_upd(uint8_t *buffer,
+spi_transfer_t spi_decode_ext_pose_upd(const uint8_t *buffer,
+                                       size_t buffer_size,
                                        ext_pose_upd_t *pos_upd) {
+    if (!valid_frame(buffer, buffer_size) || pos_upd == NULL) return SPI_ERR;
     uint8_t cmd_type = buffer[CMD_OFFSET];
     if (cmd_type != UPD_EXT_POSE_CMD) return SPI_WRONG_CMD;
 
-    memset(pos_upd, 0, sizeof(ext_pose_upd_t));
-    pos_upd->pose_id = read_int16(buffer, ID_OFFSET);
-    pos_upd->drone_id = read_int16(buffer, ID_OFFSET + 2);
-    memcpy(pos_upd->pos, &buffer[ID_OFFSET + 4], 3 * sizeof(float));
+    ext_pose_upd_t decoded;
+    memset(&decoded, 0, sizeof(decoded));
+    decoded.pose_id = read_int16(buffer, ID_OFFSET);
+    decoded.drone_id = read_int16(buffer, ID_OFFSET + 2);
+    memcpy(decoded.pos, &buffer[ID_OFFSET + 4], sizeof(decoded.pos));
 
     uint32_t checksum = 0;
-    for (size_t i = 0; i < 3 * sizeof(float); i++)
-        checksum += *((uint8_t *)pos_upd->pos + i);
+    for (size_t i = 0; i < sizeof(decoded.pos); i++)
+        checksum += ((const uint8_t *)decoded.pos)[i];
 
     uint32_t checksum_stm32 = read_uint32(buffer, 18);
     if (checksum != checksum_stm32) return SPI_CHECKSUM_ERR;
 
+    *pos_upd = decoded;
     return SPI_OK;
 }
 
-spi_transfer_t spi_decode_scan_info(uint8_t *buffer, int16_t *scan_info) {
+spi_transfer_t spi_decode_scan_info(const uint8_t *buffer, size_t buffer_size,
+                                    int16_t *scan_info) {
+    if (!valid_frame(buffer, buffer_size) || scan_info == NULL) return SPI_ERR;
     uint8_t cmd_type = buffer[CMD_OFFSET];
     if (cmd_type != SCAN_CMD) return SPI_WRONG_CMD;
 
-    scan_info[0] = read_int16(buffer, 2);
+    int16_t decoded_scan = read_int16(buffer, 2);
 
     int32_t checksum = 0;
     for (int16_t i = 2; i < 4; i++) checksum += buffer[i];
@@ -117,15 +141,18 @@ spi_transfer_t spi_decode_scan_info(uint8_t *buffer, int16_t *scan_info) {
     int32_t checksum_stm32 = read_int16(buffer, 4);
     if (checksum != checksum_stm32) return SPI_CHECKSUM_ERR;
 
+    scan_info[0] = decoded_scan;
     return SPI_OK;
 }
 
-spi_transfer_t spi_decode_pose_req(uint8_t *buffer, int16_t *pose_request) {
+spi_transfer_t spi_decode_pose_req(const uint8_t *buffer, size_t buffer_size,
+                                   int16_t *pose_request) {
+    if (!valid_frame(buffer, buffer_size) || pose_request == NULL)
+        return SPI_ERR;
     uint8_t cmd_type = buffer[CMD_OFFSET];
     if (cmd_type != POSE_REQ_CMD) return SPI_WRONG_CMD;
 
-    pose_request[0] = read_int16(buffer, 2);
-    pose_request[1] = read_int16(buffer, 4);
+    int16_t decoded_request[2] = {read_int16(buffer, 2), read_int16(buffer, 4)};
 
     int32_t checksum = 0;
     for (int16_t i = 2; i < 6; i++) checksum += buffer[i];
@@ -133,5 +160,6 @@ spi_transfer_t spi_decode_pose_req(uint8_t *buffer, int16_t *pose_request) {
     int32_t checksum_stm32 = read_int16(buffer, 6);
     if (checksum != checksum_stm32) return SPI_CHECKSUM_ERR;
 
+    memcpy(pose_request, decoded_request, sizeof(decoded_request));
     return SPI_OK;
 }
