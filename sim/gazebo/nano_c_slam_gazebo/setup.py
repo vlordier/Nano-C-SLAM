@@ -15,7 +15,10 @@ setup(
         (f"share/{package_name}", ["package.xml"]),
         (
             f"share/{package_name}/launch",
-            [str(path) for path in Path("launch").glob("*.launch.py")],
+            [
+                str(path.relative_to(package_root))
+                for path in (package_root / "launch").glob("*.launch.py")
+            ],
         ),
     ],
     install_requires=["setuptools"],

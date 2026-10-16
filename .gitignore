@@ -3,6 +3,9 @@
 __pycache__/
 .venv/
 logs/
+build/
+install/
+log/
 .beads/
 
 # STM32 build output

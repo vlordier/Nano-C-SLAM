@@ -5,7 +5,7 @@ from pathlib import Path
 import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess, IncludeLaunchDescription
+from launch.actions import ExecuteProcess, IncludeLaunchDescription, TimerAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution
 from launch_ros.actions import Node
@@ -25,13 +25,16 @@ def generate_launch_description() -> LaunchDescription:
             "gz_args": PathJoinSubstitution(
                 [
                     str(gazebo_share),
-                    "worlds/crazyflie_swarm_world.sdf -r -s "
+                    "worlds/crazyflie_swarm_world.sdf -r -s --headless-rendering "
+                    "--render-engine-server=ogre2 "
+                    "--render-engine-server-api-backend=metal "
                     "--physics-engine gz-physics-bullet-featherstone-plugin",
                 ]
             )
         }.items(),
     )
     gazebo_gui = ExecuteProcess(cmd=["gz", "sim", "-g"], output="screen")
+    gazebo_gui_after_server = TimerAction(period=8.0, actions=[gazebo_gui])
 
     gz_bridge = Node(
         package="ros_gz_bridge",
@@ -81,5 +84,12 @@ def generate_launch_description() -> LaunchDescription:
     )
 
     return LaunchDescription(
-        [gazebo, gazebo_gui, gz_bridge, odom_tf, crazyflie_server, sensor_bridge]
+        [
+            gazebo,
+            gazebo_gui_after_server,
+            gz_bridge,
+            odom_tf,
+            crazyflie_server,
+            sensor_bridge,
+        ]
     )

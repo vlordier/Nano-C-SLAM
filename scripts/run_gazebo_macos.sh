@@ -52,6 +52,8 @@ source "$workspace/install/local_setup.bash"
 # shellcheck source=/dev/null
 source "$gz_install/setup.bash"
 set -u
+# Keep the source-built Gazebo CLI ahead of Homebrew's ROS-bundled CLI.
+export PATH="$gz_install/bin:$PATH"
 export PYTHONPATH="$firmware_build${PYTHONPATH:+:$PYTHONPATH}"
 export GZ_CONFIG_PATH="$gz_install/share/gz"
 export GZ_SIM_SYSTEM_PLUGIN_PATH="$gz_install/lib:$ros_prefix/lib/gz-sim-8/plugins:$ros_prefix/lib"
@@ -62,6 +64,14 @@ export GZ_RENDERING_PLUGIN_PATH="$gz_install/lib/gz-rendering-8/engine-plugins"
 export GZ_RENDERING_RESOURCE_PATH="$gz_install/share/gz/gz-rendering8"
 export GZ_GUI_PLUGIN_PATH="$gz_install/lib/gz-sim-8/plugins/gui:$gz_install/lib/gz-gui-8/plugins"
 export QML2_IMPORT_PATH="$gz_install/lib/gz-sim-8/plugins/gui"
+export GZ_PARTITION="${NANO_C_SLAM_GZ_PARTITION:-nano_c_slam_${UID:-$(id -u)}}"
+export GZ_DISCOVERY_MULTICAST_IP="${GZ_DISCOVERY_MULTICAST_IP:-239.255.0.17}"
+export GZ_DISCOVERY_MSG_PORT="${GZ_DISCOVERY_MSG_PORT:-42327}"
+export GZ_DISCOVERY_SRV_PORT="${GZ_DISCOVERY_SRV_PORT:-42328}"
+
+printf 'Gazebo: %s\n' "$(command -v gz)"
+printf 'Gazebo partition: %s\n' "$GZ_PARTITION"
+printf 'Gazebo GUI will join after the server starts.\n'
 
 uv run --no-project --python "$python311" ros2 launch \
     nano_c_slam_gazebo crazyswarm2_gazebo.launch.py

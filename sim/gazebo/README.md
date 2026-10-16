@@ -120,7 +120,7 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
   '-DCMAKE_EXE_LINKER_FLAGS=-framework CoreFoundation -framework Security -framework IOKit'
 ```
 
-Launch the integrated Gazebo world, Crazyswarm2 SITL server, Nano-C-SLAM sensor adapter, and the separate Gazebo desktop GUI from the repository root. The GUI process joins the running server, following the `gz-macOS` setup's documented `gz sim -s` / `gz sim -g` split:
+Launch the integrated Gazebo world, Crazyswarm2 SITL server, Nano-C-SLAM sensor adapter, and the separate Gazebo desktop GUI from the repository root. The GUI process joins the running server, following the `gz-macOS` setup's documented `gz sim -s` / `gz sim -g` split. Server-side sensor rendering uses the same Metal headless-rendering flags as the working `~/Work` macOS Gazebo launch. macOS may still show a separate blank `OgreWindow(0)_0`: it is OGRE's auxiliary 1×1 render window for sensors, not the Gazebo viewport. Use the **Gazebo Sim** window for the scene. This helper window is associated with an upstream macOS Cocoa threading limitation in the sensor renderer:
 
 ```sh
 cd ~/Work/Nano-C-SLAM

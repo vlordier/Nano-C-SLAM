@@ -12,7 +12,13 @@ package = false
 [tool.ruff]
 target-version = "py312"
 line-length = 88
-extend-exclude = ["crazyflie-firmware", "uwb-software-library"]
+extend-exclude = [
+    "build",
+    "install",
+    "log",
+    "crazyflie-firmware",
+    "uwb-software-library",
+]
 
 [tool.ruff.lint]
 select = [
