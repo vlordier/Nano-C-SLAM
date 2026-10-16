@@ -127,7 +127,7 @@ cd ~/Work/Nano-C-SLAM
 ./scripts/run_gazebo_macos.sh
 ```
 
-In a second terminal, run the single-drone example mission (takeoff to 0.5 m, hover for 3 seconds, then land). The mission continuously enables the simulated Crazyflie, sends vertical velocity commands through the Gazebo bridge, uses measured odometry at each phase, and stops with an error if takeoff or landing exceeds its timeout:
+In a second terminal, run the single-drone example mission (takeoff to 0.5 m, hover for 3 seconds, then land). The mission continuously enables the simulated Crazyflie, sends vertical velocity commands through the Gazebo bridge, and requires fresh measured odometry. It holds a zero vertical command and reports failure if odometry becomes stale or inconsistent, or if takeoff or landing exceeds its timeout:
 
 ```sh
 source /opt/homebrew/opt/ros2-jazzy/setup.zsh

@@ -32,6 +32,7 @@ class SimMission(Node):
         )
         self._sequence = sequence
         self._altitude_m: float | None = None
+        self._odometry_stamp_s: float | None = None
         self._last_phase = MissionPhase.WAITING
         self._publisher = self.create_publisher(
             Twist, f"/{self._drone_name}/cmd_vel", 10
@@ -53,6 +54,8 @@ class SimMission(Node):
 
     def _on_odometry(self, message: Odometry) -> None:
         self._altitude_m = float(message.pose.pose.position.z)
+        stamp = message.header.stamp
+        self._odometry_stamp_s = float(stamp.sec) + float(stamp.nanosec) / 1e9
 
     def _step(self) -> None:
         if self._sequence.phase in (MissionPhase.COMPLETE, MissionPhase.FAILED):
@@ -68,6 +71,7 @@ class SimMission(Node):
         command.linear.z = self._sequence.step(
             self.get_clock().now().nanoseconds / 1e9,
             self._altitude_m,
+            self._odometry_stamp_s,
         )
         self._publisher.publish(command)
         if self._sequence.phase is self._last_phase:

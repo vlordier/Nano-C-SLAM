@@ -24,6 +24,7 @@ class MissionConfig:
     hover_duration_s: float = 3.0
     vertical_speed_m_s: float = 0.5
     phase_timeout_s: float = 15.0
+    odometry_timeout_s: float = 0.5
 
     def __post_init__(self) -> None:
         if not math.isfinite(self.hover_height_m) or self.hover_height_m <= 0:
@@ -38,6 +39,8 @@ class MissionConfig:
             raise ValueError("vertical_speed_m_s must be finite and positive")
         if not math.isfinite(self.phase_timeout_s) or self.phase_timeout_s <= 0:
             raise ValueError("phase_timeout_s must be finite and positive")
+        if not math.isfinite(self.odometry_timeout_s) or self.odometry_timeout_s <= 0:
+            raise ValueError("odometry_timeout_s must be finite and positive")
 
 
 class MissionSequence:
@@ -49,9 +52,15 @@ class MissionSequence:
         self._hover_started_s: float | None = None
         self._phase_started_s: float | None = None
         self._last_now_s: float | None = None
+        self._last_odometry_stamp_s: float | None = None
         self.failure_reason: str | None = None
 
-    def step(self, now_s: float, altitude_m: float | None) -> float:
+    def step(
+        self,
+        now_s: float,
+        altitude_m: float | None,
+        odometry_stamp_s: float | None = None,
+    ) -> float:
         if self.phase in (MissionPhase.COMPLETE, MissionPhase.FAILED):
             return 0.0
         if not math.isfinite(now_s):
@@ -61,9 +70,24 @@ class MissionSequence:
         self._last_now_s = now_s
         if altitude_m is not None and not math.isfinite(altitude_m):
             return self._fail("odometry altitude is not finite")
+        if odometry_stamp_s is not None:
+            if not math.isfinite(odometry_stamp_s):
+                return self._fail("odometry timestamp is not finite")
+            if (
+                self._last_odometry_stamp_s is not None
+                and odometry_stamp_s < self._last_odometry_stamp_s
+            ):
+                return self._fail("odometry timestamp moved backwards")
+            self._last_odometry_stamp_s = odometry_stamp_s
+        if self.phase is MissionPhase.WAITING and altitude_m is None:
+            return 0.0
+        if altitude_m is None:
+            return self._fail("odometry altitude is unavailable")
+        if odometry_stamp_s is None:
+            return self._fail("odometry timestamp is unavailable")
+        if now_s - odometry_stamp_s > self.config.odometry_timeout_s:
+            return self._fail("odometry data is stale")
         if self.phase is MissionPhase.WAITING:
-            if altitude_m is None:
-                return 0.0
             self.phase = MissionPhase.TAKEOFF
             self._phase_started_s = now_s
 

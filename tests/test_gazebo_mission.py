@@ -15,16 +15,16 @@ class MissionSequenceTests(unittest.TestCase):
 
         self.assertEqual(mission.step(0.0, None), 0.0)
         self.assertIs(mission.phase, MissionPhase.WAITING)
-        self.assertEqual(mission.step(0.1, 0.0), 0.5)
+        self.assertEqual(mission.step(0.1, 0.0, 0.1), 0.5)
         self.assertIs(mission.phase, MissionPhase.TAKEOFF)
-        self.assertEqual(mission.step(1.0, 0.5), 0.0)
+        self.assertEqual(mission.step(1.0, 0.5, 1.0), 0.0)
         self.assertIs(mission.phase, MissionPhase.HOVER)
-        self.assertEqual(mission.step(2.9, 0.5), 0.0)
-        self.assertEqual(mission.step(3.0, 0.5), -0.5)
+        self.assertEqual(mission.step(2.9, 0.5, 2.9), 0.0)
+        self.assertEqual(mission.step(3.0, 0.5, 3.0), -0.5)
         self.assertIs(mission.phase, MissionPhase.LAND)
-        self.assertEqual(mission.step(3.1, 0.1), 0.0)
+        self.assertEqual(mission.step(3.1, 0.1, 3.1), 0.0)
         self.assertIs(mission.phase, MissionPhase.COMPLETE)
-        self.assertEqual(mission.step(3.2, 0.1), 0.0)
+        self.assertEqual(mission.step(3.2, 0.1, 3.2), 0.0)
 
     def test_config_rejects_unreachable_landing_height(self) -> None:
         with self.assertRaisesRegex(ValueError, "below hover_height_m"):
@@ -32,39 +32,64 @@ class MissionSequenceTests(unittest.TestCase):
 
     def test_non_finite_altitude_fails_safe_with_zero_command(self) -> None:
         mission = MissionSequence()
-        self.assertEqual(mission.step(0.0, float("nan")), 0.0)
+        self.assertEqual(mission.step(0.0, float("nan"), 0.0), 0.0)
         self.assertIs(mission.phase, MissionPhase.FAILED)
         self.assertEqual(mission.failure_reason, "odometry altitude is not finite")
 
     def test_backward_simulation_time_fails_safe(self) -> None:
         mission = MissionSequence()
 
-        self.assertEqual(mission.step(2.0, 0.0), 0.5)
-        self.assertEqual(mission.step(1.9, 0.0), 0.0)
+        self.assertEqual(mission.step(2.0, 0.0, 2.0), 0.5)
+        self.assertEqual(mission.step(1.9, 0.0, 1.9), 0.0)
         self.assertIs(mission.phase, MissionPhase.FAILED)
         self.assertEqual(mission.failure_reason, "simulation time moved backwards")
 
     def test_non_finite_simulation_time_fails_safe(self) -> None:
         mission = MissionSequence()
 
-        self.assertEqual(mission.step(float("nan"), 0.0), 0.0)
+        self.assertEqual(mission.step(float("nan"), 0.0, 0.0), 0.0)
         self.assertIs(mission.phase, MissionPhase.FAILED)
         self.assertEqual(mission.failure_reason, "simulation time is not finite")
+
+    def test_stale_odometry_fails_safe(self) -> None:
+        mission = MissionSequence(MissionConfig(odometry_timeout_s=0.2))
+
+        self.assertEqual(mission.step(0.0, 0.0, 0.0), 0.5)
+        self.assertEqual(mission.step(0.1, 0.0, 0.0), 0.5)
+        self.assertEqual(mission.step(0.21, 0.0, 0.0), 0.0)
+        self.assertIs(mission.phase, MissionPhase.FAILED)
+        self.assertEqual(mission.failure_reason, "odometry data is stale")
+
+    def test_odometry_timestamp_regression_fails_safe(self) -> None:
+        mission = MissionSequence()
+
+        self.assertEqual(mission.step(0.1, 0.0, 0.1), 0.5)
+        self.assertEqual(mission.step(0.2, 0.0, 0.05), 0.0)
+        self.assertIs(mission.phase, MissionPhase.FAILED)
+        self.assertEqual(mission.failure_reason, "odometry timestamp moved backwards")
+
+    def test_active_mission_fails_if_altitude_disappears(self) -> None:
+        mission = MissionSequence()
+
+        self.assertEqual(mission.step(0.0, 0.0, 0.0), 0.5)
+        self.assertEqual(mission.step(0.1, None), 0.0)
+        self.assertIs(mission.phase, MissionPhase.FAILED)
+        self.assertEqual(mission.failure_reason, "odometry altitude is unavailable")
 
     def test_takeoff_timeout_stops_with_zero_command(self) -> None:
         mission = MissionSequence(MissionConfig(phase_timeout_s=1.0))
 
-        self.assertEqual(mission.step(0.0, 0.0), 0.5)
-        self.assertEqual(mission.step(1.0, 0.0), 0.0)
+        self.assertEqual(mission.step(0.0, 0.0, 0.0), 0.5)
+        self.assertEqual(mission.step(1.0, 0.0, 1.0), 0.0)
         self.assertIs(mission.phase, MissionPhase.FAILED)
         self.assertEqual(mission.failure_reason, "takeoff phase timed out")
 
     def test_already_airborne_mission_moves_to_hover_and_landing(self) -> None:
         mission = MissionSequence(MissionConfig(hover_duration_s=0.5))
 
-        self.assertEqual(mission.step(2.0, 0.6), 0.0)
+        self.assertEqual(mission.step(2.0, 0.6, 2.0), 0.0)
         self.assertIs(mission.phase, MissionPhase.HOVER)
-        self.assertEqual(mission.step(2.5, 0.6), -0.5)
+        self.assertEqual(mission.step(2.5, 0.6, 2.5), -0.5)
         self.assertIs(mission.phase, MissionPhase.LAND)
 
 
