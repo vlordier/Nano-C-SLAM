@@ -325,6 +325,7 @@ static bool pcl_update(float *x, int16_t from_id, int16_t nr_of_poses) {
 // }
 
 void pcl_optimize(slam_job_t *job) {
+    if (job == NULL) return;
     memset(job, 0, sizeof(slam_job_t));
 
     uint32_t t_start = pi_time_get_us();

@@ -109,6 +109,7 @@ int main(void) {
     pcl_add_external_constraint(invalid_edge);
     CHECK(constraints[0].fromIdx == 2 && constraints[0].toIdx == 4);
     slam_job_t job;
+    pcl_optimize(NULL);
     pcl_optimize(&job);
     pcl_optimize(&job);
     CHECK(main_graph_calls == 2);
