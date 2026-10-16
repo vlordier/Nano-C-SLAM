@@ -6,10 +6,33 @@ from sim.gazebo.nano_c_slam_gazebo.mission_model import (
     MissionConfig,
     MissionPhase,
     MissionSequence,
+    create_mission_config,
+    validate_drone_name,
 )
 
 
 class MissionSequenceTests(unittest.TestCase):
+    def test_validates_drone_name_before_constructing_topics(self) -> None:
+        self.assertEqual(validate_drone_name("cf12"), "cf12")
+        for invalid_name in ("cf", "cf1/topic", "/cf1", "cf1;stop", 1):
+            with (
+                self.subTest(invalid_name=invalid_name),
+                self.assertRaisesRegex(ValueError, "drone_name"),
+            ):
+                validate_drone_name(invalid_name)
+
+    def test_builds_config_from_numeric_ros_parameters(self) -> None:
+        self.assertEqual(
+            create_mission_config(0.7, 2),
+            MissionConfig(hover_height_m=0.7, hover_duration_s=2.0),
+        )
+        for invalid_values in (("0.5", 2.0), (0.5, True), (float("nan"), 2.0)):
+            with (
+                self.subTest(invalid_values=invalid_values),
+                self.assertRaises(ValueError),
+            ):
+                create_mission_config(*invalid_values)
+
     def test_takeoff_hover_and_land_follow_measured_altitude(self) -> None:
         mission = MissionSequence(MissionConfig(hover_duration_s=2.0))
 

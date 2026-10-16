@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+import re
 from dataclasses import dataclass
 from enum import Enum, auto
 
@@ -41,6 +42,29 @@ class MissionConfig:
             raise ValueError("phase_timeout_s must be finite and positive")
         if not math.isfinite(self.odometry_timeout_s) or self.odometry_timeout_s <= 0:
             raise ValueError("odometry_timeout_s must be finite and positive")
+
+
+def validate_drone_name(value: object) -> str:
+    """Accept only Crazyflie identifiers used by the Gazebo launch model."""
+    if not isinstance(value, str) or re.fullmatch(r"cf[0-9]+", value) is None:
+        raise ValueError("drone_name must be a Crazyflie name such as cf1")
+    return value
+
+
+def create_mission_config(
+    hover_height_m: object, hover_duration_s: object
+) -> MissionConfig:
+    """Validate untrusted ROS parameter values and build mission settings."""
+    if isinstance(hover_height_m, bool) or not isinstance(hover_height_m, (int, float)):
+        raise ValueError("mission height and duration parameters must be numeric")
+    if isinstance(hover_duration_s, bool) or not isinstance(
+        hover_duration_s, (int, float)
+    ):
+        raise ValueError("mission height and duration parameters must be numeric")
+    return MissionConfig(
+        hover_height_m=float(hover_height_m),
+        hover_duration_s=float(hover_duration_s),
+    )
 
 
 class MissionSequence:

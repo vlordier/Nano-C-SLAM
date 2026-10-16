@@ -10,7 +10,12 @@ from nav_msgs.msg import Odometry
 from rclpy.node import Node
 from std_msgs.msg import Bool
 
-from .mission_model import MissionConfig, MissionPhase, MissionSequence
+from .mission_model import (
+    MissionPhase,
+    MissionSequence,
+    create_mission_config,
+    validate_drone_name,
+)
 
 
 class SimMission(Node):
@@ -21,13 +26,11 @@ class SimMission(Node):
         self.declare_parameter("drone_name", "cf1")
         self.declare_parameter("hover_height_m", 0.5)
         self.declare_parameter("hover_duration_s", 3.0)
-        self._drone_name = str(self.get_parameter("drone_name").value)
-        if not self._drone_name.startswith("cf"):
-            raise ValueError("drone_name must be a Crazyflie name such as cf1")
+        self._drone_name = validate_drone_name(self.get_parameter("drone_name").value)
         sequence = MissionSequence(
-            config=MissionConfig(
-                hover_height_m=float(self.get_parameter("hover_height_m").value),
-                hover_duration_s=float(self.get_parameter("hover_duration_s").value),
+            config=create_mission_config(
+                self.get_parameter("hover_height_m").value,
+                self.get_parameter("hover_duration_s").value,
             )
         )
         self._sequence = sequence
@@ -103,14 +106,16 @@ class SimMission(Node):
 
 def main(args: Sequence[str] | None = None) -> None:
     rclpy.init(args=args)
-    node = SimMission()
+    node: SimMission | None = None
     try:
+        node = SimMission()
         while rclpy.ok() and node._sequence.phase is not MissionPhase.COMPLETE:
             rclpy.spin_once(node, timeout_sec=0.1)
     except KeyboardInterrupt:
         pass
     finally:
-        node.destroy_node()
+        if node is not None:
+            node.destroy_node()
         if rclpy.ok():
             rclpy.shutdown()
 
