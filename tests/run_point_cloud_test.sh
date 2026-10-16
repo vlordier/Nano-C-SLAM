@@ -30,3 +30,11 @@ cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
     tests/icp_test.c cslam-gap9-app/icp/icp.c \
     "$linker_gc" -lm -o /tmp/icp_test
 /tmp/icp_test
+
+cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
+    -fno-omit-frame-pointer \
+    -Itests/stubs -Icslam-gap9-app/spi -Icslam-gap9-app/point-cloud \
+    -Icslam-gap9-app/icp -Icslam-gap9-app/slam \
+    tests/gap9_spi_decode_test.c cslam-gap9-app/spi/spi_cmds_decode.c \
+    -lm -o /tmp/gap9_spi_decode_test
+/tmp/gap9_spi_decode_test
