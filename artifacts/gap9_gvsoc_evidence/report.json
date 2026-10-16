@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "evidence_class": "gvsoc-target-execution",
+  "claim_boundary": "ICP SVD kernel under GVSOC only; not full SLAM or hardware validation",
+  "hardware_measurement": false,
+  "test": "diagonal covariance SVD in Nano-C-SLAM ICP implementation",
+  "expected_sigma_milli": [
+    3000,
+    2000
+  ],
+  "observed_sigma_milli": [
+    3000,
+    2000
+  ],
+  "elf_bytes": 104712,
+  "elf_sha256": "59e3aa78e7039cfa09ba0b489696cf34c8d1aa2025bd3a27f1880b0f65121c7e",
+  "log_sha256": "ba3d78dfae0d3ecc1a558947052e5de05454ff98ce4fa1e411a98eec90bdc1ab"
+}

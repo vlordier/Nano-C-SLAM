@@ -20,7 +20,7 @@ cd crazyflie-firmware && git apply ../changes.patch && cd ..
 cd cslam-stm32-app && make all
 ```
 
-Build the full GAP9 application with `bash scripts/build_gap9_firmware.sh` when the GAP SDK and RISC-V toolchain are installed under `~/Work/da3_gap9`. Build the bounded ICP smoke ELF with `bash scripts/run_gap9_gvsoc_smoke.sh`; `NANO_C_SLAM_RUN_GVSOC=1` opts into its local simulator run. Current runtime boot failure and memory usage are recorded in [REPRODUCTION.md](REPRODUCTION.md). The Gazebo bridge and launch steps are documented in [sim/gazebo/README.md](sim/gazebo/README.md).
+Build the full GAP9 application with `bash scripts/build_gap9_firmware.sh` when the GAP SDK and RISC-V toolchain are installed under `~/Work/da3_gap9`. Run the SDK-linked ICP SVD smoke on the local GVSOC model with `bash scripts/run_gap9_gvsoc_smoke.sh`; this writes a bounded evidence report under `artifacts/gap9_gvsoc_evidence/`. It does not establish full ICP or pose-graph behavior. Current runtime limits and memory use are recorded in [REPRODUCTION.md](REPRODUCTION.md). The Gazebo bridge and launch steps are documented in [sim/gazebo/README.md](sim/gazebo/README.md).
 
 To run the workflow locally with `act` and a Docker-compatible engine:
 

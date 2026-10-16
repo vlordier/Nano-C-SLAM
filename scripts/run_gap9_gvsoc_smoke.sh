@@ -6,11 +6,12 @@ SDK_ROOT="${GAP9_SDK_ROOT:-$HOME/Work/da3_gap9/third_party/gap_sdk_private}"
 TOOLCHAIN_ROOT="${GAP9_TOOLCHAIN_ROOT:-$HOME/Work/da3_gap9/deploy/gap_riscv_toolchain}"
 STIMULUS_ROOT="${GAP9_STIMULUS_ROOT:-$HOME/Work/da3_gap9}"
 WORK_ROOT="${GAP9_GVSOC_WORK_ROOT:-${TMPDIR:-/tmp}/nano-c-slam-gvsoc}"
-BUILD_IMAGE="${GAP9_BUILD_IMAGE:-nano-c-slam-gap9-build:ubuntu22-uv0117}"
+ELF="$ROOT/cslam-gap9-app/BUILD-gvsoc/nano_c_slam_gvsoc_smoke"
+LAYOUT="$WORK_ROOT/nano_c_slam_gvsoc_layout.json"
 GVSOC_LOG="$WORK_ROOT/gvsoc.log"
 
 if [[ "$(uname -s)" != Darwin ]]; then
-    echo "This workflow builds with Linux Docker and runs with the local macOS GVSOC runtime." >&2
+    echo "This workflow runs with the local macOS GVSOC runtime." >&2
     exit 2
 fi
 
@@ -18,53 +19,12 @@ for required in \
     "$SDK_ROOT/utils/gapy_v2/bin/gapy" \
     "$SDK_ROOT/install/workstation/bin/gvsoc_launcher" \
     "$SDK_ROOT/install/workstation/models/gap9/soc.dylib" \
-    "$TOOLCHAIN_ROOT/bin/riscv32-unknown-elf-gcc" \
-    "$TOOLCHAIN_ROOT/bin/riscv32-unknown-elf-objcopy"; do
+    "$TOOLCHAIN_ROOT/bin/riscv32-unknown-elf-gcc"; do
     [[ -e "$required" ]] || { echo "missing GAP9 GVSOC prerequisite: $required" >&2; exit 2; }
 done
 
-if [[ "$(file "$SDK_ROOT/install/workstation/bin/gvsoc_launcher")" != *"Mach-O"* ]]; then
-    echo "expected a macOS GVSOC launcher in $SDK_ROOT" >&2
-    exit 2
-fi
-
-mkdir -p "$WORK_ROOT"
-if ! docker image inspect "$BUILD_IMAGE" >/dev/null 2>&1; then
-    docker build --platform linux/amd64 \
-        --file "$ROOT/scripts/Dockerfile.gap9-build" \
-        --tag "$BUILD_IMAGE" "$ROOT"
-fi
-
-docker run --rm --platform linux/amd64 \
-    -v "$ROOT:/project:ro" \
-    -v "$SDK_ROOT:/gap_sdk:ro" \
-    -v "$TOOLCHAIN_ROOT:/toolchain:ro" \
-    -v "$WORK_ROOT:/work" \
-    "$BUILD_IMAGE" bash -euo pipefail -c '
-cc=riscv32-unknown-elf-gcc
-objcopy=riscv32-unknown-elf-objcopy
-runtime=/gap_sdk/gvsoc/gvsoc/docs/developer_manual/tutorials/utils
-"$cc" -dumpmachine | grep -qx riscv32-unknown-elf
-"$cc" -march=rv32imcxgap9 -mabi=ilp32 -O2 -g \
-    -fno-tree-loop-distribute-patterns -ffunction-sections -fdata-sections \
-    -I"$runtime" -T/project/tests/gap9_gvsoc_link.ld -nostartfiles -nostdlib \
-    -Wl,--gc-sections \
-    -I/project/tests -I/project/tests/stubs -I/project/cslam-gap9-app/icp \
-    -I/project/cslam-gap9-app/slam \
-    "$runtime/init.c" "$runtime/crt0.S" "$runtime/alloc.c" "$runtime/io.c" \
-    "$runtime/prf.c" "$runtime/string.c" "$runtime/fprintf.c" \
-    /project/tests/gap9_gvsoc_smoke.c /project/cslam-gap9-app/icp/icp.c \
-    -Wl,--allow-multiple-definition -lm -lgcc \
-    -o /work/nano_c_slam_gvsoc_smoke.elf
-"$objcopy" -O binary /work/nano_c_slam_gvsoc_smoke.elf /work/nano_c_slam_gvsoc_smoke.bin
-'
-
-ELF="$WORK_ROOT/nano_c_slam_gvsoc_smoke.elf"
-LAYOUT="$WORK_ROOT/nano_c_slam_gvsoc_layout.json"
-if [[ "${NANO_C_SLAM_RUN_GVSOC:-0}" != "1" ]]; then
-    printf 'Built GAP9 ICP smoke ELF: %s\n' "$ELF"
-    echo "Set NANO_C_SLAM_RUN_GVSOC=1 to execute it with the installed macOS GVSOC runtime."
-    exit 0
+if [[ ! -s "$ELF" ]]; then
+    bash "$ROOT/scripts/build_gap9_firmware.sh"
 fi
 
 for stimulus in chip.efuse_preload.data chip.soc.mram.bin; do
@@ -73,10 +33,10 @@ for stimulus in chip.efuse_preload.data chip.soc.mram.bin; do
             echo "missing GAP9 GVSOC stimulus: $STIMULUS_ROOT/$stimulus" >&2
             exit 2
         }
+        mkdir -p "$WORK_ROOT"
         cp "$STIMULUS_ROOT/$stimulus" "$WORK_ROOT/$stimulus"
     fi
 done
-# The installed private GAP9 model has a fixed XIP work-directory path.
 ln -sfn "$WORK_ROOT" /tmp/gvsoc_workdir
 
 set +u
@@ -89,10 +49,14 @@ export PATH="$SDK_ROOT/install/workstation/bin:$SDK_ROOT/utils/gapy_v2/bin:$PATH
 export DYLD_LIBRARY_PATH="$SDK_ROOT/install/workstation/lib:${DYLD_LIBRARY_PATH:-}"
 export DYLD_FALLBACK_LIBRARY_PATH="$SDK_ROOT/install/workstation/lib"
 export GAP9_REAL_GVSOC_LAUNCHER="$SDK_ROOT/install/workstation/bin/gvsoc_launcher"
-LAUNCHER_BIN="$WORK_ROOT/launcher-bin"
-mkdir -p "$LAUNCHER_BIN"
-ln -sf "$ROOT/scripts/gvsoc_tty_launcher.sh" "$LAUNCHER_BIN/gvsoc_launcher"
-export PATH="$LAUNCHER_BIN:$PATH"
+
+mkdir -p "$WORK_ROOT/launcher-bin"
+if [[ "${GAP9_GVSOC_NO_TTY:-1}" == "1" ]]; then
+    ln -sf "$GAP9_REAL_GVSOC_LAUNCHER" "$WORK_ROOT/launcher-bin/gvsoc_launcher"
+else
+    ln -sf "$ROOT/scripts/gvsoc_tty_launcher.sh" "$WORK_ROOT/launcher-bin/gvsoc_launcher"
+fi
+export PATH="$WORK_ROOT/launcher-bin:$PATH"
 
 cd "$WORK_ROOT"
 uv run --project "$ROOT" --python 3.12 \
@@ -113,5 +77,9 @@ uv run --no-project --python 3.12 \
     --flash-content "$LAYOUT@mram" \
     --work-dir "$WORK_ROOT" image flash run 2>&1 | tee "$GVSOC_LOG"
 
-grep -q 'NANO_C_SLAM_GAP9:icp_ok' "$GVSOC_LOG"
-echo "GAP9 GVSOC ICP smoke passed; log: $GVSOC_LOG"
+grep -q 'NANO_C_SLAM_GVSOC:icp_svd_ok sigma0_milli=3000 sigma1_milli=2000' "$GVSOC_LOG"
+uv run --project "$ROOT" --python 3.12 \
+    python "$ROOT/scripts/capture_gap9_gvsoc_evidence.py" \
+    --elf "$ELF" --log "$GVSOC_LOG" \
+    --output "$ROOT/artifacts/gap9_gvsoc_evidence/report.json"
+echo "GAP9 GVSOC ICP SVD smoke passed; log: $GVSOC_LOG"

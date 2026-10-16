@@ -1,40 +1,50 @@
 cmake_minimum_required(VERSION 3.19)
 
-set(TARGET_NAME nano_c_slam_gap9)
+if(NANO_C_SLAM_GVSOC_SMOKE)
+    set(TARGET_NAME nano_c_slam_gvsoc_smoke)
+else()
+    set(TARGET_NAME nano_c_slam_gap9)
+endif()
 include($ENV{GAP_SDK_HOME}/utils/cmake/setup.cmake)
 project(${TARGET_NAME} C ASM)
 
-file(GLOB GAP9_SPI_SOURCES CONFIGURE_DEPENDS "spi/*.c")
-file(GLOB GAP9_SLAM_SOURCES CONFIGURE_DEPENDS "slam/*.c" "slam/rcm/*.c")
-file(GLOB GAP9_POINT_CLOUD_SOURCES CONFIGURE_DEPENDS "point-cloud/*.c")
+if(NANO_C_SLAM_GVSOC_SMOKE)
+    add_executable(${TARGET_NAME} ../tests/gap9_sdk_gvsoc_smoke.c icp/icp.c dma/dma_transfers.c)
+    target_include_directories(${TARGET_NAME} PRIVATE icp dma slam)
+    set(APP_OPT_LEVEL -O2)
+else()
+    file(GLOB GAP9_SPI_SOURCES CONFIGURE_DEPENDS "spi/*.c")
+    file(GLOB GAP9_SLAM_SOURCES CONFIGURE_DEPENDS "slam/*.c" "slam/rcm/*.c")
+    file(GLOB GAP9_POINT_CLOUD_SOURCES CONFIGURE_DEPENDS "point-cloud/*.c")
+    add_executable(
+        ${TARGET_NAME}
+        main.c
+        dma/dma_transfers.c
+        icp/icp.c
+        gpio/gpio_config.c
+        ${GAP9_SPI_SOURCES}
+        ${GAP9_SLAM_SOURCES}
+        ${GAP9_POINT_CLOUD_SOURCES}
+    )
+    target_include_directories(
+        ${TARGET_NAME}
+        PRIVATE
+        slam
+        slam/rcm
+        dma
+        icp
+        spi
+        point-cloud
+        gpio
+    )
+    set(APP_OPT_LEVEL -O3)
+endif()
 
-add_executable(
-    ${TARGET_NAME}
-    main.c
-    dma/dma_transfers.c
-    icp/icp.c
-    gpio/gpio_config.c
-    ${GAP9_SPI_SOURCES}
-    ${GAP9_SLAM_SOURCES}
-    ${GAP9_POINT_CLOUD_SOURCES}
-)
-
-target_include_directories(
-    ${TARGET_NAME}
-    PRIVATE
-    slam
-    slam/rcm
-    dma
-    icp
-    spi
-    point-cloud
-    gpio
-    $ENV{GAP_SDK_HOME}/rtos/pmsis/tools/assert/include
-)
+target_include_directories(${TARGET_NAME} PRIVATE $ENV{GAP_SDK_HOME}/rtos/pmsis/tools/assert/include)
 target_compile_options(
     ${TARGET_NAME}
     PRIVATE
-    -O3
+    ${APP_OPT_LEVEL}
     -Wno-error=implicit-function-declaration
     -Wno-error=deprecated-declarations
     -include
@@ -42,5 +52,5 @@ target_compile_options(
 )
 target_compile_definitions(${TARGET_NAME} PRIVATE CONFIG_DISABLE_WERROR=1)
 target_link_options(${TARGET_NAME} PRIVATE -Wl,--print-memory-usage)
-target_link_libraries(${TARGET_NAME} PRIVATE m)
 setupos(${TARGET_NAME})
+target_link_libraries(${TARGET_NAME} PRIVATE m)
