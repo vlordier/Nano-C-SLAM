@@ -99,6 +99,14 @@ int main(void) {
 
     float correction[3] = {0};
     pcl_add_constraint(2, 4, correction);
+    float invalid_correction[3] = {NAN, 0.0f, 0.0f};
+    pcl_add_constraint(2, 4, invalid_correction);
+    constraint invalid_edge = {.fromIdx = 20, .toIdx = 1, .z = {0, 0, 0}};
+    pcl_add_external_constraint(invalid_edge);
+    invalid_edge.fromIdx = 2;
+    invalid_edge.toIdx = 4;
+    invalid_edge.z[1] = INFINITY;
+    pcl_add_external_constraint(invalid_edge);
     CHECK(constraints[0].fromIdx == 2 && constraints[0].toIdx == 4);
     slam_job_t job;
     pcl_optimize(&job);

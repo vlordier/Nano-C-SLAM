@@ -14,6 +14,7 @@
 #include <stdbool.h>
 
 #include "../icp/icp.h"
+#include "../slam/graph-based-slam.h"
 #include "pmsis.h"
 
 // Augmented pose structure
@@ -69,6 +70,9 @@ void pcl_extract_scan(int16_t start_id, int16_t end_id, icp_points_t *points,
  * @param icp Pointer to the ICP result that is used to derive the constraint
  */
 void pcl_add_constraint(int16_t from_node, int16_t to_node, float *icp);
+
+/** Add an already-formed finite pose-graph constraint. */
+void pcl_add_external_constraint(constraint c);
 
 /**
  * @brief Start hierarchical pose graph optimization.

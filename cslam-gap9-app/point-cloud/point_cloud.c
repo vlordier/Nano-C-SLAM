@@ -197,10 +197,18 @@ static constraint comp_constr(float *icp_res, float *ref_pose, float *cur_pose,
 
 void pcl_add_constraint(int16_t from_node, int16_t to_node, float *icp) {
     if (constr_counter >= MAX_CONSTRAINTS || from_node < 0 || to_node < 0 ||
-        from_node >= pose_counter || to_node >= pose_counter)
+        from_node >= pose_counter || to_node >= pose_counter || icp == NULL ||
+        !isfinite(icp[0]) || !isfinite(icp[1]) || !isfinite(icp[2]) ||
+        !isfinite(p_cloud[to_node].pos[0]) ||
+        !isfinite(p_cloud[to_node].pos[1]) ||
+        !isfinite(p_cloud[to_node].pos[2]) ||
+        !isfinite(p_cloud[from_node].pos[0]) ||
+        !isfinite(p_cloud[from_node].pos[1]) ||
+        !isfinite(p_cloud[from_node].pos[2]))
         return;
     constraint c = comp_constr(icp, p_cloud[to_node].pos,
                                p_cloud[from_node].pos, to_node, from_node);
+    if (!isfinite(c.z[0]) || !isfinite(c.z[1]) || !isfinite(c.z[2])) return;
     c.external = 0;
     constraints[constr_counter] = c;
     constr_counter++;
@@ -209,7 +217,10 @@ void pcl_add_constraint(int16_t from_node, int16_t to_node, float *icp) {
 }
 
 void pcl_add_external_constraint(constraint c) {
-    if (constr_counter >= MAX_CONSTRAINTS) return;
+    if (constr_counter >= MAX_CONSTRAINTS || c.fromIdx < 0 || c.toIdx < 0 ||
+        c.fromIdx >= pose_counter || c.toIdx >= pose_counter ||
+        !isfinite(c.z[0]) || !isfinite(c.z[1]) || !isfinite(c.z[2]))
+        return;
     constraints[constr_counter] = c;
     constr_counter++;
 }
