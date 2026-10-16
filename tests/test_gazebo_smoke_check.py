@@ -2,13 +2,23 @@ import unittest
 
 from scripts.check_gazebo_macos import (
     _array_values,
+    _mission_command,
     _mission_landing_altitude,
     _odometry_timestamp_ns,
     _require_odometry_progress,
+    _valid_drone_name,
 )
 
 
 class GazeboSmokeCheckTests(unittest.TestCase):
+    def test_targets_mission_at_selected_drone(self) -> None:
+        command = _mission_command("/opt/ros/bin/ros2", "cf3")
+        self.assertEqual(command[-2:], ["-p", "drone_name:=cf3"])
+        self.assertTrue(_valid_drone_name("cf3"))
+        for invalid_name in ("cf", "cf1/foo", "/cf1", "cf1;shutdown"):
+            with self.subTest(invalid_name=invalid_name):
+                self.assertFalse(_valid_drone_name(invalid_name))
+
     def test_parses_ros_cli_yaml_sequence(self) -> None:
         message = """layout: {}\ndata:\n- 3401.0\n- -1.0\n"""
         self.assertEqual(_array_values(message), [3401.0, -1.0])

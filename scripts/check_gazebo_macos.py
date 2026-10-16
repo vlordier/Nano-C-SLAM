@@ -106,21 +106,33 @@ def check_telemetry(timeout_s: float = 8.0, drone: str = "cf1") -> int:
     return timestamp_ns
 
 
-def run_mission(timeout_s: float = 45.0) -> None:
+def _mission_command(ros2: str, drone: str) -> list[str]:
+    """Build a mission command targeted at the requested Crazyflie."""
+    return [
+        ros2,
+        "run",
+        "nano_c_slam_gazebo",
+        "sim_mission",
+        "--ros-args",
+        "-p",
+        "use_sim_time:=True",
+        "-p",
+        f"drone_name:={drone}",
+    ]
+
+
+def _valid_drone_name(drone: str) -> bool:
+    """Accept only simple Crazyflie identifiers used by the launch model."""
+    return re.fullmatch(r"cf[0-9]+", drone) is not None
+
+
+def run_mission(timeout_s: float = 45.0, drone: str = "cf1") -> None:
     """Run one takeoff-hover-land cycle and require a low-altitude completion."""
     ros2 = shutil.which("ros2")
     if ros2 is None:
         raise FileNotFoundError("ros2 was not found; source the ROS 2 setup first")
     process = subprocess.Popen(  # noqa: S603 -- resolved executable and fixed args
-        [
-            ros2,
-            "run",
-            "nano_c_slam_gazebo",
-            "sim_mission",
-            "--ros-args",
-            "-p",
-            "use_sim_time:=True",
-        ],
+        _mission_command(ros2, drone),
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
@@ -188,16 +200,14 @@ def main(args: Sequence[str] | None = None) -> int:
         help="also run a complete takeoff-hover-land mission",
     )
     options = parser.parse_args(args)
-    if not options.drone.startswith("cf") or any(
-        char.isspace() for char in options.drone
-    ):
+    if not _valid_drone_name(options.drone):
         parser.error("--drone must be a Crazyflie name such as cf1")
     if options.timeout <= 0 or not math.isfinite(options.timeout):
         parser.error("--timeout must be finite and positive")
     try:
         before_ns = _check_telemetry_until(options.timeout, options.drone)
         if options.mission:
-            run_mission(timeout_s=max(45.0, options.timeout))
+            run_mission(timeout_s=max(45.0, options.timeout), drone=options.drone)
             after_ns = _check_telemetry_until(options.timeout, options.drone)
             _require_odometry_progress(before_ns, after_ns)
             print("Gazebo odometry advanced across the mission")
