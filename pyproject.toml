@@ -46,7 +46,11 @@ select = [
 python-version = "3.12"
 
 [tool.ty.src]
-include = ["cslam-stm32-app/run_demo.py", "tests/test_run_demo.py"]
+include = [
+    "cslam-stm32-app/run_demo.py",
+    "scripts/check_gazebo_macos.py",
+    "tests/test_run_demo.py",
+]
 
 [tool.ty.rules]
 dynamic-function-decorator-return = "error"

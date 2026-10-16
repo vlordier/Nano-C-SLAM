@@ -55,6 +55,10 @@ class SimMission(Node):
         self._altitude_m = float(message.pose.pose.position.z)
 
     def _step(self) -> None:
+        if self._sequence.phase in (MissionPhase.COMPLETE, MissionPhase.FAILED):
+            self._publish_zero_command()
+            return
+
         enabled = Bool()
         enabled.data = True
         self._enable_publisher.publish(enabled)
@@ -85,6 +89,10 @@ class SimMission(Node):
                 f"{self._drone_name} mission phase: "
                 f"{self._sequence.phase.name.lower()} at altitude {altitude}"
             )
+
+    def _publish_zero_command(self) -> None:
+        """Keep the controller commanded to hover after the mission terminates."""
+        self._publisher.publish(Twist())
 
 
 def main(args: Sequence[str] | None = None) -> None:

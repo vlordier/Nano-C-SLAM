@@ -132,6 +132,7 @@ In a second terminal, run the single-drone example mission (takeoff to 0.5 m, ho
 ```sh
 source /opt/homebrew/opt/ros2-jazzy/setup.zsh
 source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
+export GZ_PARTITION="nano_c_slam_$(id -u)"
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
   ros2 run nano_c_slam_gazebo sim_mission --ros-args -p use_sim_time:=True
 ```
@@ -141,6 +142,7 @@ Check sensor output while the first terminal is running:
 ```sh
 source /opt/homebrew/opt/ros2-jazzy/setup.zsh
 source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
+export GZ_PARTITION="nano_c_slam_$(id -u)"
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
   ros2 topic echo /nano_c_slam/sim/cf1/ranges_mm
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
@@ -148,3 +150,18 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
 ```
 
 This confirms native ROS 2, the `~/Work/gz-macOS` Gazebo build and desktop GUI, simulated flight commands, and synthetic bridge messages. The four-ray lidar and ideal odometry-derived ranges do not emulate the hardware ToF matrices or UWB ranging protocol, and this does not run GAP9 SLAM or validate mapping on hardware.
+
+To verify that the native ROS graph and all telemetry streams are live without
+starting another mission, source the same ROS and workspace setup files and run:
+
+```sh
+source /opt/homebrew/opt/ros2-jazzy/setup.zsh
+source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
+export GZ_PARTITION="nano_c_slam_$(id -u)"
+uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
+  python scripts/check_gazebo_macos.py --timeout 20
+```
+
+The check waits for `/cf1/odom`, validates the four lidar values and the
+pairwise ranges, and exits nonzero with a diagnostic if the graph is not
+publishing usable messages. Run it from the Nano-C-SLAM repository root.
