@@ -59,3 +59,11 @@ cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
     tests/circular_queue_test.c cslam-gap9-app/slam/rcm/circular-queue.c \
     "$linker_gc" -o /tmp/circular_queue_test
 /tmp/circular_queue_test
+
+cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
+    -Itests/stubs -Icslam-gap9-app/slam -Icslam-gap9-app/slam/rcm \
+    tests/rcm_high_degree_test.c cslam-gap9-app/slam/rcm/rcm-sparse-matrix.c \
+    cslam-gap9-app/slam/rcm/circular-queue.c \
+    cslam-gap9-app/slam/rcm/heapsort.c cslam-gap9-app/slam/sparse-matrix.c \
+    "$linker_gc" -lm -o /tmp/rcm_high_degree_test
+/tmp/rcm_high_degree_test

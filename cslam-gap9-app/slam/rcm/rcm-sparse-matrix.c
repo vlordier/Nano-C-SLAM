@@ -20,10 +20,9 @@
 #include "rcm-sparse-matrix.h"
 #include "sparse-matrix.h"
 
-#define MAX_NEIGHBORS 100
 PI_L2 node nodes[MAX_SIZE];
 PI_L2 circular_queue_t q;
-PI_L2 node nodes_line[MAX_NEIGHBORS];
+PI_L2 node nodes_line[MAX_SIZE];
 extern float array1[MAX_SIZE];
 extern csr sp_mat1;
 
@@ -83,7 +82,6 @@ void rcm(csr *mat, int16_t *perm, int16_t N) {
             nodes[nodes_index].visited = 1;
         }
         nodes_index++;
-        int32_t t0 = pi_time_get_us();
         while (!is_empty(&q)) {
             pop_from_queue(&q, &C);
             perm[perm_index++] = C.index;
@@ -100,8 +98,6 @@ void rcm(csr *mat, int16_t *perm, int16_t N) {
                 }
             }
         }
-        int32_t t1 = pi_time_get_us();
-        // printf("Rcm:  %d \n", t1 - t0);
     }
 
     for (int16_t i = 0; i < N / 2; i++) {
