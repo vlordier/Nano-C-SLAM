@@ -13,14 +13,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "assert.h"
 #include "cholesky.h"
 #include "config_size.h"
 #include "graph-based-slam.h"
+#include "pmsis.h"
 #include "rcm-sparse-matrix.h"
 #include "sparse-matrix.h"
 #include "utils_math.h"
-#include "pmsis.h"
-#include "assert.h"
 
 extern csr sp_mat0;
 extern csr sp_mat1;

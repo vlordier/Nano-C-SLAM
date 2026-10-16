@@ -11,9 +11,9 @@
 #ifndef SPI_CMDS_H
 #define SPI_CMDS_H
 
+#include "external_point_cloud.h"
 #include "pmsis.h"
 #include "point_cloud.h"
-#include "external_point_cloud.h"
 
 #define SPIBUF_SIZE (200)
 #define SPI_PKT_SIZE (97)
@@ -64,8 +64,8 @@ spi_transfer_t spi_decode_scan_info(uint8_t *buffer, int16_t *scan_info);
  */
 spi_transfer_t spi_decode_pose_req(uint8_t *buffer, int16_t *pose_request);
 
-
 spi_transfer_t spi_decode_ext_pose(uint8_t *buffer, ext_aug_pose_t *pose);
-spi_transfer_t spi_decode_ext_pose_upd(uint8_t *buffer, ext_pose_upd_t *pos_upd);
+spi_transfer_t spi_decode_ext_pose_upd(uint8_t *buffer,
+                                       ext_pose_upd_t *pos_upd);
 
 #endif

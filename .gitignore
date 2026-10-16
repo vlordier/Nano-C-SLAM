@@ -4,6 +4,9 @@ __pycache__/
 .venv/
 logs/
 
+# STM32 build output
+cslam-stm32-app/build/
+
 # Object files
 *.o
 *.ko

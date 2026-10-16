@@ -6,12 +6,16 @@
 #define PI_L2
 #define PI_CL_L1
 
-struct pi_device { int unused; };
+struct pi_device {
+    int unused;
+};
 struct pi_cluster_task {
     void (*entry)(void *);
     void *arg;
 };
-typedef struct { int unused; } pi_task_t;
+typedef struct {
+    int unused;
+} pi_task_t;
 
 uint32_t pi_time_get_us(void);
 void pi_time_wait_us(uint32_t us);

@@ -12,12 +12,17 @@
 #include "crtp.h"
 #include "task.h"
 #include <assert.h>
+#include <stdint.h>
 #include <string.h>
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-void send_burst_data(uint8_t type, void *data, size_t len) {
+void send_burst_data(uint8_t type, const void *data, size_t len) {
+    assert(data != NULL || len == 0);
     assert(len < 0xff * 28);
+    if (data == NULL || len >= 0xff * 28)
+        return;
+    const uint8_t *bytes = data;
     for (size_t i = 0, offset = 0; offset < len; i++, offset += 28) {
         CRTPPacket pk = {
             .header = CRTP_HEADER(1, 0),
@@ -25,7 +30,7 @@ void send_burst_data(uint8_t type, void *data, size_t len) {
         };
         pk.data[0] = (type & 0x7f) | (offset + 28 >= len ? 0x80 : 0);
         pk.data[1] = i;
-        memcpy(&(pk.data[2]), data + offset, pk.size - 2);
+        memcpy(&(pk.data[2]), bytes + offset, pk.size - 2);
         crtpSendPacketBlock(&pk);
         vTaskDelay(M2T(1));
     }

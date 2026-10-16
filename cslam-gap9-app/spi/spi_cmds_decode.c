@@ -61,13 +61,15 @@ spi_transfer_t spi_decode_ext_pose(uint8_t *buffer, ext_aug_pose_t *pose) {
     for (int16_t i = 0; i < sizeof(ext_aug_pose_t); i++)
         checksum += *((uint8_t *)pose + i);
 
-    uint32_t checksum_stm32 = *((uint32_t *)&buffer[sizeof(ext_aug_pose_t) + 2]);
+    uint32_t checksum_stm32 =
+        *((uint32_t *)&buffer[sizeof(ext_aug_pose_t) + 2]);
     if (checksum != checksum_stm32) return SPI_CHECKSUM_ERR;
 
     return SPI_OK;
 }
 
-spi_transfer_t spi_decode_ext_pose_upd(uint8_t *buffer, ext_pose_upd_t *pos_upd) {
+spi_transfer_t spi_decode_ext_pose_upd(uint8_t *buffer,
+                                       ext_pose_upd_t *pos_upd) {
     uint8_t cmd_type = buffer[CMD_OFFSET];
     if (cmd_type != UPD_EXT_POSE_CMD) return SPI_WRONG_CMD;
 

@@ -8,8 +8,8 @@
  * Authors: Vlad Niculescu
  */
 
-#include "pmsis.h"
 #include "config_size.h"
+#include "pmsis.h"
 #include "sparse-matrix.h"
 
 PI_L2 csr sp_mat0;

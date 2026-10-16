@@ -77,7 +77,8 @@ void flight_task(void *parameters) {
         }
     }
 
-    while (1) vTaskDelay(M2T(10));
+    while (1)
+        vTaskDelay(M2T(10));
 }
 
 void process_line(int16_t *line_in, float *line_out) {

@@ -29,12 +29,43 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install C quality tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format-18 cppcheck
       - name: Test UWB pose update decoder
         run: |
           cc -std=c11 -Wall -Wextra -Werror tests/pose_update_packet_test.c -lm -o /tmp/pose_update_packet_test
           /tmp/pose_update_packet_test
       - name: Test GAP9 pose graph on host
         run: sh tests/run_point_cloud_test.sh
+      - name: Check owned C formatting
+        run: |
+          find cslam-gap9-app cslam-stm32-app/src tests -type f \
+            \( -name '*.c' -o -name '*.h' \) \
+            ! -path 'cslam-stm32-app/src/tof-matrix/drivers/vl53l5cx_api.*' \
+            ! -path 'cslam-stm32-app/src/tof-matrix/drivers/vl53l5cx_buffers.h' \
+            -print0 | xargs -0 clang-format-18 --dry-run --Werror
+      - name: Analyze owned C code
+        run: |
+          cppcheck --enable=warning,performance,portability --error-exitcode=1 \
+            --inline-suppr --suppress=missingIncludeSystem \
+            --suppress=missingInclude --suppress=unmatchedSuppression \
+            --suppress=unknownMacro --suppress=assertWithSideEffect \
+            --suppress=integerOverflowCond --language=c --std=c11 \
+            -Itests/stubs -Icslam-gap9-app/point-cloud \
+            -Icslam-gap9-app/icp -Icslam-gap9-app/slam \
+            -Icslam-stm32-app/src \
+            cslam-gap9-app/dma cslam-gap9-app/gpio cslam-gap9-app/icp \
+            cslam-gap9-app/point-cloud cslam-gap9-app/slam \
+            cslam-gap9-app/spi cslam-gap9-app/main.c \
+            cslam-stm32-app/src/radio_comm.c \
+            cslam-stm32-app/src/tof-matrix/drivers/i2c_expander.c \
+            cslam-stm32-app/src/tof-matrix/i2c_platform.c \
+            cslam-stm32-app/src/tof-matrix/tof_matrix.c \
+            cslam-stm32-app/src/tof_daq.c \
+            cslam-stm32-app/src/uwb_collision_det.c \
+            cslam-stm32-app/src/uwb_ranging.c tests/*.c
 
   stm32:
     runs-on: ubuntu-24.04

@@ -7,7 +7,7 @@
  *
  * Authors: Vlad Niculescu
  */
- 
+
 #include "pmsis.h"
 
 static pi_device_t gpio_dummy0, gpio_dummy1;
@@ -30,7 +30,6 @@ void gpio_init() {
     pi_gpio_flags_e flags = PI_GPIO_INPUT | PI_GPIO_PULL_ENABLE;
     pi_gpio_pin_configure(&gpio_dummy0, PI_PAD_060, flags);
 
-
     // GPIO 61
     pi_gpio_conf_init(&gpio_conf);
     gpio_conf.port = PI_PAD_061 / 32;
@@ -43,7 +42,6 @@ void gpio_init() {
 
     flags = PI_GPIO_INPUT;
     pi_gpio_pin_configure(&gpio_dummy1, PI_PAD_061, flags);
-
 
     // GPIO BUSY
 
@@ -66,5 +64,5 @@ void gpio_init() {
 }
 
 void set_cf_gpio(int8_t value) {
-	pi_gpio_pin_write(&gpio_cf, PI_PAD_063, value);
+    pi_gpio_pin_write(&gpio_cf, PI_PAD_063, value);
 }

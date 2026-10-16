@@ -27,6 +27,7 @@ struct pi_cluster_conf cl_conf;
 #include "spi_driver.h"
 
 static uint8_t *spi_buf, *spi_buf_t;
+static float requested_poses[3 * 100];
 PI_L2 icp_points_t ref_scan, cur_scan;
 
 int get_spi_command(uint8_t *spi_cmd, uint8_t len) {
@@ -122,9 +123,10 @@ void slam_loop() {
                 int16_t from_id = pose_request[0];
                 int16_t nr_of_poses = pose_request[1];
                 if (nr_of_poses > 100) break;
-                pcl_to_poses((float *)(spi_buf_t), from_id, nr_of_poses);
+                pcl_to_poses(requested_poses, from_id, nr_of_poses);
 
-                spi_send_blocking(spi_buf_t, 3 * 4 * nr_of_poses);
+                spi_send_blocking((uint8_t *)requested_poses,
+                                  3 * sizeof(float) * nr_of_poses);
             }
             break;
         }
@@ -138,8 +140,8 @@ int main_func(void) {
     int32_t cur_cl_freq = pi_freq_get(PI_FREQ_DOMAIN_CL);
 
     if (verbose)
-        printf("FC frequency : %ld\nCL frequency : %ld\n", cur_fc_freq,
-               cur_cl_freq);
+        printf("FC frequency : %ld\nCL frequency : %ld\n", (long)cur_fc_freq,
+               (long)cur_cl_freq);
 
     /* Init cluster configuration structure. */
     pi_cluster_conf_init(&cl_conf);

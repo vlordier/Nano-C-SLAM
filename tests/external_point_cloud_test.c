@@ -4,57 +4,57 @@
 
 #include "../cslam-gap9-app/point-cloud/external_point_cloud.h"
 
-#define CHECK(condition)                                                       \
-  do {                                                                         \
-    if (!(condition)) {                                                        \
-      fprintf(stderr, "check failed at line %d: %s\n", __LINE__, #condition);  \
-      abort();                                                                 \
-    }                                                                          \
-  } while (0)
+#define CHECK(condition) \
+    do { \
+        if (!(condition)) { \
+            fprintf(stderr, "check failed at line %d: %s\n", __LINE__, #condition); \
+            abort(); \
+        } \
+    } while (0)
 
 extern ext_scan_t ext_scan_table[20];
 
 int main(void) {
-  ext_aug_pose_t pose = {.drone_id = 7};
-  for (int scan = 0; scan < 20; scan++) {
-    pose.id = scan;
+    ext_aug_pose_t pose = {.drone_id = 7};
+    for (int scan = 0; scan < 20; scan++) {
+        pose.id = scan;
+        for (int sample = 0; sample < 20; sample++)
+            add_ext_aug_pose_to_buf(pose);
+        CHECK(ext_scan_table[scan].taken);
+        CHECK(ext_scan_table[scan].pose_id == scan);
+    }
+
+    pose.id = 100;
+    add_ext_aug_pose_to_buf(pose);
+    CHECK(ext_scan_table[19].ext_aug_poses[0].id == 19);
+
+    ext_scan_table[5].taken = 0;
+    for (int sample = 1; sample < 20; sample++)
+        add_ext_aug_pose_to_buf(pose);
+    CHECK(!ext_scan_table[5].taken);
+
     for (int sample = 0; sample < 20; sample++)
-      add_ext_aug_pose_to_buf(pose);
-    CHECK(ext_scan_table[scan].taken);
-    CHECK(ext_scan_table[scan].pose_id == scan);
-  }
+        add_ext_aug_pose_to_buf(pose);
+    CHECK(ext_scan_table[5].taken);
+    CHECK(ext_scan_table[5].pose_id == 100);
+    CHECK(ext_scan_table[19].pose_id == 19);
 
-  pose.id = 100;
-  add_ext_aug_pose_to_buf(pose);
-  CHECK(ext_scan_table[19].ext_aug_poses[0].id == 19);
+    icp_points_t points;
+    get_external_scan(-1, &points, 1400);
+    CHECK(points.num == 0);
+    get_external_scan(20, &points, 1400);
+    CHECK(points.num == 0);
+    get_external_scan(5, &points, 1400);
+    CHECK(points.num == 640);
 
-  ext_scan_table[5].taken = 0;
-  for (int sample = 1; sample < 20; sample++)
-    add_ext_aug_pose_to_buf(pose);
-  CHECK(!ext_scan_table[5].taken);
+    float z[3] = {1, 2, 3};
+    for (int i = 0; i < 60; i++)
+        force_external_constraint(i, z);
+    CHECK(external_constraints_count() == 50);
+    CHECK(get_ext_constraint(49).fromIdx == 49);
 
-  for (int sample = 0; sample < 20; sample++)
-    add_ext_aug_pose_to_buf(pose);
-  CHECK(ext_scan_table[5].taken);
-  CHECK(ext_scan_table[5].pose_id == 100);
-  CHECK(ext_scan_table[19].pose_id == 19);
-
-  icp_points_t points;
-  get_external_scan(-1, &points, 1400);
-  CHECK(points.num == 0);
-  get_external_scan(20, &points, 1400);
-  CHECK(points.num == 0);
-  get_external_scan(5, &points, 1400);
-  CHECK(points.num == 640);
-
-  float z[3] = {1, 2, 3};
-  for (int i = 0; i < 60; i++)
-    force_external_constraint(i, z);
-  CHECK(external_constraints_count() == 50);
-  CHECK(get_ext_constraint(49).fromIdx == 49);
-
-  ext_pose_upd_t update = {0};
-  for (int i = 0; i < 250; i++)
-    add_pose_upd_to_buf(update);
-  return 0;
+    ext_pose_upd_t update = {0};
+    for (int i = 0; i < 250; i++)
+        add_pose_upd_to_buf(update);
+    return 0;
 }

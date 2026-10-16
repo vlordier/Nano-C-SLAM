@@ -18,8 +18,7 @@ extern struct pi_device cluster_dev;
 static struct pi_cluster_task cl_task;
 static pi_task_t task_block_illegal;
 
-#define H_ZERO                                                                 \
-    { 1, 0, 0, 0, 1, 0, 0, 0, 1 }
+static const float identity_matrix[9] = {1, 0, 0, 0, 1, 0, 0, 0, 1};
 
 PI_L2 int16_t cor_P[SIZE_POINTS];
 PI_L2 int16_t cor_Q[SIZE_POINTS];
@@ -286,7 +285,9 @@ void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
     P_centered->num = P->num;
     Q_centered->num = Q->num;
 
-    float t_a[9] = H_ZERO, t_b[9] = H_ZERO;
+    float t_a[9], t_b[9];
+    memcpy(t_a, identity_matrix, sizeof(t_a));
+    memcpy(t_b, identity_matrix, sizeof(t_b));
     float *next = t_a, *prev = t_b;
     for (int iteration = 0; iteration < max_iterations; iteration++) {
         // Compute correspondences
@@ -355,8 +356,8 @@ void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
     uint32_t t_stop = pi_time_get_us();
     job->time_ms = (uint16_t)(t_stop - t_start) / 1000;
 
-    if (!isfinite(result[0]) || !isfinite(result[1]) ||
-        !isfinite(result[2]) || !isfinite(job->error)) {
+    if (!isfinite(result[0]) || !isfinite(result[1]) || !isfinite(result[2]) ||
+        !isfinite(job->error)) {
         job->has_nan = 1;
     }
 }

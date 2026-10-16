@@ -15,7 +15,8 @@ enum {
 
 // The wire format is one count byte followed by up to eight (id, x, y, yaw)
 // entries. The packet is padded to a fixed length for the UWB transport.
-static inline uint8_t pose_update_packet_count(const uint8_t *data, size_t len) {
+static inline uint8_t pose_update_packet_count(const uint8_t *data,
+                                               size_t len) {
     if (data == NULL || len != POSE_UPDATE_PACKET_SIZE || data[0] == 0 ||
         data[0] > POSE_UPDATE_MAX_ENTRIES)
         return 0;

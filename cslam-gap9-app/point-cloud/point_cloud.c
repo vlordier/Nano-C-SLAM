@@ -24,7 +24,7 @@
 #define MAX_FLIGH_TIME_S (300)
 
 #define MAX_CONSTRAINTS (50)
-#define MAX_SUBGRAPH_POSES \
+#define MAX_SUBGRAPH_POSES                                                     \
     ((int)(sizeof(x_subgraph) / sizeof(x_subgraph[0]) / 3))
 
 PI_L2 pcl_pose_t p_cloud[TOF_FREQ_HZ * MAX_FLIGH_TIME_S];
@@ -182,7 +182,8 @@ static constraint comp_constr(float *icp_res, float *ref_pose, float *cur_pose,
 
 void pcl_add_constraint(int16_t from_node, int16_t to_node, float *icp) {
     if (constr_counter >= MAX_CONSTRAINTS || from_node < 0 || to_node < 0 ||
-        from_node >= pose_counter || to_node >= pose_counter) return;
+        from_node >= pose_counter || to_node >= pose_counter)
+        return;
     constraint c = comp_constr(icp, p_cloud[to_node].pos,
                                p_cloud[from_node].pos, to_node, from_node);
     c.external = 0;
@@ -314,7 +315,8 @@ void pcl_optimize(slam_job_t *job) {
         if (optimization_constraints[i].toIdx < 0 ||
             optimization_constraints[i].toIdx >= pose_counter ||
             optimization_constraints[i].fromIdx < 0 ||
-            optimization_constraints[i].fromIdx >= pose_counter) return;
+            optimization_constraints[i].fromIdx >= pose_counter)
+            return;
         scan_poses_list[2 * i] = optimization_constraints[i].toIdx;
         scan_poses_list[2 * i + 1] = optimization_constraints[i].fromIdx;
     }

@@ -17,6 +17,6 @@
  * @param data Pointer to the data array.
  * @param len Length of the array to be sent.
  */
-void send_burst_data(uint8_t type, void *data, size_t len);
+void send_burst_data(uint8_t type, const void *data, size_t len);
 
 #endif
