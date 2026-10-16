@@ -310,7 +310,7 @@ bool solve_for_x(csr *H, float *b, int16_t *perm, int16_t size) {
         }
     }
 
-    if (H->nz_cnt < -1 || H->nz_cnt >= MAX_SIZE_SP_MAT) {
+    if (H->overflow || H->nz_cnt < -1 || H->nz_cnt >= MAX_SIZE_SP_MAT) {
         printf("Input SpMat element overflow\n");
         return false;
     }
@@ -319,7 +319,7 @@ bool solve_for_x(csr *H, float *b, int16_t *perm, int16_t size) {
     cholesky_sparse_parallel(H, size, perm);
     // cholesky_sparse_fc_only(H, size, perm);
 
-    if (H->nz_cnt < -1 || H->nz_cnt >= MAX_SIZE_SP_MAT) {
+    if (H->overflow || H->nz_cnt < -1 || H->nz_cnt >= MAX_SIZE_SP_MAT) {
         printf("SpMat element overflow\n");
         return false;
     }
@@ -435,6 +435,7 @@ bool ls_slam(float *x, constraint *constraints, int16_t nr_of_poses,
         // Compute the input of the linear equation system
         build_H_and_b(x, H, b, measurements, constraints, nr_of_poses,
                       nr_of_constr);
+        if (H->overflow) return false;
 
         // Get the permutation that minimizes the bandwidth of H
         rcm_fast(H, perm, 3 * nr_of_poses);

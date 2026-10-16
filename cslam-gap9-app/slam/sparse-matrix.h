@@ -11,6 +11,8 @@
 #ifndef SPARSE_MAT_H
 #define SPARSE_MAT_H
 
+#include <stdint.h>
+
 #include "config_size.h"
 
 #define NZ_THRESHOLD 0.00001f // any element below this value is set to 0
@@ -24,6 +26,7 @@ typedef struct {
     int16_t max_line;  // the index of the most bottom written line plus 1
     int32_t nz_cnt;    // number of non-zero entries minus 1
     int32_t max_order; // the maximum i*N + j among all elements
+    uint8_t overflow;  // Set when an insertion exceeds the allocated capacity.
 } csr;
 
 /**

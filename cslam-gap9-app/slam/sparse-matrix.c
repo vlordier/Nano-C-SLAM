@@ -65,7 +65,10 @@ void insert_element(csr *mat, int16_t N, int16_t i, int16_t j, float value) {
             }
         }
 
-        if (mat->nz_cnt >= MAX_SIZE_SP_MAT - 1) return;
+        if (mat->nz_cnt >= MAX_SIZE_SP_MAT - 1) {
+            mat->overflow = 1;
+            return;
+        }
 
         // Shift the data array and the column index array one position to the
         // right and make space for the new element
@@ -87,7 +90,10 @@ void insert_element(csr *mat, int16_t N, int16_t i, int16_t j, float value) {
 
     // The element to be added has a higher order than any previously added
     // element so it is added "to the end of the csr arrays"
-    if (mat->nz_cnt >= MAX_SIZE_SP_MAT - 1) return;
+    if (mat->nz_cnt >= MAX_SIZE_SP_MAT - 1) {
+        mat->overflow = 1;
+        return;
+    }
     mat->nz_cnt++;
     mat->data[mat->nz_cnt] = value;
     mat->col_idx[mat->nz_cnt] = j;
@@ -195,5 +201,6 @@ void init_sp_mat(csr *mat) {
     mat->nz_cnt = 0;
     mat->max_line = 0;
     mat->max_order = 0;
+    mat->overflow = 0;
     memset(mat->row_ptr, 0, (MAX_SIZE + 1) * sizeof(int16_t));
 }

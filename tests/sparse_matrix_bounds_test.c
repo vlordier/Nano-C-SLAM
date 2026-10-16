@@ -29,6 +29,9 @@ int main(void) {
 
     insert_element(&matrix, MAX_SIZE, MAX_SIZE - 1, 9, 2.0f);
     CHECK(matrix.nz_cnt == MAX_SIZE_SP_MAT - 1);
+    CHECK(matrix.overflow);
     CHECK(get_element(&matrix, MAX_SIZE, MAX_SIZE - 1, 9) == 0.0f);
+    init_sp_mat(&matrix);
+    CHECK(!matrix.overflow);
     return 0;
 }
