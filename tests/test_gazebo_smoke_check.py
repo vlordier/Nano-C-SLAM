@@ -7,6 +7,7 @@ from scripts.check_gazebo_macos import (
     _odometry_timestamp_ns,
     _require_odometry_progress,
     _valid_drone_name,
+    _validate_pairwise_ranges,
 )
 
 
@@ -31,6 +32,30 @@ class GazeboSmokeCheckTests(unittest.TestCase):
             _array_values("layout: {}\n")
         with self.assertRaisesRegex(RuntimeError, "invalid numeric"):
             _array_values("data:\n- not-a-number\n")
+
+    def test_validates_all_pairwise_labels_and_ranges(self) -> None:
+        message = """layout:
+  dim:
+  - label: cf1:cf3,cf1:cf4,cf3:cf4
+    size: 3
+data:
+- 1.0
+- 2.0
+- 3.0
+"""
+        self.assertEqual(_validate_pairwise_ranges(message), [1.0, 2.0, 3.0])
+
+    def test_rejects_incomplete_or_mislabelled_pairwise_ranges(self) -> None:
+        with self.assertRaisesRegex(RuntimeError, "dimension label"):
+            _validate_pairwise_ranges("data:\n- 1.0\n")
+        message = """layout:
+  dim:
+  - label: cf1:cf3
+data:
+- 1.0
+"""
+        with self.assertRaisesRegex(RuntimeError, "labels must be"):
+            _validate_pairwise_ranges(message)
 
     def test_parses_odometry_timestamp_and_requires_progress(self) -> None:
         before = "header:\n  stamp:\n    sec: 12\n    nanosec: 400000000\n"

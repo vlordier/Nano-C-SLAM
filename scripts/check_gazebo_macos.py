@@ -14,6 +14,7 @@ import sys
 import time
 from collections.abc import Sequence
 from contextlib import suppress
+from itertools import combinations
 from pathlib import Path
 
 
@@ -58,6 +59,44 @@ def _array_values(message: str) -> list[float]:
     raise RuntimeError("ROS message did not contain a data array")
 
 
+def _validate_pairwise_ranges(message: str) -> list[float]:
+    """Require one finite range for each configured drone pair, in stable order."""
+    drone_names = _supported_drone_names()
+    label = re.search(r"(?m)^\s*- label: (.+)$", message)
+    if label is None:
+        raise RuntimeError("pairwise range message did not contain a dimension label")
+    expected_pairs = ",".join(
+        f"{first}:{second}" for first, second in combinations(drone_names, 2)
+    )
+    if label.group(1).strip() != expected_pairs:
+        actual_pairs = label.group(1).strip()
+        raise RuntimeError(
+            f"pairwise range labels must be {expected_pairs}, got {actual_pairs}"
+        )
+
+    values = _array_values(message)
+    expected_count = len(drone_names) * (len(drone_names) - 1) // 2
+    if len(values) != expected_count:
+        raise RuntimeError(
+            f"expected {expected_count} pairwise ranges, got {len(values)}"
+        )
+    if any(not math.isfinite(value) or value < 0 for value in values):
+        raise RuntimeError(f"pairwise ranges must be finite and nonnegative: {values}")
+    return values
+
+
+def _supported_drone_names() -> tuple[str, ...]:
+    """Load the launch model when this file is run directly from ``scripts``."""
+    repository_root = str(Path(__file__).resolve().parents[1])
+    if repository_root not in sys.path:
+        sys.path.insert(0, repository_root)
+    from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
+        SUPPORTED_DRONE_NAMES,
+    )
+
+    return SUPPORTED_DRONE_NAMES
+
+
 def _odometry_timestamp_ns(message: str) -> int:
     """Parse the ROS header timestamp from an odometry YAML message."""
     stamp = re.search(
@@ -93,13 +132,9 @@ def check_telemetry(timeout_s: float = 8.0, drone: str = "cf1") -> int:
     if any(value < -1 or value > 3490 for value in ranges):
         raise RuntimeError(f"lidar values outside expected millimeter bounds: {ranges}")
 
-    pairwise = _array_values(
+    pairwise = _validate_pairwise_ranges(
         _read_topic("/nano_c_slam/sim/uwb_pairwise_range_m", timeout_s)
     )
-    if not pairwise or any(not math.isfinite(value) or value < 0 for value in pairwise):
-        raise RuntimeError(
-            f"pairwise ranges must be finite and nonnegative: {pairwise}"
-        )
     print(
         f"Gazebo telemetry OK: /{drone}/odom, lidar={ranges} mm, "
         f"{len(pairwise)} pairwise ranges (m)"
