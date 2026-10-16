@@ -29,6 +29,7 @@
 #include "flight_commander.h"
 #include "radio_comm.h"
 #include "scan_manager.h"
+#include "spi_comm.h"
 #include "uwb_api.h"
 #include "uwb_ranging.h"
 
@@ -97,7 +98,9 @@ void show_optimized_poses() {
     for (int16_t i=0; i<pose_count; i++) {
         float poses[3];
         spi_rcv_poses(poses, i, 1);
-        DEBUG_PRINT("Pose %d is: %.3f, %.3f, %.3f\n");
+        DEBUG_PRINT("Pose %d is: %.3f, %.3f, %.3f\n", i,
+                    (double)poses[0], (double)poses[1],
+                    (double)poses[2]);
         vTaskDelay(M2T(2));
     }
 }

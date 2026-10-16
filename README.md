@@ -81,13 +81,12 @@ The structure of the GAP9 application is shown below, where the folders are orde
     ├── spi/  
     ├── dma/  
     ├── gpio/  
-    ├── unit-test/  
     └── main.c
 ```
 
 Folders `slam/` and `icp/` contain the implementations of the Graph-based SLAM and ICP algorithms. In `point-cloud/` the application stores the internal pose graph and the external poses. The file `point-cloud/point_cloud.c` implements methods for deriving internal loop closure constraints (i.e., intra-drone), adding new poses to the graph and optimizing the pose graph. On the other
 
-`spi/` implements the SPI communication driver and the SPI packet decoding. In `dma/` we implement the DMA transfer functions between the Fabric Controller and the Cluster. `gpio/` containt the IO configuratio and `unit-test/` containt a unit test to validate the functionality of the system using two drones. 
+`spi/` implements the SPI communication driver and the SPI packet decoding. In `dma/` we implement the DMA transfer functions between the Fabric Controller and the Cluster. `gpio/` contains the IO configuration.
 
 The `main.c` file manages the whole process and implements the SPI slave communication. It works as a loop, which waits until a new SPI packet is received, decodes the packet and calls the appropriate functions depending on the pakcet type. Once the pakcet processing is done, the system goes back and waits for the next packet.
 
@@ -98,7 +97,7 @@ This guide shows you how to prepare, build and test a swarm of N drones, where N
  ### Flashing the STM32 onboard the Crazyflies
 1. Clone this repository:`git clone --recurse-submodules git@github.com:ETH-PBL/Nano-C-SLAM.git`
 2. Move the file `changes.patch` to `crazyflie-firmware/` and run `git apply changes.patch`
-3. Go to `cslam-stm32-app/src/config_params.h` and set `NR_OF_DRONES` to N (chosen by the user)
+3. Go to `cslam-stm32-app/src/config_params.h` and set `NR_OF_NODES` to N (chosen by the user)
 4. Go to `cslam-stm32-app/deploy.sh` and modify the file according to how many drones are used. The script is written to accommodate four drones by default
 5. Go to `cslam-stm32-app/`, turn on all drones and run `./deploy.sh`. This will flash all drones
 
@@ -110,8 +109,10 @@ To compile the code, you must first install the GAP9 SDK. If you don't have acce
 
 ### Run the mission
 1. Power on the drones and place them in the environment
-2. Got to `cslam-gap9-app/run_demo.py` and configure the `positions` variable with the 2D position and heading of each drone.
-3. Run `python3 run_demo.py N`. The drones will start flying and mapping the environment.
+2. Go to `cslam-stm32-app/run_demo.py` and configure the `positions` variable with the 2D position and heading of each drone.
+3. From `cslam-stm32-app/`, run `python3 run_demo.py N`. The drones will start flying and mapping the environment. The script currently lists radio addresses and initial poses for up to four drones.
+
+See [REPRODUCTION.md](REPRODUCTION.md) for the tested build commands and current reproduction status.
 
 
 <!-- MARKDOWN LINKS & IMAGES -->

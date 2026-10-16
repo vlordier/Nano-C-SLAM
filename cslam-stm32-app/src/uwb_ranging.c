@@ -518,11 +518,11 @@ void uwb_ranging_task(void *parameters) {
                          uwb_msg.dest == NODE_ID) { // Updated ext poses
                     uint8_t pose_count = uwb_msg.data[0];
                     uint8_t *base = &uwb_msg.data[1];
-                    float *pose_upd;
                     for (uint8_t i = 0; i < pose_count; i++) {
                         int16_t pose_id = *(int16_t *)(base + 14 * i);
                         int16_t drone_id = uwb_msg.src;
-                        pose_upd = (base + 14 * i + 2);
+                        float pose_upd[3];
+                        memcpy(pose_upd, base + 14 * i + 2, sizeof(pose_upd));
                         add_pose_upd_to_gap9_buffer(pose_upd, pose_id,
                                                     drone_id);
                     }

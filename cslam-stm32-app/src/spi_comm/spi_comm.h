@@ -65,7 +65,7 @@ void spi_send_scan_info(int16_t scan_pose_id);
  * @param nr_of_poses Number of poses to receive, starting from the ID
  * "from_id".
  */
-void spi_rcv_poses(float poses[][3], int16_t from_id, int16_t nr_of_poses);
+void spi_rcv_poses(float *poses, int16_t from_id, int16_t nr_of_poses);
 
 /**
  * @brief Inform GAP9 to perform graph optimization.

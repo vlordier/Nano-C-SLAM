@@ -31,7 +31,7 @@ static uint8_t to_send[2 * MAX_PKT_SIZE];
 static uint8_t to_recv[601];
 
 void spi_dummy_clk_cycles() {
-    float spi_dummy_rev, spi_dummy_tr;
+    uint8_t spi_dummy_rev = 0, spi_dummy_tr = 0;
     spiBeginTransaction(SPI_BAUDRATE_2MHZ);
     spiExchange(1, &spi_dummy_tr, &spi_dummy_rev);
     spiEndTransaction();
@@ -198,7 +198,7 @@ void spi_send_aug_pose_req(int16_t from_id, int16_t nr_of_poses) {
     spiEndTransaction();
 }
 
-void spi_rcv_poses(float poses[][3], int16_t from_id, int16_t nr_of_poses) {
+void spi_rcv_poses(float *poses, int16_t from_id, int16_t nr_of_poses) {
     spi_send_aug_pose_req(from_id, nr_of_poses);
 
     vTaskDelay(M2T(2));
@@ -209,9 +209,5 @@ void spi_rcv_poses(float poses[][3], int16_t from_id, int16_t nr_of_poses) {
     digitalWrite(DECK_GPIO_IO1, 1);
     spiEndTransaction();
 
-    for (int16_t i = 0; i < nr_of_poses; i++) {
-        poses[i][0] = *(float *)(to_recv + 12 * i + 0);
-        poses[i][1] = *(float *)(to_recv + 12 * i + 4);
-        poses[i][2] = *(float *)(to_recv + 12 * i + 8);
-    }
+    memcpy(poses, to_recv, 3 * sizeof(float) * nr_of_poses);
 }
