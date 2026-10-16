@@ -68,6 +68,8 @@ static void test_pose_packet_rejects_wrong_command_and_checksum(void) {
     packet[0] = 'S';
     packet[SPI_PKT_SIZE - 1] = 'E';
     CHECK(spi_decode_pose(packet, SPI_PKT_SIZE, NULL) == SPI_ERR);
+    packet[SPI_PKT_SIZE - 1] = 0;
+    CHECK(spi_decode_pose(packet, SPI_PKT_SIZE, &pose) == SPI_ERR);
 }
 
 static void test_external_pose_packet_round_trip(void) {

@@ -21,6 +21,15 @@ _Static_assert(sizeof(pcl_pose_t) + 6 <= SPI_PKT_SIZE,
                "pose packet exceeds SPI frame size");
 _Static_assert(sizeof(ext_aug_pose_t) + 6 <= SPI_PKT_SIZE,
                "external pose packet exceeds SPI frame size");
+_Static_assert(offsetof(pcl_pose_t, timestamp) == 4 &&
+                   offsetof(pcl_pose_t, pos) == 8 &&
+                   offsetof(pcl_pose_t, tof) == 20 && sizeof(pcl_pose_t) == 84,
+               "pose layout no longer matches the STM32 SPI wire format");
+_Static_assert(offsetof(ext_aug_pose_t, drone_id) == 4 &&
+                   offsetof(ext_aug_pose_t, pos) == 8 &&
+                   offsetof(ext_aug_pose_t, tof) == 20 &&
+                   sizeof(ext_aug_pose_t) == 84,
+               "external pose layout no longer matches the STM32 SPI format");
 
 static int valid_frame(const uint8_t *buffer, size_t buffer_size) {
     return buffer != NULL && buffer_size >= SPI_PKT_SIZE && buffer[0] == 'S' &&
