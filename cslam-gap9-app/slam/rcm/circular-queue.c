@@ -14,11 +14,13 @@
 #include <string.h>
 
 int16_t init_queue(circular_queue_t *queue) {
+    if (queue == NULL) return 0;
     memset(queue, 0, sizeof(circular_queue_t));
     return 1;
 }
 
 int16_t is_full(circular_queue_t *queue) {
+    if (queue == NULL || queue->size < 0 || queue->size > MAX_SIZE) return 0;
     if (queue->size == MAX_SIZE) {
         return 1;
     } else {
@@ -27,6 +29,7 @@ int16_t is_full(circular_queue_t *queue) {
 }
 
 int16_t is_empty(circular_queue_t *queue) {
+    if (queue == NULL || queue->size < 0 || queue->size > MAX_SIZE) return 1;
     if (queue->size == 0) {
         return 1;
     } else {
@@ -35,6 +38,10 @@ int16_t is_empty(circular_queue_t *queue) {
 }
 
 int16_t push_to_queue(circular_queue_t *queue, node element) {
+    if (queue == NULL || queue->head < 0 || queue->head >= MAX_SIZE ||
+        queue->tail < 0 || queue->tail >= MAX_SIZE || queue->size < 0 ||
+        queue->size > MAX_SIZE)
+        return 0;
     if (is_full(queue)) return 0;
 
     queue->nodes[queue->tail] = element;
@@ -45,6 +52,10 @@ int16_t push_to_queue(circular_queue_t *queue, node element) {
 }
 
 int16_t pop_from_queue(circular_queue_t *queue, node *element) {
+    if (queue == NULL || element == NULL || queue->head < 0 ||
+        queue->head >= MAX_SIZE || queue->tail < 0 || queue->tail >= MAX_SIZE ||
+        queue->size < 0 || queue->size > MAX_SIZE)
+        return 0;
     if (is_empty(queue)) return 0;
 
     *element = queue->nodes[queue->head];

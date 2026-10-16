@@ -53,3 +53,9 @@ cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
     tests/sparse_matrix_bounds_test.c cslam-gap9-app/slam/sparse-matrix.c \
     "$linker_gc" -lm -o /tmp/sparse_matrix_bounds_test
 /tmp/sparse_matrix_bounds_test
+
+cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
+    -Itests/stubs -Icslam-gap9-app/slam -Icslam-gap9-app/slam/rcm \
+    tests/circular_queue_test.c cslam-gap9-app/slam/rcm/circular-queue.c \
+    "$linker_gc" -o /tmp/circular_queue_test
+/tmp/circular_queue_test
