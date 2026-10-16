@@ -169,7 +169,8 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
   python scripts/check_gazebo_macos.py --timeout 20 --mission
 ```
 
-The check runs a complete takeoff-hover-land cycle, verifies the final altitude
-is near ground level, then validates `/cf1/odom`, the four lidar values, and
-pairwise ranges. It exits nonzero with a diagnostic if flight or telemetry
-fails. Run it from the Nano-C-SLAM repository root.
+The check validates `/cf1/odom`, the four lidar values, and pairwise ranges
+before and after a complete takeoff-hover-land cycle. It verifies phase order,
+near-ground completion, and advancing odometry timestamps. It exits nonzero
+with a diagnostic if flight or telemetry fails. Run it from the Nano-C-SLAM
+repository root.

@@ -151,13 +151,11 @@ def _signal_process_group(process_id: int, signal_number: int) -> None:
 def _mission_landing_altitude(returncode: int, output: str) -> float:
     """Require all mission phases and a successful landing near ground level."""
     required_phases = ("takeoff", "hover", "land")
-    missing = [
-        phase for phase in required_phases if f"mission phase: {phase}" not in output
-    ]
-    if returncode or missing:
+    phases = re.findall(r"mission phase: (takeoff|hover|land)\b", output)
+    if returncode or phases != list(required_phases):
         detail = f"mission exited {returncode}"
-        if missing:
-            detail += f" before phases: {', '.join(missing)}"
+        if phases != list(required_phases):
+            detail += f" with phases {phases}; expected {list(required_phases)}"
         raise RuntimeError(f"{detail}\n{output.strip()}")
     completion = re.search(
         r"completed takeoff, hover, and landing at altitude (-?\d+(?:\.\d+)?) m",
@@ -168,9 +166,9 @@ def _mission_landing_altitude(returncode: int, output: str) -> float:
             f"mission did not report successful completion\n{output.strip()}"
         )
     final_altitude_m = float(completion.group(1))
-    if final_altitude_m > 0.15:
+    if abs(final_altitude_m) > 0.15:
         raise RuntimeError(
-            f"mission completed above the ground threshold: {final_altitude_m:.3f} m"
+            f"mission completed outside the ground threshold: {final_altitude_m:.3f} m"
         )
     return final_altitude_m
 

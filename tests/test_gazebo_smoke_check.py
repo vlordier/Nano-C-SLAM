@@ -45,14 +45,30 @@ cf1 completed takeoff, hover, and landing at altitude 0.06 m
         self.assertEqual(_mission_landing_altitude(0, output), 0.06)
 
     def test_rejects_incomplete_or_high_landing(self) -> None:
-        with self.assertRaisesRegex(RuntimeError, "before phases: land"):
+        with self.assertRaisesRegex(RuntimeError, "expected.*takeoff.*hover.*land"):
             _mission_landing_altitude(1, "mission phase: takeoff\nmission phase: hover")
-        with self.assertRaisesRegex(RuntimeError, "above the ground"):
+        with self.assertRaisesRegex(RuntimeError, "outside the ground"):
             _mission_landing_altitude(
                 0,
                 "mission phase: takeoff\nmission phase: hover\n"
                 "mission phase: land\n"
                 "completed takeoff, hover, and landing at altitude 0.5 m",
+            )
+
+    def test_rejects_misordered_phases_and_below_ground_completion(self) -> None:
+        with self.assertRaisesRegex(RuntimeError, "expected "):
+            _mission_landing_altitude(
+                0,
+                "mission phase: hover\nmission phase: takeoff\n"
+                "mission phase: land\n"
+                "completed takeoff, hover, and landing at altitude 0.05 m",
+            )
+        with self.assertRaisesRegex(RuntimeError, "outside the ground threshold"):
+            _mission_landing_altitude(
+                0,
+                "mission phase: takeoff\nmission phase: hover\n"
+                "mission phase: land\n"
+                "completed takeoff, hover, and landing at altitude -0.2 m",
             )
 
 
