@@ -24,10 +24,14 @@ The local GAP9 SDK at `~/Work/da3_gap9/third_party/gap_sdk` reports release 5.20
 
 ## Python demo
 
-The demo dependencies are pinned in `pyproject.toml` and `uv.lock`. The tested environment uses Python 3.12, `cflib` 0.1.34, and NumPy 2.5.4:
+The demo dependencies are locked in `pyproject.toml` and `uv.lock`. The tested environment uses Python 3.12 and `cflib` 0.1.34:
 
 ```sh
 uv sync --locked
+uv run --locked ruff check .
+uv run --locked ruff format --check .
+uv run --locked ty check --error-on-warning
+uv run --locked python -m unittest discover -s tests -p 'test_*.py'
 uv run --locked python -m py_compile cslam-stm32-app/run_demo.py
 ```
 

@@ -109,7 +109,7 @@ To compile the code, you must first install the GAP9 SDK. If you don't have acce
 
 ### Run the mission
 1. Power on the drones and place them in the environment
-2. Go to `cslam-stm32-app/run_demo.py` and configure the `positions` variable with the 2D position and heading of each drone.
+2. Go to `cslam-stm32-app/run_demo.py` and configure the `DRONES` entries with each drone's radio URI and initial `(x, y, yaw)` pose.
 3. From the repository root, run `uv sync --locked`. Then, from `cslam-stm32-app/`, run `uv run --locked --project .. python run_demo.py N`. The drones will start flying and mapping the environment. The script currently lists radio addresses and initial poses for up to four drones.
 
 See [REPRODUCTION.md](REPRODUCTION.md) for the tested build commands and current reproduction status.

@@ -17,6 +17,10 @@ jobs:
           version: "0.11.7"
           enable-cache: true
       - run: uv sync --locked
+      - run: uv run --locked ruff check .
+      - run: uv run --locked ruff format --check .
+      - run: uv run --locked ty check --error-on-warning
+      - run: uv run --locked python -m unittest discover -s tests -p 'test_*.py'
       - run: uv run --locked python -m py_compile cslam-stm32-app/run_demo.py
       - run: uv run --locked python -c "import cflib, numpy"
       - run: uv run --locked python cslam-stm32-app/run_demo.py --help

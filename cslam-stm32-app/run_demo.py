@@ -1,178 +1,255 @@
+"""Run and log a Nano-C-SLAM Crazyflie mission."""
+
 import argparse
-import time
-from datetime import datetime
-
-import cflib.crtp
-from cflib.crazyflie.log import LogConfig
-from cflib.crazyflie.swarm import CachedCfFactory
-from cflib.crazyflie.swarm import Swarm
-from cflib.crazyflie.syncLogger import SyncLogger
 import csv
-import json
-from numpy import arctan2, arcsin
-import cflib
-import time
-import numpy as np
 import struct
-import os
+import time
+from collections.abc import Callable, Mapping, Sequence
+from dataclasses import dataclass
+from functools import partial
+from pathlib import Path
+from threading import Lock
+from typing import Protocol
 
-parser = argparse.ArgumentParser(description="Run a Nano-C-SLAM drone mission")
-parser.add_argument("drone_count", type=int, help="number of drones (1 to 4)")
-args = parser.parse_args()
-if not 1 <= args.drone_count <= 4:
-    parser.error("drone_count must be between 1 and 4")
-NR_OF_DRONES = args.drone_count
-
-os.makedirs("logs", exist_ok=True)
-folders = [f for f in os.listdir("logs/") if os.path.isdir(os.path.join("logs/", f))]
-folder_idx = len(folders)
-while os.path.exists("logs/log" + str(folder_idx) + "/"):
-    folder_idx += 1
-fileName = "logs/log" + str(folder_idx) + "/"
-os.makedirs(fileName, exist_ok=True)
-
-URI0 = 'radio://0/100/2M/E7E7E7E7EA'
-URI1 = 'radio://0/100/2M/E7E7E7E7EB'
-URI2 = 'radio://0/100/2M/E7E7E7E7EC'
-URI3 = 'radio://0/100/2M/E7E7E7E7ED'
-uri_list = [URI0, URI1, URI2, URI3]
-
-uris = {URI0}
-for i in range(1, NR_OF_DRONES):
-    uris.add(uri_list[i])
-
-positions = np.array([
-    [0.00, 0.0, 0.0],
-    [-1.95, 0.0, 0.0],
-    [-3.90, 0.0, 0.0],
-    [-11.5, 0.0, 3.14]])
-
-start_mission = 1
-
-class Logger:
-    def __init__(self, drone_label):
-        self.data_buf = []
-        self.drone_label = drone_label
-
-    def log(self, data, file):
-        if data[0] == 0 or data[0] == 128 + 0:
-            if data[1] == 0:
-                self.data_buf = data[2:]
-            else:
-                self.data_buf.extend(data[2:])
-
-            if (data[0] > 127):
-                global start_mission
-                if start_mission:
-                    start_mission = 0
-                    print("Time ", round(1000 * time.time(), 1))
-
-                [id] = struct.unpack("<hxx", bytes(self.data_buf[:4]))
-                [timestamp] = struct.unpack("<l", bytes(self.data_buf[4:8]))
-                [x, y, yaw] = struct.unpack("<fff", bytes(self.data_buf[8:20]))
-                tof = np.zeros((4, 8))
-                for i in range(4):
-                    for j in range(8):
-                        from_idx = 20 + 8 * 2 * i + 2 * j
-                        to_idx = 20 + 8 * 2 * i + 2 * (j+1)
-                        [tof[i, j]] = struct.unpack("<h", bytes(self.data_buf[from_idx:to_idx]))
-
-                pose = np.zeros(37)
-                pose[0] = id
-                pose[1] = timestamp
-                pose[2] = x
-                pose[3] = y
-                pose[4] = yaw
-                pose[5:] = tof.reshape(-1)
-                
-                with open(fileName + str(self.drone_label) + ".csv", 'a') as csvfile:
-                    writer = csv.writer(csvfile,delimiter=',')
-                    pose = [round(float(entry), 3) if i > 1 and i < 5 else int(entry) for i, entry in enumerate(pose)]
-
-                    writer.writerow(pose)
-                csvfile.close()
-
-        if data[0] == 1 or data[0] == 128 + 1:
-            [scan_id] = struct.unpack("<h", bytes(data[2:4]))
-
-            with open(fileName + str(self.drone_label) + "s.csv", 'a') as csvfile:
-                writer = csv.writer(csvfile,delimiter=',')
-                writer.writerow([scan_id])
-                csvfile.close()
+POSE_STRUCT = struct.Struct("<hxxlfff32h")
+SCAN_STRUCT = struct.Struct("<h")
+POSE_PACKET = 0
+SCAN_PACKET = 1
+FINAL_FRAGMENT = 0x80
 
 
-def new_packet_rcv_0(packet):
-    data = packet._get_data_l()
-    log0.log(data, "A")
-
-def new_packet_rcv_1(packet):
-    data = packet._get_data_l()
-    log1.log(data, "B")
-
-def new_packet_rcv_2(packet):
-    data = packet._get_data_l()
-    log2.log(data, "C")
-
-def new_packet_rcv_3(packet):
-    data = packet._get_data_l()
-    log3.log(data, "D")
+class PacketLike(Protocol):
+    @property
+    def data(self) -> bytearray: ...
 
 
-def console_callback_0(text: str):
-    print("A: ",text, end='')
+class ParamLike(Protocol):
+    is_updated: bool
 
-def console_callback_1(text: str):
-    print("B: ",text, end='')
-    
-def console_callback_2(text: str):
-    print("C: ",text, end='')
-    
-def console_callback_3(text: str):
-    print("D: ",text, end='')
+    def set_value(self, name: str, value: str) -> None: ...
 
-def wait_for_param_download(scf):
+
+class CallbackListLike(Protocol):
+    def add_callback(self, callback: Callable[[str], None]) -> None: ...
+
+
+class ConsoleLike(Protocol):
+    receivedChar: CallbackListLike
+
+
+class CrazyflieLike(Protocol):
+    link_uri: str
+    param: ParamLike
+    console: ConsoleLike
+
+    def add_port_callback(
+        self, port: int, callback: Callable[[PacketLike], None]
+    ) -> None: ...
+
+
+class SyncCrazyflieLike(Protocol):
+    cf: CrazyflieLike
+
+
+@dataclass(frozen=True)
+class DroneConfig:
+    uri: str
+    label: str
+    initial_pose: tuple[float, float, float]
+
+
+# Change these positions to match the launch layout before a flight.
+DRONES = (
+    DroneConfig("radio://0/100/2M/E7E7E7E7EA", "A", (0.0, 0.0, 0.0)),
+    DroneConfig("radio://0/100/2M/E7E7E7E7EB", "B", (-1.95, 0.0, 0.0)),
+    DroneConfig("radio://0/100/2M/E7E7E7E7EC", "C", (-3.90, 0.0, 0.0)),
+    DroneConfig("radio://0/100/2M/E7E7E7E7ED", "D", (-11.5, 0.0, 3.14)),
+)
+
+
+@dataclass(frozen=True)
+class PoseRecord:
+    pose_id: int
+    timestamp: int
+    x: float
+    y: float
+    yaw: float
+    tof: tuple[int, ...]
+
+    def csv_row(self) -> list[int | float]:
+        return [
+            self.pose_id,
+            self.timestamp,
+            round(self.x, 3),
+            round(self.y, 3),
+            round(self.yaw, 3),
+            *self.tof,
+        ]
+
+
+def decode_pose_payload(payload: bytes) -> PoseRecord:
+    if len(payload) != POSE_STRUCT.size:
+        raise ValueError(f"pose payload must be {POSE_STRUCT.size} bytes")
+    pose_id, timestamp, x, y, yaw, *tof = POSE_STRUCT.unpack(payload)
+    return PoseRecord(pose_id, timestamp, x, y, yaw, tuple(tof))
+
+
+def decode_scan_packet(packet: bytes) -> int:
+    if len(packet) < 2 + SCAN_STRUCT.size:
+        raise ValueError("scan packet is too short")
+    return int(SCAN_STRUCT.unpack_from(packet, 2)[0])
+
+
+class PoseAssembler:
+    def __init__(self) -> None:
+        self._buffer: bytearray | None = None
+        self._next_fragment = 0
+
+    def feed(self, packet: bytes) -> PoseRecord | None:
+        if len(packet) < 2 or packet[0] not in (POSE_PACKET, FINAL_FRAGMENT):
+            return None
+        if packet[1] == 0:
+            self._buffer = bytearray()
+            self._next_fragment = 0
+        if self._buffer is None or packet[1] != self._next_fragment:
+            self._buffer = None
+            return None
+        self._buffer.extend(packet[2:])
+        if len(self._buffer) > POSE_STRUCT.size:
+            self._buffer = None
+            return None
+        if packet[0] != FINAL_FRAGMENT:
+            self._next_fragment += 1
+            return None
+        payload = bytes(self._buffer)
+        self._buffer = None
+        if len(payload) != POSE_STRUCT.size:
+            return None
+        return decode_pose_payload(payload)
+
+
+class MissionStartNotifier:
+    def __init__(self) -> None:
+        self._lock = Lock()
+        self._started = False
+
+    def notify(self) -> None:
+        with self._lock:
+            if self._started:
+                return
+            self._started = True
+        print("Time ", round(1000 * time.time(), 1))
+
+
+class DroneLogger:
+    def __init__(
+        self, label: str, log_dir: Path, start_notifier: MissionStartNotifier
+    ) -> None:
+        self.label = label
+        self.log_dir = log_dir
+        self.start_notifier = start_notifier
+        self.pose_assembler = PoseAssembler()
+
+    def handle_packet(self, data: bytes | bytearray | list[int]) -> None:
+        packet = bytes(data)
+        if len(packet) < 2:
+            return
+        if packet[0] in (POSE_PACKET, POSE_PACKET | FINAL_FRAGMENT):
+            pose = self.pose_assembler.feed(packet)
+            if pose is None:
+                return
+            self.start_notifier.notify()
+            with (self.log_dir / f"{self.label}.csv").open(
+                "a", newline="", encoding="utf-8"
+            ) as csv_file:
+                csv.writer(csv_file).writerow(pose.csv_row())
+        elif packet[0] == SCAN_PACKET | FINAL_FRAGMENT and packet[1] == 0:
+            try:
+                scan_id = decode_scan_packet(packet)
+            except ValueError:
+                return
+            with (self.log_dir / f"{self.label}s.csv").open(
+                "a", newline="", encoding="utf-8"
+            ) as csv_file:
+                csv.writer(csv_file).writerow([scan_id])
+
+
+def create_log_dir(root: Path) -> Path:
+    root.mkdir(parents=True, exist_ok=True)
+    index = 0
+    while True:
+        log_dir = root / f"log{index}"
+        try:
+            log_dir.mkdir()
+        except FileExistsError:
+            index += 1
+        else:
+            return log_dir
+
+
+def wait_for_param_download(
+    scf: SyncCrazyflieLike, *, loggers: Mapping[str, DroneLogger]
+) -> None:
     while not scf.cf.param.is_updated:
         time.sleep(1.0)
-    print('Parameters downloaded for', scf.cf.link_uri)
+    uri: str = scf.cf.link_uri
+    logger = loggers[uri]
+    print("Parameters downloaded for", uri)
 
-    if scf.cf.link_uri == "radio://0/100/2M/E7E7E7E7EA":
-        scf.cf.console.receivedChar.add_callback(console_callback_0)
-        scf.cf.add_port_callback(1, new_packet_rcv_0)
+    def on_console(text: str) -> None:
+        print(f"{logger.label}: {text}", end="")
 
-    if scf.cf.link_uri == "radio://0/100/2M/E7E7E7E7EB":
-        scf.cf.console.receivedChar.add_callback(console_callback_1)
-        scf.cf.add_port_callback(1, new_packet_rcv_1)
+    def on_packet(packet: PacketLike) -> None:
+        logger.handle_packet(packet.data)
 
-    if scf.cf.link_uri == "radio://0/100/2M/E7E7E7E7EC":
-        scf.cf.console.receivedChar.add_callback(console_callback_2)
-        scf.cf.add_port_callback(1, new_packet_rcv_2)
+    scf.cf.console.receivedChar.add_callback(on_console)
+    scf.cf.add_port_callback(1, on_packet)
 
-    if scf.cf.link_uri == "radio://0/100/2M/E7E7E7E7ED":
-        scf.cf.console.receivedChar.add_callback(console_callback_3)
-        scf.cf.add_port_callback(1, new_packet_rcv_3)
 
-def set_param(scf):
-    drone_id = ord(scf.cf.link_uri[-1]) - ord("A")
-    print("Setting ", positions[drone_id][0], positions[drone_id][1], positions[drone_id][2])
-    scf.cf.param.set_value('initial.xinit', '{:f}'.format(positions[drone_id][0]))
-    scf.cf.param.set_value('initial.yinit', '{:f}'.format(positions[drone_id][1]))
-    scf.cf.param.set_value('initial.yawinit', '{:f}'.format(positions[drone_id][2]))
-    scf.cf.param.set_value('cmds.ready', '{:d}'.format(1))
+def set_initial_params(
+    scf: SyncCrazyflieLike, *, configs: Mapping[str, DroneConfig]
+) -> None:
+    config = configs[scf.cf.link_uri]
+    x, y, yaw = config.initial_pose
+    print("Setting ", x, y, yaw)
+    scf.cf.param.set_value("initial.xinit", f"{x:f}")
+    scf.cf.param.set_value("initial.yinit", f"{y:f}")
+    scf.cf.param.set_value("initial.yawinit", f"{yaw:f}")
+    scf.cf.param.set_value("cmds.ready", "1")
 
-def reset_param(scf):
-    scf.cf.param.set_value('cmds.ready', '{:d}'.format(0))
 
-log0 = Logger("A")
-log1 = Logger("B")
-log2 = Logger("C")
-log3 = Logger("D")
+def run_mission(configs: Sequence[DroneConfig], log_root: Path = Path("logs")) -> None:
+    import cflib.crtp
+    from cflib.crazyflie.swarm import CachedCfFactory, Swarm
 
-cflib.crtp.init_drivers(enable_debug_driver=False)
-factory = CachedCfFactory(rw_cache='./cache')
-with Swarm(uris, factory=factory) as swarm:
-    swarm.parallel(wait_for_param_download)
-    swarm.parallel(set_param)
-    
-    while(1):
-        time.sleep(1)
-    
+    log_dir = create_log_dir(log_root)
+    notifier = MissionStartNotifier()
+    loggers = {
+        config.uri: DroneLogger(config.label, log_dir, notifier) for config in configs
+    }
+    by_uri = {config.uri: config for config in configs}
+
+    cflib.crtp.init_drivers(enable_debug_driver=False)
+    factory = CachedCfFactory(rw_cache="./cache")
+    with Swarm(set(by_uri), factory=factory) as swarm:
+        swarm.parallel_safe(partial(wait_for_param_download, loggers=loggers))
+        swarm.parallel_safe(partial(set_initial_params, configs=by_uri))
+        while True:
+            time.sleep(1)
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Run a Nano-C-SLAM drone mission")
+    parser.add_argument("drone_count", type=int, help="number of drones (1 to 4)")
+    args = parser.parse_args(argv)
+    if not 1 <= args.drone_count <= len(DRONES):
+        parser.error(f"drone_count must be between 1 and {len(DRONES)}")
+    try:
+        run_mission(DRONES[: args.drone_count])
+    except KeyboardInterrupt:
+        return 130
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
