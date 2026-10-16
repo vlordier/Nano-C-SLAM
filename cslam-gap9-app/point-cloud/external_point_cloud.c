@@ -85,6 +85,11 @@ void add_ext_aug_pose_to_buf(ext_aug_pose_t ext_pose) {
             ext_drop_remaining = EXT_SCAN_POSE_COUNT - 1;
             return;
         }
+    } else if (ext_pose.drone_id !=
+               ext_scan_table[ext_scan_table_idx].from_drone) {
+        // UWB messages from different drones can interleave. Keep collecting
+        // this partial scan only from its original sender.
+        return;
     }
 
     ext_scan_table[ext_scan_table_idx].ext_aug_poses[ext_aug_pose_idx] =

@@ -26,7 +26,22 @@ int main(void) {
     CHECK(!ext_scan_table[0].taken);
     pose.tof[DIR_FRONT][0] = 0;
 
-    for (int scan = 0; scan < 20; scan++) {
+    add_ext_aug_pose_to_buf(pose);
+    pose.drone_id = 8;
+    for (int sample = 0; sample < 19; sample++)
+        add_ext_aug_pose_to_buf(pose);
+    CHECK(!ext_scan_table[0].taken);
+
+    pose.drone_id = 7;
+    for (int sample = 1; sample < 20; sample++) {
+        pose.id = sample;
+        add_ext_aug_pose_to_buf(pose);
+    }
+    CHECK(ext_scan_table[0].taken);
+    for (int sample = 0; sample < 20; sample++)
+        CHECK(ext_scan_table[0].ext_aug_poses[sample].drone_id == 7);
+
+    for (int scan = 1; scan < 20; scan++) {
         pose.id = scan;
         for (int sample = 0; sample < 20; sample++)
             add_ext_aug_pose_to_buf(pose);
