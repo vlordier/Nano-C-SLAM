@@ -92,7 +92,7 @@ assert "cflib" not in sys.modules
 assert not Path("logs").exists()
 """
         with tempfile.TemporaryDirectory() as tmp:
-            result = subprocess.run(
+            result = subprocess.run(  # noqa: S603 - fixed interpreter and inline test code
                 [sys.executable, "-c", code],
                 cwd=tmp,
                 capture_output=True,

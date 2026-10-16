@@ -22,6 +22,8 @@ Runtime buffers are fixed-size. The STM32 tracks up to 30 scan poses and queues 
 
 The local GAP9 SDK at `~/Work/da3_gap9/third_party/gap_sdk` reports release 5.20.4. With its `configs/gap9_evk_audio.sh` environment, `make all` stops before compilation: `utils/rules/pmsis_rules.mk` includes `rtos/pmsis/os/freeRTOS/vendors/gwt/rules/freeRTOS_rules.mk`, which is absent from that SDK checkout. The adjacent `gap_sdk_private` checkout also lacks this file. A compatible SDK revision or build configuration is still needed to reproduce the GAP9 binary.
 
+The local private SDK does include GVSOC sources, GAP9 model libraries, and a `gvsoc_launcher`, but the installed runtime and models are Mach-O arm64 while the bundled RISC-V toolchain is Linux x86_64. The toolchain can be invoked in a Linux container, but the Mac GVSOC runtime cannot; the Nano-C-SLAM GAP9 firmware has therefore not been executed in GVSOC. `scripts/run_gap9_gvsoc_smoke.sh` builds a bounded ICP-only RISC-V smoke ELF in Docker when the SDK/toolchain are present. It does not model ToF, SPI, UWB, FreeRTOS task scheduling, or Crazyflie flight control. A compatible Linux GVSOC runtime is required to run that ELF; `NANO_C_SLAM_RUN_GVSOC=1` opts into launching it after building.
+
 ## Python demo
 
 The demo dependencies are locked in `pyproject.toml` and `uv.lock`. The tested environment uses Python 3.12 and `cflib` 0.1.34:

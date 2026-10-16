@@ -32,7 +32,7 @@ jobs:
       - name: Install C quality tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang-format-18 cppcheck
+          sudo apt-get install -y clang-format-18 cppcheck shellcheck
       - name: Test UWB pose update decoder
         run: |
           cc -std=c11 -Wall -Wextra -Werror tests/pose_update_packet_test.c -lm -o /tmp/pose_update_packet_test
@@ -66,6 +66,8 @@ jobs:
             cslam-stm32-app/src/tof_daq.c \
             cslam-stm32-app/src/uwb_collision_det.c \
             cslam-stm32-app/src/uwb_ranging.c tests/*.c
+      - name: Check owned shell scripts
+        run: shellcheck -s bash -x tests/run_point_cloud_test.sh cslam-stm32-app/deploy.sh scripts/run_gap9_gvsoc_smoke.sh
 
   stm32:
     runs-on: ubuntu-24.04

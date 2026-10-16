@@ -15,7 +15,26 @@ line-length = 88
 extend-exclude = ["crazyflie-firmware", "uwb-software-library"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B", "SIM", "RUF", "ANN"]
+select = [
+    "E",     # pycodestyle errors
+    "F",     # Pyflakes correctness checks
+    "I",     # import sorting
+    "UP",    # modern Python syntax
+    "B",     # likely bugs
+    "SIM",   # simplifications
+    "RUF",   # Ruff correctness/style checks
+    "ANN",   # annotations on owned runtime/test code
+    "ASYNC", # async correctness
+    "S",     # security-sensitive patterns
+    "PTH",   # pathlib usage
+    "PERF",  # avoid costly patterns
+    "DTZ",   # explicit timezone handling
+    "G",     # logging format discipline
+    "LOG",   # logging best practices
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"] # Tests intentionally use assertions.
 
 [tool.ty.environment]
 python-version = "3.12"
