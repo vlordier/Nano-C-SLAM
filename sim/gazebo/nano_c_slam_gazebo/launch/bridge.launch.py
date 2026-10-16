@@ -11,7 +11,9 @@ def generate_launch_description() -> LaunchDescription:
                 executable="sensor_bridge",
                 name="nano_c_slam_sensor_bridge",
                 output="screen",
-                parameters=[{"drone_names": list(SUPPORTED_DRONE_NAMES)}],
+                parameters=[
+                    {"drone_names": list(SUPPORTED_DRONE_NAMES), "use_sim_time": True}
+                ],
             )
         ]
     )

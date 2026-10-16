@@ -4,6 +4,7 @@ import unittest
 from sim.gazebo.nano_c_slam_gazebo.sensor_model import (
     laser_scan_ranges_mm,
     pairwise_ranges_m,
+    validate_odometry_timestamps,
 )
 
 
@@ -47,6 +48,31 @@ class PairwiseRangeTests(unittest.TestCase):
             pairwise_ranges_m({"cf1": (0.0, 1.0)})
         with self.assertRaises(ValueError):
             pairwise_ranges_m({"cf1": (0.0, math.inf, 0.0)})
+
+    def test_accepts_recent_synchronized_odometry(self) -> None:
+        validate_odometry_timestamps(
+            {"cf1": 9.95, "cf3": 10.0, "cf4": 9.98}, now_s=10.0
+        )
+
+    def test_rejects_stale_skewed_or_future_odometry(self) -> None:
+        cases = (
+            ({"cf1": 9.4, "cf3": 10.0}, 10.0, "stale"),
+            ({"cf1": 9.8, "cf3": 10.0}, 10.0, "synchronized"),
+            ({"cf1": 10.0, "cf3": 10.2}, 10.0, "ahead"),
+            ({"cf1": 9.9, "cf3": math.nan}, 10.0, "finite"),
+        )
+        for stamps, now_s, reason in cases:
+            with (
+                self.subTest(stamps=stamps),
+                self.assertRaisesRegex(ValueError, reason),
+            ):
+                validate_odometry_timestamps(stamps, now_s=now_s)
+
+    def test_rejects_empty_timestamp_set_and_invalid_tolerances(self) -> None:
+        with self.assertRaisesRegex(ValueError, "no odometry"):
+            validate_odometry_timestamps({}, now_s=0.0)
+        with self.assertRaisesRegex(ValueError, "maximum odometry age"):
+            validate_odometry_timestamps({"cf1": 1.0}, now_s=1.0, max_age_s=0.0)
 
 
 if __name__ == "__main__":

@@ -60,3 +60,33 @@ def pairwise_ranges_m(
         )
         for first, second in combinations(normalized, 2)
     )
+
+
+def validate_odometry_timestamps(
+    timestamps_s: Mapping[str, float],
+    *,
+    now_s: float,
+    max_age_s: float = 0.5,
+    max_skew_s: float = 0.1,
+) -> None:
+    """Reject missing, stale, or poorly synchronized swarm odometry samples."""
+    if not timestamps_s:
+        raise ValueError("no odometry timestamps are available")
+    if not math.isfinite(now_s):
+        raise ValueError("current simulation time must be finite")
+    if not math.isfinite(max_age_s) or max_age_s <= 0:
+        raise ValueError("maximum odometry age must be finite and positive")
+    if not math.isfinite(max_skew_s) or max_skew_s <= 0:
+        raise ValueError("maximum odometry skew must be finite and positive")
+
+    stamps = tuple(float(stamp) for stamp in timestamps_s.values())
+    if not all(math.isfinite(stamp) for stamp in stamps):
+        raise ValueError("odometry timestamps must be finite")
+    oldest_stamp_s = min(stamps)
+    newest_stamp_s = max(stamps)
+    if newest_stamp_s - now_s > max_skew_s:
+        raise ValueError("odometry timestamp is ahead of simulation time")
+    if now_s - oldest_stamp_s > max_age_s:
+        raise ValueError("odometry data is stale")
+    if newest_stamp_s - oldest_stamp_s > max_skew_s:
+        raise ValueError("odometry samples are not synchronized")
