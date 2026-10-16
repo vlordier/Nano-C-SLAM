@@ -82,6 +82,10 @@ int main(void) {
     CHECK(correspondence_p[0] == 99 && correspondence_q[0] == 99);
     CHECK(!compute_correspondences_parallel(&reference_pair, &reference_pair, INFINITY,
                                             correspondence_p, correspondence_q));
+    moved_pair.items[0].x = NAN;
+    CHECK(!compute_correspondences_parallel(&moved_pair, &reference_pair, 0.04f,
+                                            correspondence_p, correspondence_q));
+    moved_pair.items[0].x = 0.1f;
 
     icp_points_t reference = {.num = 1, .items = {{0, 0}}};
     icp_points_t moved = {.num = 0};
@@ -90,6 +94,7 @@ int main(void) {
 
     icp(&reference, &moved, 1, 0.4f, result, &job);
     CHECK(job.has_nan && isinf(job.error));
+
     CHECK(result[0] == 0 && result[1] == 0 && result[2] == 0);
 
     moved.num = 1;
@@ -97,6 +102,12 @@ int main(void) {
     icp(&reference, &moved, 1, 0.4f, result, &job);
     CHECK(job.has_nan && isinf(job.error));
 
+    moved.items[0].x = NAN;
+    icp(&reference, &moved, 1, 0.4f, result, &job);
+    CHECK(job.has_nan && isinf(job.error));
+    CHECK(result[0] == 0 && result[1] == 0 && result[2] == 0);
+
+    moved.items[0].x = 0.1f;
     moved.num = 2;
     moved.items[0] = (icp_point_t){0.1f, 0};
     moved.items[1] = (icp_point_t){100, 0};

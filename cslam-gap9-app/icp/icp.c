@@ -138,6 +138,16 @@ bool compute_correspondences_parallel(const icp_points_t *P,
         Q->num > SIZE_POINTS || !isfinite(error_bound) || error_bound <= 0)
         return false;
 
+    // The cluster compares every coordinate. Reject malformed clouds before
+    // DMA so NaNs cannot silently turn into unmatched points and infinities
+    // cannot produce overflowing squared distances.
+    for (size_t i = 0; i < P->num; ++i) {
+        if (!isfinite(P->items[i].x) || !isfinite(P->items[i].y)) return false;
+    }
+    for (size_t i = 0; i < Q->num; ++i) {
+        if (!isfinite(Q->items[i].x) || !isfinite(Q->items[i].y)) return false;
+    }
+
     fabric_job job_fc = {
         .P = P,
         .Q = Q,
@@ -283,6 +293,19 @@ void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
         return;
     }
 
+    for (size_t i = 0; i < P->num; ++i) {
+        if (!isfinite(P->items[i].x) || !isfinite(P->items[i].y)) {
+            job->has_nan = 1;
+            return;
+        }
+    }
+    for (size_t i = 0; i < Q->num; ++i) {
+        if (!isfinite(Q->items[i].x) || !isfinite(Q->items[i].y)) {
+            job->has_nan = 1;
+            return;
+        }
+    }
+
     // Allocate additional memory
     icp_points_t *P_copy = (icp_points_t *)&cloud0;
     memcpy(P_copy, P, sizeof(icp_points_t));
@@ -334,6 +357,13 @@ void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
         t.x = center_of_Q.x - t.x;
         t.y = center_of_Q.y - t.y;
 
+        if (!isfinite(t.x) || !isfinite(t.y) || !isfinite(r[0]) ||
+            !isfinite(r[1]) || !isfinite(r[2]) || !isfinite(r[3])) {
+            job->has_nan = 1;
+            job->error = INFINITY;
+            return;
+        }
+
         // Chain transformations using homogenous coordinates
         float transform[9] = {
             r[0], r[1], t.x, r[2], r[3], t.y, 0, 0, 1,
@@ -348,6 +378,11 @@ void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
             icp_point_t p = matpointmul(r, P_copy->items[i]);
             p.x += t.x;
             p.y += t.y;
+            if (!isfinite(p.x) || !isfinite(p.y)) {
+                job->has_nan = 1;
+                job->error = INFINITY;
+                return;
+            }
             P_copy->items[i] = p;
         }
 
@@ -360,6 +395,11 @@ void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
             icp_error += points_dist_squared(P_copy->items[i], Q->items[j]);
         }
         job->error = icp_error / (float)matched;
+        if (!isfinite(job->error)) {
+            job->has_nan = 1;
+            job->error = INFINITY;
+            return;
+        }
     }
 
     // Write transform result
