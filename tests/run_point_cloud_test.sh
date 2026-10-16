@@ -38,3 +38,12 @@ cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
     tests/gap9_spi_decode_test.c cslam-gap9-app/spi/spi_cmds_decode.c \
     -lm -o /tmp/gap9_spi_decode_test
 /tmp/gap9_spi_decode_test
+
+cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
+    -ffunction-sections -fdata-sections \
+    -Itests/stubs -Icslam-gap9-app/slam -Icslam-gap9-app/slam/rcm \
+    tests/pose_graph_validation_test.c \
+    cslam-gap9-app/slam/graph-based-slam.c \
+    cslam-gap9-app/slam/utils_math.c \
+    "$linker_gc" -lm -o /tmp/pose_graph_validation_test
+/tmp/pose_graph_validation_test

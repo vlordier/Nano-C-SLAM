@@ -24,7 +24,6 @@
 #define TOF_FREQ_HZ (10)
 #define MAX_FLIGH_TIME_S (300)
 
-#define MAX_CONSTRAINTS (50)
 #define MAX_SUBGRAPH_POSES                                                     \
     ((int)(sizeof(x_subgraph) / sizeof(x_subgraph[0]) / 3))
 

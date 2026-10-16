@@ -32,6 +32,27 @@ PI_L2 int16_t array3[MAX_SIZE];
 
 PI_L2 measurement measurements[MAX_POSES - 1];
 
+static int valid_pose_graph(const float *x, const constraint *constraints,
+                            int16_t nr_of_poses, int16_t nr_of_constr) {
+    if (x == NULL || nr_of_poses <= 0 || nr_of_poses > MAX_POSES ||
+        nr_of_constr < 0 || nr_of_constr > MAX_CONSTRAINTS ||
+        (nr_of_constr > 0 && constraints == NULL))
+        return 0;
+
+    for (int32_t i = 0; i < 3 * (int32_t)nr_of_poses; ++i) {
+        if (!isfinite(x[i])) return 0;
+    }
+    for (int16_t i = 0; i < nr_of_constr; ++i) {
+        const constraint *edge = &constraints[i];
+        if (edge->fromIdx < 0 || edge->fromIdx >= nr_of_poses ||
+            edge->toIdx < 0 || edge->toIdx >= nr_of_poses ||
+            !isfinite(edge->z[0]) || !isfinite(edge->z[1]) ||
+            !isfinite(edge->z[2]))
+            return 0;
+    }
+    return 1;
+}
+
 static void v2t(float pose[3], float T[3][3]) {
     float c = cosf(pose[2]);
     float s = sinf(pose[2]);
@@ -116,10 +137,20 @@ void linearize_pose_pose_constraint(float *x1, float *x2, float *z,
 void build_H_and_b(float *x, csr *H, float *b, measurement *measurements,
                    constraint *constraints, int16_t nr_of_poses,
                    int16_t nr_of_constr) {
+    if (H == NULL || b == NULL || measurements == NULL ||
+        !valid_pose_graph(x, constraints, nr_of_poses, nr_of_constr))
+        return;
+
     float z[3];
     float A[3][3], B[3][3], e[3];
 
-    int16_t dim = 3 * nr_of_poses;
+    for (int16_t i = 0; i < nr_of_poses - 1; ++i) {
+        if (!isfinite(measurements[i].z[0]) ||
+            !isfinite(measurements[i].z[1]) || !isfinite(measurements[i].z[2]))
+            return;
+    }
+
+    int16_t dim = (int16_t)(3 * nr_of_poses);
 
     insert_element(H, dim, 0, 0, 1000);
     insert_element(H, dim, 1, 1, 1000);
@@ -252,7 +283,6 @@ void solve_for_x(csr *H, float *b, int16_t *perm, int16_t size) {
     }
 
     // Cholesky Decomposition
-    int32_t t0 = pi_time_get_us();
     cholesky_sparse_parallel(H, size, perm);
     // cholesky_sparse_fc_only(H, size, perm);
 
@@ -291,6 +321,13 @@ void measurement_from_poses(float *x_from, float *x_to, float *z) {
 
 void measurements_from_poses(float *x, measurement *measurements,
                              int nr_of_poses) {
+    if (x == NULL || measurements == NULL || nr_of_poses < 2 ||
+        nr_of_poses > MAX_POSES)
+        return;
+    for (int32_t i = 0; i < 3 * nr_of_poses; ++i) {
+        if (!isfinite(x[i])) return;
+    }
+
     float z[3];
     for (int16_t i = 1; i < nr_of_poses; i++) {
         float xi[3] = {x[3 * i - 3], x[3 * i - 2], x[3 * i - 1]};
@@ -336,6 +373,8 @@ int16_t bandwidth_test(csr *mat, int N, int16_t *perm) {
 
 void ls_slam(float *x, constraint *constraints, int16_t nr_of_poses,
              int16_t nr_of_constr) {
+    if (!valid_pose_graph(x, constraints, nr_of_poses, nr_of_constr)) return;
+
     csr *H = &sp_mat0;
     memset(array0, 0, MAX_SIZE * sizeof(float));
     memset(array1, 0, MAX_SIZE * sizeof(float));
