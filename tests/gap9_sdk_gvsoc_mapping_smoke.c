@@ -10,6 +10,12 @@
 struct pi_cluster_conf cl_conf;
 uint8_t verbose = 0;
 
+#ifdef NANO_C_SLAM_TARGET_GVSOC
+#define EXECUTION_CLASS "GVSOC"
+#else
+#define EXECUTION_CLASS "HOST"
+#endif
+
 static int run_mapping_fixture(void) {
     slam_job_t job = {0};
     const int16_t ranges_mm[4] = {1000, 1200, 900, 1100};
@@ -36,7 +42,8 @@ static int run_mapping_fixture(void) {
             pose.tof[direction][3] = ranges_mm[direction];
         }
         if (!pcl_add_augmented_pose(pose)) {
-            printf("NANO_C_SLAM_GVSOC:mapping_fail rejected_pose=%d\n", id);
+            printf("NANO_C_SLAM_%s:mapping_fail rejected_pose=%d\n",
+                   EXECUTION_CLASS, id);
             return -1;
         }
 
@@ -82,19 +89,19 @@ static int run_mapping_fixture(void) {
                        icp_constraint_count >= 2 && job.number_of_poses == 60 &&
                        job.main_graph_size == 3 && job.has_nan == 0;
     if (!passed) {
-        printf("NANO_C_SLAM_GVSOC:mapping_fail poses=%d scans=%u points=%zu "
+        printf("NANO_C_SLAM_%s:mapping_fail poses=%d scans=%u points=%zu "
                "icp_constraints=%d matches=%d icp_error_milli=%d "
                "icp_has_nan=%d "
                "optimized=%d graph=%d has_nan=%d\n",
-               pose_count, scan_count, map.num, icp_constraint_count,
+               EXECUTION_CLASS, pose_count, scan_count, map.num, icp_constraint_count,
                last_correspondence_count, (int)last_icp_error_milli, last_icp_has_nan,
                job.number_of_poses, job.main_graph_size, job.has_nan);
         return -1;
     }
 
-    printf("NANO_C_SLAM_GVSOC:mapping_ok poses=%d scans=%u map_points=%zu "
+    printf("NANO_C_SLAM_%s:mapping_ok poses=%d scans=%u map_points=%zu "
            "optimized=%d graph=%d has_nan=%d\n",
-           pose_count, scan_count, map.num, job.number_of_poses, job.main_graph_size,
+           EXECUTION_CLASS, pose_count, scan_count, map.num, job.number_of_poses, job.main_graph_size,
            job.has_nan);
     return 0;
 }

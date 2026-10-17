@@ -455,10 +455,11 @@ class NativeMappingReplayTests(unittest.TestCase):
         )
 
         self.assertIn(
-            "NANO_C_SLAM_GVSOC:mapping_ok poses=60 scans=3 map_points=240 "
+            "NANO_C_SLAM_HOST:mapping_ok poses=60 scans=3 map_points=240 "
             "optimized=60 graph=3 has_nan=0",
             result.stdout,
         )
+        self.assertNotIn("NANO_C_SLAM_GVSOC:", result.stdout)
 
     def test_rejects_malformed_replay_input(self) -> None:
         result = subprocess.run(  # noqa: S603 -- built fixture executable
