@@ -89,6 +89,7 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
         exit_code: int = 1,
         *,
         mutate_log_during_capture: bool = False,
+        mutate_source_during_capture: Path | None = None,
         sdk_metadata_override: dict[str, str | bool] | None = None,
     ) -> tuple[int, str]:
         args = [
@@ -110,10 +111,17 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
         ]
         stdout = io.StringIO()
         stderr = io.StringIO()
+        sdk_calls = 0
 
         def read_sdk_metadata(_: Path) -> dict[str, str | bool]:
+            nonlocal sdk_calls
+            sdk_calls += 1
             if mutate_log_during_capture:
                 self.log.write_text("modified after target exit\n", encoding="utf-8")
+            if mutate_source_during_capture is not None and sdk_calls == 1:
+                mutate_source_during_capture.write_bytes(
+                    b"owned source changed during capture"
+                )
             return sdk_metadata_override or {
                 "revision": "a" * 40,
                 "release": "5.20.4",
@@ -205,6 +213,58 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
         self.commands.write_text("[]", encoding="utf-8")
         result, _ = self.run_capture()
         self.assertNotEqual(result, 0)
+        self.assertFalse(self.output.exists())
+
+    def test_target_elf_must_match_the_build_record(self) -> None:
+        self.elf.write_bytes(b"stale ELF from another build")
+        result, diagnostic = self.run_capture()
+        self.assertNotEqual(result, 0)
+        self.assertIn("target ELF does not match", diagnostic)
+        self.assertFalse(self.output.exists())
+
+    def test_runtime_sdk_release_and_dirty_state_must_match_build_record(self) -> None:
+        recorded_sdk = {
+            "revision": "a" * 40,
+            "release": "5.20.4",
+            "worktree_dirty": True,
+        }
+        for key, value in (("release", "5.20.3"), ("worktree_dirty", False)):
+            with self.subTest(key=key):
+                self.output.unlink(missing_ok=True)
+                metadata = dict(recorded_sdk)
+                metadata[key] = value
+                result, diagnostic = self.run_capture(sdk_metadata_override=metadata)
+                self.assertNotEqual(result, 0)
+                self.assertIn("GAP SDK differs", diagnostic)
+                self.assertFalse(self.output.exists())
+
+    def test_owned_source_changed_during_capture_is_rejected(self) -> None:
+        source_root = self.root / "checkout"
+        fixture = source_root / "tests/gap9_sdk_gvsoc_mapping_smoke.c"
+        owned_source = source_root / "cslam-gap9-app/icp/icp.c"
+        fixture.parent.mkdir(parents=True)
+        owned_source.parent.mkdir(parents=True)
+        fixture.write_bytes(b"fixture source")
+        owned_source.write_bytes(b"owned source before capture")
+        sdk_state = {
+            "revision": "a" * 40,
+            "release": "5.20.4",
+            "worktree_dirty": True,
+        }
+        with (
+            patch.object(capture, "REPOSITORY_ROOT", source_root),
+            patch.object(
+                capture,
+                "mapping_source_paths",
+                return_value=[fixture, owned_source],
+            ),
+        ):
+            result, diagnostic = self.run_capture(
+                mutate_source_during_capture=owned_source,
+                sdk_metadata_override=sdk_state,
+            )
+        self.assertNotEqual(result, 0)
+        self.assertIn("mapping source changed during capture", diagnostic)
         self.assertFalse(self.output.exists())
 
     def test_runtime_sdk_must_match_the_build_time_sdk_record(self) -> None:
