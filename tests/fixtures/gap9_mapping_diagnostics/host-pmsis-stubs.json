@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "status": "passed",
   "evidence_class": "host-pmsis-stubs",
   "claim_boundary": "Synthetic mapping fixture through host PMSIS stubs only; no target or hardware validation.",
@@ -14,12 +14,22 @@
   "build": {
     "toolchain_id": "example-host-compiler",
     "compiler_flags": "-O1 -fsanitize=address,undefined",
-    "binary_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+    "binary_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "source_sha256": {
+      "cslam-gap9-app/icp/icp.c": "3333333333333333333333333333333333333333333333333333333333333333",
+      "cslam-gap9-app/point-cloud/point_cloud.c": "4444444444444444444444444444444444444444444444444444444444444444",
+      "cslam-gap9-app/slam/graph-based-slam.c": "5555555555555555555555555555555555555555555555555555555555555555",
+      "tests/gap9_sdk_gvsoc_mapping_smoke.c": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "sdk_metadata": null,
+    "compiler_commands_sha256": null
   },
   "execution": {
     "exit_code": 0,
     "marker_seen": true,
-    "terminated": true
+    "terminated": true,
+    "log_sha256": null,
+    "log_bytes": null
   },
   "mapping": {
     "poses": 60,

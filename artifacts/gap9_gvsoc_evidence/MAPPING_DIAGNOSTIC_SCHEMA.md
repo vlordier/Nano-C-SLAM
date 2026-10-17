@@ -1,13 +1,18 @@
 # Shared mapping diagnostic schema
 
-`mapping_diagnostic.schema.json` defines version 1. Python producers and
+`mapping_diagnostic.schema.json` defines version 2. Python producers and
 consumers should additionally call `scripts.gap9_mapping_diagnostic`
 validation because the JSON Schema documents field types while the validator
 enforces cross-field invariants.
 
 The artifact binds a run to the SHA-256 of
-`tests/gap9_sdk_gvsoc_mapping_smoke.c`, its built binary hash, compiler/toolchain
-identity and flags. Fixture counts describe poses, extracted scans and final
+`tests/gap9_sdk_gvsoc_mapping_smoke.c`, the repository-owned C/header and build
+inputs in `build.source_sha256`, its built binary hash, compiler/toolchain
+identity and flags. GVSOC evidence also binds the SDK commit, release and dirty
+state, the exact compile database hash, and the raw target log SHA-256 and byte count.
+The build-time record binds its ELF and compile database hashes before GVSOC runs.
+Host PMSIS evidence
+must leave SDK and target-log fields null. Fixture counts describe poses, extracted scans and final
 map points. `evidence_class` must be `host-pmsis-stubs` or
 `gvsoc-target-execution`; these classes are never interchangeable. Neither
 class is hardware measurement.
@@ -24,6 +29,9 @@ fixture. `has_nan` and `icp_has_nan` are explicit non-finite indicators.
 not mean zero or success. A `passed` artifact must have all mapping-stage
 fields observed and consistent, a successful process exit, a seen marker, and
 no non-finite values. A failure artifact may contain nulls, but may not promote
-them to successful measurements. Unknown fields require a schema version
-change. Example documents in `tests/fixtures/gap9_mapping_diagnostics/` are
+them to successful measurements. `reproduced-limitation` is reserved for the
+exact current GVSOC ICP failure signature: 80 final-pair matches, the int32
+error sentinel, ICP NaN, zero accepted constraints, and no optimizer graph.
+Unknown fields require a schema version change. Example documents in
+`tests/fixtures/gap9_mapping_diagnostics/` are
 synthetic schema fixtures, not execution evidence.

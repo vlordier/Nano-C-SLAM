@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "status": "reproduced-limitation",
   "evidence_class": "gvsoc-target-execution",
   "claim_boundary": "GAP9 target executed under GVSOC; ICP produced no accepted constraints. Not hardware or flight validation.",
@@ -14,12 +14,26 @@
   "build": {
     "toolchain_id": "example-gap-riscv-toolchain",
     "compiler_flags": "-O2 -DNANO_C_SLAM_TARGET_GVSOC",
-    "binary_sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+    "binary_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "source_sha256": {
+      "cslam-gap9-app/icp/icp.c": "3333333333333333333333333333333333333333333333333333333333333333",
+      "cslam-gap9-app/point-cloud/point_cloud.c": "4444444444444444444444444444444444444444444444444444444444444444",
+      "cslam-gap9-app/slam/graph-based-slam.c": "5555555555555555555555555555555555555555555555555555555555555555",
+      "tests/gap9_sdk_gvsoc_mapping_smoke.c": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "sdk_metadata": {
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "release": "5.20.4",
+      "worktree_dirty": false
+    },
+    "compiler_commands_sha256": "7777777777777777777777777777777777777777777777777777777777777777"
   },
   "execution": {
     "exit_code": 1,
     "marker_seen": true,
-    "terminated": true
+    "terminated": true,
+    "log_sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+    "log_bytes": 9876
   },
   "mapping": {
     "poses": 60,

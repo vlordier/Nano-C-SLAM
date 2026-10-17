@@ -13,7 +13,10 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from scripts.gap9_mapping_diagnostic import validate_mapping_diagnostic
+from scripts.gap9_mapping_diagnostic import (
+    mapping_source_paths,
+    validate_mapping_diagnostic,
+)
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = REPOSITORY_ROOT / "tests/gap9_sdk_gvsoc_mapping_smoke.c"
@@ -171,6 +174,12 @@ def main() -> int:
     if output.exists():
         parser.error(f"output already exists: {output}")
     fixture_hash_before = _sha256(FIXTURE)
+    source_hashes = {
+        path.relative_to(REPOSITORY_ROOT).as_posix(): _sha256(path)
+        for path in mapping_source_paths(REPOSITORY_ROOT)
+    }
+    if source_hashes["tests/gap9_sdk_gvsoc_mapping_smoke.c"] != fixture_hash_before:
+        parser.error("fixture hash disagrees with source provenance")
     binary_hash_before = _sha256(binary)
     try:
         result = subprocess.run(  # noqa: S603 -- explicit repository-built smoke ELF
@@ -192,7 +201,7 @@ def main() -> int:
         return 1
 
     artifact: dict[str, Any] = {
-        "schema_version": 1,
+        "schema_version": 2,
         "status": status,
         "evidence_class": "host-pmsis-stubs",
         "claim_boundary": (
@@ -211,11 +220,16 @@ def main() -> int:
             "toolchain_id": args.toolchain_id,
             "compiler_flags": args.compiler_flags,
             "binary_sha256": binary_hash_before,
+            "source_sha256": source_hashes,
+            "sdk_metadata": None,
+            "compiler_commands_sha256": None,
         },
         "execution": {
             "exit_code": result.returncode,
             "marker_seen": True,
             "terminated": True,
+            "log_sha256": None,
+            "log_bytes": None,
         },
         "mapping": mapping,
     }

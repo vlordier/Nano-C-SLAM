@@ -7,10 +7,19 @@ TOOLCHAIN_ROOT="${GAP9_TOOLCHAIN_ROOT:-$HOME/Work/da3_gap9/deploy/gap_riscv_tool
 STIMULUS_ROOT="${GAP9_STIMULUS_ROOT:-$HOME/Work/da3_gap9}"
 WORK_ROOT="${GAP9_GVSOC_WORK_ROOT:-${TMPDIR:-/tmp}/nano-c-slam-gvsoc}"
 DEFAULT_ELF="$ROOT/cslam-gap9-app/BUILD-gvsoc/nano_c_slam_gvsoc_smoke"
+MAPPING_CAPTURE="${GAP9_GVSOC_MAPPING_CAPTURE:-0}"
+if [[ "$MAPPING_CAPTURE" == "1" ]]; then
+    DEFAULT_ELF="$ROOT/cslam-gap9-app/BUILD-gvsoc-mapping/nano_c_slam_gvsoc_mapping_smoke"
+    DEFAULT_MARKER="NANO_C_SLAM_GVSOC:mapping_fail"
+else
+    DEFAULT_MARKER="NANO_C_SLAM_GVSOC:icp_svd_ok sigma0_milli=3000 sigma1_milli=2000"
+fi
 ELF="${GAP9_GVSOC_ELF:-$DEFAULT_ELF}"
-EXPECTED_MARKER="${GAP9_GVSOC_EXPECTED_MARKER:-NANO_C_SLAM_GVSOC:icp_svd_ok sigma0_milli=3000 sigma1_milli=2000}"
+EXPECTED_MARKER="${GAP9_GVSOC_EXPECTED_MARKER:-$DEFAULT_MARKER}"
 LAYOUT="$WORK_ROOT/nano_c_slam_gvsoc_layout.json"
 GVSOC_LOG="$WORK_ROOT/gvsoc.log"
+MAPPING_OUTPUT="${GAP9_GVSOC_MAPPING_OUTPUT:-$ROOT/artifacts/gap9_gvsoc_evidence/mapping_diagnostic.json}"
+RUN_TIMEOUT_S="${GAP9_GVSOC_TIMEOUT_S:-600}"
 
 if [[ "$(uname -s)" != Darwin ]]; then
     echo "This workflow runs with the local macOS GVSOC runtime." >&2
@@ -25,7 +34,7 @@ for required in \
     [[ -e "$required" ]] || { echo "missing GAP9 GVSOC prerequisite: $required" >&2; exit 2; }
 done
 
-if [[ ! -s "$ELF" ]]; then
+if [[ "$MAPPING_CAPTURE" == "1" || ! -s "$ELF" ]]; then
     bash "$ROOT/scripts/build_gap9_firmware.sh"
 fi
 
@@ -60,10 +69,14 @@ else
 fi
 export PATH="$WORK_ROOT/launcher-bin:$PATH"
 
-cd "$WORK_ROOT"
+cd "$ROOT"
 uv run --project "$ROOT" --python 3.12 \
     python "$ROOT/scripts/create_gap9_gvsoc_layout.py" "$ELF" "$LAYOUT"
-uv run --no-project --python 3.12 \
+set +e
+uv run --project "$ROOT" --python 3.12 \
+    python -m scripts.run_gap9_gvsoc_target \
+    --log "$GVSOC_LOG" --cwd "$WORK_ROOT" --timeout-s "$RUN_TIMEOUT_S" -- \
+    uv run --no-project --python 3.12 \
     --with pycryptodome --with kconfiglib --with pyelftools \
     --with prettytable --with pexpect --with lz4 --with rich \
     --with psutil --with xxhash --with fdt --with six \
@@ -77,7 +90,29 @@ uv run --no-project --python 3.12 \
     --target-property boot.mode=flash \
     --target-property boot.mode_on_pads=mram \
     --flash-content "$LAYOUT@mram" \
-    --work-dir "$WORK_ROOT" image flash run 2>&1 | tee "$GVSOC_LOG"
+    --work-dir "$WORK_ROOT" image flash run
+GVSOC_EXIT_CODE=$?
+set -e
+
+if [[ "$MAPPING_CAPTURE" == "1" ]]; then
+    if [[ "$GVSOC_EXIT_CODE" == "124" ]]; then
+        echo "GVSOC timed out; raw log retained at $GVSOC_LOG, no mapping artifact published." >&2
+        exit 124
+    fi
+    uv run --project "$ROOT" --python 3.12 \
+        python -m scripts.capture_gap9_gvsoc_mapping_diagnostic \
+        --elf "$ELF" --log "$GVSOC_LOG" \
+        --compile-commands "$ROOT/cslam-gap9-app/BUILD-gvsoc-mapping/compile_commands.json" \
+        --build-provenance "$ROOT/cslam-gap9-app/BUILD-gvsoc-mapping/build-provenance.json" \
+        --sdk-root "$SDK_ROOT" --output "$MAPPING_OUTPUT" \
+        --gvsoc-exit-code "$GVSOC_EXIT_CODE"
+    exit $?
+fi
+
+if [[ "$GVSOC_EXIT_CODE" != "0" ]]; then
+    echo "GVSOC command failed with status $GVSOC_EXIT_CODE; log retained at $GVSOC_LOG" >&2
+    exit "$GVSOC_EXIT_CODE"
+fi
 
 grep -Fq "$EXPECTED_MARKER" "$GVSOC_LOG"
 if [[ "$ELF" == "$DEFAULT_ELF" ]]; then

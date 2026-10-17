@@ -70,7 +70,7 @@ jobs:
             cslam-stm32-app/src/uwb_collision_det.c \
             cslam-stm32-app/src/uwb_ranging.c tests/*.c
       - name: Check owned shell scripts
-        run: shellcheck -s bash -x tests/run_point_cloud_test.sh cslam-stm32-app/deploy.sh scripts/run_gap9_gvsoc_smoke.sh scripts/capture_gap9_host_mapping_diagnostic.sh
+        run: shellcheck -s bash -x tests/run_point_cloud_test.sh cslam-stm32-app/deploy.sh scripts/run_gap9_gvsoc_smoke.sh scripts/build_gap9_firmware.sh scripts/capture_gap9_host_mapping_diagnostic.sh
 
   stm32:
     runs-on: ubuntu-24.04

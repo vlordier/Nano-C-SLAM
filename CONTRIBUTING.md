@@ -24,6 +24,8 @@ Build the full GAP9 application with `bash scripts/build_gap9_firmware.sh` when 
 
 Build and capture the deterministic mapping smoke through host PMSIS stubs with `bash scripts/capture_gap9_host_mapping_diagnostic.sh`. The command writes a schema-validated host-only artifact to `artifacts/gap9_gvsoc_evidence/host_mapping_diagnostic.json` by default; pass another path as its first argument to preserve multiple runs. This is a host regression baseline, not GVSOC target, sensor, SPI, flight, or hardware validation.
 
+To build and run the same fixture on the GAP9 GVSOC target, use `GAP9_GVSOC_MAPPING_CAPTURE=1 bash scripts/run_gap9_gvsoc_smoke.sh`. The runner rebuilds the instrumented target, applies a 600-second timeout by default (`GAP9_GVSOC_TIMEOUT_S`), keeps the raw log, and writes a shared-schema v2 report to `artifacts/gap9_gvsoc_evidence/mapping_diagnostic.json`. Set `GAP9_GVSOC_MAPPING_OUTPUT` to choose another report path. A reproduced ICP failure is retained as `reproduced-limitation`; it does not mean mapping passed.
+
 To run the workflow locally with `act` and a Docker-compatible engine:
 
 ```sh

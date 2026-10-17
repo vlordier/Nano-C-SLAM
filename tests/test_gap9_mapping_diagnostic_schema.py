@@ -35,7 +35,7 @@ class MappingDiagnosticSchemaTests(unittest.TestCase):
     def test_rejects_version_unknown_missing_and_duplicate_object_fields(self) -> None:
         valid = self.load_fixture("host-pmsis-stubs.json")
         for mutate in (
-            lambda item: item.update(schema_version=2),
+            lambda item: item.update(schema_version=3),
             lambda item: item.update(unrecognized=True),
             lambda item: item.pop("claim_boundary"),
         ):
@@ -45,7 +45,7 @@ class MappingDiagnosticSchemaTests(unittest.TestCase):
                 validate_mapping_diagnostic(invalid)
 
         duplicate_key_json = json.dumps(valid).replace(
-            '"schema_version": 1', '"schema_version": 1, "schema_version": 1'
+            '"schema_version": 2', '"schema_version": 2, "schema_version": 2'
         )
         with self.assertRaises(ValueError):
             decoded = json.loads(
@@ -58,6 +58,7 @@ class MappingDiagnosticSchemaTests(unittest.TestCase):
         mutations = (
             ("fixture", "source_sha256", "not-a-digest"),
             ("fixture", "scan_count", True),
+            ("fixture", "point_count", 239),
             ("build", "binary_sha256", "A" * 64),
             ("execution", "exit_code", 256),
             ("mapping", "poses", 59),
@@ -82,6 +83,52 @@ class MappingDiagnosticSchemaTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "hardware measurement"):
             validate_mapping_diagnostic(claims_hardware)
 
+    def test_provenance_is_path_safe_complete_and_class_specific(self) -> None:
+        mutations = (
+            lambda item: item["build"]["source_sha256"].update(
+                {"../outside.c": "a" * 64}
+            ),
+            lambda item: item["build"]["source_sha256"].update(
+                {"cslam-gap9-app/icp/icp.c": "bad"}
+            ),
+            lambda item: item["build"]["source_sha256"].pop("cslam-gap9-app/icp/icp.c"),
+            lambda item: item["fixture"].update(source_sha256="f" * 64),
+            lambda item: item["execution"].update(log_sha256="not-a-hash"),
+            lambda item: item["execution"].update(log_bytes=0),
+        )
+        for mutate in mutations:
+            artifact = self.load_fixture("gvsoc-target-execution.json")
+            mutate(artifact)
+            with self.subTest(artifact=artifact), self.assertRaises(ValueError):
+                validate_mapping_diagnostic(artifact)
+
+        missing_sdk = self.load_fixture("gvsoc-target-execution.json")
+        missing_sdk_build = missing_sdk["build"]
+        assert isinstance(missing_sdk_build, dict)
+        missing_sdk_build["sdk_metadata"] = None
+        with self.assertRaisesRegex(ValueError, "fields do not match"):
+            validate_mapping_diagnostic(missing_sdk)
+
+        invalid_revision = self.load_fixture("gvsoc-target-execution.json")
+        invalid_revision_build = invalid_revision["build"]
+        assert isinstance(invalid_revision_build, dict)
+        sdk_metadata = invalid_revision_build["sdk_metadata"]
+        assert isinstance(sdk_metadata, dict)
+        sdk_metadata["revision"] = "dirty"
+        with self.assertRaisesRegex(ValueError, "Git commit hash"):
+            validate_mapping_diagnostic(invalid_revision)
+
+        host_claims_sdk = self.load_fixture("host-pmsis-stubs.json")
+        host_claims_sdk_build = host_claims_sdk["build"]
+        assert isinstance(host_claims_sdk_build, dict)
+        host_claims_sdk_build["sdk_metadata"] = {
+            "revision": "a" * 40,
+            "release": "5.20.4",
+            "worktree_dirty": False,
+        }
+        with self.assertRaisesRegex(ValueError, "cannot claim SDK"):
+            validate_mapping_diagnostic(host_claims_sdk)
+
     def test_rejects_impossible_counts_and_null_stages_claimed_as_pass(self) -> None:
         too_many_constraints = self.load_fixture("host-pmsis-stubs.json")
         mapping = too_many_constraints["mapping"]
@@ -99,12 +146,32 @@ class MappingDiagnosticSchemaTests(unittest.TestCase):
 
     def test_failure_artifact_may_preserve_unobserved_stage_as_null(self) -> None:
         artifact = self.load_fixture("gvsoc-target-execution.json")
+        artifact["status"] = "failed"
         mapping = artifact["mapping"]
         assert isinstance(mapping, dict)
         mapping["completed_solver_iterations"] = None
-        self.assertEqual(
-            validate_mapping_diagnostic(artifact)["status"], "reproduced-limitation"
-        )
+        self.assertEqual(validate_mapping_diagnostic(artifact)["status"], "failed")
+
+    def test_reproduced_limitation_requires_the_observed_target_failure(self) -> None:
+        for section, field, value in (
+            ("execution", "exit_code", 0),
+            ("execution", "marker_seen", False),
+            ("mapping", "correspondences_last_pair", 0),
+            ("mapping", "icp_has_nan", False),
+            ("mapping", "accepted_constraints", 1),
+            ("mapping", "graph_nodes", 1),
+        ):
+            artifact = self.load_fixture("gvsoc-target-execution.json")
+            nested = artifact[section]
+            assert isinstance(nested, dict)
+            nested[field] = value
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                validate_mapping_diagnostic(artifact)
+
+        host_claims_target_failure = self.load_fixture("host-pmsis-stubs.json")
+        host_claims_target_failure["status"] = "reproduced-limitation"
+        with self.assertRaisesRegex(ValueError, "only target execution"):
+            validate_mapping_diagnostic(host_claims_target_failure)
 
     def test_pass_requires_finite_icp_and_completed_optimizer_evidence(self) -> None:
         mutations = (
@@ -114,7 +181,11 @@ class MappingDiagnosticSchemaTests(unittest.TestCase):
             ("main_solver_returned", False),
             ("successful_solver_calls", 0),
             ("icp_attempts", 0),
+            ("accepted_constraints", 0),
             ("graph_nodes", 0),
+            ("optimizer_input_constraints", 0),
+            ("optimizer_unique_edges", 0),
+            ("completed_solver_iterations", 8),
         )
         for field, value in mutations:
             artifact = self.load_fixture("host-pmsis-stubs.json")

@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://nano-c-slam.invalid/schemas/gap9-mapping-diagnostic-v1.json",
+  "$id": "https://nano-c-slam.invalid/schemas/gap9-mapping-diagnostic-v2.json",
   "title": "Nano-C-SLAM shared host/GVSOC mapping diagnostic",
-  "description": "Synthetic fixture evidence only. Host PMSIS stubs and GVSOC target execution are distinct evidence classes; neither is hardware or flight validation.",
+  "description": "Synthetic fixture evidence only. Host PMSIS stubs and GVSOC target execution are distinct evidence classes; neither is hardware or flight validation. Version 2 binds owned source files and retained target logs.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "status", "evidence_class", "claim_boundary", "hardware_measurement", "fixture", "build", "execution", "mapping"],
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {"const": 2},
     "status": {"enum": ["passed", "failed", "reproduced-limitation"]},
     "evidence_class": {"enum": ["host-pmsis-stubs", "gvsoc-target-execution"]},
     "claim_boundary": {"type": "string", "minLength": 1},
@@ -16,29 +16,50 @@
       "type": "object", "additionalProperties": false,
       "required": ["name", "source_sha256", "pose_count", "scan_count", "point_count"],
       "properties": {
-        "name": {"type": "string", "minLength": 1},
+        "name": {"const": "gap9_sdk_gvsoc_mapping_smoke"},
         "source_sha256": {"$ref": "#/$defs/sha256"},
-        "pose_count": {"type": "integer", "minimum": 1},
-        "scan_count": {"type": "integer", "minimum": 1},
-        "point_count": {"type": "integer", "minimum": 1}
+        "pose_count": {"const": 60},
+        "scan_count": {"const": 3},
+        "point_count": {"const": 240}
       }
     },
     "build": {
       "type": "object", "additionalProperties": false,
-      "required": ["toolchain_id", "compiler_flags", "binary_sha256"],
+      "required": ["toolchain_id", "compiler_flags", "binary_sha256", "source_sha256", "sdk_metadata", "compiler_commands_sha256"],
       "properties": {
         "toolchain_id": {"type": "string", "minLength": 1},
         "compiler_flags": {"type": "string", "minLength": 1},
-        "binary_sha256": {"$ref": "#/$defs/sha256"}
+        "binary_sha256": {"$ref": "#/$defs/sha256"},
+        "source_sha256": {
+          "type": "object", "minProperties": 1,
+          "additionalProperties": {"$ref": "#/$defs/sha256"}
+        },
+        "compiler_commands_sha256": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "sdk_metadata": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object", "additionalProperties": false,
+              "required": ["revision", "release", "worktree_dirty"],
+              "properties": {
+                "revision": {"type": "string", "minLength": 1},
+                "release": {"type": "string", "minLength": 1},
+                "worktree_dirty": {"type": "boolean"}
+              }
+            }
+          ]
+        }
       }
     },
     "execution": {
       "type": "object", "additionalProperties": false,
-      "required": ["exit_code", "marker_seen", "terminated"],
+      "required": ["exit_code", "marker_seen", "terminated", "log_sha256", "log_bytes"],
       "properties": {
         "exit_code": {"type": "integer", "minimum": -255, "maximum": 255},
         "marker_seen": {"type": "boolean"},
-        "terminated": {"const": true}
+        "terminated": {"const": true},
+        "log_sha256": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "log_bytes": {"oneOf": [{"type": "integer", "minimum": 1}, {"type": "null"}]}
       }
     },
     "mapping": {
@@ -65,6 +86,23 @@
       }
     }
   },
+  "allOf": [
+    {
+      "if": {"properties": {"evidence_class": {"const": "host-pmsis-stubs"}}},
+      "then": {
+        "properties": {
+          "build": {"properties": {"sdk_metadata": {"type": "null"}, "compiler_commands_sha256": {"type": "null"}}},
+          "execution": {"properties": {"log_sha256": {"type": "null"}, "log_bytes": {"type": "null"}}}
+        }
+      },
+      "else": {
+        "properties": {
+          "build": {"properties": {"sdk_metadata": {"type": "object"}, "compiler_commands_sha256": {"$ref": "#/$defs/sha256"}}},
+          "execution": {"properties": {"log_sha256": {"$ref": "#/$defs/sha256"}, "log_bytes": {"type": "integer", "minimum": 1}}}
+        }
+      }
+    }
+  ],
   "$defs": {
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
   }

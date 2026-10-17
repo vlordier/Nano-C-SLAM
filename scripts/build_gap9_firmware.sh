@@ -78,6 +78,7 @@ uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
     cmake -S /project/cslam-gap9-app -B "$BUILD_ROOT/BUILD-gvsoc-mapping" \
     -DCMAKE_BUILD_TYPE=Release -DNANO_C_SLAM_GVSOC_MAPPING_SMOKE=ON \
     -DNANO_C_SLAM_ICP_DIAGNOSTICS=ON \
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
     -DKCONFIG_CONFIG=/project/tests/gap9_gvsoc_sdk.config
 uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
     cmake --build "$BUILD_ROOT/BUILD-gvsoc-mapping" \
@@ -88,6 +89,18 @@ riscv32-unknown-elf-size \
 mkdir -p /project/cslam-gap9-app/BUILD-gvsoc-mapping
 cp "$BUILD_ROOT/BUILD-gvsoc-mapping/nano_c_slam_gvsoc_mapping_smoke" \
     /project/cslam-gap9-app/BUILD-gvsoc-mapping/nano_c_slam_gvsoc_mapping_smoke
+cp "$BUILD_ROOT/BUILD-gvsoc-mapping/compile_commands.json" \
+    /project/cslam-gap9-app/BUILD-gvsoc-mapping/compile_commands.json
+MAPPING_ARTIFACTS=/project/cslam-gap9-app/BUILD-gvsoc-mapping
+riscv32-unknown-elf-gcc --version | sed -n 1p \
+    > "$MAPPING_ARTIFACTS/toolchain-id.txt"
+uv run --no-project --python /usr/bin/python3 \
+    /project/scripts/write_gap9_build_provenance.py \
+    --elf "$MAPPING_ARTIFACTS/nano_c_slam_gvsoc_mapping_smoke" \
+    --compile-commands "$MAPPING_ARTIFACTS/compile_commands.json" \
+    --toolchain-id "$MAPPING_ARTIFACTS/toolchain-id.txt" \
+    --sdk-root /gap_sdk \
+    --output "$MAPPING_ARTIFACTS/build-provenance.json"
 '
 
 echo "GAP9 firmware ELF: $ROOT/.build-gap9-container/BUILD/nano_c_slam_gap9"
