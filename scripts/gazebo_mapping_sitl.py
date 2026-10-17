@@ -273,10 +273,28 @@ def _capture_samples(drone: str, sample_limit: int, timeout_s: float) -> _Captur
             rclpy.shutdown()
     if len(result.samples) < sample_limit:
         raise RuntimeError(
-            f"captured {len(result.samples)} of {sample_limit} samples before timeout; "
-            "check that Gazebo, the sensor bridge, and sim_mission are running"
+            _format_capture_timeout(
+                len(result.samples), sample_limit, result.rejections
+            )
         )
     return result
+
+
+def _format_capture_timeout(
+    captured: int, target: int, rejections: dict[str, int]
+) -> str:
+    """Describe an incomplete capture with the pairer's rejection evidence."""
+    rejection_summary = (
+        ", ".join(
+            f"{name}={count}" for name, count in sorted(rejections.items()) if count > 0
+        )
+        or "none"
+    )
+    return (
+        f"captured {captured} of {target} samples before timeout; "
+        f"pairing rejections: {rejection_summary}; check Gazebo, the sensor "
+        "bridge, and sim_mission"
+    )
 
 
 def _build_host_runner(binary: Path) -> None:

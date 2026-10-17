@@ -12,7 +12,11 @@ import unittest
 from pathlib import Path
 from typing import cast
 
-from scripts.gazebo_mapping_sitl import _parse_args, _run_mapping
+from scripts.gazebo_mapping_sitl import (
+    _format_capture_timeout,
+    _parse_args,
+    _run_mapping,
+)
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
     MappingSample,
     quaternion_yaw,
@@ -47,6 +51,15 @@ class MappingSampleTests(unittest.TestCase):
 
         self.assertTrue(options.reuse_binary)
         self.assertEqual(options.samples, 60)
+
+    def test_capture_timeout_reports_named_pairing_rejections(self) -> None:
+        message = _format_capture_timeout(
+            0, 60, {"stale_range": 12, "future_odometry": 3}
+        )
+
+        self.assertIn("captured 0 of 60 samples", message)
+        self.assertIn("stale_range=12", message)
+        self.assertIn("future_odometry=3", message)
 
     def test_serializes_pose_and_four_range_readings(self) -> None:
         sample = MappingSample(4, 250, 1.25, -0.5, 0.75, (1000, -1, 850, 1200))
