@@ -30,6 +30,16 @@ def git_value(sdk_root: Path, *args: str) -> str:
     return result.stdout.strip()
 
 
+def git_worktree_dirty(sdk_root: Path) -> bool:
+    result = subprocess.run(  # noqa: S603 -- fixed git argv and SDK path
+        ("git", "-C", str(sdk_root), "diff-index", "--quiet", "HEAD", "--"),  # noqa: S607
+        check=False,
+    )
+    if result.returncode not in (0, 1):
+        raise ValueError("GAP SDK git diff-index failed")
+    return result.returncode == 1
+
+
 def create_provenance(
     elf: Path,
     compile_commands: Path,
@@ -41,7 +51,7 @@ def create_provenance(
     release = git_value(
         sdk_root, "describe", "--abbrev=0", "--tags", "--match", "release*"
     )
-    dirty = git_value(sdk_root, "status", "--porcelain")
+    dirty = git_worktree_dirty(sdk_root)
     if not compiler:
         raise ValueError("toolchain identity must not be empty")
     return {
@@ -51,7 +61,7 @@ def create_provenance(
         "sdk_metadata": {
             "revision": revision,
             "release": release,
-            "worktree_dirty": bool(dirty),
+            "worktree_dirty": dirty,
         },
     }
 

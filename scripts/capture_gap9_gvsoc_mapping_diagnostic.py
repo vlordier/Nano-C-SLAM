@@ -151,13 +151,13 @@ def parse_target_marker(log_text: str) -> tuple[str, dict[str, int | bool]]:
 def sdk_metadata(sdk_root: Path) -> dict[str, str | bool]:
     revision = _git(sdk_root, "rev-parse", "HEAD")
     release = _git(sdk_root, "describe", "--abbrev=0", "--tags", "--match", "release*")
-    dirty_output = _git(sdk_root, "status", "--porcelain")
+    dirty_output = _git_worktree_dirty(sdk_root)
     if not revision or not release:
         raise ValueError("could not establish GAP SDK revision and release")
     return {
         "revision": revision,
         "release": release,
-        "worktree_dirty": bool(dirty_output),
+        "worktree_dirty": dirty_output,
     }
 
 
@@ -171,6 +171,16 @@ def _git(directory: Path, *arguments: str) -> str:
     if result.returncode != 0:
         raise ValueError(f"GAP SDK git {' '.join(arguments)} failed")
     return result.stdout.strip()
+
+
+def _git_worktree_dirty(directory: Path) -> bool:
+    result = subprocess.run(  # noqa: S603 -- fixed git argv and SDK directory
+        ("git", "-C", str(directory), "diff-index", "--quiet", "HEAD", "--"),  # noqa: S607
+        check=False,
+    )
+    if result.returncode not in (0, 1):
+        raise ValueError("GAP SDK git diff-index failed")
+    return result.returncode == 1
 
 
 def _compiler_commands(path: Path) -> str:

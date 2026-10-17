@@ -8,6 +8,9 @@
 #include "point_cloud.h"
 
 struct pi_cluster_conf cl_conf;
+#ifdef NANO_C_SLAM_TARGET_GVSOC
+struct pi_device cluster_dev;
+#endif
 uint8_t verbose = 0;
 
 #ifdef NANO_C_SLAM_TARGET_GVSOC

@@ -9,11 +9,12 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from scripts import capture_gap9_gvsoc_mapping_diagnostic as capture
 from scripts.gap9_mapping_diagnostic import validate_mapping_diagnostic
-from scripts.write_gap9_build_provenance import create_provenance
+from scripts.write_gap9_build_provenance import create_provenance, git_worktree_dirty
 from test_support.gap9_mapping_fixtures import (
     GVSOC_MAPPING_LIMITATION as LIMITATION_MARKER,
 )
@@ -267,9 +268,15 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
         toolchain.write_text(
             "riscv32-unknown-elf-gcc (GAP SDK) 12.2.0\n", encoding="utf-8"
         )
-        with patch(
-            "scripts.write_gap9_build_provenance.git_value",
-            side_effect=("a" * 40, "release-v5.20.4", " M source.c"),
+        with (
+            patch(
+                "scripts.write_gap9_build_provenance.git_value",
+                side_effect=("a" * 40, "release-v5.20.4"),
+            ),
+            patch(
+                "scripts.write_gap9_build_provenance.git_worktree_dirty",
+                return_value=True,
+            ),
         ):
             provenance = create_provenance(
                 self.elf,
@@ -280,6 +287,16 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
         self.assertEqual(provenance["binary_sha256"], _sha256(self.elf))
         self.assertEqual(provenance["compiler_commands_sha256"], _sha256(self.commands))
         self.assertTrue(provenance["sdk_metadata"]["worktree_dirty"])
+
+    def test_sdk_dirty_check_handles_clean_and_modified_results(self) -> None:
+        with patch(
+            "scripts.write_gap9_build_provenance.subprocess.run",
+            side_effect=(SimpleNamespace(returncode=0), SimpleNamespace(returncode=1)),
+        ) as run:
+            self.assertFalse(git_worktree_dirty(self.sdk))
+            self.assertTrue(git_worktree_dirty(self.sdk))
+        self.assertEqual(run.call_count, 2)
+        self.assertEqual(run.call_args_list[0].args[0][-3:], ("--quiet", "HEAD", "--"))
 
 
 if __name__ == "__main__":

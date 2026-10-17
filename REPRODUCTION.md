@@ -1,6 +1,20 @@
 # Reproduction status
 
-Tested on macOS (Apple Silicon) on 2026-10-16. The repository's pinned submodules and `changes.patch` were used. Gazebo and ROS 2 SITL ran natively on macOS. No hardware flight or mapping-accuracy result was reproduced.
+Tested on macOS (Apple Silicon), with the evidence dates recorded below. The repository's pinned submodules and `changes.patch` were used. Gazebo and ROS 2 SITL ran natively on macOS. No hardware flight or mapping-accuracy result was reproduced.
+
+## Current capability status (2026-10-18)
+
+| Capability | Status | Evidence and boundary |
+| --- | --- | --- |
+| One Crazyflie flying a bounded mission in native Gazebo | Passed historically | Native ROS 2 Jazzy/Gazebo Harmonic run documented below and in `sim/gazebo/README.md`; this is simulated flight. |
+| Owned host C mapper processing Gazebo telemetry | Passed for retained captures | Near-field replay has 170 timestamped pose/range pairs, 9 scans, 588 projected points and 11 stored constraints submitted to the final optimizer call. This proves pipeline execution, not map accuracy or convergence. |
+| GAP9 firmware build | Passed 2026-10-18 | Fresh SDK 5.20.4 build: 63,062 text, 526,920 data, 56,700 BSS; L1 117,612/131,068 B (89.73%), L2 shared 643,216/1,572,864 B (40.89%). |
+| GAP9 GVSOC ICP kernel smoke | Build passed; execution evidence is older | Retained `report.json` is kernel-only evidence. It does not exercise mapping. |
+| GAP9 GVSOC mapping-core smoke | Target image built 2026-10-18; fresh execution not completed | The current target ELF links after fixing a target-only `cluster_dev` declaration in `tests/gap9_sdk_gvsoc_mapping_smoke.c`. The mapping target uses 586,448 B L2 shared and 117,612 B L1. A fresh schema-v2 simulator report was not produced because Colima/Docker stopped responding during the rerun. The October schema-v1 failure remains historical and is not current-HEAD evidence. |
+| Production GAP9 main loop consuming deterministic STM32 SPI packets | Not demonstrated | Current mapping smoke omits `main.c` and `spi/*.c`; see beads `ncs-ju6.4.1`–`ncs-ju6.4.5`. |
+| Three-drone mission, map fusion, physical flight, quantitative map accuracy | Not demonstrated | Separate open work remains; per-drone mapping is not map fusion, and simulated four-ray lidar/ideal odometry are not hardware ToF/UWB. |
+
+The next validation order is explicit in beads: finish the fresh provenance-bound GVSOC mapping run (`ncs-ju6.3.1.3.3`), interpret its stage diagnostics (`ncs-ju6.3.1.4`), compare identical host/target fixture results (`ncs-ju6.3.2`), then fix any measured ICP divergence (`ncs-ju6.3.3`). Only after the core smoke is understood should production SPI stimulus (`ncs-ju6.4`) and the final capability bundle (`ncs-ju6.8`) be treated as downstream goals.
 
 ## STM32 firmware
 
@@ -20,9 +34,9 @@ Runtime buffers are fixed-size. The STM32 tracks up to 30 scan poses and queues 
 
 ## GAP9 firmware
 
-The local GAP9 SDK at `~/Work/da3_gap9/third_party/gap_sdk_private` reports release 5.20.4. The direct Make flow refers to absent FreeRTOS rules. On 2026-10-17, the SDK CMake build completed through the x86_64 `colima-act-ci` VM using Docker-over-SSH and `uv`, without modifying the SDK checkout. The current firmware reports 62,486 bytes text, 526,920 data, and 56,700 BSS; linker placement uses 642,640 B L2 shared (40.86%) and 117,612 B L1 (89.73%). L1 headroom is tight. The SDK emits a `pi_assert` implicit declaration warning from its own `udma_core.h` include chain.
+The local GAP9 SDK at `~/Work/da3_gap9/third_party/gap_sdk_private` reports release 5.20.4. The direct Make flow refers to absent FreeRTOS rules. On 2026-10-18, the SDK CMake build completed through the x86_64 `colima-act-ci` VM using Docker-over-SSH and `uv`, without modifying the SDK checkout. The current firmware reports 63,062 bytes text, 526,920 data, and 56,700 BSS; linker placement uses 643,216 B L2 shared (40.89%) and 117,612 B L1 (89.73%). L1 headroom is tight. The SDK emits a `pi_assert` implicit declaration warning from its own `udma_core.h` include chain.
 
-The native GVSOC launcher is available locally on macOS, and the tracked result in `artifacts/gap9_gvsoc_evidence/report.json` observes the expected ICP SVD singular values (3.000, 2.000). This is kernel-only evidence. The full firmware, the SVD smoke, and the mapping-core smoke compile with the SDK 5.20.4 toolchain in the x86_64 Colima VM. The full firmware uses 89.73% of L1; the mapping smoke uses 583,248 B of L2 shared and 117,612 B of L1. The mapping target also runs on the GAP9 GVSOC model, accepts 60 poses, extracts three scans and 240 map points, and calls the cluster ICP path. It reproducibly fails before pose-graph optimization: the last scan pair has 80 nearest-neighbor matches, but ICP reports an invalid result, leaving zero accepted constraints and zero optimized poses. The failure and ELF/log hashes are recorded in `artifacts/gap9_gvsoc_evidence/mapping_limitation.json`. The root cause of the host/GVSOC ICP discrepancy is not isolated, so this is a simulator execution limitation, not a GAP9 mapping pass.
+The native GVSOC launcher is available locally on macOS, and the tracked result in `artifacts/gap9_gvsoc_evidence/report.json` observes the expected ICP SVD singular values (3.000, 2.000). This is kernel-only evidence. The full firmware, the SVD smoke, and the mapping-core smoke compile with the SDK 5.20.4 toolchain in the x86_64 Colima VM. The older `artifacts/gap9_gvsoc_evidence/mapping_limitation.json` is a schema-v1 run from repository revision `4f9ae1384f10c42360942b5d2d65f5e8b176a1a9`, not current-HEAD evidence. That run accepted 60 poses, extracted three scans and 240 map points, and called cluster ICP; its last pair had 80 nearest-neighbor matches, but ICP returned an invalid result, leaving zero accepted constraints and optimized poses. Its ELF/log hashes are retained, but the host/GVSOC root cause is not isolated. A fresh schema-v2 run is still pending, so the historical failure is not a current mapping verdict.
 
 ```sh
 DOCKER_HOST=ssh://colima-act-ci bash scripts/build_gap9_firmware.sh
