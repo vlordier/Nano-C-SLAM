@@ -292,13 +292,17 @@ sample records, per-direction range accounting, finite pose estimates, exact
 constraint endpoint accounting, and projected map points. On Linux, use the ROS and workspace setup paths from the Linux
 section and replace the Python path with `/usr/bin/python3`.
 
-Treat this as one mapping run per freshly launched world for now. The square
-starts at the measured current drone position; the coordinator does not reset
-Gazebo or return the drone to its spawn pose. A same-world second run has
-failed the per-window observability gate after collecting 60 samples, so the
-coordinator correctly wrote no passing report. Restart the near-field Gazebo
-launch before another mapping run. Safe same-world reuse is tracked in bead
-`ncs-ju6.5.19`.
+Treat this as one mapping run per freshly launched world. The launch holds an
+exclusive lock on its Gazebo partition and writes a UUID session manifest.
+Starting a second Nano-C-SLAM launch on the same partition fails before Gazebo
+starts. Before starting the collector or mission, the coordinator atomically
+claims the session; a second mapping invocation fails before takeoff and asks
+you to restart the Gazebo launch. A repeated-world run previously collected 60
+samples and failed the per-window observability gate, so the coordinator wrote
+no passing report.
+There is no validated world-frame safe-start envelope and no Gazebo reset in
+this workflow. The session guard prevents repeated runs through this
+coordinator; it cannot detect a drone moved manually or by another controller.
 
 For a bounded spatial mapping pass, enable the optional square path. It moves
 0.25 m along each side at no more than 0.25 m/s, holds at the target altitude,

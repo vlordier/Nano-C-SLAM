@@ -7,11 +7,16 @@ import tempfile
 import unittest
 import uuid
 from pathlib import Path
+from unittest.mock import patch
 
 from scripts.gazebo_mapping_run import (
     _events_from_mission_log,
     _parse_args,
     _publish_report_atomically,
+    _run,
+)
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_run_processes import (
+    supervise_mapping_processes,
 )
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     MissionPhase,
@@ -20,6 +25,26 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
 
 
 class MappingRunCliTests(unittest.TestCase):
+    def test_missing_world_session_fails_before_child_process_start(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            directory = Path(temporary_directory)
+            _, config = _parse_args(["--output", str(directory / "run.json")])
+            with (
+                patch.object(type(config), "validate_runtime"),
+                patch(
+                    "scripts.gazebo_mapping_run.session_file_for_partition",
+                    return_value=directory / "missing-session.json",
+                ),
+                patch(
+                    "scripts.gazebo_mapping_run.supervise_mapping_processes",
+                    wraps=supervise_mapping_processes,
+                ) as supervise,
+                self.assertRaisesRegex(RuntimeError, "start the world"),
+            ):
+                _run(config, "ros2")
+
+            supervise.assert_not_called()
+
     def test_mission_log_recovers_terminal_event_and_checks_ros_prefix(self) -> None:
         phases = (
             MissionPhase.WAITING,

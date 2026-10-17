@@ -1,5 +1,6 @@
 """Launch the Gazebo Crazyflie SITL world and Nano-C-SLAM telemetry on macOS."""
 
+import os
 from pathlib import Path
 
 from ament_index_python.packages import get_package_share_directory
@@ -8,8 +9,11 @@ from launch.actions import (
     DeclareLaunchArgument,
     ExecuteProcess,
     IncludeLaunchDescription,
+    OpaqueFunction,
     TimerAction,
 )
+from launch.launch_context import LaunchContext
+from launch.launch_description_entity import LaunchDescriptionEntity
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import (
     LaunchConfiguration,
@@ -17,6 +21,29 @@ from launch.substitutions import (
     TextSubstitution,
 )
 from launch_ros.actions import Node
+from nano_c_slam_gazebo.world_session_model import (
+    acquire_world_session_lock,
+    publish_world_session,
+    session_file_for_partition,
+)
+
+_WORLD_SESSION_LOCK = None
+
+
+def _publish_session(context: LaunchContext) -> list[LaunchDescriptionEntity]:
+    """Bind one single-run token to this launch before Gazebo starts."""
+    world = LaunchConfiguration("world").perform(context)
+    scene = (
+        "nearfield-mapping"
+        if Path(world).name == "nano_c_slam_nearfield.sdf"
+        else "default"
+    )
+    partition = os.environ.get("GZ_PARTITION", "default")
+    session_path = session_file_for_partition(partition)
+    global _WORLD_SESSION_LOCK
+    _WORLD_SESSION_LOCK = acquire_world_session_lock(session_path)
+    publish_world_session(session_path, scene=scene)
+    return []
 
 
 def generate_launch_description() -> LaunchDescription:
@@ -68,6 +95,7 @@ def generate_launch_description() -> LaunchDescription:
     return LaunchDescription(
         [
             DeclareLaunchArgument("world", default_value=default_world),
+            OpaqueFunction(function=_publish_session),
             gazebo,
             gazebo_gui_after_server,
             gz_bridge,

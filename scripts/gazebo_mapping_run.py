@@ -32,6 +32,10 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     MissionStatusEvent,
     validate_mission_status_events,
 )
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model import (
+    claim_world_session,
+    session_file_for_partition,
+)
 
 
 class _StringMessage(Protocol):
@@ -174,6 +178,11 @@ def _run(config: MappingRunConfig, ros2_executable: str) -> Path:
         ros2_executable=ros2_executable,
         collector_script=REPOSITORY_ROOT / "scripts/gazebo_mapping_sitl.py",
     )
+    world_session_id = claim_world_session(
+        session_file_for_partition(os.environ.get("GZ_PARTITION", "default")),
+        scene=config.scene,
+        run_id=config.run_id,
+    )
     rclpy = importlib.import_module("rclpy")
     rclpy.init(args=[])
     node: _StatusListener | None = None
@@ -275,6 +284,7 @@ def _run(config: MappingRunConfig, ros2_executable: str) -> Path:
             "run_id": config.run_id,
             "drone": config.drone_name,
             "scene": config.scene,
+            "gazebo_world_session_id": world_session_id,
             "child_commands": {
                 "collector": list(commands.collector),
                 "mission": list(commands.mission),
