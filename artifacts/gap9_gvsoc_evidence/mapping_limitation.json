@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "status": "reproduced-limitation",
+  "evidence_class": "gvsoc-target-execution",
+  "claim_boundary": "The GAP9 GVSOC target boots and executes the fixture, but its cluster ICP path produces no accepted constraints and does not reach pose-graph optimization. This is not a GAP9 mapping pass, hardware validation, or mapping-accuracy result.",
+  "hardware_measurement": false,
+  "test": "60-pose, three-scan point-cloud and cluster-ICP fixture",
+  "observed": {
+    "poses": 60,
+    "scans": 3,
+    "map_points": 240,
+    "icp_constraints": 0,
+    "matched_points_last_pair": 80,
+    "icp_error_milli": 2147483647,
+    "icp_has_nan": true,
+    "optimized_poses": 0,
+    "graph_nodes": 0,
+    "has_nan": false
+  },
+  "gvsoc_exit_code": 1,
+  "host_core_reference": {
+    "status": "passed",
+    "poses": 60,
+    "scans": 3,
+    "map_points": 240,
+    "icp_constraints_at_least": 2,
+    "optimized_poses": 60,
+    "graph_nodes": 3,
+    "execution": "native host with PMSIS compute-boundary stubs"
+  },
+  "elf_bytes": 663968,
+  "elf_sha256": "ea2c88c59d033464b2a65f738c0e7e8a53e3ccb0ed50f101954cd76f751a2dd3",
+  "log_sha256": "03fd4d6c350a135a1c0f578b18ef263d408c1ff6a6d12d61266502e798f5ef1e"
+}
