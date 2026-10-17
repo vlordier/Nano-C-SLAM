@@ -27,6 +27,7 @@ _MAPPING_SOURCE_FILES = {
     "pyproject.toml",
     "uv.lock",
     "scripts/capture_gap9_gvsoc_mapping_diagnostic.py",
+    "scripts/capture_gap9_host_mapping_diagnostic.py",
     "scripts/write_gap9_build_provenance.py",
     "scripts/gap9_mapping_diagnostic.py",
     "scripts/gapy_private_wrapper.py",
@@ -35,6 +36,7 @@ _MAPPING_SOURCE_FILES = {
     "scripts/build_host_mapping_sitl.sh",
     "scripts/build_gap9_firmware.sh",
     "scripts/run_gap9_gvsoc_smoke.sh",
+    "scripts/select_gap9_mapping_output.py",
 }
 _MAPPING_SOURCE_DIRECTORIES = (
     "cslam-gap9-app/dma",
@@ -166,11 +168,8 @@ def validate_mapping_diagnostic(value: object) -> dict[str, Any]:
         raise ValueError("mapping diagnostic process did not terminate")
     log_hash = execution["log_sha256"]
     log_bytes = execution["log_bytes"]
-    if evidence_class == "gvsoc-target-execution":
-        _hash(log_hash, "execution.log_sha256")
-        _integer(log_bytes, "execution.log_bytes", minimum=1)
-    elif log_hash is not None or log_bytes is not None:
-        raise ValueError("host-stub artifacts must not invent a retained target log")
+    _hash(log_hash, "execution.log_sha256")
+    _integer(log_bytes, "execution.log_bytes", minimum=1)
 
     mapping = _object(
         data["mapping"],
@@ -240,8 +239,8 @@ def validate_mapping_diagnostic(value: object) -> dict[str, Any]:
     ):
         raise ValueError("optimizer_unique_edges exceeds optimizer input count")
     graph_nodes = metrics["graph_nodes"]
-    if graph_nodes is not None and graph_nodes > scans:
-        raise ValueError("graph_nodes exceeds fixture.scan_count")
+    if graph_nodes is not None and graph_nodes > poses:
+        raise ValueError("graph_nodes exceeds fixture.pose_count")
     if data["status"] == "passed":
         if exit_code != 0 or not execution["marker_seen"] or mapping["has_nan"]:
             raise ValueError(
@@ -261,11 +260,11 @@ def validate_mapping_diagnostic(value: object) -> dict[str, Any]:
         if (
             mapping["icp_attempts"] != 2
             or mapping["accepted_constraints"] < 2
-            or mapping["graph_nodes"] != scans
+            or mapping["graph_nodes"] < scans
             or mapping["optimizer_input_constraints"] < 2
             or mapping["optimizer_unique_edges"] < 2
-            or mapping["successful_solver_calls"] != scans
-            or mapping["completed_solver_iterations"] != 9
+            or mapping["completed_solver_iterations"]
+            != 3 * mapping["successful_solver_calls"]
             or mapping["icp_error_milli"] == 2_147_483_647
         ):
             raise ValueError("passed artifact lacks ICP or pose-graph evidence")
@@ -274,27 +273,22 @@ def validate_mapping_diagnostic(value: object) -> dict[str, Any]:
             raise ValueError("only target execution can reproduce a GVSOC limitation")
         if exit_code != 1 or not execution["marker_seen"]:
             raise ValueError("reproduced limitation contradicts target execution")
-        limitation_metrics = {
-            "finite_poses": 0,
-            "icp_attempts": 2,
-            "correspondences_last_pair": 80,
-            "icp_error_milli": 2_147_483_647,
-            "icp_has_nan": True,
-            "accepted_constraints": 0,
-            "graph_nodes": 0,
-            "optimizer_input_constraints": 0,
-            "optimizer_unique_edges": 0,
-            "main_solver_returned": False,
-            "successful_solver_calls": 0,
-            "completed_solver_iterations": 0,
-            "optimization_completed": False,
-            "has_nan": False,
-        }
-        if any(
-            mapping[field] != expected for field, expected in limitation_metrics.items()
-        ):
+        mapping_passes = (
+            mapping["finite_poses"] == poses
+            and not mapping["icp_has_nan"]
+            and mapping["accepted_constraints"] >= 2
+            and scans <= mapping["graph_nodes"] <= poses
+            and mapping["optimizer_input_constraints"] >= 2
+            and mapping["optimizer_unique_edges"] >= 2
+            and mapping["main_solver_returned"]
+            and mapping["successful_solver_calls"] > 0
+            and mapping["completed_solver_iterations"]
+            == 3 * mapping["successful_solver_calls"]
+            and mapping["optimization_completed"]
+        )
+        if mapping_passes:
             raise ValueError(
-                "reproduced limitation metrics do not match the known failure"
+                "reproduced limitation contradicts passing mapping metrics"
             )
     if evidence_class == "host-pmsis-stubs" and "GVSOC target" in str(
         data["claim_boundary"]

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import contextlib
+import hashlib
 import io
 import json
 import tempfile
@@ -70,6 +71,12 @@ class HostMappingDiagnosticCaptureTests(unittest.TestCase):
         self.assertEqual(artifact["fixture"]["source_sha256"], _sha256_fixture())
         self.assertEqual(artifact["build"]["binary_sha256"], _sha256(self.binary))
         self.assertFalse(artifact["hardware_measurement"])
+        raw_log = self.output.with_suffix(".log").read_bytes()
+        self.assertEqual(raw_log, (HOST_MAPPING_PASS + "\n").encode())
+        self.assertEqual(artifact["execution"]["log_bytes"], len(raw_log))
+        self.assertEqual(
+            artifact["execution"]["log_sha256"], hashlib.sha256(raw_log).hexdigest()
+        )
 
     def test_rejects_absent_duplicate_malformed_target_and_inconsistent_markers(
         self,
@@ -126,6 +133,13 @@ class HostMappingDiagnosticCaptureTests(unittest.TestCase):
         code, _ = self.capture()
         self.assertNotEqual(code, 0)
         self.assertEqual(self.output.read_text(encoding="utf-8"), "preserve")
+
+        self.output.unlink()
+        log_output = self.output.with_suffix(".log")
+        log_output.write_text("preserve", encoding="utf-8")
+        code, _ = self.capture()
+        self.assertNotEqual(code, 0)
+        self.assertEqual(log_output.read_text(encoding="utf-8"), "preserve")
 
     def test_rejects_non_executable_binary(self) -> None:
         self.binary.chmod(0o644)

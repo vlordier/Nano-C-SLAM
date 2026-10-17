@@ -131,10 +131,23 @@ def _parse_marker(output: str) -> tuple[str, dict[str, int | bool]]:
     }
 
 
-def _publish_atomically(output: Path, artifact: dict[str, Any]) -> None:
+def _publish_atomically(output: Path, artifact: dict[str, Any], log: bytes) -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
-    temporary_path: Path | None = None
+    log_output = output.with_suffix(".log")
+    temporary_paths: list[Path] = []
     try:
+        with tempfile.NamedTemporaryFile(
+            mode="wb",
+            dir=output.parent,
+            prefix=f".{log_output.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as stream:
+            log_temporary = Path(stream.name)
+            temporary_paths.append(log_temporary)
+            stream.write(log)
+            stream.flush()
+            os.fsync(stream.fileno())
         with tempfile.NamedTemporaryFile(
             mode="w",
             encoding="utf-8",
@@ -143,15 +156,21 @@ def _publish_atomically(output: Path, artifact: dict[str, Any]) -> None:
             suffix=".tmp",
             delete=False,
         ) as stream:
-            temporary_path = Path(stream.name)
+            json_temporary = Path(stream.name)
+            temporary_paths.append(json_temporary)
             json.dump(artifact, stream, indent=2, sort_keys=True, allow_nan=False)
             stream.write("\n")
             stream.flush()
             os.fsync(stream.fileno())
-        os.link(temporary_path, output)
+        os.link(log_temporary, log_output)
+        try:
+            os.link(json_temporary, output)
+        except OSError:
+            log_output.unlink(missing_ok=True)
+            raise
     finally:
-        if temporary_path is not None:
-            temporary_path.unlink(missing_ok=True)
+        for path in temporary_paths:
+            path.unlink(missing_ok=True)
 
 
 def main() -> int:
@@ -171,8 +190,9 @@ def main() -> int:
     if not binary.is_file() or not os.access(binary, os.X_OK):
         parser.error("--binary must be an executable file")
     output = args.output.resolve()
-    if output.exists():
-        parser.error(f"output already exists: {output}")
+    log_output = output.with_suffix(".log")
+    if output.exists() or log_output.exists():
+        parser.error(f"output or log already exists: {output} / {log_output}")
     fixture_hash_before = _sha256(FIXTURE)
     source_hashes = {
         path.relative_to(REPOSITORY_ROOT).as_posix(): _sha256(path)
@@ -184,12 +204,13 @@ def main() -> int:
     try:
         result = subprocess.run(  # noqa: S603 -- explicit repository-built smoke ELF
             [str(binary)],
-            capture_output=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
             check=False,
-            text=True,
             timeout=args.timeout_s,
         )
-        status, mapping = _parse_marker(result.stdout)
+        raw_log = result.stdout
+        status, mapping = _parse_marker(raw_log.decode("utf-8", errors="replace"))
     except (OSError, subprocess.TimeoutExpired, ValueError) as error:
         print(f"host mapping diagnostic capture failed: {error}")
         return 1
@@ -228,14 +249,14 @@ def main() -> int:
             "exit_code": result.returncode,
             "marker_seen": True,
             "terminated": True,
-            "log_sha256": None,
-            "log_bytes": None,
+            "log_sha256": hashlib.sha256(raw_log).hexdigest(),
+            "log_bytes": len(raw_log),
         },
         "mapping": mapping,
     }
     try:
         validate_mapping_diagnostic(artifact)
-        _publish_atomically(output, artifact)
+        _publish_atomically(output, artifact, raw_log)
     except (OSError, ValueError) as error:
         print(f"host mapping diagnostic artifact rejected: {error}")
         return 1

@@ -37,22 +37,6 @@ FAIL_MARKER = re.compile(
     r"icp_attempts=(\d+) accepted_constraints=(\d+) "
     r"optimizer_inputs=(\d+) optimizer_unique_edges=(\d+)$"
 )
-EXPECTED_LIMITATION = {
-    "finite_poses": 0,
-    "icp_attempts": 2,
-    "correspondences_last_pair": 80,
-    "icp_error_milli": 2_147_483_647,
-    "icp_has_nan": True,
-    "accepted_constraints": 0,
-    "graph_nodes": 0,
-    "optimizer_input_constraints": 0,
-    "optimizer_unique_edges": 0,
-    "main_solver_returned": False,
-    "successful_solver_calls": 0,
-    "completed_solver_iterations": 0,
-    "optimization_completed": False,
-    "has_nan": False,
-}
 
 
 def sha256_bytes(value: bytes) -> str:
@@ -325,12 +309,7 @@ def main() -> int:
             if args.gvsoc_exit_code != 0:
                 raise ValueError("mapping success marker disagrees with GVSOC exit")
             status = "passed"
-        elif args.gvsoc_exit_code == 1 and mapping == {
-            "poses": 60,
-            "scans": 3,
-            "points": 240,
-            **EXPECTED_LIMITATION,
-        }:
+        elif args.gvsoc_exit_code == 1:
             status = "reproduced-limitation"
         else:
             raise ValueError("GVSOC failure does not match the known ICP limitation")

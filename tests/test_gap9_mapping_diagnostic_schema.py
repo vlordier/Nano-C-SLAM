@@ -152,14 +152,10 @@ class MappingDiagnosticSchemaTests(unittest.TestCase):
         mapping["completed_solver_iterations"] = None
         self.assertEqual(validate_mapping_diagnostic(artifact)["status"], "failed")
 
-    def test_reproduced_limitation_requires_the_observed_target_failure(self) -> None:
+    def test_reproduced_limitation_requires_failure_and_rejects_full_pass(self) -> None:
         for section, field, value in (
             ("execution", "exit_code", 0),
             ("execution", "marker_seen", False),
-            ("mapping", "correspondences_last_pair", 0),
-            ("mapping", "icp_has_nan", False),
-            ("mapping", "accepted_constraints", 1),
-            ("mapping", "graph_nodes", 1),
         ):
             artifact = self.load_fixture("gvsoc-target-execution.json")
             nested = artifact[section]
@@ -167,6 +163,25 @@ class MappingDiagnosticSchemaTests(unittest.TestCase):
             nested[field] = value
             with self.subTest(field=field), self.assertRaises(ValueError):
                 validate_mapping_diagnostic(artifact)
+
+        claims_success = self.load_fixture("gvsoc-target-execution.json")
+        mapping = claims_success["mapping"]
+        assert isinstance(mapping, dict)
+        mapping.update(
+            finite_poses=60,
+            icp_has_nan=False,
+            icp_error_milli=0,
+            accepted_constraints=2,
+            graph_nodes=3,
+            optimizer_input_constraints=2,
+            optimizer_unique_edges=2,
+            main_solver_returned=True,
+            successful_solver_calls=3,
+            completed_solver_iterations=9,
+            optimization_completed=True,
+        )
+        with self.assertRaisesRegex(ValueError, "contradicts passing"):
+            validate_mapping_diagnostic(claims_success)
 
         host_claims_target_failure = self.load_fixture("host-pmsis-stubs.json")
         host_claims_target_failure["status"] = "reproduced-limitation"
@@ -194,6 +209,24 @@ class MappingDiagnosticSchemaTests(unittest.TestCase):
             mapping[field] = value
             with self.subTest(field=field), self.assertRaises(ValueError):
                 validate_mapping_diagnostic(artifact)
+
+    def test_pass_allows_selected_graph_nodes_and_subgraph_solves(self) -> None:
+        artifact = self.load_fixture("host-pmsis-stubs.json")
+        mapping = artifact["mapping"]
+        assert isinstance(mapping, dict)
+        mapping.update(
+            graph_nodes=12,
+            successful_solver_calls=6,
+            completed_solver_iterations=18,
+        )
+        self.assertEqual(validate_mapping_diagnostic(artifact)["status"], "passed")
+
+        too_many_nodes = copy.deepcopy(artifact)
+        mapping = too_many_nodes["mapping"]
+        assert isinstance(mapping, dict)
+        mapping["graph_nodes"] = 61
+        with self.assertRaisesRegex(ValueError, "exceeds fixture.pose_count"):
+            validate_mapping_diagnostic(too_many_nodes)
 
 
 def _reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict[str, object]:

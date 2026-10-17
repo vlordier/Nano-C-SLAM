@@ -28,8 +28,8 @@
     "exit_code": 0,
     "marker_seen": true,
     "terminated": true,
-    "log_sha256": null,
-    "log_bytes": null
+    "log_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "log_bytes": 123
   },
   "mapping": {
     "poses": 60,

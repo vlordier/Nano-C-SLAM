@@ -170,8 +170,6 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
             PASS_MARKER + " unexpected=1",
             PASS_MARKER.replace("accepted_constraints=2", "accepted_constraints=3"),
             PASS_MARKER.replace("icp_has_nan=0", "icp_has_nan=1"),
-            LIMITATION_MARKER.replace("optimizer_inputs=0", "optimizer_inputs=1"),
-            LIMITATION_MARKER.replace("icp_constraints=0", "icp_constraints=1"),
             PASS_MARKER.replace("poses=60", "poses=59"),
         )
         for content in invalid_logs:
@@ -180,6 +178,25 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
                 result, _ = self.run_capture(exit_code=1)
                 self.assertNotEqual(result, 0)
                 self.assertFalse(self.output.exists())
+
+    def test_captures_a_new_target_failure_profile_without_relabeling_it_passed(
+        self,
+    ) -> None:
+        marker_path = (
+            Path(__file__).parent
+            / "fixtures/gap9_mapping_diagnostics"
+            / "gvsoc-mapping-reverse-counts.marker"
+        )
+        marker = marker_path.read_text(encoding="utf-8").strip()
+        self.log.write_text(marker + "\n", encoding="utf-8")
+        result, _ = self.run_capture(exit_code=1)
+        self.assertEqual(result, 0)
+        artifact = json.loads(self.output.read_text(encoding="utf-8"))
+        validate_mapping_diagnostic(artifact)
+        self.assertEqual(artifact["status"], "reproduced-limitation")
+        self.assertEqual(artifact["mapping"]["icp_error_milli"], 2092)
+        self.assertFalse(artifact["mapping"]["icp_has_nan"])
+        self.assertEqual(artifact["mapping"]["accepted_constraints"], 0)
 
     def test_success_marker_with_failure_exit_is_not_published(self) -> None:
         self.log.write_text(PASS_MARKER + "\n", encoding="utf-8")

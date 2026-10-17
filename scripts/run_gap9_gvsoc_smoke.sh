@@ -21,6 +21,22 @@ GVSOC_LOG="$WORK_ROOT/gvsoc.log"
 MAPPING_OUTPUT="${GAP9_GVSOC_MAPPING_OUTPUT:-$ROOT/artifacts/gap9_gvsoc_evidence/mapping_diagnostic.json}"
 RUN_TIMEOUT_S="${GAP9_GVSOC_TIMEOUT_S:-600}"
 
+if [[ "$MAPPING_CAPTURE" == "1" ]]; then
+    if [[ "$MAPPING_OUTPUT" != /* ]]; then
+        MAPPING_OUTPUT="$ROOT/$MAPPING_OUTPUT"
+    fi
+    if [[ -n "${GAP9_GVSOC_MAPPING_OUTPUT+x}" ]]; then
+        MAPPING_OUTPUT="$(uv run --project "$ROOT" --locked --python 3.12 \
+            python "$ROOT/scripts/select_gap9_mapping_output.py" \
+            "$MAPPING_OUTPUT" --explicit)"
+    else
+        MAPPING_OUTPUT="$(uv run --project "$ROOT" --locked --python 3.12 \
+            python "$ROOT/scripts/select_gap9_mapping_output.py" \
+            "$MAPPING_OUTPUT")"
+    fi
+    echo "GAP9 mapping evidence output: $MAPPING_OUTPUT"
+fi
+
 if [[ "$(uname -s)" != Darwin ]]; then
     echo "This workflow runs with the local macOS GVSOC runtime." >&2
     exit 2

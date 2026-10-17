@@ -92,6 +92,7 @@ cp "$BUILD_ROOT/BUILD-gvsoc-mapping/nano_c_slam_gvsoc_mapping_smoke" \
 cp "$BUILD_ROOT/BUILD-gvsoc-mapping/compile_commands.json" \
     /project/cslam-gap9-app/BUILD-gvsoc-mapping/compile_commands.json
 MAPPING_ARTIFACTS=/project/cslam-gap9-app/BUILD-gvsoc-mapping
+rm -f "$MAPPING_ARTIFACTS/build-provenance.json"
 riscv32-unknown-elf-gcc --version | sed -n 1p \
     > "$MAPPING_ARTIFACTS/toolchain-id.txt"
 uv run --no-project --python /usr/bin/python3 \

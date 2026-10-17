@@ -1,0 +1,1 @@
+NANO_C_SLAM_GVSOC:mapping_fail poses=60 scans=3 points=240 icp_constraints=0 matches=80 icp_error_milli=2092 icp_has_nan=0 finite=0 graph=0 main_solver=0 solver_calls=0 solver_iterations=0 completed=0 has_nan=0 icp_attempts=2 accepted_constraints=0 optimizer_inputs=0 optimizer_unique_edges=0
