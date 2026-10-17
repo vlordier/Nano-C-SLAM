@@ -7,7 +7,6 @@
 #include "pmsis.h"
 #include "point_cloud.h"
 
-struct pi_device cluster_dev;
 struct pi_cluster_conf cl_conf;
 uint8_t verbose = 0;
 
