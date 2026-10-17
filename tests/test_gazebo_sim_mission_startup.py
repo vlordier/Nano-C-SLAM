@@ -39,6 +39,7 @@ class _Node:
         self.parameters: dict[str, object] = {}
         self.publishers: list[_Publisher] = []
         self.subscriptions: list[object] = []
+        self.timers: list[types.SimpleNamespace] = []
         self._logger = _Logger()
 
     def declare_parameter(self, name: str, default: object) -> None:
@@ -57,8 +58,17 @@ class _Node:
         self.subscriptions.append(subscription)
         return subscription
 
-    def create_timer(self, *_args: object, **_kwargs: object) -> types.SimpleNamespace:
-        return types.SimpleNamespace(cancel=lambda: None)
+    def create_timer(
+        self, _period: float, callback: object, **kwargs: object
+    ) -> types.SimpleNamespace:
+        timer = types.SimpleNamespace(
+            callback=callback,
+            clock=kwargs.get("clock"),
+            canceled=False,
+        )
+        timer.cancel = lambda: setattr(timer, "canceled", True)
+        self.timers.append(timer)
+        return timer
 
     def get_clock(self) -> _Clock:
         return _Clock()
@@ -88,6 +98,10 @@ class SimMissionStartupTests(unittest.TestCase):
         self.nav.Odometry = type("Odometry", (), {})
         self.rcl_node = types.ModuleType("rclpy.node")
         self.rcl_node.Node = _Node
+        self.rcl_clock = types.ModuleType("rclpy.clock")
+        self.rcl_clock.Clock = lambda **kwargs: types.SimpleNamespace(**kwargs)
+        self.rcl_clock_type = types.ModuleType("rclpy.clock_type")
+        self.rcl_clock_type.ClockType = types.SimpleNamespace(STEADY_TIME="steady")
         self.rcl_qos = types.ModuleType("rclpy.qos")
         self.rcl_qos.DurabilityPolicy = types.SimpleNamespace(TRANSIENT_LOCAL=1)
         self.rcl_qos.HistoryPolicy = types.SimpleNamespace(KEEP_LAST=1)
@@ -98,6 +112,8 @@ class SimMissionStartupTests(unittest.TestCase):
         self.modules = {
             "rclpy": self.rclpy,
             "rclpy.node": self.rcl_node,
+            "rclpy.clock": self.rcl_clock,
+            "rclpy.clock_type": self.rcl_clock_type,
             "rclpy.qos": self.rcl_qos,
             "geometry_msgs": types.ModuleType("geometry_msgs"),
             "geometry_msgs.msg": self.geometry,
@@ -114,6 +130,8 @@ class SimMissionStartupTests(unittest.TestCase):
             self.modules[parent].msg = child
         for package in ("rclpy", "geometry_msgs", "nav_msgs", "std_msgs"):
             self.modules[package].__path__ = []
+        self.rclpy.clock = self.rcl_clock
+        self.rclpy.clock_type = self.rcl_clock_type
         self.stack = patch.dict(sys.modules, self.modules)
         self.stack.start()
         sys.modules.pop(
@@ -136,7 +154,8 @@ class SimMissionStartupTests(unittest.TestCase):
         node._odometry_startup_timeout_s = 0.1
         node._startup_started_wall_s = time.monotonic() - 0.2
 
-        node._step()
+        self.assertEqual(node.timers[1].clock.clock_type, "steady")
+        node.timers[1].callback()
 
         self.assertEqual(node._sequence.phase.name, "FAILED")
         self.assertEqual(
@@ -163,6 +182,7 @@ class SimMissionStartupTests(unittest.TestCase):
         )
         self.assertEqual(node._odometry_message_count, 0)
         node.subscriptions[0].callback(message)
+        self.assertTrue(node.timers[1].canceled)
 
         node._step()
 

@@ -1,0 +1,16 @@
+{
+  "source_revision": "b79635e599c88614a84115c9d3bf8bc0bd100b04",
+  "ros_domain_id": 43,
+  "gazebo_partition": "nano_c_slam_mapping_agent_501",
+  "nano_c_slam_package_prefix": "/Users/vincent/Work/crazyswarm2_gazebo/install/nano_c_slam_gazebo",
+  "evidence_file": "active_partition_ground_check_20261017.json",
+  "observed": {
+    "odometry_received_count": 207,
+    "first_altitude_m": 0.7504511473785646,
+    "last_altitude_m": 0.7509670944464407,
+    "clock_received_count": 4072,
+    "mission_status_messages": 0,
+    "cmd_vel_messages": 0
+  },
+  "decision": "Did not start a mission because cf1 was already airborne; this active simulation's state and controls were left untouched."
+}

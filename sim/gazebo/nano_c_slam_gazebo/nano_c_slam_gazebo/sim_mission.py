@@ -9,6 +9,8 @@ from collections.abc import Sequence
 import rclpy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
+from rclpy.clock import Clock
+from rclpy.clock_type import ClockType
 from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, HistoryPolicy, QoSProfile
 from std_msgs.msg import Bool, String
@@ -87,6 +89,11 @@ class SimMission(Node):
             10,
         )
         self._timer = self.create_timer(0.05, self._step)
+        self._startup_timer = self.create_timer(
+            0.1,
+            self._check_odometry_startup_timeout,
+            clock=Clock(clock_type=ClockType.STEADY_TIME),
+        )
         self.get_logger().info(
             f"Mission run {self._run_id}; waiting for "
             f"/{self._drone_name}/odom before takeoff to "
@@ -101,25 +108,9 @@ class SimMission(Node):
         stamp = message.header.stamp
         self._odometry_stamp_s = float(stamp.sec) + float(stamp.nanosec) / 1e9
         self._odometry_message_count += 1
+        self._startup_timer.cancel()
 
     def _step(self) -> None:
-        if (
-            self._sequence.phase is MissionPhase.WAITING
-            and self._altitude_m is None
-            and time.monotonic() - self._startup_started_wall_s
-            >= self._odometry_startup_timeout_s
-        ):
-            self._sequence.fail("odometry was not received before startup timeout")
-            now_s = self.get_clock().now().nanoseconds / 1e9
-            self._publish_zero_command_if_active()
-            self._publish_status(now_s)
-            self.get_logger().error(
-                f"{self._drone_name} mission failed: "
-                f"{self._sequence.failure_reason} before takeoff"
-            )
-            self._timer.cancel()
-            return
-
         if self._sequence.phase in (MissionPhase.COMPLETE, MissionPhase.FAILED):
             self._publish_zero_command_if_active()
             if self._sequence.phase is MissionPhase.COMPLETE:
@@ -193,6 +184,31 @@ class SimMission(Node):
                 f"{self._drone_name} mission phase: "
                 f"{self._sequence.phase.name.lower()} at altitude {altitude}"
             )
+
+    def _check_odometry_startup_timeout(self) -> None:
+        """Fail safely using steady time even when simulation time is paused."""
+        if self._sequence.phase is not MissionPhase.WAITING:
+            self._startup_timer.cancel()
+            return
+        if (
+            self._altitude_m is not None
+            or time.monotonic() - self._startup_started_wall_s
+            < self._odometry_startup_timeout_s
+        ):
+            return
+
+        self._sequence.fail("odometry was not received before startup timeout")
+        now_s = self.get_clock().now().nanoseconds / 1e9
+        self._publish_zero_command_if_active()
+        self._publish_status(now_s)
+        self.get_logger().error(
+            f"{self._drone_name} mission failed: "
+            f"{self._sequence.failure_reason} before takeoff; "
+            f"odometry_callbacks={self._odometry_message_count}, "
+            f"odometry_stamp_s={self._odometry_stamp_s}"
+        )
+        self._startup_timer.cancel()
+        self._timer.cancel()
 
     def _publish_zero_command_if_active(self) -> None:
         """Keep the controller commanded to hover after the mission terminates."""

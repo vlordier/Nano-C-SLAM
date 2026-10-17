@@ -338,6 +338,21 @@ not proof that this callback ran. The 10-second startup watchdog fails closed
 without odometry. Do not launch a second native Gazebo server beside another
 active test instance just to gather this evidence.
 
+To take a passive, bounded snapshot of the current ROS domain without starting
+a mission, source the same ROS, Crazyswarm2, and Gazebo workspaces as the active
+launch, set its `ROS_DOMAIN_ID`, and run:
+
+```sh
+uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
+  scripts/diagnose_gazebo_odom.py --drone cf1 --duration 5 \
+  --output artifacts/gazebo_mapping_sitl/odom-diagnostic.json
+```
+
+The JSON records the probe's received `/cf1/odom` callback count and source
+stamp span, `/clock` span, ROS node names, odometry publisher QoS, and domain
+metadata. A positive probe count proves delivery to this diagnostic subscriber
+only; mission callback evidence still comes from the mission log.
+
 For a bounded spatial mapping pass, enable the optional square path. It moves
 0.25 m along each side at no more than 0.25 m/s, holds at the target altitude,
 then performs the configured hover and landing. The square is relative to the

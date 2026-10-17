@@ -51,6 +51,7 @@ include = [
     "scripts/check_gazebo_macos.py",
     "scripts/gazebo_mapping_sitl.py",
     "scripts/verify_gazebo_collector_ros.py",
+    "scripts/diagnose_gazebo_odom.py",
     "sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/mapping_model.py",
     "sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/telemetry_model.py",
     "tests/test_run_demo.py",

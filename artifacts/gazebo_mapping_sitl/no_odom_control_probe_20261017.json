@@ -1,0 +1,39 @@
+{
+  "clock": {
+    "first_stamp_ns": null,
+    "last_stamp_ns": null,
+    "received_count": 0
+  },
+  "cmd_vel": {
+    "max_abs_linear_velocity_m_s": 0.0,
+    "received_count": 2
+  },
+  "duration_observed_s": 2.000284791996819,
+  "duration_requested_s": 2.0,
+  "enable_messages": [],
+  "gazebo_partition": null,
+  "mission_status_messages": [
+    "{\"altitude_m\": null, \"drone_name\": \"cf1\", \"failure_reason\": \"odometry was not received before startup timeout\", \"landing_height_m\": 0.1, \"mapping_path_complete\": false, \"mapping_path_requested\": false, \"phase\": \"FAILED\", \"run_id\": \"89b36082-945a-42da-b1d0-9f6b1109ea66\", \"schema_version\": 1, \"sequence\": 1, \"sim_time_s\": 0.0}"
+  ],
+  "node_names_and_namespaces": [
+    {
+      "name": "nano_c_slam_sim_mission",
+      "namespace": "/"
+    },
+    {
+      "name": "nano_c_slam_odom_diagnostic",
+      "namespace": "/"
+    }
+  ],
+  "odometry": {
+    "first_stamp_ns": null,
+    "last_stamp_ns": null,
+    "publishers": [],
+    "received_count": 0,
+    "topic": "/cf1/odom"
+  },
+  "publishes_flight_commands": false,
+  "rmw_implementation": null,
+  "ros_domain_id": "97",
+  "schema_version": 1
+}

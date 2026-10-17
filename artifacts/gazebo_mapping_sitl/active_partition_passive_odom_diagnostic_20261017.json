@@ -1,0 +1,44 @@
+{
+  "clock": {
+    "first_stamp_ns": 5620832000000,
+    "last_stamp_ns": 5624871000000,
+    "received_count": 3966
+  },
+  "duration_observed_s": 5.000730874999135,
+  "duration_requested_s": 5.0,
+  "gazebo_partition": "nano_c_slam_mapping_agent_501",
+  "mission_status_messages": [],
+  "node_names_and_namespaces": [
+    {
+      "name": "ros_gz_bridge",
+      "namespace": "/"
+    },
+    {
+      "name": "nano_c_slam_odom_diagnostic",
+      "namespace": "/"
+    }
+  ],
+  "odometry": {
+    "first_stamp_ns": 5620840000000,
+    "last_stamp_ns": 5624860000000,
+    "publishers": [
+      {
+        "node_name": "ros_gz_bridge",
+        "node_namespace": "/",
+        "qos": {
+          "depth": 0,
+          "durability": "2",
+          "history": "3",
+          "reliability": "1"
+        },
+        "topic_type": "nav_msgs/msg/Odometry"
+      }
+    ],
+    "received_count": 202,
+    "topic": "/cf1/odom"
+  },
+  "publishes_flight_commands": false,
+  "rmw_implementation": null,
+  "ros_domain_id": "43",
+  "schema_version": 1
+}

@@ -1,0 +1,11 @@
+{
+  "source_revision": "b79635e599c88614a84115c9d3bf8bc0bd100b04",
+  "source_tree_dirty": true,
+  "ros_domain_id": 43,
+  "gazebo_partition": "nano_c_slam_mapping_agent_501",
+  "nano_c_slam_package_prefix": "/Users/vincent/Work/crazyswarm2_gazebo/install/nano_c_slam_gazebo",
+  "bridge_package_prefix": "/Users/vincent/Work/crazyswarm2_gazebo/install/ros_gz_crazyflie_bringup",
+  "probe": "scripts/diagnose_gazebo_odom.py --drone cf1 --duration 5",
+  "evidence_file": "active_partition_passive_odom_diagnostic_20261017.json",
+  "limits": "Passive probe proves delivery to its own subscriber only; no sim_mission was running in this graph."
+}

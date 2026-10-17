@@ -1,0 +1,21 @@
+{
+  "source_revision": "b79635e599c88614a84115c9d3bf8bc0bd100b04",
+  "source_tree_dirty": true,
+  "sim_mission_source_sha256": "19a33c1d474f1205623cccf010960d3eaf65cdaac5b31df7fbe017f4c9a6c68a",
+  "overlay": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.Yx3g6m/install",
+  "ros_domain_id": 97,
+  "ros_automatic_discovery_range": "LOCALHOST",
+  "startup_timeout_s": 1.0,
+  "mission_exit_code": 1,
+  "mission_log": "no_odom_control_mission_20261017.log",
+  "probe_log": "no_odom_control_probe_20261017.json",
+  "observed": {
+    "odometry_callbacks": 0,
+    "mission_status": "FAILED",
+    "enable_message_count": 0,
+    "cmd_vel_message_count": 2,
+    "maximum_absolute_linear_velocity_m_s": 0.0,
+    "clock_message_count": 0
+  },
+  "limits": "Controlled no-publisher ROS-domain test; no Gazebo was launched."
+}
