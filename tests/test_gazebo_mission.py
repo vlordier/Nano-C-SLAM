@@ -329,6 +329,7 @@ class MissionStatusEventTests(unittest.TestCase):
         hover = self.event(2, MissionPhase.HOVER, altitude_m=0.5)
         skipped = self.event(2, MissionPhase.HOVER, altitude_m=0.5)
         for events in (
+            [],
             [waiting],
             [waiting, waiting],
             [waiting, skipped],

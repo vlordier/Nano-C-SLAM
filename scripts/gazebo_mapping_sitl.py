@@ -39,6 +39,9 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
     validate_capture_report,
     validate_mapping_result,
 )
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_run_model import (
+    MissionCaptureGate,
+)
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     SUPPORTED_DRONE_NAMES,
     create_run_id,
@@ -98,6 +101,10 @@ class _RangeMessage(Protocol):
     ranges_mm: Sequence[int]
 
 
+class _StringMessage(Protocol):
+    data: str
+
+
 @dataclass(frozen=True)
 class _CaptureResult:
     samples: list[MappingSample]
@@ -111,6 +118,16 @@ def _parse_args(args: list[str] | None) -> argparse.Namespace:
     parser.add_argument(
         "--run-id",
         help="canonical UUID shared with sim_mission; generated when omitted",
+    )
+    parser.add_argument(
+        "--mission-gated",
+        action="store_true",
+        help="start pairing only after this run publishes an active mission phase",
+    )
+    parser.add_argument(
+        "--ready-file",
+        type=Path,
+        help="write the run ID after all telemetry/status subscriptions are created",
     )
     parser.add_argument(
         "--samples",
@@ -141,6 +158,7 @@ def _parse_args(args: list[str] | None) -> argparse.Namespace:
         default=REPOSITORY_ROOT / "cslam-gap9-app/BUILD-host/mapping_replay",
     )
     options = parser.parse_args(args)
+    options.run_id_supplied = options.run_id is not None
     try:
         options.run_id = (
             create_run_id()
@@ -149,6 +167,8 @@ def _parse_args(args: list[str] | None) -> argparse.Namespace:
         )
     except ValueError as error:
         parser.error(str(error))
+    if options.mission_gated and not options.run_id_supplied:
+        parser.error("--mission-gated requires an explicit --run-id")
     if not MINIMUM_SAMPLES <= options.samples <= MAXIMUM_SAMPLES:
         parser.error(
             f"--samples must be between {MINIMUM_SAMPLES} and {MAXIMUM_SAMPLES}"
@@ -158,12 +178,28 @@ def _parse_args(args: list[str] | None) -> argparse.Namespace:
     return options
 
 
-def _capture_samples(drone: str, sample_limit: int, timeout_s: float) -> _CaptureResult:
+def _capture_samples(
+    drone: str,
+    sample_limit: int,
+    timeout_s: float,
+    *,
+    run_id: str | None = None,
+    mission_gated: bool = False,
+    ready_file: Path | None = None,
+) -> _CaptureResult:
     """Collect synchronized odometry and range messages from a running Gazebo."""
+    if mission_gated:
+        if run_id is None:
+            raise ValueError("mission-gated capture requires a shared run ID")
+        validate_run_id(run_id)
+        if ready_file is None:
+            raise ValueError("mission-gated capture requires a readiness file")
     rclpy: Any = importlib.import_module("rclpy")
     odometry_module = importlib.import_module("nav_msgs.msg")
     range_module = importlib.import_module("nano_c_slam_interfaces.msg")
+    string_module = importlib.import_module("std_msgs.msg")
     ros_node_module = importlib.import_module("rclpy.node")
+    qos_module = importlib.import_module("rclpy.qos")
     odometry_message = odometry_module.Odometry
     range_message = range_module.StampedRanges
     node_base = ros_node_module.Node
@@ -173,6 +209,11 @@ def _capture_samples(drone: str, sample_limit: int, timeout_s: float) -> _Captur
             super().__init__("nano_c_slam_mapping_capture")
             self._drone = drone
             self._sample_limit = sample_limit
+            self._mission_gate = (
+                MissionCaptureGate(run_id, drone) if mission_gated and run_id else None
+            )
+            self._mission_started = self._mission_gate is None
+            self._mission_failure: str | None = None
             self._pairer = TelemetryPairer(
                 drone,
                 PairingLimits(
@@ -193,7 +234,28 @@ def _capture_samples(drone: str, sample_limit: int, timeout_s: float) -> _Captur
                 self._on_ranges,
                 10,
             )
+            if self._mission_gate is not None:
+                status_qos = qos_module.QoSProfile(
+                    depth=10,
+                    durability=qos_module.DurabilityPolicy.TRANSIENT_LOCAL,
+                    history=qos_module.HistoryPolicy.KEEP_LAST,
+                )
+                self.create_subscription(
+                    string_module.String,
+                    f"/{drone}/mission_status",
+                    self._on_mission_status,
+                    status_qos,
+                )
             self.create_timer(0.1, self._sample)
+
+        def _on_mission_status(self, message: _StringMessage) -> None:
+            gate = self._mission_gate
+            if gate is None:
+                return
+            self._mission_started = gate.observe(str(message.data))
+            if gate.failure_reason is not None:
+                self._mission_failure = gate.failure_reason
+                self.complete = True
 
         def _on_odometry(self, message: _OdometryMessage) -> None:
             stamp = message.header.stamp
@@ -237,10 +299,25 @@ def _capture_samples(drone: str, sample_limit: int, timeout_s: float) -> _Captur
             self._pairer.add_range(sample)
 
         def _sample(self) -> None:
+            if self._mission_failure is not None:
+                return
+            if not self._mission_started:
+                return
             now_ns = self.get_clock().now().nanoseconds
             pair = self._pairer.pop_pair(now_ns)
             if pair is None:
                 return
+            if self._mission_gate is not None:
+                started_at_s = self._mission_gate.started_at_s
+                if started_at_s is None:
+                    return
+                mission_start_ns = int(started_at_s * 1_000_000_000)
+                if (
+                    pair.ranges.stamp_ns < mission_start_ns
+                    or pair.odometry.stamp_ns < mission_start_ns
+                ):
+                    self._pairer.rejections["pre_mission_pair"] += 1
+                    return
             try:
                 sample = MappingSample(
                     sample_id=len(self.samples),
@@ -277,6 +354,11 @@ def _capture_samples(drone: str, sample_limit: int, timeout_s: float) -> _Captur
     node = CaptureNode()
     deadline = time.monotonic() + timeout_s
     try:
+        if ready_file is not None:
+            with ready_file.open("x", encoding="utf-8") as stream:
+                stream.write(f"{run_id or ''}\n")
+                stream.flush()
+                os.fsync(stream.fileno())
         while rclpy.ok() and not node.complete and time.monotonic() < deadline:
             rclpy.spin_once(node, timeout_sec=0.1)
         result = _CaptureResult(
@@ -289,6 +371,8 @@ def _capture_samples(drone: str, sample_limit: int, timeout_s: float) -> _Captur
         if rclpy.ok():
             rclpy.shutdown()
     if len(result.samples) < sample_limit:
+        if node._mission_failure is not None:
+            raise RuntimeError(node._mission_failure)
         raise RuntimeError(
             _format_capture_timeout(
                 len(result.samples), sample_limit, result.rejections
@@ -426,7 +510,14 @@ def main(args: list[str] | None = None) -> int:
     if not binary.is_file():
         raise FileNotFoundError(f"host mapping executable was not built: {binary}")
 
-    capture = _capture_samples(options.drone, options.samples, options.timeout)
+    capture = _capture_samples(
+        options.drone,
+        options.samples,
+        options.timeout,
+        run_id=options.run_id,
+        mission_gated=options.mission_gated,
+        ready_file=options.ready_file,
+    )
     samples = capture.samples
     range_summary = summarize_range_accounting(samples, range_limit_mm=1400)
     scan_window_in_range_samples = [
@@ -469,6 +560,9 @@ def main(args: list[str] | None = None) -> int:
         ),
         "drone": options.drone,
         "run_id": options.run_id,
+        "mission_binding": (
+            "matching-status-run" if options.mission_gated else "unbound-standalone"
+        ),
         "simulator": "Gazebo Harmonic Crazyswarm2 swarm world",
         "scene": options.scene,
         "host": {"system": platform.system(), "machine": platform.machine()},

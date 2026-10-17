@@ -60,6 +60,10 @@ include = [
     "sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/mission_model.py",
     "sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/mapping_run_model.py",
     "tests/test_gazebo_mapping_run.py",
+    "tests/test_gazebo_mapping_run_processes.py",
+    "tests/test_gazebo_mapping_run_cli.py",
+    "sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/mapping_run_processes.py",
+    "scripts/gazebo_mapping_run.py",
 ]
 
 [tool.ty.rules]

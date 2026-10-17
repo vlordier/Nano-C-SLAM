@@ -1,0 +1,185 @@
+"""Bounded, testable supervision for the mapping collector and mission."""
+
+from __future__ import annotations
+
+import math
+import signal
+import subprocess
+import time
+from collections.abc import Callable
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Protocol, cast
+
+from .mapping_run_model import MappingRunCommands
+
+
+class ManagedProcess(Protocol):
+    """Small subprocess surface required by the coordinator."""
+
+    def poll(self) -> int | None: ...
+
+    def terminate(self) -> None: ...
+
+    def kill(self) -> None: ...
+
+    def send_signal(self, signal_number: int) -> None: ...
+
+    def wait(self, timeout: float | None = None) -> int: ...
+
+
+@dataclass(frozen=True)
+class MappingRunProcessResult:
+    """Completed child statuses and retained raw log paths."""
+
+    collector_returncode: int
+    mission_returncode: int
+    collector_log: Path
+    mission_log: Path
+
+
+def supervise_mapping_processes(
+    commands: MappingRunCommands,
+    *,
+    readiness_file: Path,
+    run_id: str,
+    log_directory: Path,
+    timeout_s: float,
+    pump_status: Callable[[], None],
+    subscriptions_ready: Callable[[], bool] = lambda: True,
+    process_factory: Callable[..., ManagedProcess] | None = None,
+    monotonic: Callable[[], float] = time.monotonic,
+    sleep: Callable[[float], None] = time.sleep,
+    poll_interval_s: float = 0.05,
+    terminate_grace_s: float = 1.0,
+) -> MappingRunProcessResult:
+    """Start collector before mission, then reap both under one host deadline.
+
+    ``pump_status`` should spin the ROS status listener and raise if it receives
+    malformed or otherwise unusable status. The caller validates the complete
+    event stream after both children exit successfully.
+    """
+    for value, name in (
+        (timeout_s, "timeout_s"),
+        (poll_interval_s, "poll_interval_s"),
+        (terminate_grace_s, "terminate_grace_s"),
+    ):
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            raise ValueError(f"{name} must be finite numeric data")
+        try:
+            finite = math.isfinite(value)
+        except OverflowError as error:
+            raise ValueError(f"{name} must be finite numeric data") from error
+        if not finite or value <= 0:
+            raise ValueError(f"{name} must be finite and positive")
+    if not run_id or not readiness_file.is_absolute():
+        raise ValueError("run_id and an absolute collector readiness path are required")
+    if readiness_file.exists():
+        raise FileExistsError(
+            f"collector readiness marker already exists: {readiness_file}"
+        )
+    if log_directory.exists():
+        raise FileExistsError(f"run log directory already exists: {log_directory}")
+    start_process: Callable[..., ManagedProcess] = (
+        process_factory
+        if process_factory is not None
+        else cast(Callable[..., ManagedProcess], subprocess.Popen)
+    )
+    log_directory.mkdir(parents=True)
+    readiness_file.parent.mkdir(parents=True, exist_ok=True)
+    collector_log = log_directory / "collector.log"
+    mission_log = log_directory / "mission.log"
+    collector: ManagedProcess | None = None
+    mission: ManagedProcess | None = None
+    deadline = monotonic() + timeout_s
+    try:
+        with collector_log.open("xb") as collector_stream:
+            collector = start_process(
+                commands.collector,
+                stdout=collector_stream,
+                stderr=subprocess.STDOUT,
+            )
+            while True:
+                pump_status()
+                if readiness_file.is_file():
+                    announced_run_id = readiness_file.read_text(
+                        encoding="utf-8"
+                    ).strip()
+                    if announced_run_id != run_id:
+                        raise RuntimeError("collector readiness run ID does not match")
+                    if subscriptions_ready():
+                        break
+                collector_code = collector.poll()
+                if collector_code is not None:
+                    raise RuntimeError(
+                        "collector exited before subscribing to telemetry"
+                    )
+                _check_deadline(deadline, monotonic)
+                sleep(poll_interval_s)
+
+            with mission_log.open("xb") as mission_stream:
+                mission = start_process(
+                    commands.mission,
+                    stdout=mission_stream,
+                    stderr=subprocess.STDOUT,
+                )
+                while True:
+                    pump_status()
+                    collector_code = collector.poll()
+                    mission_code = mission.poll()
+                    if collector_code not in (None, 0):
+                        raise RuntimeError(
+                            f"collector exited with status {collector_code}"
+                        )
+                    if mission_code not in (None, 0):
+                        raise RuntimeError(f"mission exited with status {mission_code}")
+                    if collector_code == 0 and mission_code == 0:
+                        break
+                    _check_deadline(deadline, monotonic)
+                    sleep(poll_interval_s)
+        collector_returncode = collector.wait() if collector is not None else 1
+        mission_returncode = mission.wait() if mission is not None else 1
+        if collector_returncode != 0 or mission_returncode != 0:
+            raise RuntimeError(
+                "child return codes changed while reaping completed processes"
+            )
+        return MappingRunProcessResult(
+            collector_returncode=collector_returncode,
+            mission_returncode=mission_returncode,
+            collector_log=collector_log,
+            mission_log=mission_log,
+        )
+    except BaseException:
+        _stop_and_reap(mission, terminate_grace_s, signal_number=signal.SIGINT)
+        _stop_and_reap(collector, terminate_grace_s, signal_number=signal.SIGTERM)
+        raise
+
+
+def _check_deadline(deadline: float, monotonic: Callable[[], float]) -> None:
+    if monotonic() >= deadline:
+        raise TimeoutError("mapping run exceeded its host-side deadline")
+
+
+def _stop_and_reap(
+    process: ManagedProcess | None,
+    grace_s: float,
+    *,
+    signal_number: int,
+) -> None:
+    if process is None:
+        return
+    if process.poll() is not None:
+        process.wait()
+        return
+    try:
+        process.send_signal(signal_number)
+    except ProcessLookupError:
+        return
+    try:
+        process.wait(timeout=grace_s)
+    except subprocess.TimeoutExpired:
+        try:
+            process.kill()
+        except ProcessLookupError:
+            return
+        process.wait()

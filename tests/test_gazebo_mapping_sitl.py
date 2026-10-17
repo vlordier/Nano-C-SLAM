@@ -77,6 +77,19 @@ class MappingSampleTests(unittest.TestCase):
         self.assertEqual(
             _parse_args(["--run-id", supplied_run_id]).run_id, supplied_run_id
         )
+        with self.assertRaises(SystemExit):
+            _parse_args(["--mission-gated"])
+        gated = _parse_args(
+            [
+                "--mission-gated",
+                "--run-id",
+                supplied_run_id,
+                "--ready-file",
+                "collector.ready",
+            ]
+        )
+        self.assertTrue(gated.mission_gated)
+        self.assertEqual(gated.ready_file, Path("collector.ready"))
 
     def test_capture_timeout_reports_named_pairing_rejections(self) -> None:
         message = _format_capture_timeout(
@@ -269,6 +282,15 @@ class MappingSampleTests(unittest.TestCase):
         report = json.loads(report_path.read_text(encoding="utf-8"))
         self.assertEqual(validate_capture_report(report), report)
 
+        rounded = copy.deepcopy(report)
+        rounded_observability = rounded["mapping"]["projected_scan_windows"][0][
+            "observability"
+        ]
+        rounded_observability["covariance_minor_eigenvalue_m2"] = round(
+            rounded_observability["covariance_minor_eigenvalue_m2"], 12
+        )
+        validate_capture_report(rounded)
+
         invalid = copy.deepcopy(report)
         invalid["range_accounting"]["accepted_at_or_below_limit"] += 1
         with self.assertRaisesRegex(ValueError, "does not reconcile"):
@@ -352,6 +374,13 @@ class MappingSampleTests(unittest.TestCase):
             report["pairing_limits"]["maximum_age_ns"],
         )
         self.assertEqual(max(pair["pair_skew_ns"] for pair in pairs), 0)
+        windows = report["mapping"]["projected_scan_windows"]
+        self.assertEqual([window["pose_count"] for window in windows], [20] * 8 + [10])
+
+        forged_full_window = copy.deepcopy(report)
+        forged_full_window["mapping"]["projected_scan_windows"][-1]["pose_count"] = 20
+        with self.assertRaisesRegex(ValueError, "do not reconcile to mapping"):
+            validate_capture_report(forged_full_window)
 
     def test_retained_nearfield_report_reconciles_four_beams_and_scan_windows(
         self,

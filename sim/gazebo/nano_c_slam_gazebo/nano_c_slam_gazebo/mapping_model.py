@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from itertools import pairwise
 from statistics import median
 
-from .mission_model import validate_run_id
+from .mission_model import validate_drone_name, validate_run_id
 
 MIN_SCAN_MINOR_EIGENVALUE_M2 = 0.1
 
@@ -419,6 +419,15 @@ def validate_capture_report(report: object) -> dict[str, object]:
         raise ValueError("capture report is missing drone identity")
     if "run_id" in report:
         validate_run_id(report["run_id"])
+        validate_drone_name(drone)
+    mission_binding = report.get("mission_binding")
+    if "mission_binding" in report and mission_binding not in (
+        "matching-status-run",
+        "unbound-standalone",
+    ):
+        raise ValueError("capture report has an unsupported mission binding mode")
+    if mission_binding == "matching-status-run" and "run_id" not in report:
+        raise ValueError("mission-bound capture report is missing run_id")
     if (
         not isinstance(provenance, dict)
         or not isinstance(provenance.get("revision"), str)
@@ -630,10 +639,29 @@ def validate_capture_report(report: object) -> dict[str, object]:
         if not isinstance(window, dict) or not isinstance(window.get("points"), list):
             raise ValueError("capture mapping has malformed projected scan window")
         expected_observability = summarize_projected_scan(window["points"])
-        if window.get("observability") != expected_observability:
+        reported_observability = window.get("observability")
+        if not isinstance(reported_observability, dict) or set(
+            reported_observability
+        ) != set(expected_observability):
             raise ValueError(
                 "scan-window observability does not match projected points"
             )
+        for key, expected in expected_observability.items():
+            actual = reported_observability[key]
+            if isinstance(expected, float):
+                if (
+                    isinstance(actual, bool)
+                    or not isinstance(actual, (int, float))
+                    or not math.isfinite(actual)
+                    or not math.isclose(actual, expected, rel_tol=1e-12, abs_tol=1e-15)
+                ):
+                    raise ValueError(
+                        "scan-window observability does not match projected points"
+                    )
+            elif type(actual) is not type(expected) or actual != expected:
+                raise ValueError(
+                    "scan-window observability does not match projected points"
+                )
         if expected_observability["observable_2d"] is not True:
             raise ValueError("projected scan window has insufficient 2D spread")
     map_point_count = mapping["map_point_count"]

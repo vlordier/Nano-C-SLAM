@@ -80,7 +80,8 @@ run and drone identity, simulation-clock time, measured altitude, requested and
 completed mapping-path state, and landing-height limit. A `COMPLETE` event is
 emitted only with a measured altitude within the configured landing bound and,
 when requested, a completed bounded path. `FAILED` exits with status 1;
-interrupt exits with status 130. This status stream is evidence for later
+interrupt exits with status 130. The transient-local topic retains the phase
+history for a collector that joins after mission startup. This status stream is evidence for later
 single-run orchestration; launching the mission separately still does not bind
 it to a telemetry capture.
 
@@ -253,11 +254,10 @@ with named rejection counters and no passing report. The pure pairer tests
 cover inclusive age/skew boundaries and over-limit skew. This is a ROS collector
 contract test, not a Gazebo freshness measurement.
 
-With the near-field Gazebo instance and sensor bridge running, start the
-collector in one terminal before launching the mission in another. It samples
-fresh odometry and the four-ray range topic at 10 Hz, then builds and runs the
-owned C point-cloud, ICP, and pose-graph code on the captured data. The mapper
-discards returns above the firmware loop-closure limit of 1.4 m:
+With the near-field Gazebo instance and sensor bridge running, use the
+single-run coordinator to start the collector before the mission, wait for
+matching ROS subscriptions, capture only after that run begins, and replay the
+telemetry through the owned C point-cloud, ICP, and pose-graph code:
 
 ```sh
 cd ~/Work/Nano-C-SLAM
@@ -266,14 +266,17 @@ source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
 export GZ_PARTITION="nano_c_slam_$(id -u)"
 export ROS_DOMAIN_ID=42
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
-  python scripts/gazebo_mapping_sitl.py --drone cf1 --samples 60 \
-  --scene nearfield-mapping \
-  --output /tmp/nano-c-slam-gazebo-map.json
+  python scripts/gazebo_mapping_run.py --drone cf1 --samples 60 \
+  --scene nearfield-mapping --timeout 120 \
+  --output /tmp/nano-c-slam-gazebo-run.json
 ```
 
-In a second terminal, run the single-drone mission from the previous section.
-The collector requires at least 60 fresh samples (three 20-pose scan windows)
-and reports success only when it obtains finite map points, at least two
+The command generates one UUID for both processes, requires a completed bounded
+square path and a measured landing at or below 0.1 m, and writes the combined
+report only after both processes and host replay pass. Child logs remain beside
+the report in a hidden run-scoped directory. The collector requires at least
+60 fresh samples (three 20-pose scan windows) and reports success only when it
+obtains finite map points, at least two
 unique edges submitted to `ls_slam`, a finite three-node graph, successful
 solver calls, and complete fixed iteration counts. The report names poses
 `finite_pose_count` because it records finite reconstructed output; it does

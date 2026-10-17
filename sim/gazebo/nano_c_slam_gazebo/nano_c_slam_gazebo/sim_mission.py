@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import math
+import time
 from collections.abc import Sequence
 
 import rclpy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from rclpy.node import Node
+from rclpy.qos import DurabilityPolicy, HistoryPolicy, QoSProfile
 from std_msgs.msg import Bool, String
 
 from .mapping_path import MappingPath
@@ -59,7 +61,13 @@ class SimMission(Node):
             Bool, f"/{self._drone_name}/enable", 10
         )
         self._status_publisher = self.create_publisher(
-            String, f"/{self._drone_name}/mission_status", 10
+            String,
+            f"/{self._drone_name}/mission_status",
+            QoSProfile(
+                depth=10,
+                durability=DurabilityPolicy.TRANSIENT_LOCAL,
+                history=HistoryPolicy.KEEP_LAST,
+            ),
         )
         self.create_subscription(
             Odometry,
@@ -156,6 +164,11 @@ class SimMission(Node):
         """Keep the controller commanded to hover after the mission terminates."""
         self._publisher.publish(Twist())
 
+    def destroy_node(self) -> None:
+        """Stop commanded motion before releasing the ROS publisher."""
+        self._publish_zero_command()
+        super().destroy_node()
+
     def _publish_status(self, sim_time_s: float) -> None:
         """Publish structured evidence for each mission phase transition."""
         altitude_m = self._altitude_m
@@ -192,6 +205,13 @@ def main(args: Sequence[str] | None = None) -> int:
         ):
             rclpy.spin_once(node, timeout_sec=0.1)
         exit_code = mission_exit_code(node._sequence.phase)
+        if node._sequence.phase in (MissionPhase.COMPLETE, MissionPhase.FAILED):
+            # Keep the transient-local status publisher alive long enough for
+            # late DDS subscribers to receive the terminal event after process
+            # exit is observed by the coordinator.
+            terminal_deadline = time.monotonic() + 0.5
+            while rclpy.ok() and time.monotonic() < terminal_deadline:
+                rclpy.spin_once(node, timeout_sec=0.05)
     except KeyboardInterrupt:
         exit_code = mission_exit_code(MissionPhase.FAILED, interrupted=True)
     finally:
