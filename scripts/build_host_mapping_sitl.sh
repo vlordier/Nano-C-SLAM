@@ -42,7 +42,8 @@ flags+=(-ffunction-sections -fdata-sections)
 cc "${flags[@]}" "${includes[@]}" \
     "$repo_root/cslam-gap9-app/host-sitl/mapping_replay.c" \
     "${core_sources[@]}" "$linker_gc" -lm -o "$output"
-cc "${flags[@]}" "${includes[@]}" \
+smoke_flags=("${flags[@]}" -DNANO_C_SLAM_ICP_DIAGNOSTICS=1)
+cc "${smoke_flags[@]}" "${includes[@]}" \
     "$repo_root/tests/gap9_sdk_gvsoc_mapping_smoke.c" \
     "${core_sources[@]}" "$linker_gc" -lm -o "$mapping_smoke"
 

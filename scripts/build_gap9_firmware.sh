@@ -77,6 +77,7 @@ riscv32-unknown-elf-size "$BUILD_ROOT/BUILD-gvsoc/nano_c_slam_gvsoc_smoke"
 uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
     cmake -S /project/cslam-gap9-app -B "$BUILD_ROOT/BUILD-gvsoc-mapping" \
     -DCMAKE_BUILD_TYPE=Release -DNANO_C_SLAM_GVSOC_MAPPING_SMOKE=ON \
+    -DNANO_C_SLAM_ICP_DIAGNOSTICS=ON \
     -DKCONFIG_CONFIG=/project/tests/gap9_gvsoc_sdk.config
 uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
     cmake --build "$BUILD_ROOT/BUILD-gvsoc-mapping" \

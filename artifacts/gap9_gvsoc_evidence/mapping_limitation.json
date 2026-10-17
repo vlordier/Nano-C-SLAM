@@ -18,6 +18,22 @@
     "has_nan": false
   },
   "gvsoc_exit_code": 1,
+  "target_marker": "NANO_C_SLAM_GVSOC:mapping_fail poses=60 scans=3 points=240 icp_constraints=0 matches=80 icp_error_milli=2147483647 icp_has_nan=1 optimized=0 graph=0 has_nan=0",
+  "target_log_path": "/Users/vincent/Work/Nano-C-SLAM/artifacts/gap9_gvsoc_evidence/gvsoc_mapping_limitation.log",
+  "source_provenance": {
+    "repository_revision": "4f9ae1384f10c42360942b5d2d65f5e8b176a1a9",
+    "repository_dirty": true,
+    "source_sha256": {
+      "tests/gap9_sdk_gvsoc_mapping_smoke.c": "76a81f898a008aed0cc4df842604567b7d2c34999b9a70af177d170b497dde44",
+      "cslam-gap9-app/icp/icp.c": "b88e9a4b0e3c3ba05307fce821a06571fbaa72f410ec1675f02fd20dd8a7c0fc",
+      "cslam-gap9-app/point-cloud/point_cloud.c": "cb6b95ca309675752ab20771bb4ca47a437e5c70c301ddd31719d180eb84354f"
+    }
+  },
+  "gvsoc_runtime": {
+    "sdk_revision": "45247566dbfd1ec7bb021f158fefe133c2aa8e10",
+    "sdk_worktree_dirty": true,
+    "release": "5.20.4"
+  },
   "host_core_reference": {
     "status": "passed",
     "poses": 60,
@@ -26,9 +42,13 @@
     "icp_constraints_at_least": 2,
     "optimized_poses": 60,
     "graph_nodes": 3,
-    "execution": "native host with PMSIS compute-boundary stubs"
+    "execution": "native host with PMSIS compute-boundary stubs",
+    "elf_sha256": "fd73a476eb9182bdda5acb96d088ca9784913d47f8ae71859050373ed0aaf8cc",
+    "exit_code": 0,
+    "stdout": "NANO_C_SLAM_HOST:mapping_ok poses=60 scans=3 map_points=240 finite=60 graph=3 main_solver=1 solver_calls=3 solver_iterations=9 completed=1 has_nan=0\n",
+    "stderr": ""
   },
   "elf_bytes": 663968,
   "elf_sha256": "ea2c88c59d033464b2a65f738c0e7e8a53e3ccb0ed50f101954cd76f751a2dd3",
-  "log_sha256": "03fd4d6c350a135a1c0f578b18ef263d408c1ff6a6d12d61266502e798f5ef1e"
+  "log_sha256": "9d80c0b1e9e7dedb9d96f21b103e51a78c11d81d58d11d073b545226f498d3e6"
 }

@@ -10,6 +10,8 @@ endif()
 include($ENV{GAP_SDK_HOME}/utils/cmake/setup.cmake)
 project(${TARGET_NAME} C ASM)
 
+option(NANO_C_SLAM_ICP_DIAGNOSTICS "Enable test-only ICP stage diagnostics" OFF)
+
 set_source_files_properties(
     ../tests/gap9_sdk_gvsoc_mapping_smoke.c
     PROPERTIES COMPILE_OPTIONS "-std=gnu11"
@@ -75,6 +77,9 @@ target_compile_options(
     $ENV{GAP_SDK_HOME}/rtos/pmsis/tools/assert/include/assert.h
 )
 target_compile_definitions(${TARGET_NAME} PRIVATE CONFIG_DISABLE_WERROR=1)
+if(NANO_C_SLAM_ICP_DIAGNOSTICS)
+    target_compile_definitions(${TARGET_NAME} PRIVATE NANO_C_SLAM_ICP_DIAGNOSTICS=1)
+endif()
 target_link_options(${TARGET_NAME} PRIVATE -Wl,--print-memory-usage)
 setupos(${TARGET_NAME})
 target_link_libraries(${TARGET_NAME} PRIVATE m)

@@ -14,6 +14,12 @@
 #include "config_size.h"
 #include "icp.h"
 
+#ifdef NANO_C_SLAM_ICP_DIAGNOSTICS
+#define ICP_DIAG(...) printf("NANO_C_SLAM_ICP_DIAG:" __VA_ARGS__)
+#else
+#define ICP_DIAG(...) ((void)0)
+#endif
+
 extern struct pi_device cluster_dev;
 static struct pi_cluster_task cl_task;
 static pi_evt_t task_block_illegal;
@@ -333,6 +339,29 @@ void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
         for (size_t i = 0; i < P_copy->num; i++) {
             if (cor_P[i] >= 0) matched++;
         }
+#ifdef NANO_C_SLAM_ICP_DIAGNOSTICS
+        int32_t reverse_matches = 0;
+        int16_t reverse_nonzero = 0;
+        int16_t invalid_reverse = 0;
+        int16_t invalid_forward = 0;
+        for (size_t i = 0; i < Q->num; ++i) {
+            if (cor_Q[i] < 0) {
+                invalid_reverse++;
+            } else {
+                reverse_matches += cor_Q[i];
+                reverse_nonzero += cor_Q[i] > 0;
+            }
+        }
+        for (size_t i = 0; i < P_copy->num; ++i) {
+            if (cor_P[i] >= (int16_t)Q->num) invalid_forward++;
+        }
+        ICP_DIAG("iter=%d stage=correspondence p=%u q=%u forward=%d "
+                 "reverse=%ld reverse_nonzero=%d invalid_forward=%d "
+                 "invalid_reverse=%d\n",
+                 iteration, (unsigned)P_copy->num, (unsigned)Q->num, matched,
+                 (long)reverse_matches, reverse_nonzero, invalid_forward,
+                 invalid_reverse);
+#endif
         if (matched == 0) {
             job->has_nan = 1;
             job->error = INFINITY;
@@ -343,14 +372,23 @@ void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
         icp_point_t center_of_P, center_of_Q;
         center_data_P(P_copy, cor_P, &center_of_P, P_centered);
         center_data_Q(Q, cor_Q, &center_of_Q, Q_centered);
+        ICP_DIAG("iter=%d stage=center p=(%.9g,%.9g) q=(%.9g,%.9g)\n",
+                 iteration, center_of_P.x, center_of_P.y, center_of_Q.x,
+                 center_of_Q.y);
 
         // Computer the cross variance on centered data
         float cov[4];
         compute_cross_variance(P_centered, Q_centered, cor_P, cov);
+        ICP_DIAG("iter=%d stage=covariance values=(%.9g,%.9g,%.9g,%.9g)\n",
+                 iteration, cov[0], cov[1], cov[2], cov[3]);
 
         // Execute SVD to obtain transformation
         float u[4], sigma[4], v[4], r[4];
         svd(cov, u, sigma, v);
+        ICP_DIAG("iter=%d stage=svd sigma=(%.9g,%.9g) u=(%.9g,%.9g,%.9g,%.9g) "
+                 "v=(%.9g,%.9g,%.9g,%.9g)\n",
+                 iteration, sigma[0], sigma[3], u[0], u[1], u[2], u[3], v[0],
+                 v[1], v[2], v[3]);
 
         matmul_2x2(u, v, r);
         icp_point_t t = matpointmul(r, center_of_P);
@@ -363,6 +401,8 @@ void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
             job->error = INFINITY;
             return;
         }
+        ICP_DIAG("iter=%d stage=transform t=(%.9g,%.9g) r=(%.9g,%.9g,%.9g,%.9g)\n",
+                 iteration, t.x, t.y, r[0], r[1], r[2], r[3]);
 
         // Chain transformations using homogenous coordinates
         float transform[9] = {
@@ -395,6 +435,7 @@ void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
             icp_error += points_dist_squared(P_copy->items[i], Q->items[j]);
         }
         job->error = icp_error / (float)matched;
+        ICP_DIAG("iter=%d stage=error value=%.9g\n", iteration, job->error);
         if (!isfinite(job->error)) {
             job->has_nan = 1;
             job->error = INFINITY;
