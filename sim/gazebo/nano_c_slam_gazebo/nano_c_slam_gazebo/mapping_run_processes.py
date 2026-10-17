@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import math
+import os
 import signal
 import subprocess
 import time
 from collections.abc import Callable
+from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol, cast
@@ -48,6 +50,7 @@ def supervise_mapping_processes(
     pump_status: Callable[[], None],
     subscriptions_ready: Callable[[], bool] = lambda: True,
     process_factory: Callable[..., ManagedProcess] | None = None,
+    process_group_exists: Callable[[ManagedProcess], bool] | None = None,
     monotonic: Callable[[], float] = time.monotonic,
     sleep: Callable[[float], None] = time.sleep,
     poll_interval_s: float = 0.05,
@@ -85,6 +88,11 @@ def supervise_mapping_processes(
         if process_factory is not None
         else cast(Callable[..., ManagedProcess], subprocess.Popen)
     )
+    group_exists = (
+        process_group_exists
+        if process_group_exists is not None
+        else _process_group_exists
+    )
     log_directory.mkdir(parents=True)
     readiness_file.parent.mkdir(parents=True, exist_ok=True)
     collector_log = log_directory / "collector.log"
@@ -98,6 +106,7 @@ def supervise_mapping_processes(
                 commands.collector,
                 stdout=collector_stream,
                 stderr=subprocess.STDOUT,
+                start_new_session=(os.name == "posix"),
             )
             while True:
                 pump_status()
@@ -122,6 +131,7 @@ def supervise_mapping_processes(
                     commands.mission,
                     stdout=mission_stream,
                     stderr=subprocess.STDOUT,
+                    start_new_session=(os.name == "posix"),
                 )
                 while True:
                     pump_status()
@@ -150,8 +160,22 @@ def supervise_mapping_processes(
             mission_log=mission_log,
         )
     except BaseException:
-        _stop_and_reap(mission, terminate_grace_s, signal_number=signal.SIGINT)
-        _stop_and_reap(collector, terminate_grace_s, signal_number=signal.SIGTERM)
+        _stop_and_reap(
+            mission,
+            terminate_grace_s,
+            signal_number=signal.SIGINT,
+            process_group_exists=group_exists,
+            monotonic=monotonic,
+            sleep=sleep,
+        )
+        _stop_and_reap(
+            collector,
+            terminate_grace_s,
+            signal_number=signal.SIGTERM,
+            process_group_exists=group_exists,
+            monotonic=monotonic,
+            sleep=sleep,
+        )
         raise
 
 
@@ -165,21 +189,45 @@ def _stop_and_reap(
     grace_s: float,
     *,
     signal_number: int,
+    process_group_exists: Callable[[ManagedProcess], bool],
+    monotonic: Callable[[], float],
+    sleep: Callable[[float], None],
 ) -> None:
     if process is None:
         return
-    if process.poll() is not None:
-        process.wait()
-        return
-    try:
-        process.send_signal(signal_number)
-    except ProcessLookupError:
-        return
-    try:
+    with suppress(ProcessLookupError):
+        _signal_process_group(process, signal_number)
+    grace_deadline = monotonic() + grace_s
+    with suppress(subprocess.TimeoutExpired):
         process.wait(timeout=grace_s)
-    except subprocess.TimeoutExpired:
-        try:
+    while process_group_exists(process) and monotonic() < grace_deadline:
+        sleep(min(0.05, grace_deadline - monotonic()))
+    with suppress(ProcessLookupError):
+        # The direct process can exit before descendants. Force-clean the
+        # isolated group after its grace interval regardless of leader status.
+        _signal_process_group(process, signal.SIGKILL)
+    if process.poll() is None:
+        with suppress(ProcessLookupError):
             process.kill()
+    process.wait()
+
+
+def _signal_process_group(process: ManagedProcess, signal_number: int) -> None:
+    """Signal the isolated Popen session, with a direct-process test fallback."""
+    if os.name == "posix" and isinstance(process, subprocess.Popen):
+        os.killpg(process.pid, signal_number)
+    else:
+        process.send_signal(signal_number)
+
+
+def _process_group_exists(process: ManagedProcess) -> bool:
+    """Check whether the isolated POSIX session still has any live members."""
+    if os.name == "posix" and isinstance(process, subprocess.Popen):
+        try:
+            os.killpg(process.pid, 0)
         except ProcessLookupError:
-            return
-        process.wait()
+            return False
+        except PermissionError:
+            return True
+        return True
+    return process.poll() is None

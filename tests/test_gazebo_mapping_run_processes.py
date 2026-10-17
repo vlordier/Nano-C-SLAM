@@ -8,12 +8,14 @@ import tempfile
 import unittest
 from collections.abc import Callable
 from pathlib import Path
+from typing import cast
 
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_run_model import (
     MappingRunCommands,
 )
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_run_processes import (
     MappingRunProcessResult,
+    _stop_and_reap,
     supervise_mapping_processes,
 )
 
@@ -36,15 +38,16 @@ class _FakeProcess:
         self.poll_count = 0
         self.terminated = False
         self.killed = False
-        self.received_signal: int | None = None
+        self.received_signals: list[int] = []
+        self.descendant_alive = True
         self.waited = False
 
     def poll(self) -> int | None:
         self.poll_count += 1
-        if self.terminated:
-            return -15
         if self.killed:
             return -9
+        if self.terminated:
+            return -15
         if self.exit_after is not None and self.poll_count >= self.exit_after:
             return self.returncode
         return None
@@ -53,8 +56,12 @@ class _FakeProcess:
         self.terminated = True
 
     def send_signal(self, signal_number: int) -> None:
-        self.received_signal = signal_number
-        self.terminated = True
+        self.received_signals.append(signal_number)
+        if signal_number == signal.SIGKILL:
+            self.killed = True
+            self.descendant_alive = False
+        else:
+            self.terminated = True
 
     def kill(self) -> None:
         self.killed = True
@@ -68,6 +75,14 @@ class _FakeProcess:
         return result
 
 
+class _LookupRaceProcess(_FakeProcess):
+    def send_signal(self, signal_number: int) -> None:
+        if not self.received_signals:
+            self.received_signals.append(signal_number)
+            raise ProcessLookupError
+        super().send_signal(signal_number)
+
+
 class MappingRunProcessTests(unittest.TestCase):
     def setUp(self) -> None:
         self.commands = MappingRunCommands(
@@ -77,6 +92,7 @@ class MappingRunProcessTests(unittest.TestCase):
         self.run_id = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
         self.last_processes: list[_FakeProcess] = []
         self.commands_started: list[tuple[str, ...]] = []
+        self.session_options: list[bool] = []
 
     def run_supervisor(
         self,
@@ -94,9 +110,10 @@ class MappingRunProcessTests(unittest.TestCase):
         processes: list[_FakeProcess] = []
         self.last_processes = processes
         self.commands_started = []
+        self.session_options = []
 
         def process_factory(command: tuple[str, ...], **kwargs: object) -> _FakeProcess:
-            del kwargs
+            self.session_options.append(kwargs.get("start_new_session") is True)
             self.commands_started.append(command)
             if command == self.commands.mission:
                 assert readiness_file.is_file()
@@ -119,6 +136,9 @@ class MappingRunProcessTests(unittest.TestCase):
             pump_status=pump_status,
             process_factory=process_factory,
             subscriptions_ready=subscriptions_ready,
+            process_group_exists=lambda process: (
+                cast(_FakeProcess, process).descendant_alive or process.poll() is None
+            ),
             monotonic=clock.monotonic,
             sleep=clock.sleep,
             poll_interval_s=0.1,
@@ -151,6 +171,7 @@ class MappingRunProcessTests(unittest.TestCase):
                 [self.commands.collector, self.commands.mission],
             )
             self.assertGreaterEqual(subscription_checks, 3)
+            self.assertEqual(self.session_options, [True, True])
 
     def test_rejects_collector_exit_before_readiness(self) -> None:
         with (
@@ -163,8 +184,13 @@ class MappingRunProcessTests(unittest.TestCase):
                 create_ready=False,
             )
         self.assertEqual(len(self.last_processes), 1)
-        self.assertFalse(self.last_processes[0].terminated)
+        self.assertTrue(self.last_processes[0].terminated)
         self.assertTrue(self.last_processes[0].waited)
+        self.assertEqual(
+            self.last_processes[0].received_signals,
+            [signal.SIGTERM, signal.SIGKILL],
+        )
+        self.assertFalse(self.last_processes[0].descendant_alive)
 
     def test_rejects_wrong_readiness_identity(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -226,7 +252,11 @@ class MappingRunProcessTests(unittest.TestCase):
             )
         self.assertTrue(self.last_processes[0].terminated)
         self.assertTrue(self.last_processes[0].waited)
-        self.assertEqual(self.last_processes[0].received_signal, signal.SIGTERM)
+        self.assertEqual(
+            self.last_processes[0].received_signals,
+            [signal.SIGTERM, signal.SIGKILL],
+        )
+        self.assertFalse(self.last_processes[0].descendant_alive)
 
     def test_collector_nonzero_exit_terminates_and_reaps_mission(self) -> None:
         with (
@@ -239,7 +269,31 @@ class MappingRunProcessTests(unittest.TestCase):
             )
         self.assertTrue(self.last_processes[1].terminated)
         self.assertTrue(self.last_processes[1].waited)
-        self.assertEqual(self.last_processes[1].received_signal, signal.SIGINT)
+        self.assertEqual(
+            self.last_processes[1].received_signals,
+            [signal.SIGINT, signal.SIGKILL],
+        )
+        self.assertFalse(self.last_processes[1].descendant_alive)
+
+    def test_signal_lookup_race_still_escalates_and_reaps_leader(self) -> None:
+        process = _LookupRaceProcess(exit_after=None, returncode=0)
+        clock = _FakeClock()
+
+        _stop_and_reap(
+            process,
+            0.2,
+            signal_number=signal.SIGTERM,
+            process_group_exists=lambda child: (
+                cast(_FakeProcess, child).descendant_alive or child.poll() is None
+            ),
+            monotonic=clock.monotonic,
+            sleep=clock.sleep,
+        )
+
+        self.assertEqual(process.received_signals, [signal.SIGTERM, signal.SIGKILL])
+        self.assertFalse(process.descendant_alive)
+        self.assertTrue(process.waited)
+        self.assertEqual(process.poll(), -9)
 
     def test_timeout_and_interrupt_both_terminate_children(self) -> None:
         with (
@@ -253,8 +307,14 @@ class MappingRunProcessTests(unittest.TestCase):
             )
         self.assertTrue(all(process.terminated for process in self.last_processes))
         self.assertTrue(all(process.waited for process in self.last_processes))
-        self.assertEqual(self.last_processes[1].received_signal, signal.SIGINT)
-        self.assertEqual(self.last_processes[0].received_signal, signal.SIGTERM)
+        self.assertEqual(
+            self.last_processes[1].received_signals,
+            [signal.SIGINT, signal.SIGKILL],
+        )
+        self.assertEqual(
+            self.last_processes[0].received_signals,
+            [signal.SIGTERM, signal.SIGKILL],
+        )
 
         with tempfile.TemporaryDirectory() as temporary_directory:
             pumps = 0
@@ -273,7 +333,10 @@ class MappingRunProcessTests(unittest.TestCase):
                 )
             self.assertTrue(all(process.terminated for process in self.last_processes))
             self.assertTrue(all(process.waited for process in self.last_processes))
-            self.assertEqual(self.last_processes[1].received_signal, signal.SIGINT)
+            self.assertEqual(
+                self.last_processes[1].received_signals,
+                [signal.SIGINT, signal.SIGKILL],
+            )
 
 
 if __name__ == "__main__":
