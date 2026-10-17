@@ -85,6 +85,13 @@ history for a collector that joins after mission startup. This status stream is 
 single-run orchestration; launching the mission separately still does not bind
 it to a telemetry capture.
 
+Before the first odometry message arrives, the mission uses a 10-second wall
+clock watchdog (`odometry_startup_timeout_s`). If odometry does not arrive, it
+publishes a `FAILED` status, sends only a zero velocity command, and exits
+nonzero. This watchdog continues to run if simulation time is paused; it does
+not by itself diagnose why the ROS odometry path failed. Override the bound
+with `-p odometry_startup_timeout_s:=<seconds>` when starting `sim_mission`.
+
 ```sh
 uv run --no-project --python /usr/bin/python3 \
   /opt/ros/jazzy/bin/ros2 launch nano_c_slam_gazebo swarm_mission.launch.py
@@ -318,6 +325,18 @@ no passing report.
 There is no validated world-frame safe-start envelope and no Gazebo reset in
 this workflow. The session guard prevents repeated runs through this
 coordinator; it cannot detect a drone moved manually or by another controller.
+
+When diagnosing missing mission odometry, use a dedicated ROS domain and
+Gazebo partition, and build a fresh owned-package overlay first. Set
+`NANO_C_SLAM_ROS_DOMAIN_ID` and `NANO_C_SLAM_GZ_PARTITION` before starting
+`run_gazebo_macos.sh`, then set `NANO_C_SLAM_OVERLAY_SETUP` to the resulting
+overlay's `install/local_setup.bash`. Confirm the launch PID's environment and
+the `ros2 pkg prefix nano_c_slam_gazebo` path before running a mission. The
+mission logs `odometry_callbacks` and the last odometry source stamp when it
+leaves `WAITING`; topic visibility in a separate `ros2 topic echo` process is
+not proof that this callback ran. The 10-second startup watchdog fails closed
+without odometry. Do not launch a second native Gazebo server beside another
+active test instance just to gather this evidence.
 
 For a bounded spatial mapping pass, enable the optional square path. It moves
 0.25 m along each side at no more than 0.25 m/s, holds at the target altitude,

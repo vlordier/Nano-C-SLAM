@@ -35,6 +35,7 @@ class SimMission(Node):
         self.declare_parameter("hover_height_m", 0.5)
         self.declare_parameter("hover_duration_s", 3.0)
         self.declare_parameter("mapping_path", False)
+        self.declare_parameter("odometry_startup_timeout_s", 10.0)
         self._drone_name = validate_drone_name(self.get_parameter("drone_name").value)
         configured_run_id = self.get_parameter("run_id").value
         self._run_id = (
@@ -50,6 +51,16 @@ class SimMission(Node):
         self._altitude_m: float | None = None
         self._position_xy_m: tuple[float, float] | None = None
         self._odometry_stamp_s: float | None = None
+        self._odometry_message_count = 0
+        self._startup_started_wall_s = time.monotonic()
+        self._odometry_startup_timeout_s = float(
+            self.get_parameter("odometry_startup_timeout_s").value
+        )
+        if (
+            not math.isfinite(self._odometry_startup_timeout_s)
+            or self._odometry_startup_timeout_s <= 0
+        ):
+            raise ValueError("odometry_startup_timeout_s must be finite and positive")
         self._last_phase = MissionPhase.WAITING
         self._mapping_path: MappingPath | None = None
         self._mapping_path_finished = False
@@ -89,10 +100,28 @@ class SimMission(Node):
         self._position_xy_m = (float(position.x), float(position.y))
         stamp = message.header.stamp
         self._odometry_stamp_s = float(stamp.sec) + float(stamp.nanosec) / 1e9
+        self._odometry_message_count += 1
 
     def _step(self) -> None:
+        if (
+            self._sequence.phase is MissionPhase.WAITING
+            and self._altitude_m is None
+            and time.monotonic() - self._startup_started_wall_s
+            >= self._odometry_startup_timeout_s
+        ):
+            self._sequence.fail("odometry was not received before startup timeout")
+            now_s = self.get_clock().now().nanoseconds / 1e9
+            self._publish_zero_command_if_active()
+            self._publish_status(now_s)
+            self.get_logger().error(
+                f"{self._drone_name} mission failed: "
+                f"{self._sequence.failure_reason} before takeoff"
+            )
+            self._timer.cancel()
+            return
+
         if self._sequence.phase in (MissionPhase.COMPLETE, MissionPhase.FAILED):
-            self._publish_zero_command()
+            self._publish_zero_command_if_active()
             if self._sequence.phase is MissionPhase.COMPLETE:
                 self._timer.cancel()
             elif self._sequence.failure_reason is not None:
@@ -141,6 +170,11 @@ class SimMission(Node):
             return
         self._last_phase = self._sequence.phase
         self._publish_status(now_s)
+        self.get_logger().info(
+            f"{self._drone_name} mission readiness: "
+            f"odometry_callbacks={self._odometry_message_count}, "
+            f"odometry_stamp_s={self._odometry_stamp_s}"
+        )
         altitude = (
             "unknown" if self._altitude_m is None else f"{self._altitude_m:.3f} m"
         )
@@ -160,13 +194,14 @@ class SimMission(Node):
                 f"{self._sequence.phase.name.lower()} at altitude {altitude}"
             )
 
-    def _publish_zero_command(self) -> None:
+    def _publish_zero_command_if_active(self) -> None:
         """Keep the controller commanded to hover after the mission terminates."""
-        self._publisher.publish(Twist())
+        if rclpy.ok():
+            self._publisher.publish(Twist())
 
     def destroy_node(self) -> None:
         """Stop commanded motion before releasing the ROS publisher."""
-        self._publish_zero_command()
+        self._publish_zero_command_if_active()
         super().destroy_node()
 
     def _publish_status(self, sim_time_s: float) -> None:
