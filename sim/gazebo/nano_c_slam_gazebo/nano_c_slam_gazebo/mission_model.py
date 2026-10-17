@@ -327,6 +327,16 @@ def create_mission_config(
     )
 
 
+def create_mapping_start_altitude_limit(value: object) -> float:
+    """Validate the maximum initial altitude for a spatial mapping mission."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError("mapping_start_max_altitude_m must be numeric")
+    altitude_m = float(value)
+    if not math.isfinite(altitude_m) or altitude_m < 0:
+        raise ValueError("mapping_start_max_altitude_m must be finite and nonnegative")
+    return altitude_m
+
+
 class MissionSequence:
     """Convert measured altitude and simulation time into vertical commands."""
 

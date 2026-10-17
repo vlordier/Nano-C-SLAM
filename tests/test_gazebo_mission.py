@@ -12,6 +12,7 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     MissionPhase,
     MissionSequence,
     MissionStatusEvent,
+    create_mapping_start_altitude_limit,
     create_mission_config,
     create_run_id,
     mission_exit_code,
@@ -53,6 +54,15 @@ class MissionSequenceTests(unittest.TestCase):
                 self.assertRaises(ValueError),
             ):
                 create_mission_config(*invalid_values)
+
+    def test_validates_mapping_start_altitude_limit(self) -> None:
+        self.assertEqual(create_mapping_start_altitude_limit(0.15), 0.15)
+        for invalid_value in (True, "0.15", float("nan"), float("inf"), -0.01):
+            with (
+                self.subTest(invalid_value=invalid_value),
+                self.assertRaises(ValueError),
+            ):
+                create_mapping_start_altitude_limit(invalid_value)
 
     def test_takeoff_hover_and_land_follow_measured_altitude(self) -> None:
         mission = MissionSequence(MissionConfig(hover_duration_s=2.0))

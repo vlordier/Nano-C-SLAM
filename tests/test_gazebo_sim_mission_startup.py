@@ -190,6 +190,48 @@ class SimMissionStartupTests(unittest.TestCase):
         self.assertEqual(node._odometry_message_count, 1)
         self.assertEqual(node._publisher.messages[-1].linear.z, 0.5)
 
+    def test_mapping_mission_rejects_airborne_start_before_enabling(self) -> None:
+        node = self.module.SimMission()
+        node._mapping_path_enabled = True
+        message = self.nav.Odometry()
+        message.pose = types.SimpleNamespace(
+            pose=types.SimpleNamespace(
+                position=types.SimpleNamespace(x=1.0, y=2.0, z=0.75)
+            )
+        )
+        message.header = types.SimpleNamespace(
+            stamp=types.SimpleNamespace(sec=1, nanosec=0)
+        )
+        node.subscriptions[0].callback(message)
+
+        node._step()
+
+        self.assertEqual(node._sequence.phase.name, "FAILED")
+        self.assertEqual(node._enable_publisher.messages, [])
+        self.assertEqual(node._publisher.messages[-1].linear.z, 0.0)
+        self.assertIn('"phase": "FAILED"', node._status_publisher.messages[-1].data)
+        self.assertEqual(self.module.mission_exit_code(node._sequence.phase), 1)
+
+    def test_grounded_mapping_mission_keeps_takeoff_behavior(self) -> None:
+        node = self.module.SimMission()
+        node._mapping_path_enabled = True
+        message = self.nav.Odometry()
+        message.pose = types.SimpleNamespace(
+            pose=types.SimpleNamespace(
+                position=types.SimpleNamespace(x=1.0, y=2.0, z=0.1)
+            )
+        )
+        message.header = types.SimpleNamespace(
+            stamp=types.SimpleNamespace(sec=1, nanosec=0)
+        )
+        node.subscriptions[0].callback(message)
+
+        node._step()
+
+        self.assertEqual(node._sequence.phase.name, "TAKEOFF")
+        self.assertEqual(len(node._enable_publisher.messages), 1)
+        self.assertEqual(node._publisher.messages[-1].linear.z, 0.5)
+
     def test_teardown_skips_ros_publish_when_context_is_invalid(self) -> None:
         node = self.module.SimMission()
         before = len(node._publisher.messages)

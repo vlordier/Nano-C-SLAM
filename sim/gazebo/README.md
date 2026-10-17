@@ -85,6 +85,12 @@ history for a collector that joins after mission startup. This status stream is 
 single-run orchestration; launching the mission separately still does not bind
 it to a telemetry capture.
 
+A mapping-path mission refuses its first odometry sample if the measured
+altitude exceeds `mapping_start_max_altitude_m` (default 0.15 m). It publishes
+`FAILED` and zero velocity without publishing `enable`; ordinary non-mapping
+missions retain their existing already-airborne behavior. This vertical bound
+does not validate x/y start position or replace a fresh-world check.
+
 Before the first odometry message arrives, the mission uses a 10-second wall
 clock watchdog (`odometry_startup_timeout_s`). If odometry does not arrive, it
 publishes a `FAILED` status, sends only a zero velocity command, and exits

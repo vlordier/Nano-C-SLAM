@@ -20,6 +20,7 @@ from .mission_model import (
     MissionPhase,
     MissionSequence,
     MissionStatusEvent,
+    create_mapping_start_altitude_limit,
     create_mission_config,
     create_run_id,
     mission_exit_code,
@@ -37,6 +38,7 @@ class SimMission(Node):
         self.declare_parameter("hover_height_m", 0.5)
         self.declare_parameter("hover_duration_s", 3.0)
         self.declare_parameter("mapping_path", False)
+        self.declare_parameter("mapping_start_max_altitude_m", 0.15)
         self.declare_parameter("odometry_startup_timeout_s", 10.0)
         self._drone_name = validate_drone_name(self.get_parameter("drone_name").value)
         configured_run_id = self.get_parameter("run_id").value
@@ -48,6 +50,9 @@ class SimMission(Node):
             self.get_parameter("hover_duration_s").value,
         )
         self._mapping_path_enabled = bool(self.get_parameter("mapping_path").value)
+        self._mapping_start_max_altitude_m = create_mapping_start_altitude_limit(
+            self.get_parameter("mapping_start_max_altitude_m").value
+        )
         sequence = MissionSequence(config=config)
         self._sequence = sequence
         self._altitude_m: float | None = None
@@ -121,6 +126,28 @@ class SimMission(Node):
                     f"{self._sequence.failure_reason}"
                 )
                 self._timer.cancel()
+            return
+
+        if (
+            self._mapping_path_enabled
+            and self._sequence.phase is MissionPhase.WAITING
+            and self._altitude_m is not None
+            and self._altitude_m > self._mapping_start_max_altitude_m
+        ):
+            self._sequence.fail(
+                "mapping mission started above grounded altitude limit "
+                f"({self._altitude_m:.3f} m > "
+                f"{self._mapping_start_max_altitude_m:.3f} m)"
+            )
+            now_s = self.get_clock().now().nanoseconds / 1e9
+            self._publish_zero_command_if_active()
+            self._publish_status(now_s)
+            self.get_logger().error(
+                f"{self._drone_name} mapping mission refused airborne start at "
+                f"{self._altitude_m:.3f} m; no enable or movement command sent"
+            )
+            self._startup_timer.cancel()
+            self._timer.cancel()
             return
 
         enabled = Bool()
