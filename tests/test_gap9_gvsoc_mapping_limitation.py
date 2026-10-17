@@ -9,6 +9,10 @@ from pathlib import Path
 from unittest.mock import patch
 
 from scripts.capture_gap9_gvsoc_mapping_limitation import main
+from test_support.gap9_mapping_fixtures import (
+    GVSOC_MAPPING_LIMITATION_V1,
+    HOST_MAPPING_PASS,
+)
 
 
 class GvsocMappingLimitationTests(unittest.TestCase):
@@ -44,13 +48,7 @@ class GvsocMappingLimitationTests(unittest.TestCase):
         return result, report
 
     def test_records_reproduced_target_failure_against_executed_host_pass(self) -> None:
-        result, report = self._capture(
-            "NANO_C_SLAM_GVSOC:mapping_fail poses=60 scans=3 points=240 "
-            "icp_constraints=0 matches=80 icp_error_milli=2147483647 "
-            "icp_has_nan=1 optimized=0 graph=0 has_nan=0",
-            "NANO_C_SLAM_HOST:mapping_ok poses=60 scans=3 map_points=240 "
-            "finite=60 graph=3",
-        )
+        result, report = self._capture(GVSOC_MAPPING_LIMITATION_V1, HOST_MAPPING_PASS)
 
         self.assertEqual(result, 0)
         self.assertEqual(report["status"], "reproduced-limitation")
@@ -64,11 +62,10 @@ class GvsocMappingLimitationTests(unittest.TestCase):
 
     def test_host_failure_cannot_be_reported_as_reproduced_divergence(self) -> None:
         result, report = self._capture(
-            "NANO_C_SLAM_GVSOC:mapping_fail poses=60 scans=3 points=240 "
-            "icp_constraints=0 matches=80 icp_error_milli=2147483647 "
-            "icp_has_nan=1 optimized=0 graph=0 has_nan=0",
-            "NANO_C_SLAM_HOST:mapping_fail poses=60 scans=3 map_points=240 "
-            "finite=0 graph=0",
+            GVSOC_MAPPING_LIMITATION_V1,
+            HOST_MAPPING_PASS.replace(
+                "NANO_C_SLAM_HOST:mapping_ok", "NANO_C_SLAM_HOST:mapping_fail"
+            ).replace("finite=60 graph=3", "finite=0 graph=0"),
         )
 
         self.assertEqual(result, 1)
@@ -77,11 +74,8 @@ class GvsocMappingLimitationTests(unittest.TestCase):
 
     def test_unexpected_gvsoc_metrics_do_not_pass(self) -> None:
         result, report = self._capture(
-            "NANO_C_SLAM_GVSOC:mapping_fail poses=59 scans=3 points=240 "
-            "icp_constraints=0 matches=80 icp_error_milli=2147483647 "
-            "icp_has_nan=1 optimized=0 graph=0 has_nan=0",
-            "NANO_C_SLAM_HOST:mapping_ok poses=60 scans=3 map_points=240 "
-            "finite=60 graph=3",
+            GVSOC_MAPPING_LIMITATION_V1.replace("poses=60", "poses=59", 1),
+            HOST_MAPPING_PASS,
         )
 
         self.assertEqual(result, 1)

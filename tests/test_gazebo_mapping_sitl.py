@@ -27,6 +27,7 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
     validate_capture_report,
     validate_mapping_result,
 )
+from test_support.gap9_mapping_fixtures import HOST_MAPPING_PASS
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 
@@ -707,12 +708,7 @@ class NativeMappingReplayTests(unittest.TestCase):
             timeout=30,
         )
 
-        self.assertIn(
-            "NANO_C_SLAM_HOST:mapping_ok poses=60 scans=3 map_points=240 "
-            "finite=60 graph=3 main_solver=1 solver_calls=3 "
-            "solver_iterations=9 completed=1 has_nan=0",
-            result.stdout,
-        )
+        self.assertIn(HOST_MAPPING_PASS, result.stdout)
         self.assertNotIn("NANO_C_SLAM_GVSOC:", result.stdout)
 
     def test_rejects_malformed_replay_input(self) -> None:

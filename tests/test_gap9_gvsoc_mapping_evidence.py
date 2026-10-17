@@ -9,6 +9,10 @@ from pathlib import Path
 from unittest.mock import patch
 
 from scripts.capture_gap9_gvsoc_mapping_evidence import main
+from test_support.gap9_mapping_fixtures import (
+    GVSOC_MAPPING_PASS_V1,
+    HOST_MAPPING_PASS,
+)
 
 
 class GvsocMappingEvidenceTests(unittest.TestCase):
@@ -37,11 +41,7 @@ class GvsocMappingEvidenceTests(unittest.TestCase):
         return result, report
 
     def test_accepts_exact_gvsoc_mapping_marker(self) -> None:
-        result, report = self._capture(
-            "NANO_C_SLAM_GVSOC:mapping_ok poses=60 scans=3 map_points=240 "
-            "finite=60 graph=3 main_solver=1 solver_calls=3 "
-            "solver_iterations=9 completed=1 has_nan=0"
-        )
+        result, report = self._capture(GVSOC_MAPPING_PASS_V1)
 
         self.assertEqual(result, 0)
         self.assertEqual(report["status"], "passed")
@@ -55,11 +55,7 @@ class GvsocMappingEvidenceTests(unittest.TestCase):
         self.assertTrue(observed["optimization_completed"])
 
     def test_host_marker_cannot_be_captured_as_gvsoc_evidence(self) -> None:
-        result, report = self._capture(
-            "NANO_C_SLAM_HOST:mapping_ok poses=60 scans=3 map_points=240 "
-            "finite=60 graph=3 main_solver=1 solver_calls=3 "
-            "solver_iterations=9 completed=1 has_nan=0"
-        )
+        result, report = self._capture(HOST_MAPPING_PASS)
 
         self.assertEqual(result, 1)
         self.assertEqual(report["status"], "failed")
@@ -67,9 +63,12 @@ class GvsocMappingEvidenceTests(unittest.TestCase):
 
     def test_wrong_gvsoc_metrics_fail_capture(self) -> None:
         result, report = self._capture(
-            "NANO_C_SLAM_GVSOC:mapping_ok poses=60 scans=3 map_points=240 "
-            "finite=0 graph=0 main_solver=0 solver_calls=0 "
-            "solver_iterations=0 completed=0 has_nan=1"
+            GVSOC_MAPPING_PASS_V1.replace(
+                "finite=60 graph=3 main_solver=1 solver_calls=3 "
+                "solver_iterations=9 completed=1 has_nan=0",
+                "finite=0 graph=0 main_solver=0 solver_calls=0 "
+                "solver_iterations=0 completed=0 has_nan=1",
+            )
         )
 
         self.assertEqual(result, 1)
@@ -78,9 +77,7 @@ class GvsocMappingEvidenceTests(unittest.TestCase):
 
     def test_rejects_wrong_iteration_or_completion_metrics(self) -> None:
         result, report = self._capture(
-            "NANO_C_SLAM_GVSOC:mapping_ok poses=60 scans=3 map_points=240 "
-            "finite=60 graph=3 main_solver=1 solver_calls=3 "
-            "solver_iterations=8 completed=1 has_nan=0"
+            GVSOC_MAPPING_PASS_V1.replace("solver_iterations=9", "solver_iterations=8")
         )
         self.assertEqual(result, 1)
         self.assertEqual(report["status"], "failed")

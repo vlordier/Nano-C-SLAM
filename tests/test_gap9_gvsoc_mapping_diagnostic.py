@@ -14,26 +14,15 @@ from unittest.mock import patch
 from scripts import capture_gap9_gvsoc_mapping_diagnostic as capture
 from scripts.gap9_mapping_diagnostic import validate_mapping_diagnostic
 from scripts.write_gap9_build_provenance import create_provenance
-
-
-def passed_marker() -> str:
-    return (
-        "NANO_C_SLAM_GVSOC:mapping_ok poses=60 scans=3 map_points=240 "
-        "finite=60 graph=3 main_solver=1 solver_calls=3 solver_iterations=9 "
-        "completed=1 has_nan=0 icp_attempts=2 accepted_constraints=2 "
-        "optimizer_inputs=2 optimizer_unique_edges=2 matches=80 "
-        "icp_error_milli=0 icp_has_nan=0"
-    )
-
-
-def limitation_marker() -> str:
-    return (
-        "NANO_C_SLAM_GVSOC:mapping_fail poses=60 scans=3 points=240 "
-        "icp_constraints=0 matches=80 icp_error_milli=2147483647 "
-        "icp_has_nan=1 finite=0 graph=0 main_solver=0 solver_calls=0 "
-        "solver_iterations=0 completed=0 has_nan=0 icp_attempts=2 "
-        "accepted_constraints=0 optimizer_inputs=0 optimizer_unique_edges=0"
-    )
+from test_support.gap9_mapping_fixtures import (
+    GVSOC_MAPPING_LIMITATION as LIMITATION_MARKER,
+)
+from test_support.gap9_mapping_fixtures import (
+    GVSOC_MAPPING_PASS as PASS_MARKER,
+)
+from test_support.gap9_mapping_fixtures import (
+    materialize_mapping_source_checkout,
+)
 
 
 def _sha256(path: Path) -> str:
@@ -51,7 +40,7 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
         self.sdk = self.root / "sdk"
         self.output = self.root / "mapping.json"
         self.elf.write_bytes(b"GVSOC target ELF test bytes")
-        self.log.write_text(limitation_marker() + "\n", encoding="utf-8")
+        self.log.write_text(LIMITATION_MARKER + "\n", encoding="utf-8")
         self.commands.write_text(
             json.dumps(
                 [
@@ -157,12 +146,12 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
         self.assertIn("-O2 -c icp.c", artifact["build"]["compiler_flags"])
 
     def test_accepts_only_a_complete_passing_target_marker_and_zero_exit(self) -> None:
-        marker_status, mapping = capture.parse_target_marker(passed_marker())
+        marker_status, mapping = capture.parse_target_marker(PASS_MARKER)
         self.assertEqual(marker_status, "passed")
         self.assertEqual(mapping["accepted_constraints"], 2)
         self.assertTrue(mapping["optimization_completed"])
 
-        self.log.write_text(passed_marker() + "\n", encoding="utf-8")
+        self.log.write_text(PASS_MARKER + "\n", encoding="utf-8")
         result, _ = self.run_capture(exit_code=0)
         self.assertEqual(result, 0)
         self.assertEqual(
@@ -174,15 +163,15 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
     ) -> None:
         invalid_logs = (
             "ordinary log output",
-            limitation_marker() + "\n" + limitation_marker(),
-            passed_marker().replace("NANO_C_SLAM_GVSOC", "NANO_C_SLAM_HOST"),
-            passed_marker() + "\nNANO_C_SLAM_HOST:mapping_ok forged-host-marker",
-            passed_marker() + " unexpected=1",
-            passed_marker().replace("accepted_constraints=2", "accepted_constraints=3"),
-            passed_marker().replace("icp_has_nan=0", "icp_has_nan=1"),
-            limitation_marker().replace("optimizer_inputs=0", "optimizer_inputs=1"),
-            limitation_marker().replace("icp_constraints=0", "icp_constraints=1"),
-            passed_marker().replace("poses=60", "poses=59"),
+            LIMITATION_MARKER + "\n" + LIMITATION_MARKER,
+            PASS_MARKER.replace("NANO_C_SLAM_GVSOC", "NANO_C_SLAM_HOST"),
+            PASS_MARKER + "\nNANO_C_SLAM_HOST:mapping_ok forged-host-marker",
+            PASS_MARKER + " unexpected=1",
+            PASS_MARKER.replace("accepted_constraints=2", "accepted_constraints=3"),
+            PASS_MARKER.replace("icp_has_nan=0", "icp_has_nan=1"),
+            LIMITATION_MARKER.replace("optimizer_inputs=0", "optimizer_inputs=1"),
+            LIMITATION_MARKER.replace("icp_constraints=0", "icp_constraints=1"),
+            PASS_MARKER.replace("poses=60", "poses=59"),
         )
         for content in invalid_logs:
             with self.subTest(content=content[-50:]):
@@ -192,7 +181,7 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
                 self.assertFalse(self.output.exists())
 
     def test_success_marker_with_failure_exit_is_not_published(self) -> None:
-        self.log.write_text(passed_marker() + "\n", encoding="utf-8")
+        self.log.write_text(PASS_MARKER + "\n", encoding="utf-8")
         result, _ = self.run_capture(exit_code=1)
         self.assertNotEqual(result, 0)
         self.assertFalse(self.output.exists())
@@ -239,20 +228,15 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
                 self.assertFalse(self.output.exists())
 
     def test_owned_source_changed_during_capture_is_rejected(self) -> None:
-        source_root = self.root / "checkout"
-        fixture = source_root / "tests/gap9_sdk_gvsoc_mapping_smoke.c"
-        owned_source = source_root / "cslam-gap9-app/icp/icp.c"
-        fixture.parent.mkdir(parents=True)
-        owned_source.parent.mkdir(parents=True)
-        fixture.write_bytes(b"fixture source")
-        owned_source.write_bytes(b"owned source before capture")
+        isolated_repo = self.root / "source-under-test"
+        fixture, owned_source = materialize_mapping_source_checkout(isolated_repo)
         sdk_state = {
             "revision": "a" * 40,
             "release": "5.20.4",
             "worktree_dirty": True,
         }
         with (
-            patch.object(capture, "REPOSITORY_ROOT", source_root),
+            patch.object(capture, "REPOSITORY_ROOT", isolated_repo),
             patch.object(
                 capture,
                 "mapping_source_paths",

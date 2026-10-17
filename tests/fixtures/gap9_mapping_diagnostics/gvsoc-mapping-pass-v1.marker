@@ -1,0 +1,1 @@
+NANO_C_SLAM_GVSOC:mapping_ok poses=60 scans=3 map_points=240 finite=60 graph=3 main_solver=1 solver_calls=3 solver_iterations=9 completed=1 has_nan=0

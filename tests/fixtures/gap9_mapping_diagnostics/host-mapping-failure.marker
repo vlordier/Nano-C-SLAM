@@ -1,0 +1,1 @@
+NANO_C_SLAM_HOST:mapping_fail poses=60 scans=3 points=240 icp_constraints=2 matches=80 icp_error_milli=0 icp_has_nan=0 finite=60 graph=3 main_solver=1 solver_calls=3 solver_iterations=9 completed=1 has_nan=0 icp_attempts=2 accepted_constraints=2 optimizer_inputs=2 optimizer_unique_edges=2

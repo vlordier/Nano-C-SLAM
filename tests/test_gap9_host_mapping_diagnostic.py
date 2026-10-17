@@ -12,39 +12,7 @@ from unittest.mock import patch
 
 from scripts.capture_gap9_host_mapping_diagnostic import main
 from scripts.gap9_mapping_diagnostic import validate_mapping_diagnostic
-
-
-def pass_marker_fixture() -> str:
-    fields = [
-        "NANO_C_SLAM_HOST:mapping_ok",
-        "poses=60",
-        "scans=3",
-        "map_points=240",
-        "finite=60",
-        "graph=3",
-        "main_solver=1",
-        "solver_calls=3",
-        "solver_iterations=9",
-        "completed=1",
-        "has_nan=0",
-        "icp_attempts=2",
-        "accepted_constraints=2",
-        "optimizer_inputs=2",
-        "optimizer_unique_edges=2",
-        "matches=80",
-        "icp_error_milli=0",
-        "icp_has_nan=0",
-    ]
-    return " ".join(fields) + "\n"
-
-
-FAIL_MARKER = (
-    "NANO_C_SLAM_HOST:mapping_fail poses=60 scans=3 points=240 "
-    "icp_constraints=2 matches=80 icp_error_milli=0 icp_has_nan=0 finite=60 "
-    "graph=3 main_solver=1 solver_calls=3 solver_iterations=9 completed=1 "
-    "has_nan=0 icp_attempts=2 accepted_constraints=2 optimizer_inputs=2 "
-    "optimizer_unique_edges=2\n"
-)
+from test_support.gap9_mapping_fixtures import HOST_MAPPING_FAILURE, HOST_MAPPING_PASS
 
 
 class HostMappingDiagnosticCaptureTests(unittest.TestCase):
@@ -53,7 +21,7 @@ class HostMappingDiagnosticCaptureTests(unittest.TestCase):
         self.directory = Path(self.tempdir.name)
         self.binary = self.directory / "smoke"
         self.output = self.directory / "diagnostic.json"
-        self.write_binary(pass_marker_fixture())
+        self.write_binary(HOST_MAPPING_PASS + "\n")
 
     def tearDown(self) -> None:
         self.tempdir.cleanup()
@@ -107,14 +75,14 @@ class HostMappingDiagnosticCaptureTests(unittest.TestCase):
     ) -> None:
         outputs = (
             "ordinary process output\n",
-            pass_marker_fixture() + pass_marker_fixture(),
-            pass_marker_fixture().replace("icp_has_nan=0", "icp_has_nan=0 extra=1"),
-            pass_marker_fixture().replace("NANO_C_SLAM_HOST", "NANO_C_SLAM_GVSOC"),
-            pass_marker_fixture().replace(
+            HOST_MAPPING_PASS + "\n" + HOST_MAPPING_PASS + "\n",
+            HOST_MAPPING_PASS.replace("icp_has_nan=0", "icp_has_nan=0 extra=1"),
+            HOST_MAPPING_PASS.replace("NANO_C_SLAM_HOST", "NANO_C_SLAM_GVSOC"),
+            HOST_MAPPING_PASS.replace(
                 "accepted_constraints=2", "accepted_constraints=3"
             ),
-            pass_marker_fixture().replace("icp_has_nan=0", "icp_has_nan=1"),
-            pass_marker_fixture().replace("completed=1", "completed=0"),
+            HOST_MAPPING_PASS.replace("icp_has_nan=0", "icp_has_nan=1"),
+            HOST_MAPPING_PASS.replace("completed=1", "completed=0"),
         )
         for marker in outputs:
             with self.subTest(marker=marker[-60:]):
@@ -124,7 +92,10 @@ class HostMappingDiagnosticCaptureTests(unittest.TestCase):
                 self.assertFalse(self.output.exists())
 
     def test_exit_code_must_agree_with_marker_status(self) -> None:
-        for marker, exit_code in ((pass_marker_fixture(), 1), (FAIL_MARKER, 0)):
+        for marker, exit_code in (
+            (HOST_MAPPING_PASS + "\n", 1),
+            (HOST_MAPPING_FAILURE + "\n", 0),
+        ):
             with self.subTest(exit_code=exit_code):
                 self.write_binary(marker, exit_code)
                 code, _ = self.capture()
@@ -132,7 +103,7 @@ class HostMappingDiagnosticCaptureTests(unittest.TestCase):
                 self.assertFalse(self.output.exists())
 
     def test_failed_mapping_retains_a_valid_failure_artifact(self) -> None:
-        self.write_binary(FAIL_MARKER, 1)
+        self.write_binary(HOST_MAPPING_FAILURE + "\n", 1)
         code, _ = self.capture()
         self.assertEqual(code, 1)
         artifact = json.loads(self.output.read_text(encoding="utf-8"))
