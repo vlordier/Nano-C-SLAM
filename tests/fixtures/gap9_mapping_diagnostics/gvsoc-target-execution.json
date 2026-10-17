@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "status": "reproduced-limitation",
+  "evidence_class": "gvsoc-target-execution",
+  "claim_boundary": "GAP9 target executed under GVSOC; ICP produced no accepted constraints. Not hardware or flight validation.",
+  "hardware_measurement": false,
+  "fixture": {
+    "name": "gap9_sdk_gvsoc_mapping_smoke",
+    "source_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "pose_count": 60,
+    "scan_count": 3,
+    "point_count": 240
+  },
+  "build": {
+    "toolchain_id": "example-gap-riscv-toolchain",
+    "compiler_flags": "-O2 -DNANO_C_SLAM_TARGET_GVSOC",
+    "binary_sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+  },
+  "execution": {
+    "exit_code": 1,
+    "marker_seen": true,
+    "terminated": true
+  },
+  "mapping": {
+    "poses": 60,
+    "scans": 3,
+    "points": 240,
+    "finite_poses": 0,
+    "has_nan": false,
+    "icp_attempts": 2,
+    "correspondences_last_pair": 80,
+    "icp_error_milli": 2147483647,
+    "icp_has_nan": true,
+    "accepted_constraints": 0,
+    "graph_nodes": 0,
+    "optimizer_input_constraints": 0,
+    "optimizer_unique_edges": 0,
+    "main_solver_returned": false,
+    "successful_solver_calls": 0,
+    "completed_solver_iterations": 0,
+    "optimization_completed": false
+  }
+}

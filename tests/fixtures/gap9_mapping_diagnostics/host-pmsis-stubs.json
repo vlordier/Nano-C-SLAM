@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "evidence_class": "host-pmsis-stubs",
+  "claim_boundary": "Synthetic mapping fixture through host PMSIS stubs only; no target or hardware validation.",
+  "hardware_measurement": false,
+  "fixture": {
+    "name": "gap9_sdk_gvsoc_mapping_smoke",
+    "source_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "pose_count": 60,
+    "scan_count": 3,
+    "point_count": 240
+  },
+  "build": {
+    "toolchain_id": "example-host-compiler",
+    "compiler_flags": "-O1 -fsanitize=address,undefined",
+    "binary_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "execution": {
+    "exit_code": 0,
+    "marker_seen": true,
+    "terminated": true
+  },
+  "mapping": {
+    "poses": 60,
+    "scans": 3,
+    "points": 240,
+    "finite_poses": 60,
+    "has_nan": false,
+    "icp_attempts": 2,
+    "correspondences_last_pair": 80,
+    "icp_error_milli": 0,
+    "icp_has_nan": false,
+    "accepted_constraints": 2,
+    "graph_nodes": 3,
+    "optimizer_input_constraints": 2,
+    "optimizer_unique_edges": 2,
+    "main_solver_returned": true,
+    "successful_solver_calls": 3,
+    "completed_solver_iterations": 9,
+    "optimization_completed": true
+  }
+}

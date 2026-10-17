@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nano-c-slam.invalid/schemas/gap9-mapping-diagnostic-v1.json",
+  "title": "Nano-C-SLAM shared host/GVSOC mapping diagnostic",
+  "description": "Synthetic fixture evidence only. Host PMSIS stubs and GVSOC target execution are distinct evidence classes; neither is hardware or flight validation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "evidence_class", "claim_boundary", "hardware_measurement", "fixture", "build", "execution", "mapping"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "status": {"enum": ["passed", "failed", "reproduced-limitation"]},
+    "evidence_class": {"enum": ["host-pmsis-stubs", "gvsoc-target-execution"]},
+    "claim_boundary": {"type": "string", "minLength": 1},
+    "hardware_measurement": {"const": false},
+    "fixture": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "source_sha256", "pose_count", "scan_count", "point_count"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "source_sha256": {"$ref": "#/$defs/sha256"},
+        "pose_count": {"type": "integer", "minimum": 1},
+        "scan_count": {"type": "integer", "minimum": 1},
+        "point_count": {"type": "integer", "minimum": 1}
+      }
+    },
+    "build": {
+      "type": "object", "additionalProperties": false,
+      "required": ["toolchain_id", "compiler_flags", "binary_sha256"],
+      "properties": {
+        "toolchain_id": {"type": "string", "minLength": 1},
+        "compiler_flags": {"type": "string", "minLength": 1},
+        "binary_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "execution": {
+      "type": "object", "additionalProperties": false,
+      "required": ["exit_code", "marker_seen", "terminated"],
+      "properties": {
+        "exit_code": {"type": "integer", "minimum": -255, "maximum": 255},
+        "marker_seen": {"type": "boolean"},
+        "terminated": {"const": true}
+      }
+    },
+    "mapping": {
+      "type": "object", "additionalProperties": false,
+      "required": ["poses", "scans", "points", "finite_poses", "has_nan", "icp_attempts", "correspondences_last_pair", "icp_error_milli", "icp_has_nan", "accepted_constraints", "graph_nodes", "optimizer_input_constraints", "optimizer_unique_edges", "main_solver_returned", "successful_solver_calls", "completed_solver_iterations", "optimization_completed"],
+      "properties": {
+        "poses": {"type": "integer", "minimum": 0},
+        "scans": {"type": "integer", "minimum": 0},
+        "points": {"type": "integer", "minimum": 0},
+        "finite_poses": {"type": "integer", "minimum": 0},
+        "has_nan": {"type": "boolean"},
+        "icp_attempts": {"type": ["integer", "null"], "minimum": 0},
+        "correspondences_last_pair": {"type": ["integer", "null"], "minimum": 0},
+        "icp_error_milli": {"type": ["integer", "null"]},
+        "icp_has_nan": {"type": ["boolean", "null"]},
+        "accepted_constraints": {"type": ["integer", "null"], "minimum": 0},
+        "graph_nodes": {"type": ["integer", "null"], "minimum": 0},
+        "optimizer_input_constraints": {"type": ["integer", "null"], "minimum": 0},
+        "optimizer_unique_edges": {"type": ["integer", "null"], "minimum": 0},
+        "main_solver_returned": {"type": ["boolean", "null"]},
+        "successful_solver_calls": {"type": ["integer", "null"], "minimum": 0},
+        "completed_solver_iterations": {"type": ["integer", "null"], "minimum": 0},
+        "optimization_completed": {"type": ["boolean", "null"]}
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
