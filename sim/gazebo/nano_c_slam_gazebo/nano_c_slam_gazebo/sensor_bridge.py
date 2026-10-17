@@ -71,6 +71,8 @@ class SensorBridge(Node):
         try:
             ranges = laser_scan_ranges_mm(
                 msg.ranges,
+                angle_min_rad=msg.angle_min,
+                angle_increment_rad=msg.angle_increment,
                 range_min_m=msg.range_min,
                 range_max_m=msg.range_max,
             )

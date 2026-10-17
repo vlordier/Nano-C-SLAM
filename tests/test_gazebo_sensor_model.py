@@ -11,7 +11,11 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.sensor_model import (
 class LaserScanConversionTests(unittest.TestCase):
     def test_maps_four_gazebo_rays_to_front_back_left_right(self) -> None:
         ranges = laser_scan_ranges_mm(
-            [1.0, 2.0, 3.0, 4.0], range_min_m=0.08, range_max_m=3.49
+            [1.0, 2.0, 3.0, 4.0],
+            angle_min_rad=-3.14159,
+            angle_increment_rad=(1.5708 + 3.14159) / 3,
+            range_min_m=0.08,
+            range_max_m=3.49,
         )
 
         self.assertEqual(ranges, (3000, 1000, -1, 2000))
@@ -19,6 +23,8 @@ class LaserScanConversionTests(unittest.TestCase):
     def test_marks_nonfinite_and_out_of_range_readings_invalid(self) -> None:
         ranges = laser_scan_ranges_mm(
             [math.inf, 0.07, math.nan, 3.49],
+            angle_min_rad=-3.14159,
+            angle_increment_rad=(1.5708 + 3.14159) / 3,
             range_min_m=0.08,
             range_max_m=3.49,
         )
@@ -27,9 +33,29 @@ class LaserScanConversionTests(unittest.TestCase):
 
     def test_rejects_unexpected_scan_shape_and_bounds(self) -> None:
         with self.assertRaises(ValueError):
-            laser_scan_ranges_mm([1.0] * 3, range_min_m=0.08, range_max_m=3.49)
+            laser_scan_ranges_mm(
+                [1.0] * 3,
+                angle_min_rad=-3.14159,
+                angle_increment_rad=(1.5708 + 3.14159) / 3,
+                range_min_m=0.08,
+                range_max_m=3.49,
+            )
         with self.assertRaises(ValueError):
-            laser_scan_ranges_mm([1.0] * 4, range_min_m=1.0, range_max_m=1.0)
+            laser_scan_ranges_mm(
+                [1.0] * 4,
+                angle_min_rad=-3.14159,
+                angle_increment_rad=(1.5708 + 3.14159) / 3,
+                range_min_m=1.0,
+                range_max_m=1.0,
+            )
+        with self.assertRaisesRegex(ValueError, "angles do not match"):
+            laser_scan_ranges_mm(
+                [1.0] * 4,
+                angle_min_rad=-1.57,
+                angle_increment_rad=1.57,
+                range_min_m=0.08,
+                range_max_m=3.49,
+            )
 
 
 class PairwiseRangeTests(unittest.TestCase):

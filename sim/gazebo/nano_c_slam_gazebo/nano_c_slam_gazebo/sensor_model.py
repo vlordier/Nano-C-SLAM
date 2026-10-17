@@ -7,10 +7,18 @@ from collections.abc import Mapping, Sequence
 from itertools import combinations
 
 BEAM_ORDER = (2, 0, 3, 1)  # front, back, left, right for the upstream SDF scan
+EXPECTED_SCAN_ANGLE_MIN_RAD = -3.14159
+EXPECTED_SCAN_ANGLE_INCREMENT_RAD = (1.5708 - EXPECTED_SCAN_ANGLE_MIN_RAD) / 3
+SCAN_ANGLE_TOLERANCE_RAD = 0.01
 
 
 def laser_scan_ranges_mm(
-    ranges_m: Sequence[float], *, range_min_m: float, range_max_m: float
+    ranges_m: Sequence[float],
+    *,
+    angle_min_rad: float,
+    angle_increment_rad: float,
+    range_min_m: float,
+    range_max_m: float,
 ) -> tuple[int, int, int, int]:
     """Convert the upstream four-beam scan to front/back/left/right millimeters.
 
@@ -20,6 +28,16 @@ def laser_scan_ranges_mm(
     """
     if len(ranges_m) != len(BEAM_ORDER):
         raise ValueError(f"expected {len(BEAM_ORDER)} lidar beams, got {len(ranges_m)}")
+    if not math.isfinite(angle_min_rad) or not math.isfinite(angle_increment_rad):
+        raise ValueError("lidar scan angles must be finite")
+    if angle_increment_rad <= 0:
+        raise ValueError("lidar scan angle increment must be positive")
+    if (
+        abs(angle_min_rad - EXPECTED_SCAN_ANGLE_MIN_RAD) > SCAN_ANGLE_TOLERANCE_RAD
+        or abs(angle_increment_rad - EXPECTED_SCAN_ANGLE_INCREMENT_RAD)
+        > SCAN_ANGLE_TOLERANCE_RAD
+    ):
+        raise ValueError("lidar scan angles do not match the four-ray SDF convention")
     if not math.isfinite(range_min_m) or not math.isfinite(range_max_m):
         raise ValueError("lidar range bounds must be finite")
     if range_min_m < 0 or range_max_m <= range_min_m:

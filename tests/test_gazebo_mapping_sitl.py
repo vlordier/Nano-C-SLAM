@@ -444,6 +444,55 @@ class NativeMappingReplayTests(unittest.TestCase):
         self.assertNotEqual(invalid_pose.returncode, 0)
         self.assertIn("sample IDs, timestamp, or pose are invalid", invalid_pose.stderr)
 
+    def test_c_replay_projects_each_cardinal_ray_for_cardinal_body_yaws(self) -> None:
+        offsets_m = (0.025, -0.025, 0.02, -0.02)
+        direction_yaws = (0.0, math.pi, math.pi / 2, -math.pi / 2)
+        body_yaws = (0.0, math.pi / 2, math.pi, -math.pi / 2)
+        column_angle = math.pi / 64
+        range_m = 1.0
+        pose_x_m, pose_y_m = 1.25, -0.75
+
+        # Derive expected coordinates from the C formula documented in
+        # sim/gazebo/SENSOR_PROJECTION.md, then compare with pcl_extract_scan.
+        for direction, direction_yaw in enumerate(direction_yaws):
+            for body_yaw in body_yaws:
+                with self.subTest(direction=direction, body_yaw=body_yaw):
+                    yaw = body_yaw + direction_yaw
+                    local_x = range_m + offsets_m[direction]
+                    local_y = range_m * math.tan(column_angle)
+                    expected = (
+                        pose_x_m + local_x * math.cos(yaw) - local_y * math.sin(yaw),
+                        pose_y_m + local_x * math.sin(yaw) + local_y * math.cos(yaw),
+                    )
+                    records = []
+                    for sample_id in range(20):
+                        ranges = [-1, -1, -1, -1]
+                        ranges[direction] = 1000
+                        sample = MappingSample(
+                            sample_id=sample_id,
+                            timestamp_ms=(sample_id + 1) * 100,
+                            x_m=pose_x_m,
+                            y_m=pose_y_m,
+                            yaw_rad=body_yaw,
+                            ranges_mm=cast(tuple[int, int, int, int], tuple(ranges)),
+                        )
+                        records.append(sample.to_record())
+
+                    result = subprocess.run(  # noqa: S603 -- built fixture executable
+                        [str(self.binary)],
+                        input="\n".join(records) + "\n",
+                        capture_output=True,
+                        check=True,
+                        text=True,
+                        timeout=10,
+                    )
+                    mapping = json.loads(result.stdout)
+                    points = mapping["points"]
+                    self.assertEqual(len(points), 20)
+                    for point in points:
+                        self.assertAlmostEqual(point[0], expected[0], delta=1e-6)
+                        self.assertAlmostEqual(point[1], expected[1], delta=1e-6)
+
     def test_runs_the_same_embedded_scan_and_optimization_path_as_gvsoc(self) -> None:
         executable = REPOSITORY_ROOT / "cslam-gap9-app/BUILD-host/gap9_mapping_smoke"
         result = subprocess.run(  # noqa: S603 -- built repository fixture
