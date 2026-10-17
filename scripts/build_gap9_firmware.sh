@@ -5,6 +5,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SDK_ROOT="${GAP9_SDK_ROOT:-$HOME/Work/da3_gap9/third_party/gap_sdk_private}"
 TOOLCHAIN_ROOT="${GAP9_TOOLCHAIN_ROOT:-$HOME/Work/da3_gap9/deploy/gap_riscv_toolchain}"
 BUILD_IMAGE="${GAP9_BUILD_IMAGE:-nano-c-slam-gap9-build:ubuntu22-uv0117}"
+BUILD_DNS="${GAP9_BUILD_DNS:-1.1.1.1}"
 
 for required in \
     "$SDK_ROOT/utils/cmake/setup.cmake" \
@@ -18,10 +19,11 @@ if ! docker image inspect "$BUILD_IMAGE" >/dev/null 2>&1; then
         --tag "$BUILD_IMAGE" "$ROOT"
 fi
 
-docker run --rm --platform linux/amd64 \
+docker run --rm --platform linux/amd64 --dns "$BUILD_DNS" \
     -v "$ROOT:/project" \
     -v "$SDK_ROOT:/gap_sdk:ro" \
     -v "$TOOLCHAIN_ROOT:/toolchain:ro" \
+    --mount type=volume,source=nano-c-slam-gap9-uv-cache,target=/root/.cache/uv \
     "$BUILD_IMAGE" bash -euo pipefail -c '
 export PATH=/toolchain/bin:$PATH
 export GAP_SDK_HOME=/gap_sdk
