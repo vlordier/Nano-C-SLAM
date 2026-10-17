@@ -4,12 +4,129 @@ from __future__ import annotations
 
 import math
 from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
 from itertools import combinations
 
 BEAM_ORDER = (2, 0, 3, 1)  # front, back, left, right for the upstream SDF scan
 EXPECTED_SCAN_ANGLE_MIN_RAD = -3.14159
 EXPECTED_SCAN_ANGLE_INCREMENT_RAD = (1.5708 - EXPECTED_SCAN_ANGLE_MIN_RAD) / 3
 SCAN_ANGLE_TOLERANCE_RAD = 0.01
+FLOAT32_MAX = 3.4028234663852886e38
+
+
+class OdometrySynchronizationError(ValueError):
+    """A valid sample set cannot currently produce synchronized swarm ranges."""
+
+
+@dataclass(frozen=True)
+class OdometryCacheUpdate:
+    """Validated candidate swarm cache and publishable pairwise ranges."""
+
+    positions: dict[str, tuple[float, float, float]]
+    timestamps_s: dict[str, float]
+    distances_m: tuple[tuple[str, str, float], ...] | None
+
+
+def odometry_stamp_seconds(sec: object, nanosec: object) -> float:
+    """Convert normalized ROS time fields without accepting malformed values."""
+    if (
+        isinstance(sec, bool)
+        or not isinstance(sec, int)
+        or isinstance(nanosec, bool)
+        or not isinstance(nanosec, int)
+        or not 0 <= nanosec < 1_000_000_000
+    ):
+        raise ValueError("odometry timestamp fields are malformed")
+    try:
+        stamp_s = float(sec) + float(nanosec) / 1e9
+    except OverflowError as error:
+        raise ValueError("odometry timestamp must be finite") from error
+    if (
+        isinstance(stamp_s, bool)
+        or not isinstance(stamp_s, (int, float))
+        or not math.isfinite(stamp_s)
+    ):
+        raise ValueError("odometry timestamp must be finite")
+    return stamp_s
+
+
+def update_odometry_cache(
+    positions: Mapping[str, Sequence[float]],
+    timestamps_s: Mapping[str, float],
+    *,
+    drone: str,
+    position: Sequence[float],
+    stamp_s: float,
+    drone_names: Sequence[str],
+    now_s: float,
+    max_age_s: float = 0.5,
+    max_skew_s: float = 0.1,
+) -> OdometryCacheUpdate:
+    """Validate one sample, then return a new cache and eligible pair ranges.
+
+    Invalid individual input raises before either input mapping is copied or
+    changed. Valid samples update a candidate cache even when another drone's
+    sample is currently stale or unsynchronized; no ranges are returned until
+    the complete candidate swarm snapshot satisfies the synchronization rules.
+    """
+    if drone not in drone_names:
+        raise ValueError(f"odometry received from unknown drone {drone!r}")
+    if len(position) != 3:
+        raise ValueError(f"position for {drone} must have three coordinates")
+    if any(
+        isinstance(value, bool) or not isinstance(value, (int, float))
+        for value in position
+    ):
+        raise ValueError(f"position for {drone} must be numeric")
+    try:
+        coordinates = tuple(float(value) for value in position)
+    except OverflowError as error:
+        raise ValueError(f"position for {drone} must be finite") from error
+    if not all(math.isfinite(value) for value in coordinates):
+        raise ValueError(f"position for {drone} must be finite")
+    if (
+        isinstance(stamp_s, bool)
+        or not isinstance(stamp_s, (int, float))
+        or not math.isfinite(stamp_s)
+    ):
+        raise ValueError("odometry timestamp must be finite")
+    if not set(positions).issubset(drone_names) or not set(timestamps_s).issubset(
+        drone_names
+    ):
+        raise ValueError("odometry cache contains an unknown drone")
+    validate_odometry_timestamps(
+        {drone: stamp_s},
+        now_s=now_s,
+        max_age_s=max_age_s,
+        max_skew_s=max_skew_s,
+    )
+    previous_stamp_s = timestamps_s.get(drone)
+    if previous_stamp_s is not None and stamp_s < previous_stamp_s:
+        raise ValueError(f"odometry timestamp moved backwards for {drone}")
+
+    candidate_positions = dict(positions)
+    candidate_timestamps_s = dict(timestamps_s)
+    candidate_positions[drone] = coordinates  # type: ignore[assignment]
+    candidate_timestamps_s[drone] = stamp_s
+    if set(candidate_positions) != set(drone_names):
+        return OdometryCacheUpdate(candidate_positions, candidate_timestamps_s, None)
+
+    try:
+        validate_odometry_timestamps(
+            candidate_timestamps_s,
+            now_s=now_s,
+            max_age_s=max_age_s,
+            max_skew_s=max_skew_s,
+        )
+    except OdometrySynchronizationError:
+        return OdometryCacheUpdate(candidate_positions, candidate_timestamps_s, None)
+    distances = pairwise_ranges_m(candidate_positions)
+    if any(
+        not math.isfinite(distance) or distance > FLOAT32_MAX
+        for _, _, distance in distances
+    ):
+        raise ValueError("pairwise range exceeds finite Float32 representation")
+    return OdometryCacheUpdate(candidate_positions, candidate_timestamps_s, distances)
 
 
 def laser_scan_ranges_mm(
@@ -65,7 +182,15 @@ def pairwise_ranges_m(
     for name, position in positions.items():
         if len(position) != 3:
             raise ValueError(f"position for {name} must have three coordinates")
-        coordinates = tuple(float(value) for value in position)
+        if any(
+            isinstance(value, bool) or not isinstance(value, (int, float))
+            for value in position
+        ):
+            raise ValueError(f"position for {name} must be numeric")
+        try:
+            coordinates = tuple(float(value) for value in position)
+        except OverflowError as error:
+            raise ValueError(f"position for {name} must be finite") from error
         if not all(math.isfinite(value) for value in coordinates):
             raise ValueError(f"position for {name} must be finite")
         normalized[name] = coordinates  # type: ignore[assignment]
@@ -90,21 +215,35 @@ def validate_odometry_timestamps(
     """Reject missing, stale, or poorly synchronized swarm odometry samples."""
     if not timestamps_s:
         raise ValueError("no odometry timestamps are available")
-    if not math.isfinite(now_s):
+    if (
+        isinstance(now_s, bool)
+        or not isinstance(now_s, (int, float))
+        or not math.isfinite(now_s)
+    ):
         raise ValueError("current simulation time must be finite")
     if not math.isfinite(max_age_s) or max_age_s <= 0:
         raise ValueError("maximum odometry age must be finite and positive")
     if not math.isfinite(max_skew_s) or max_skew_s <= 0:
         raise ValueError("maximum odometry skew must be finite and positive")
 
-    stamps = tuple(float(stamp) for stamp in timestamps_s.values())
+    if any(
+        isinstance(stamp, bool) or not isinstance(stamp, (int, float))
+        for stamp in timestamps_s.values()
+    ):
+        raise ValueError("odometry timestamps must be finite")
+    try:
+        stamps = tuple(float(stamp) for stamp in timestamps_s.values())
+    except OverflowError as error:
+        raise ValueError("odometry timestamps must be finite") from error
     if not all(math.isfinite(stamp) for stamp in stamps):
         raise ValueError("odometry timestamps must be finite")
     oldest_stamp_s = min(stamps)
     newest_stamp_s = max(stamps)
     if newest_stamp_s - now_s > max_skew_s:
-        raise ValueError("odometry timestamp is ahead of simulation time")
+        raise OdometrySynchronizationError(
+            "odometry timestamp is ahead of simulation time"
+        )
     if now_s - oldest_stamp_s > max_age_s:
-        raise ValueError("odometry data is stale")
+        raise OdometrySynchronizationError("odometry data is stale")
     if newest_stamp_s - oldest_stamp_s > max_skew_s:
-        raise ValueError("odometry samples are not synchronized")
+        raise OdometrySynchronizationError("odometry samples are not synchronized")

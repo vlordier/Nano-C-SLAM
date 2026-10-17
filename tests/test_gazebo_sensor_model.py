@@ -3,7 +3,9 @@ import unittest
 
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.sensor_model import (
     laser_scan_ranges_mm,
+    odometry_stamp_seconds,
     pairwise_ranges_m,
+    update_odometry_cache,
     validate_odometry_timestamps,
 )
 
@@ -59,6 +61,128 @@ class LaserScanConversionTests(unittest.TestCase):
 
 
 class PairwiseRangeTests(unittest.TestCase):
+    def test_odometry_stamp_requires_normalized_ros_time_fields(self) -> None:
+        self.assertEqual(odometry_stamp_seconds(1, 500_000_000), 1.5)
+        for sec, nanosec in ((True, 0), (1, True), (1, -1), (1, 1_000_000_000)):
+            with (
+                self.subTest(sec=sec, nanosec=nanosec),
+                self.assertRaisesRegex(ValueError, "malformed"),
+            ):
+                odometry_stamp_seconds(sec, nanosec)
+
+    def test_invalid_odometry_does_not_mutate_cache_and_valid_sample_recovers(
+        self,
+    ) -> None:
+        positions = {"cf1": (0.0, 0.0, 0.0)}
+        stamps = {"cf1": 10.0}
+
+        with self.assertRaisesRegex(ValueError, "finite"):
+            update_odometry_cache(
+                positions,
+                stamps,
+                drone="cf3",
+                position=(math.nan, 1.0, 0.0),
+                stamp_s=10.0,
+                drone_names=("cf1", "cf3"),
+                now_s=10.0,
+            )
+        self.assertEqual(positions, {"cf1": (0.0, 0.0, 0.0)})
+        self.assertEqual(stamps, {"cf1": 10.0})
+
+        update = update_odometry_cache(
+            positions,
+            stamps,
+            drone="cf3",
+            position=(3.0, 4.0, 0.0),
+            stamp_s=10.0,
+            drone_names=("cf1", "cf3"),
+            now_s=10.0,
+        )
+        self.assertEqual(update.distances_m, (("cf1", "cf3", 5.0),))
+        self.assertEqual(positions, {"cf1": (0.0, 0.0, 0.0)})
+
+    def test_cache_rejects_regression_stale_future_unknown_and_float32_overflow(
+        self,
+    ) -> None:
+        positions = {"cf1": (0.0, 0.0, 0.0)}
+        stamps = {"cf1": 10.0}
+        cases = (
+            ("cf1", (0.0, 0.0, 0.0), 9.9, 10.0, "backwards"),
+            ("cf3", (1.0, 0.0, 0.0), 9.0, 10.0, "stale"),
+            ("cf3", (1.0, 0.0, 0.0), 10.2, 10.0, "ahead"),
+            ("cf2", (1.0, 0.0, 0.0), 10.0, 10.0, "unknown"),
+            ("cf3", (3.5e38, 0.0, 0.0), 10.0, 10.0, "Float32"),
+        )
+        for drone, position, stamp_s, now_s, reason in cases:
+            with (
+                self.subTest(reason=reason),
+                self.assertRaisesRegex(ValueError, reason),
+            ):
+                update_odometry_cache(
+                    positions,
+                    stamps,
+                    drone=drone,
+                    position=position,
+                    stamp_s=stamp_s,
+                    drone_names=("cf1", "cf3"),
+                    now_s=now_s,
+                )
+        self.assertEqual(positions, {"cf1": (0.0, 0.0, 0.0)})
+        self.assertEqual(stamps, {"cf1": 10.0})
+
+    def test_cache_withholds_ranges_until_samples_are_synchronized(self) -> None:
+        first = update_odometry_cache(
+            {},
+            {},
+            drone="cf1",
+            position=(0.0, 0.0, 0.0),
+            stamp_s=10.0,
+            drone_names=("cf1", "cf3"),
+            now_s=10.0,
+        )
+        second = update_odometry_cache(
+            first.positions,
+            first.timestamps_s,
+            drone="cf3",
+            position=(1.0, 0.0, 0.0),
+            stamp_s=10.100001,
+            drone_names=("cf1", "cf3"),
+            now_s=10.100001,
+        )
+        self.assertIsNone(second.distances_m)
+        recovered = update_odometry_cache(
+            second.positions,
+            second.timestamps_s,
+            drone="cf1",
+            position=(0.0, 0.0, 0.0),
+            stamp_s=10.100001,
+            drone_names=("cf1", "cf3"),
+            now_s=10.100001,
+        )
+        self.assertEqual(recovered.distances_m, (("cf1", "cf3", 1.0),))
+
+    def test_cache_accepts_inclusive_age_and_skew_boundaries(self) -> None:
+        age_boundary = update_odometry_cache(
+            {"cf1": (0.0, 0.0, 0.0)},
+            {"cf1": 9.5},
+            drone="cf3",
+            position=(1.0, 0.0, 0.0),
+            stamp_s=9.5,
+            drone_names=("cf1", "cf3"),
+            now_s=10.0,
+        )
+        skew_boundary = update_odometry_cache(
+            {"cf1": (0.0, 0.0, 0.0)},
+            {"cf1": 10.0},
+            drone="cf3",
+            position=(1.0, 0.0, 0.0),
+            stamp_s=10.1,
+            drone_names=("cf1", "cf3"),
+            now_s=10.0,
+        )
+        self.assertEqual(age_boundary.distances_m, (("cf1", "cf3", 1.0),))
+        self.assertEqual(skew_boundary.distances_m, (("cf1", "cf3", 1.0),))
+
     def test_returns_stable_three_dimensional_pairwise_ranges(self) -> None:
         distances = pairwise_ranges_m(
             {"cf1": (0.0, 0.0, 0.0), "cf3": (3.0, 4.0, 0.0), "cf4": (0, 0, 12)}

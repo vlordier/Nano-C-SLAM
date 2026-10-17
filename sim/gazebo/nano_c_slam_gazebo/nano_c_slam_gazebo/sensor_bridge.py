@@ -19,8 +19,8 @@ from .mission_model import (
 )
 from .sensor_model import (
     laser_scan_ranges_mm,
-    pairwise_ranges_m,
-    validate_odometry_timestamps,
+    odometry_stamp_seconds,
+    update_odometry_cache,
 )
 
 MAX_ODOMETRY_AGE_S = 0.5
@@ -100,23 +100,27 @@ class SensorBridge(Node):
 
     def _odom_callback(self, msg: Odometry, drone: str) -> None:
         position = msg.pose.pose.position
-        self._positions[drone] = (position.x, position.y, position.z)
         stamp = msg.header.stamp
-        self._odometry_stamps_s[drone] = float(stamp.sec) + float(stamp.nanosec) / 1e9
-        if len(self._positions) != len(self._drone_names):
-            return
-
         try:
             now_s = self.get_clock().now().nanoseconds / 1e9
-            validate_odometry_timestamps(
+            update = update_odometry_cache(
+                self._positions,
                 self._odometry_stamps_s,
+                drone=drone,
+                position=(position.x, position.y, position.z),
+                stamp_s=odometry_stamp_seconds(stamp.sec, stamp.nanosec),
+                drone_names=self._drone_names,
                 now_s=now_s,
                 max_age_s=MAX_ODOMETRY_AGE_S,
                 max_skew_s=MAX_ODOMETRY_SKEW_S,
             )
-            distances = pairwise_ranges_m(self._positions)
         except ValueError as error:
             self._warn_invalid_odometry(str(error))
+            return
+        self._positions = update.positions
+        self._odometry_stamps_s = update.timestamps_s
+        distances = update.distances_m
+        if distances is None:
             return
         output = Float32MultiArray()
         output.layout.dim = [
