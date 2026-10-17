@@ -18,6 +18,7 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     mission_exit_code,
     validate_drone_name,
     validate_drone_names,
+    validate_mission_odometry,
     validate_mission_status_events,
 )
 
@@ -42,6 +43,32 @@ class MissionSequenceTests(unittest.TestCase):
                 self.assertRaises(ValueError),
             ):
                 validate_drone_names(invalid_names)
+
+    def test_validates_mission_odometry_before_readiness(self) -> None:
+        validate_mission_odometry(
+            (1.0, -2.0, 0.1), 10.1, now_s=10.0, previous_stamp_s=10.1
+        )
+        validate_mission_odometry(
+            (0.0, 0.0, 0.0), 9.5, now_s=10.0, previous_stamp_s=None
+        )
+        invalid_cases = (
+            ((0.0, 0.0, float("nan")), 10.0, 10.0, None, "position"),
+            ((0.0, 0.0, 0.0), float("inf"), 10.0, None, "timestamp"),
+            ((0.0, 0.0, 0.0), 10.2, 10.0, None, "ahead"),
+            ((0.0, 0.0, 0.0), 9.4, 10.0, None, "stale"),
+            ((0.0, 0.0, 0.0), 9.9, 10.0, 10.0, "backwards"),
+        )
+        for position, stamp_s, now_s, previous_stamp_s, reason in invalid_cases:
+            with (
+                self.subTest(reason=reason),
+                self.assertRaisesRegex(ValueError, reason),
+            ):
+                validate_mission_odometry(
+                    position,
+                    stamp_s,
+                    now_s=now_s,
+                    previous_stamp_s=previous_stamp_s,
+                )
 
     def test_builds_config_from_numeric_ros_parameters(self) -> None:
         self.assertEqual(

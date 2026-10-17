@@ -23,7 +23,9 @@ class _Clock:
         nanoseconds = 0
 
     def now(self) -> _Now:
-        return self._Now()
+        value = self._Now()
+        value.nanoseconds = 1_000_000_000
+        return value
 
 
 class _Logger:
@@ -178,7 +180,7 @@ class SimMissionStartupTests(unittest.TestCase):
             )
         )
         message.header = types.SimpleNamespace(
-            stamp=types.SimpleNamespace(sec=0, nanosec=0)
+            stamp=types.SimpleNamespace(sec=1, nanosec=0)
         )
         self.assertEqual(node._odometry_message_count, 0)
         node.subscriptions[0].callback(message)
@@ -190,8 +192,31 @@ class SimMissionStartupTests(unittest.TestCase):
         self.assertEqual(node._odometry_message_count, 1)
         self.assertEqual(node._publisher.messages[-1].linear.z, 0.5)
 
+    def test_invalid_first_odometry_fails_without_satisfying_readiness(self) -> None:
+        node = self.module.SimMission()
+        message = self.nav.Odometry()
+        message.pose = types.SimpleNamespace(
+            pose=types.SimpleNamespace(
+                position=types.SimpleNamespace(x=0.0, y=0.0, z=float("nan"))
+            )
+        )
+        message.header = types.SimpleNamespace(
+            stamp=types.SimpleNamespace(sec=1, nanosec=0)
+        )
+
+        node.subscriptions[0].callback(message)
+        node._step()
+
+        self.assertEqual(node._sequence.phase.name, "FAILED")
+        self.assertEqual(node._odometry_message_count, 0)
+        self.assertIsNone(node._altitude_m)
+        self.assertTrue(node.timers[1].canceled)
+        self.assertEqual(node._enable_publisher.messages, [])
+        self.assertEqual(node._publisher.messages[-1].linear.z, 0.0)
+
     def test_mapping_mission_rejects_airborne_start_before_enabling(self) -> None:
         node = self.module.SimMission()
+        node.get_clock().now().nanoseconds = 1_000_000_000
         node._mapping_path_enabled = True
         message = self.nav.Odometry()
         message.pose = types.SimpleNamespace(
@@ -214,6 +239,7 @@ class SimMissionStartupTests(unittest.TestCase):
 
     def test_grounded_mapping_mission_keeps_takeoff_behavior(self) -> None:
         node = self.module.SimMission()
+        node.get_clock().now().nanoseconds = 1_000_000_000
         node._mapping_path_enabled = True
         message = self.nav.Odometry()
         message.pose = types.SimpleNamespace(

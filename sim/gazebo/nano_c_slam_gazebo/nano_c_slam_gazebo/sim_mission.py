@@ -25,6 +25,7 @@ from .mission_model import (
     create_run_id,
     mission_exit_code,
     validate_drone_name,
+    validate_mission_odometry,
 )
 
 
@@ -107,11 +108,37 @@ class SimMission(Node):
         self._publish_status(self.get_clock().now().nanoseconds / 1e9)
 
     def _on_odometry(self, message: Odometry) -> None:
-        self._altitude_m = float(message.pose.pose.position.z)
         position = message.pose.pose.position
-        self._position_xy_m = (float(position.x), float(position.y))
+        candidate_position = (
+            float(position.x),
+            float(position.y),
+            float(position.z),
+        )
         stamp = message.header.stamp
-        self._odometry_stamp_s = float(stamp.sec) + float(stamp.nanosec) / 1e9
+        candidate_stamp_s = float(stamp.sec) + float(stamp.nanosec) / 1e9
+        now_s = self.get_clock().now().nanoseconds / 1e9
+        try:
+            validate_mission_odometry(
+                candidate_position,
+                candidate_stamp_s,
+                now_s=now_s,
+                previous_stamp_s=self._odometry_stamp_s,
+            )
+        except ValueError as error:
+            self._sequence.fail(str(error))
+            self._publish_zero_command_if_active()
+            self._publish_status(now_s)
+            self.get_logger().error(
+                f"{self._drone_name} mission rejected odometry: {error}; "
+                f"odometry_callbacks={self._odometry_message_count}"
+            )
+            self._startup_timer.cancel()
+            self._timer.cancel()
+            return
+
+        self._altitude_m = candidate_position[2]
+        self._position_xy_m = candidate_position[:2]
+        self._odometry_stamp_s = candidate_stamp_s
         self._odometry_message_count += 1
         self._startup_timer.cancel()
 

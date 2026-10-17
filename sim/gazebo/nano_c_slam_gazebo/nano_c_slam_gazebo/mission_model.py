@@ -337,6 +337,33 @@ def create_mapping_start_altitude_limit(value: object) -> float:
     return altitude_m
 
 
+def validate_mission_odometry(
+    position: tuple[float, float, float],
+    stamp_s: float,
+    *,
+    now_s: float,
+    previous_stamp_s: float | None,
+    max_age_s: float = 0.5,
+    max_future_skew_s: float = 0.1,
+) -> None:
+    """Reject malformed or temporally invalid odometry before mission readiness.
+
+    ROS time is used for all timestamp comparisons so paused simulation time does
+    not make otherwise valid samples appear stale. Equal timestamps are allowed
+    because some bridges publish multiple state updates per simulation tick.
+    """
+    if len(position) != 3 or not all(math.isfinite(value) for value in position):
+        raise ValueError("odometry position is not finite")
+    if not math.isfinite(now_s) or not math.isfinite(stamp_s):
+        raise ValueError("odometry timestamp is not finite")
+    if previous_stamp_s is not None and stamp_s < previous_stamp_s:
+        raise ValueError("odometry timestamp moved backwards")
+    if stamp_s - now_s > max_future_skew_s:
+        raise ValueError("odometry timestamp is ahead of simulation time")
+    if now_s - stamp_s > max_age_s:
+        raise ValueError("odometry data is stale")
+
+
 class MissionSequence:
     """Convert measured altitude and simulation time into vertical commands."""
 
