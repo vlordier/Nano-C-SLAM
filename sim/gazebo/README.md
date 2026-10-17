@@ -2,10 +2,12 @@
 
 This integration uses the Gazebo Harmonic Crazyflie world from [`crazyswarm2_gazebo`](https://github.com/prakash-aryan/crazyswarm2_gazebo), with ROS 2 Jazzy. The world provides Crazyflie physics, velocity control, odometry, and a four-ray multiranger scan. The native macOS mission uses measured odometry and publishes velocity commands directly to the existing `/cf1/cmd_vel` Gazebo bridge; this avoids the upstream `control_services` relay's internal flight-state cutoff. The launch keeps the world's default physics engine. We tested the Crazyswarm2 `hello_world` service path as well, but its calls were acknowledged while Gazebo odometry showed no altitude change.
 
-The `nano_c_slam_gazebo` ROS package adds two telemetry topics:
+The `nano_c_slam_gazebo` ROS package currently publishes two telemetry topics:
 
-- `/nano_c_slam/sim/<drone>/ranges_mm`: four distances in `front,back,left,right` order, with `-1` for invalid readings.
+- `/nano_c_slam/sim/<drone>/ranges_mm`: `StampedRanges` with source stamp, drone identity, sequence, and four distances in `front,back,left,right` order; `-1` marks invalid readings.
 - `/nano_c_slam/sim/uwb_pairwise_range_m`: ideal 3D distances computed from Gazebo odometry. The `Float32MultiArray` dimension label identifies each pair.
+
+See [RANGE_TELEMETRY.md](RANGE_TELEMETRY.md) for the timestamp, sequence, clock, pairing, and evidence contract. The bridge and collector now pair source-stamped ranges with odometry under the documented age and skew bounds.
 
 These are simulation adapters. The Gazebo lidar has four rays, while the hardware uses four 8x8 ToF matrices; the pairwise ranges use ground-truth simulator odometry, with no UWB noise, packet loss, or ranging protocol. The simulation does not run the GAP9 SLAM task or STM32 firmware. The existing `cslam-stm32-app/run_demo.py` still uses `cflib` and a Crazyradio, so it cannot be run unchanged against this ROS 2 simulator.
 
@@ -25,7 +27,8 @@ Build the upstream workspace and this package together. The package is passed as
 ```sh
 source /opt/ros/jazzy/setup.bash
 uv run --no-project --python /usr/bin/python3 --with colcon-common-extensions \
-  colcon build --base-paths src "$HOME/Work/Nano-C-SLAM/sim/gazebo/nano_c_slam_gazebo" \
+  colcon build --base-paths src "$HOME/Work/Nano-C-SLAM/sim/gazebo/nano_c_slam_interfaces" \
+    "$HOME/Work/Nano-C-SLAM/sim/gazebo/nano_c_slam_gazebo" \
   --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 source install/local_setup.bash
 ```
@@ -124,7 +127,8 @@ export PATH=/Library/Frameworks/Python.framework/Versions/3.11/bin:$PATH
 export CXXFLAGS='-I/opt/homebrew/opt/eigen/include/eigen3'
 source /opt/homebrew/opt/ros2-jazzy/setup.zsh
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
-  colcon build --base-paths src "$HOME/Work/Nano-C-SLAM/sim/gazebo/nano_c_slam_gazebo" \
+  colcon build --base-paths src "$HOME/Work/Nano-C-SLAM/sim/gazebo/nano_c_slam_interfaces" \
+    "$HOME/Work/Nano-C-SLAM/sim/gazebo/nano_c_slam_gazebo" \
   --packages-skip motion_capture_tracking \
   --cmake-args -DCMAKE_BUILD_TYPE=Release \
   -DPython3_EXECUTABLE=/Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
@@ -226,7 +230,7 @@ source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
 export GZ_PARTITION="nano_c_slam_$(id -u)"
 export ROS_DOMAIN_ID=42
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
-  python scripts/gazebo_mapping_sitl.py --drone cf1 --samples 60 --mapping-path \
+  python scripts/gazebo_mapping_sitl.py --drone cf1 --samples 60 \
   --scene nearfield-mapping \
   --output /tmp/nano-c-slam-gazebo-map.json
 ```
@@ -253,9 +257,10 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
   -p use_sim_time:=True -p mapping_path:=True
 ```
 
-Pass `--mapping-path` to the collector when launching the mission with
-`mapping_path:=True`; the report records raw odometry/range samples, x/y bounds,
-cumulative horizontal travel, and accepted/rejected readings at the cutoff.
+The collector records paired source timestamps, skew, range samples, x/y bounds,
+cumulative horizontal travel, and accepted/rejected readings at the cutoff. It
+does not infer mission success from a command-line flag; automated mission
+outcome evidence is tracked separately.
 Build the host replay before flight and pass
 `--reuse-binary` to avoid compiling while Gazebo is running:
 
@@ -263,7 +268,7 @@ Build the host replay before flight and pass
 scripts/build_host_mapping_sitl.sh
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
   python scripts/gazebo_mapping_sitl.py --drone cf1 --samples 60 \
-  --mapping-path --scene nearfield-mapping --reuse-binary \
+  --scene nearfield-mapping --reuse-binary \
   --output /tmp/nano-c-slam-gazebo-map.json
 ```
 

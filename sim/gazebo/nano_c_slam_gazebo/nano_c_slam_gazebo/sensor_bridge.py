@@ -6,6 +6,7 @@ import time
 from collections.abc import Sequence
 
 import rclpy
+from nano_c_slam_interfaces.msg import StampedRanges
 from nav_msgs.msg import Odometry
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
@@ -36,9 +37,10 @@ class SensorBridge(Node):
         self._positions: dict[str, tuple[float, float, float]] = {}
         self._odometry_stamps_s: dict[str, float] = {}
         self._last_odometry_warning_s = float("-inf")
+        self._range_sequences = dict.fromkeys(self._drone_names, 0)
         self._range_publishers = {
             name: self.create_publisher(
-                Float32MultiArray, f"/nano_c_slam/sim/{name}/ranges_mm", 10
+                StampedRanges, f"/nano_c_slam/sim/{name}/ranges_mm", 10
             )
             for name in self._drone_names
         }
@@ -76,12 +78,19 @@ class SensorBridge(Node):
             self.get_logger().warning(f"Ignoring invalid scan from {drone}: {error}")
             return
 
-        output = Float32MultiArray()
-        output.layout.dim = [
-            MultiArrayDimension(label="front,back,left,right", size=4, stride=4)
-        ]
-        output.data = [float(distance) for distance in ranges]
+        output = StampedRanges()
+        output.header = msg.header
+        output.drone_id = drone
+        output.sequence = self._range_sequences[drone]
+        # Generated fixed-array setters do not validate array length. The pure
+        # converter guarantees four ints before assignment; keep the guard at
+        # this serialization boundary to avoid malformed CDR messages.
+        if len(ranges) != 4 or any(type(value) is not int for value in ranges):
+            self.get_logger().error("Refusing malformed four-ray range payload")
+            return
+        output.ranges_mm = list(ranges)
         self._range_publishers[drone].publish(output)
+        self._range_sequences[drone] += 1
 
     def _odom_callback(self, msg: Odometry, drone: str) -> None:
         position = msg.pose.pose.position

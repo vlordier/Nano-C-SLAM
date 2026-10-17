@@ -39,10 +39,9 @@ def _deterministic_samples(count: int) -> list[MappingSample]:
 
 
 class MappingSampleTests(unittest.TestCase):
-    def test_mapping_capture_cli_labels_path_and_reuses_prebuilt_runner(self) -> None:
-        options = _parse_args(["--mapping-path", "--reuse-binary"])
+    def test_mapping_capture_cli_reuses_prebuilt_runner(self) -> None:
+        options = _parse_args(["--reuse-binary"])
 
-        self.assertTrue(options.mapping_path)
         self.assertTrue(options.reuse_binary)
         self.assertEqual(options.samples, 60)
 

@@ -16,8 +16,12 @@ import subprocess
 import sys
 import tempfile
 import time
+from collections.abc import Sequence
+from dataclasses import dataclass
 from datetime import UTC, datetime
+from itertools import pairwise
 from pathlib import Path
+from statistics import median
 from typing import Any, Protocol, cast
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
@@ -32,6 +36,12 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
 )
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     SUPPORTED_DRONE_NAMES,
+)
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.telemetry_model import (
+    PairingLimits,
+    StampedOdometrySample,
+    StampedRangeSample,
+    TelemetryPairer,
 )
 
 MINIMUM_SAMPLES = 60
@@ -75,7 +85,17 @@ class _OdometryMessage(Protocol):
 
 
 class _RangeMessage(Protocol):
-    data: list[float]
+    header: _Header
+    drone_id: str
+    sequence: int
+    ranges_mm: Sequence[int]
+
+
+@dataclass(frozen=True)
+class _CaptureResult:
+    samples: list[MappingSample]
+    pair_provenance: list[dict[str, int | str]]
+    rejections: dict[str, int]
 
 
 def _parse_args(args: list[str] | None) -> argparse.Namespace:
@@ -88,11 +108,6 @@ def _parse_args(args: list[str] | None) -> argparse.Namespace:
         help="number of fresh 10 Hz samples (minimum 60 for three 20-pose scans)",
     )
     parser.add_argument("--timeout", type=float, default=60.0)
-    parser.add_argument(
-        "--mapping-path",
-        action="store_true",
-        help="record that sim_mission was launched with mapping_path:=True",
-    )
     parser.add_argument(
         "--scene",
         choices=("default", "nearfield-mapping"),
@@ -124,16 +139,14 @@ def _parse_args(args: list[str] | None) -> argparse.Namespace:
     return options
 
 
-def _capture_samples(
-    drone: str, sample_limit: int, timeout_s: float
-) -> list[MappingSample]:
+def _capture_samples(drone: str, sample_limit: int, timeout_s: float) -> _CaptureResult:
     """Collect synchronized odometry and range messages from a running Gazebo."""
     rclpy: Any = importlib.import_module("rclpy")
     odometry_module = importlib.import_module("nav_msgs.msg")
-    standard_messages = importlib.import_module("std_msgs.msg")
+    range_module = importlib.import_module("nano_c_slam_interfaces.msg")
     ros_node_module = importlib.import_module("rclpy.node")
     odometry_message = odometry_module.Odometry
-    array_message = standard_messages.Float32MultiArray
+    range_message = range_module.StampedRanges
     node_base = ros_node_module.Node
 
     class CaptureNode(node_base):
@@ -141,19 +154,22 @@ def _capture_samples(
             super().__init__("nano_c_slam_mapping_capture")
             self._drone = drone
             self._sample_limit = sample_limit
-            self._odometry: _OdometryMessage | None = None
-            self._odometry_stamp_ns = -1
-            self._ranges_mm: tuple[int, int, int, int] | None = None
-            self._range_sequence = 0
-            self._last_sample_range_sequence = 0
-            self._last_sample_stamp_ns = -1
+            self._pairer = TelemetryPairer(
+                drone,
+                PairingLimits(
+                    max_age_ns=500_000_000,
+                    max_skew_ns=100_000_000,
+                    buffer_size=32,
+                ),
+            )
             self.samples: list[MappingSample] = []
+            self.pair_provenance: list[dict[str, int | str]] = []
             self.complete = False
             self.create_subscription(
                 odometry_message, f"/{drone}/odom", self._on_odometry, 10
             )
             self.create_subscription(
-                array_message,
+                range_message,
                 f"/nano_c_slam/sim/{drone}/ranges_mm",
                 self._on_ranges,
                 10,
@@ -162,62 +178,74 @@ def _capture_samples(
 
         def _on_odometry(self, message: _OdometryMessage) -> None:
             stamp = message.header.stamp
-            self._odometry_stamp_ns = int(stamp.sec) * 1_000_000_000 + int(
-                stamp.nanosec
-            )
-            self._odometry = message
-
-        def _on_ranges(self, message: _RangeMessage) -> None:
-            if len(message.data) != 4:
-                return
-            values = tuple(float(value) for value in message.data)
-            if any(
-                not math.isfinite(value)
-                or value < -1
-                or value > 3490
-                or not value.is_integer()
-                for value in values
-            ):
-                return
-            self._ranges_mm = tuple(int(value) for value in values)
-            self._range_sequence += 1
-
-        def _sample(self) -> None:
-            if (
-                self._odometry is None
-                or self._ranges_mm is None
-                or self._range_sequence <= self._last_sample_range_sequence
-                or self._odometry_stamp_ns <= self._last_sample_stamp_ns
-            ):
-                return
-            now_ns = self.get_clock().now().nanoseconds
-            if now_ns - self._odometry_stamp_ns > 500_000_000:
-                return
-            message = self._odometry
             position = message.pose.pose.position
             orientation = message.pose.pose.orientation
             try:
-                yaw = quaternion_yaw(
-                    float(orientation.x),
-                    float(orientation.y),
-                    float(orientation.z),
-                    float(orientation.w),
-                )
-                sample = MappingSample(
-                    sample_id=len(self.samples),
-                    timestamp_ms=self._odometry_stamp_ns // 1_000_000,
+                sample = StampedOdometrySample(
+                    drone_id=drone,
+                    stamp_ns=int(stamp.sec) * 1_000_000_000 + int(stamp.nanosec),
                     x_m=float(position.x),
                     y_m=float(position.y),
-                    yaw_rad=yaw,
-                    ranges_mm=self._ranges_mm,
+                    yaw_rad=quaternion_yaw(
+                        float(orientation.x),
+                        float(orientation.y),
+                        float(orientation.z),
+                        float(orientation.w),
+                    ),
+                )
+            except ValueError as error:
+                self._pairer.rejections["invalid_odometry"] += 1
+                self.get_logger().warning(f"Skipping invalid odometry: {error}")
+                return
+            self._pairer.add_odometry(sample)
+
+        def _on_ranges(self, message: _RangeMessage) -> None:
+            stamp = message.header.stamp
+            try:
+                sample = StampedRangeSample(
+                    drone_id=str(message.drone_id),
+                    stamp_ns=int(stamp.sec) * 1_000_000_000 + int(stamp.nanosec),
+                    sequence=int(message.sequence),
+                    ranges_mm=cast(
+                        tuple[int, int, int, int],
+                        tuple(int(value) for value in message.ranges_mm),
+                    ),
+                )
+            except (TypeError, ValueError) as error:
+                self._pairer.rejections["invalid_range"] += 1
+                self.get_logger().warning(f"Skipping invalid range sample: {error}")
+                return
+            self._pairer.add_range(sample)
+
+        def _sample(self) -> None:
+            now_ns = self.get_clock().now().nanoseconds
+            pair = self._pairer.pop_pair(now_ns)
+            if pair is None:
+                return
+            try:
+                sample = MappingSample(
+                    sample_id=len(self.samples),
+                    timestamp_ms=pair.odometry.stamp_ns // 1_000_000,
+                    x_m=pair.odometry.x_m,
+                    y_m=pair.odometry.y_m,
+                    yaw_rad=pair.odometry.yaw_rad,
+                    ranges_mm=pair.ranges.ranges_mm,
                 )
                 sample.to_record()
             except ValueError as error:
+                self._pairer.rejections["invalid_mapping_sample"] += 1
                 self.get_logger().warning(f"Skipping invalid sample: {error}")
                 return
             self.samples.append(sample)
-            self._last_sample_stamp_ns = self._odometry_stamp_ns
-            self._last_sample_range_sequence = self._range_sequence
+            self.pair_provenance.append(
+                {
+                    "drone_id": drone,
+                    "range_sequence": pair.ranges.sequence,
+                    "range_stamp_ns": pair.ranges.stamp_ns,
+                    "odometry_stamp_ns": pair.odometry.stamp_ns,
+                    "pair_skew_ns": pair.skew_ns,
+                }
+            )
             if len(self.samples) % 10 == 0:
                 self.get_logger().info(
                     f"Captured {len(self.samples)}/{self._sample_limit} samples"
@@ -230,17 +258,21 @@ def _capture_samples(
     try:
         while rclpy.ok() and not node.complete and time.monotonic() < deadline:
             rclpy.spin_once(node, timeout_sec=0.1)
-        samples = cast(list[MappingSample], node.samples)
+        result = _CaptureResult(
+            samples=cast(list[MappingSample], node.samples),
+            pair_provenance=cast(list[dict[str, int | str]], node.pair_provenance),
+            rejections=dict(node._pairer.rejections),
+        )
     finally:
         node.destroy_node()
         if rclpy.ok():
             rclpy.shutdown()
-    if len(samples) < sample_limit:
+    if len(result.samples) < sample_limit:
         raise RuntimeError(
-            f"captured {len(samples)} of {sample_limit} samples before timeout; "
+            f"captured {len(result.samples)} of {sample_limit} samples before timeout; "
             "check that Gazebo, the sensor bridge, and sim_mission are running"
         )
-    return samples
+    return result
 
 
 def _build_host_runner(binary: Path) -> None:
@@ -288,7 +320,8 @@ def main(args: list[str] | None = None) -> int:
     if not binary.is_file():
         raise FileNotFoundError(f"host mapping executable was not built: {binary}")
 
-    samples = _capture_samples(options.drone, options.samples, options.timeout)
+    capture = _capture_samples(options.drone, options.samples, options.timeout)
+    samples = capture.samples
     valid_readings = [
         value for sample in samples for value in sample.ranges_mm if value >= 0
     ]
@@ -324,6 +357,13 @@ def main(args: list[str] | None = None) -> int:
         for start in range(0, len(samples), 20)
     ]
     mapping = _run_mapping(binary, samples)
+    range_stamps_ns = [int(pair["range_stamp_ns"]) for pair in capture.pair_provenance]
+    intervals_ns = [
+        current - previous
+        for previous, current in pairwise(range_stamps_ns)
+        if current > previous
+    ]
+    median_frequency_hz = 1_000_000_000 / median(intervals_ns) if intervals_ns else 0.0
     report: dict[str, Any] = {
         "schema_version": 1,
         "captured_at_utc": datetime.now(UTC).isoformat(),
@@ -343,8 +383,12 @@ def main(args: list[str] | None = None) -> int:
             f"/nano_c_slam/sim/{options.drone}/ranges_mm",
         ],
         "input_sample_count": len(samples),
-        "input_frequency_hz": 10,
-        "mapping_path_enabled": options.mapping_path,
+        "median_input_frequency_hz": median_frequency_hz,
+        "source_clock": "ROS simulation clock",
+        "pairing_limits": {
+            "maximum_age_ns": 500_000_000,
+            "maximum_skew_ns": 100_000_000,
+        },
         "input_horizontal_path": summarize_sample_path(samples),
         "input_sim_time_ms": {
             "start": samples[0].timestamp_ms,
@@ -368,6 +412,8 @@ def main(args: list[str] | None = None) -> int:
             scan_window_three_direction_samples
         ),
         "input_samples": [sample.to_record() for sample in samples],
+        "input_pair_provenance": capture.pair_provenance,
+        "capture_rejections": capture.rejections,
         "tof_projection": "one four-ray reading per direction in central ToF column",
         "mapping": mapping,
     }
