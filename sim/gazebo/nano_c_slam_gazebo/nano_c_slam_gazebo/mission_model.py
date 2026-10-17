@@ -22,7 +22,9 @@ class MissionPhase(Enum):
     FAILED = auto()
 
 
-MISSION_STATUS_SCHEMA_VERSION = 1
+MISSION_STATUS_SCHEMA_VERSION = 2
+LANDING_STABLE_DWELL_S = 0.5
+LANDING_MAX_SAMPLE_GAP_S = 0.2
 
 
 def create_run_id() -> str:
@@ -50,6 +52,8 @@ class MissionStatusEvent:
     mapping_path_requested: bool
     mapping_path_complete: bool
     landing_height_m: float
+    odometry_stamp_s: float | None = None
+    landing_stable_since_s: float | None = None
     failure_reason: str | None = None
     schema_version: int = MISSION_STATUS_SCHEMA_VERSION
 
@@ -68,6 +72,10 @@ class MissionStatusEvent:
             raise ValueError("landing_height_m must be nonnegative")
         if self.altitude_m is not None:
             _require_finite(self.altitude_m, "altitude_m")
+        if self.landing_stable_since_s is not None:
+            _require_finite(self.landing_stable_since_s, "landing_stable_since_s")
+        if self.odometry_stamp_s is not None:
+            _require_finite(self.odometry_stamp_s, "odometry_stamp_s")
         if (
             isinstance(self.schema_version, bool)
             or not isinstance(self.schema_version, int)
@@ -101,6 +109,13 @@ class MissionStatusEvent:
             raise ValueError("terminal success requires measured landing altitude")
         if self.altitude_m > self.landing_height_m:
             raise ValueError("landing altitude exceeds configured limit")
+        if self.landing_stable_since_s is None:
+            raise ValueError("terminal success requires stable-altitude start time")
+        if self.landing_stable_since_s > self.sim_time_s:
+            raise ValueError("stable-altitude start time is after terminal status")
+        stable_duration_s = self.sim_time_s - self.landing_stable_since_s
+        if stable_duration_s + 1e-9 < LANDING_STABLE_DWELL_S:
+            raise ValueError("terminal success lacks required stable-altitude dwell")
 
     def to_json(self) -> str:
         """Serialize with nonstandard NaN/Infinity JSON values forbidden."""
@@ -115,6 +130,8 @@ class MissionStatusEvent:
             "mapping_path_requested": self.mapping_path_requested,
             "mapping_path_complete": self.mapping_path_complete,
             "landing_height_m": self.landing_height_m,
+            "odometry_stamp_s": self.odometry_stamp_s,
+            "landing_stable_since_s": self.landing_stable_since_s,
             "failure_reason": self.failure_reason,
         }
         return json.dumps(payload, allow_nan=False, sort_keys=True)
@@ -137,6 +154,8 @@ class MissionStatusEvent:
             "mapping_path_requested",
             "mapping_path_complete",
             "landing_height_m",
+            "odometry_stamp_s",
+            "landing_stable_since_s",
             "failure_reason",
         }
         if not isinstance(data, dict) or set(data) != expected:
@@ -160,6 +179,8 @@ class MissionStatusEvent:
             mapping_path_requested=data["mapping_path_requested"],
             mapping_path_complete=data["mapping_path_complete"],
             landing_height_m=data["landing_height_m"],
+            odometry_stamp_s=data["odometry_stamp_s"],
+            landing_stable_since_s=data["landing_stable_since_s"],
             failure_reason=data["failure_reason"],
         )
 
@@ -178,6 +199,8 @@ def validate_mission_status_events(
     validate_drone_name(expected_drone_name)
     previous_time = -math.inf
     previous_phase: MissionPhase | None = None
+    landing_stable_since_s: float | None = None
+    previous_odometry_stamp_s: float | None = None
     path_requested: bool | None = None
     path_complete = False
     allowed_transitions = {
@@ -188,7 +211,11 @@ def validate_mission_status_events(
         },
         MissionPhase.TAKEOFF: {MissionPhase.HOVER, MissionPhase.FAILED},
         MissionPhase.HOVER: {MissionPhase.LAND, MissionPhase.FAILED},
-        MissionPhase.LAND: {MissionPhase.COMPLETE, MissionPhase.FAILED},
+        MissionPhase.LAND: {
+            MissionPhase.LAND,
+            MissionPhase.COMPLETE,
+            MissionPhase.FAILED,
+        },
     }
     for index, event in enumerate(events):
         if event.run_id != expected_run_id:
@@ -201,7 +228,6 @@ def validate_mission_status_events(
             )
         if event.sim_time_s < previous_time:
             raise ValueError("mission status simulation time moved backwards")
-        previous_time = event.sim_time_s
         if index == 0 and event.phase is not MissionPhase.WAITING:
             raise ValueError("mission status stream must start at WAITING")
         if previous_phase is not None and event.phase not in allowed_transitions.get(
@@ -209,6 +235,44 @@ def validate_mission_status_events(
         ):
             raise ValueError("mission status phase transition is invalid")
         previous_phase = event.phase
+        if event.phase is MissionPhase.LAND:
+            if (
+                event.altitude_m is None
+                or event.altitude_m > event.landing_height_m
+                or event.odometry_stamp_s is None
+            ):
+                landing_stable_since_s = None
+            elif landing_stable_since_s is None or (
+                previous_odometry_stamp_s is not None
+                and event.odometry_stamp_s - previous_odometry_stamp_s
+                > LANDING_MAX_SAMPLE_GAP_S + 1e-9
+            ):
+                landing_stable_since_s = event.odometry_stamp_s
+            if event.landing_stable_since_s != landing_stable_since_s:
+                raise ValueError("LAND event stable-altitude evidence does not match")
+            if event.odometry_stamp_s is not None:
+                previous_odometry_stamp_s = event.odometry_stamp_s
+        elif event.phase is MissionPhase.COMPLETE:
+            if landing_stable_since_s is None:
+                raise ValueError("terminal status is missing stable-altitude samples")
+            if (
+                event.odometry_stamp_s is None
+                or previous_odometry_stamp_s is None
+                or event.odometry_stamp_s - previous_odometry_stamp_s
+                > LANDING_MAX_SAMPLE_GAP_S + 1e-9
+            ):
+                raise ValueError("terminal status is missing recent altitude evidence")
+            if landing_stable_since_s != event.landing_stable_since_s:
+                raise ValueError(
+                    "terminal stable-altitude evidence does not match stream"
+                )
+            if (
+                previous_odometry_stamp_s is None
+                or event.odometry_stamp_s - previous_odometry_stamp_s
+                > LANDING_MAX_SAMPLE_GAP_S + 1e-9
+            ):
+                raise ValueError("terminal status is missing recent altitude evidence")
+        previous_time = event.sim_time_s
         if path_requested is None:
             path_requested = event.mapping_path_requested
         elif event.mapping_path_requested != path_requested:
@@ -375,6 +439,7 @@ class MissionSequence:
         self._phase_started_s: float | None = None
         self._last_now_s: float | None = None
         self._last_odometry_stamp_s: float | None = None
+        self._landing_stable_since_s: float | None = None
         self.failure_reason: str | None = None
 
     def step(
@@ -392,6 +457,12 @@ class MissionSequence:
         if self._last_now_s is not None and now_s < self._last_now_s:
             return self.fail("simulation time moved backwards")
         self._last_now_s = now_s
+        previous_odometry_stamp_s = self._last_odometry_stamp_s
+        odometry_delta_s = (
+            None
+            if previous_odometry_stamp_s is None or odometry_stamp_s is None
+            else odometry_stamp_s - previous_odometry_stamp_s
+        )
         if altitude_m is not None and not math.isfinite(altitude_m):
             return self.fail("odometry altitude is not finite")
         if odometry_stamp_s is not None:
@@ -442,9 +513,28 @@ class MissionSequence:
                 return 0.0
 
         if self.phase is MissionPhase.LAND:
-            if altitude_m is not None and altitude_m <= self.config.landing_height_m:
-                self.phase = MissionPhase.COMPLETE
-                return 0.0
+            if (
+                self._landing_stable_since_s is not None
+                and odometry_stamp_s is not None
+                and previous_odometry_stamp_s is not None
+                and odometry_delta_s is not None
+                and odometry_delta_s > LANDING_MAX_SAMPLE_GAP_S + 1e-9
+            ):
+                self._landing_stable_since_s = None
+            if altitude_m <= self.config.landing_height_m:
+                if self._landing_stable_since_s is None or (
+                    odometry_delta_s is not None
+                    and odometry_delta_s > LANDING_MAX_SAMPLE_GAP_S + 1e-9
+                ):
+                    self._landing_stable_since_s = odometry_stamp_s
+                if (
+                    odometry_stamp_s - self._landing_stable_since_s
+                    >= LANDING_STABLE_DWELL_S - 1e-9
+                ):
+                    self.phase = MissionPhase.COMPLETE
+                    return 0.0
+            else:
+                self._landing_stable_since_s = None
             if self._timed_out(now_s):
                 return self.fail("landing phase timed out")
             return -self.config.vertical_speed_m_s
@@ -455,6 +545,7 @@ class MissionSequence:
         """Stop the mission safely and retain a diagnostic failure reason."""
         self.phase = MissionPhase.FAILED
         self.failure_reason = reason
+        self._landing_stable_since_s = None
         return 0.0
 
     def _timed_out(self, now_s: float) -> bool:
@@ -463,3 +554,8 @@ class MissionSequence:
             phase_started_s is not None
             and now_s - phase_started_s >= self.config.phase_timeout_s
         )
+
+    @property
+    def landing_stable_since_s(self) -> float | None:
+        """Odometry time when the current uninterrupted low-altitude dwell began."""
+        return self._landing_stable_since_s

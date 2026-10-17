@@ -223,7 +223,8 @@ def _mission_landing_altitude(returncode: int, output: str) -> float:
             )
         raise RuntimeError(f"{detail}\n{output.strip()}")
     completion = re.search(
-        r"completed takeoff, hover, and landing at altitude (-?\d+(?:\.\d+)?) m",
+        r"completed takeoff, hover, and maintained altitude below the landing\s+"
+        r"threshold at (-?\d+(?:\.\d+)?) m",
         output,
     )
     if completion is None:

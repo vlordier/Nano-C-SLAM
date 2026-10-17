@@ -209,12 +209,13 @@ class MissionCaptureGateTests(unittest.TestCase):
             run_id=self.run_id,
             drone_name="cf1",
             sequence=0,
-            sim_time_s=0.0,
+            sim_time_s=0.5,
             phase=MissionPhase.COMPLETE,
             altitude_m=0.05,
             mapping_path_requested=True,
             mapping_path_complete=True,
             landing_height_m=0.1,
+            landing_stable_since_s=0.0,
         )
         self.assertFalse(completed.observe(complete_event.to_json()))
         self.assertIn("before telemetry", completed.failure_reason or "")

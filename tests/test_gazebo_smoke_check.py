@@ -71,11 +71,12 @@ data:
         with self.assertRaisesRegex(RuntimeError, "header timestamp"):
             _odometry_timestamp_ns("position:\n  z: 0.2\n")
 
-    def test_accepts_only_a_complete_mission_that_lands_near_ground(self) -> None:
+    def test_accepts_only_a_mission_with_stable_altitude_wording(self) -> None:
         output = """cf1 mission phase: takeoff at altitude 0.1 m
 cf1 mission phase: hover at altitude 0.5 m
 cf1 mission phase: land at altitude 0.5 m
-cf1 completed takeoff, hover, and landing at altitude 0.06 m
+cf1 completed takeoff, hover, and maintained altitude below the landing
+threshold at 0.06 m
 """
         self.assertEqual(_mission_landing_altitude(0, output), 0.06)
 
@@ -87,13 +88,14 @@ cf1 completed takeoff, hover, and landing at altitude 0.06 m
                 0,
                 "mission phase: takeoff\nmission phase: hover\n"
                 "mission phase: land\n"
-                "completed takeoff, hover, and landing at altitude 0.5 m",
+                "completed takeoff, hover, and maintained altitude below the "
+                "landing threshold at 0.5 m",
             )
 
     def test_accepts_safe_landing_when_drone_starts_airborne(self) -> None:
         output = """mission phase: hover at altitude 0.6 m
 mission phase: land at altitude 0.6 m
-completed takeoff, hover, and landing at altitude 0.08 m
+completed takeoff, hover, and maintained altitude below the landing threshold at 0.08 m
 """
         self.assertEqual(_mission_landing_altitude(0, output), 0.08)
 
@@ -103,14 +105,16 @@ completed takeoff, hover, and landing at altitude 0.08 m
                 0,
                 "mission phase: hover\nmission phase: takeoff\n"
                 "mission phase: land\n"
-                "completed takeoff, hover, and landing at altitude 0.05 m",
+                "completed takeoff, hover, and maintained altitude below the "
+                "landing threshold at 0.05 m",
             )
         with self.assertRaisesRegex(RuntimeError, "outside the ground threshold"):
             _mission_landing_altitude(
                 0,
                 "mission phase: takeoff\nmission phase: hover\n"
                 "mission phase: land\n"
-                "completed takeoff, hover, and landing at altitude -0.2 m",
+                "completed takeoff, hover, and maintained altitude below the "
+                "landing threshold at -0.2 m",
             )
 
 

@@ -51,6 +51,8 @@ class MappingRunCliTests(unittest.TestCase):
             MissionPhase.TAKEOFF,
             MissionPhase.HOVER,
             MissionPhase.LAND,
+            MissionPhase.LAND,
+            MissionPhase.LAND,
             MissionPhase.COMPLETE,
         )
         events = [
@@ -58,13 +60,17 @@ class MappingRunCliTests(unittest.TestCase):
                 run_id="aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
                 drone_name="cf1",
                 sequence=index,
-                sim_time_s=float(index),
+                sim_time_s=(2.0 + 0.2 * (index - 3) if index >= 3 else float(index)),
                 phase=phase,
                 altitude_m=(None if phase is MissionPhase.WAITING else 0.05),
                 mapping_path_requested=True,
                 mapping_path_complete=phase
                 in (MissionPhase.LAND, MissionPhase.COMPLETE),
                 landing_height_m=0.1,
+                odometry_stamp_s=(2.0 + 0.2 * (index - 3) if index >= 3 else None),
+                landing_stable_since_s=(
+                    2.0 if phase in (MissionPhase.LAND, MissionPhase.COMPLETE) else None
+                ),
             )
             for index, phase in enumerate(phases)
         ]

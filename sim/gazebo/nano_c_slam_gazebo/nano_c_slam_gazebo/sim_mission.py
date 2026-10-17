@@ -212,6 +212,8 @@ class SimMission(Node):
                     )
         self._publisher.publish(command)
         if self._sequence.phase is self._last_phase:
+            if self._sequence.phase is MissionPhase.LAND:
+                self._publish_status(now_s)
             return
         self._last_phase = self._sequence.phase
         self._publish_status(now_s)
@@ -230,8 +232,8 @@ class SimMission(Node):
             )
         elif self._sequence.phase is MissionPhase.COMPLETE:
             self.get_logger().info(
-                f"{self._drone_name} completed takeoff, hover, and landing "
-                f"at altitude {altitude}"
+                f"{self._drone_name} completed takeoff, hover, and maintained "
+                f"altitude below the landing threshold at {altitude}"
             )
         else:
             self.get_logger().info(
@@ -289,6 +291,8 @@ class SimMission(Node):
             mapping_path_requested=self._mapping_path_enabled,
             mapping_path_complete=self._mapping_path_finished,
             landing_height_m=self._sequence.config.landing_height_m,
+            odometry_stamp_s=self._odometry_stamp_s,
+            landing_stable_since_s=self._sequence.landing_stable_since_s,
             failure_reason=self._sequence.failure_reason,
         )
         message = String()

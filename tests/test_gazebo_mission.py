@@ -103,9 +103,67 @@ class MissionSequenceTests(unittest.TestCase):
         self.assertEqual(mission.step(2.9, 0.5, 2.9), 0.0)
         self.assertEqual(mission.step(3.0, 0.5, 3.0), -0.5)
         self.assertIs(mission.phase, MissionPhase.LAND)
-        self.assertEqual(mission.step(3.1, 0.1, 3.1), 0.0)
+        self.assertEqual(mission.step(3.1, 0.1, 3.1), -0.5)
+        self.assertIs(mission.phase, MissionPhase.LAND)
+        self.assertEqual(mission.step(3.3, 0.1, 3.3), -0.5)
+        self.assertEqual(mission.step(3.5, 0.1, 3.5), -0.5)
+        self.assertEqual(mission.step(3.6, 0.1, 3.6), 0.0)
         self.assertIs(mission.phase, MissionPhase.COMPLETE)
-        self.assertEqual(mission.step(3.2, 0.1, 3.2), 0.0)
+        self.assertEqual(mission.step(3.7, 0.1, 3.7), 0.0)
+
+    def test_landing_needs_continuous_inclusive_altitude_dwell(self) -> None:
+        mission = MissionSequence(MissionConfig(hover_duration_s=0.0))
+        mission.step(0.0, 0.5, 0.0)
+        self.assertEqual(mission.step(0.5, 0.5, 0.5), -0.5)
+        self.assertEqual(mission.step(0.6, 0.1, 0.6), -0.5)
+        self.assertEqual(mission.step(0.8, 0.100001, 0.8), -0.5)
+        self.assertIsNone(mission.landing_stable_since_s)
+        self.assertEqual(mission.step(0.9, 0.1, 0.9), -0.5)
+        self.assertEqual(mission.landing_stable_since_s, 0.9)
+        self.assertEqual(mission.step(1.09, 0.1, 1.09), -0.5)
+        self.assertEqual(mission.step(1.29, 0.1, 1.29), -0.5)
+        self.assertEqual(mission.step(1.39, 0.1, 1.39), -0.5)
+        self.assertEqual(mission.step(1.4, 0.1, 1.4), 0.0)
+        self.assertIs(mission.phase, MissionPhase.COMPLETE)
+
+    def test_landing_gap_restarts_dwell_and_paused_clock_never_accumulates(
+        self,
+    ) -> None:
+        mission = MissionSequence(MissionConfig(hover_duration_s=0.0))
+        mission.step(0.0, 0.5, 0.0)
+        mission.step(0.5, 0.5, 0.5)
+        self.assertEqual(mission.step(0.6, 0.05, 0.6), -0.5)
+        self.assertEqual(mission.step(0.8, 0.05, 0.8), -0.5)
+        self.assertEqual(mission.step(1.01, 0.05, 1.01), -0.5)
+        self.assertEqual(mission.landing_stable_since_s, 1.01)
+        self.assertEqual(mission.step(1.01, 0.05, 1.01), -0.5)
+        self.assertIs(mission.phase, MissionPhase.LAND)
+
+    def test_landing_dwell_uses_sim_time_and_rejects_stale_or_gapped_samples(
+        self,
+    ) -> None:
+        mission = MissionSequence(MissionConfig(hover_duration_s=0.0))
+        mission.step(0.0, 0.5, 0.0)
+        mission.step(0.5, 0.5, 0.5)
+        mission.step(0.6, 0.05, 0.6)
+        self.assertEqual(mission.step(0.7, 0.05, 0.7), -0.5)
+        self.assertIs(mission.phase, MissionPhase.LAND)
+        self.assertEqual(mission.step(0.89, 0.05, 0.89), -0.5)
+        self.assertEqual(mission.step(0.9, 0.05, 0.9), -0.5)
+        self.assertEqual(mission.step(1.09, 0.05, 1.09), -0.5)
+        self.assertEqual(mission.step(1.1, 0.05, 1.1), 0.0)
+        self.assertIs(mission.phase, MissionPhase.COMPLETE)
+
+    def test_landing_timeout_does_not_accept_transient_crossing(self) -> None:
+        mission = MissionSequence(
+            MissionConfig(hover_duration_s=0.0, phase_timeout_s=0.5)
+        )
+        mission.step(0.0, 0.5, 0.0)
+        mission.step(0.1, 0.5, 0.1)
+        self.assertEqual(mission.step(0.2, 0.05, 0.2), -0.5)
+        self.assertEqual(mission.step(0.6, 0.05, 0.6), 0.0)
+        self.assertIs(mission.phase, MissionPhase.FAILED)
+        self.assertEqual(mission.failure_reason, "landing phase timed out")
 
     def test_config_rejects_unreachable_landing_height(self) -> None:
         with self.assertRaisesRegex(ValueError, "below hover_height_m"):
@@ -222,6 +280,8 @@ class MissionStatusEventTests(unittest.TestCase):
         altitude_m: float | None = 0.05,
         path_requested: bool = True,
         path_complete: bool = True,
+        odometry_stamp_s: float | None = None,
+        landing_stable_since_s: float | None = None,
         failure_reason: str | None = None,
     ) -> MissionStatusEvent:
         return MissionStatusEvent(
@@ -234,6 +294,8 @@ class MissionStatusEventTests(unittest.TestCase):
             mapping_path_requested=path_requested,
             mapping_path_complete=path_complete,
             landing_height_m=0.1,
+            odometry_stamp_s=odometry_stamp_s,
+            landing_stable_since_s=landing_stable_since_s,
             failure_reason=failure_reason,
         )
 
@@ -265,14 +327,40 @@ class MissionStatusEventTests(unittest.TestCase):
             self.event(
                 3,
                 MissionPhase.LAND,
-                altitude_m=0.5,
+                sim_time_s=2.1,
+                altitude_m=0.05,
+                odometry_stamp_s=2.1,
+                landing_stable_since_s=2.1,
                 path_requested=path_requested,
                 path_complete=path_requested,
             ),
             self.event(
                 4,
-                MissionPhase.COMPLETE,
+                MissionPhase.LAND,
+                sim_time_s=2.3,
                 altitude_m=0.05,
+                odometry_stamp_s=2.3,
+                landing_stable_since_s=2.1,
+                path_requested=path_requested,
+                path_complete=path_requested,
+            ),
+            self.event(
+                5,
+                MissionPhase.LAND,
+                sim_time_s=2.5,
+                altitude_m=0.05,
+                odometry_stamp_s=2.5,
+                landing_stable_since_s=2.1,
+                path_requested=path_requested,
+                path_complete=path_requested,
+            ),
+            self.event(
+                6,
+                MissionPhase.COMPLETE,
+                sim_time_s=2.6,
+                altitude_m=0.05,
+                odometry_stamp_s=2.6,
+                landing_stable_since_s=2.1,
                 path_requested=path_requested,
                 path_complete=path_requested,
             ),
@@ -308,7 +396,7 @@ class MissionStatusEventTests(unittest.TestCase):
             raw.replace(self.run_id, ""),
             raw.replace(self.run_id, "not-a-uuid"),
             raw.replace('"drone_name": "cf1"', '"drone_name": "cf2"'),
-            raw.replace('"schema_version": 1', '"schema_version": 2'),
+            raw.replace('"schema_version": 2', '"schema_version": 1'),
             raw.replace('"sequence": 0', '"sequence": true'),
             raw.replace('"sim_time_s": 0.0', '"sim_time_s": NaN'),
             raw[:-1] + ', "unrecognized": true}',
@@ -337,12 +425,22 @@ class MissionStatusEventTests(unittest.TestCase):
                 self.assertRaises(ValueError),
             ):
                 self.event(
-                    0,
+                    5,
                     MissionPhase.COMPLETE,
+                    sim_time_s=0.5,
                     altitude_m=altitude,
+                    odometry_stamp_s=0.5,
                     path_complete=path_complete,
+                    landing_stable_since_s=0.5,
                 )
-        boundary = self.event(0, MissionPhase.COMPLETE, altitude_m=0.1)
+        boundary = self.event(
+            1,
+            MissionPhase.COMPLETE,
+            sim_time_s=0.5,
+            altitude_m=0.1,
+            odometry_stamp_s=0.5,
+            landing_stable_since_s=0.0,
+        )
         self.assertEqual(boundary.altitude_m, boundary.landing_height_m)
         no_path_events = self.successful_events(path_requested=False)
         no_path = no_path_events[-1]
@@ -350,6 +448,22 @@ class MissionStatusEventTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "without requesting"):
             validate_mission_status_events(
                 no_path_events, self.run_id, "cf1", require_mapping_path=True
+            )
+
+    def test_terminal_success_requires_measured_stable_altitude_dwell(self) -> None:
+        with self.assertRaisesRegex(ValueError, "required stable-altitude dwell"):
+            MissionStatusEvent(
+                run_id=self.run_id,
+                drone_name="cf1",
+                sequence=0,
+                sim_time_s=10.0,
+                phase=MissionPhase.COMPLETE,
+                altitude_m=0.05,
+                odometry_stamp_s=10.0,
+                mapping_path_requested=True,
+                mapping_path_complete=True,
+                landing_height_m=0.1,
+                landing_stable_since_s=9.7,
             )
 
     def test_rejects_path_completion_without_a_requested_path(self) -> None:
@@ -411,17 +525,39 @@ class MissionStatusEventTests(unittest.TestCase):
             validate_mission_status_events(
                 [waiting, takeoff, hover], self.run_id, "cf1"
             )
+        invalid_drone_complete = MissionStatusEvent(
+            run_id=self.run_id,
+            drone_name="cf3",
+            sequence=0,
+            sim_time_s=0.5,
+            phase=MissionPhase.COMPLETE,
+            altitude_m=0.05,
+            odometry_stamp_s=0.5,
+            mapping_path_requested=True,
+            mapping_path_complete=True,
+            landing_height_m=0.1,
+            landing_stable_since_s=0.0,
+        )
         with self.assertRaisesRegex(ValueError, "drone_name"):
-            validate_mission_status_events(
-                [self.event(0, MissionPhase.COMPLETE)], self.run_id, "cf3"
-            )
+            validate_mission_status_events([invalid_drone_complete], self.run_id, "cf1")
+        invalid_run_complete = MissionStatusEvent(
+            run_id=create_run_id(),
+            drone_name="cf1",
+            sequence=0,
+            sim_time_s=0.5,
+            phase=MissionPhase.COMPLETE,
+            altitude_m=0.05,
+            odometry_stamp_s=0.5,
+            mapping_path_requested=True,
+            mapping_path_complete=True,
+            landing_height_m=0.1,
+            landing_stable_since_s=0.0,
+        )
         with self.assertRaisesRegex(ValueError, "run_id"):
-            validate_mission_status_events(
-                [self.event(0, MissionPhase.COMPLETE)], create_run_id(), "cf1"
-            )
+            validate_mission_status_events([invalid_run_complete], self.run_id, "cf1")
         complete = self.successful_events()
         following = self.event(
-            5,
+            6,
             MissionPhase.FAILED,
             altitude_m=0.05,
             failure_reason="unexpected trailing event",
