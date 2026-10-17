@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib
 import json
 import math
@@ -334,6 +335,43 @@ def _source_provenance() -> dict[str, str | bool]:
     return {"revision": revision, "worktree_dirty": bool(status)}
 
 
+def _mapping_replay_provenance(binary: Path) -> dict[str, str | bool]:
+    """Bind host replay output to the exact executable and owned source state."""
+    git = shutil.which("git")
+    if git is None:
+        raise FileNotFoundError(
+            "git is required to record mapping executable provenance"
+        )
+    revision = subprocess.run(  # noqa: S603 -- fixed git commands from PATH
+        [git, "rev-parse", "HEAD"],
+        cwd=REPOSITORY_ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    source_paths = (
+        "scripts/gazebo_mapping_sitl.py",
+        "cslam-gap9-app/host-sitl/mapping_replay.c",
+        "cslam-gap9-app/point-cloud/point_cloud.c",
+        "cslam-gap9-app/icp/icp.c",
+        "cslam-gap9-app/slam/graph-based-slam.c",
+    )
+    dirty = subprocess.run(  # noqa: S603 -- fixed git commands from PATH
+        [git, "status", "--short", "--", *source_paths],
+        cwd=REPOSITORY_ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    digest = hashlib.sha256(binary.read_bytes()).hexdigest()
+    return {
+        "source_revision": revision,
+        "source_paths_dirty": bool(dirty),
+        "binary_sha256": digest,
+        "execution": "native-host",
+    }
+
+
 def _run_mapping(binary: Path, samples: list[MappingSample]) -> dict[str, object]:
     records = "\n".join(sample.to_record() for sample in samples) + "\n"
     try:
@@ -403,6 +441,7 @@ def main(args: list[str] | None = None) -> int:
         "schema_version": 1,
         "captured_at_utc": datetime.now(UTC).isoformat(),
         "source_provenance": _source_provenance(),
+        "mapping_replay_provenance": _mapping_replay_provenance(binary),
         "evidence_class": "host-execution-of-owned-gap9-mapping-core",
         "mapping_claim": (
             "host mapping pipeline execution only; map accuracy and completeness "

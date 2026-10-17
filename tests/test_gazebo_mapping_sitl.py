@@ -284,6 +284,11 @@ class MappingSampleTests(unittest.TestCase):
             validate_capture_report(invalid)
 
         invalid = copy.deepcopy(report)
+        invalid["mapping_replay_provenance"]["binary_sha256"] = "unknown"
+        with self.assertRaisesRegex(ValueError, "mapping executable provenance"):
+            validate_capture_report(invalid)
+
+        invalid = copy.deepcopy(report)
         invalid["input_pair_provenance"][0].pop("odometry_stamp_ns")
         with self.assertRaisesRegex(ValueError, "must be integers"):
             validate_capture_report(invalid)

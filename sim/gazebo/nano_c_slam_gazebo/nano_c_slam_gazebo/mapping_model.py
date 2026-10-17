@@ -422,6 +422,21 @@ def validate_capture_report(report: object) -> dict[str, object]:
         or not isinstance(provenance.get("worktree_dirty"), bool)
     ):
         raise ValueError("capture report is missing source provenance")
+    replay_provenance = report.get("mapping_replay_provenance")
+    if (
+        not isinstance(replay_provenance, dict)
+        or not isinstance(replay_provenance.get("source_revision"), str)
+        or not replay_provenance["source_revision"]
+        or not isinstance(replay_provenance.get("source_paths_dirty"), bool)
+        or replay_provenance.get("execution") != "native-host"
+        or not isinstance(replay_provenance.get("binary_sha256"), str)
+        or len(replay_provenance["binary_sha256"]) != 64
+        or any(
+            character not in "0123456789abcdef"
+            for character in replay_provenance["binary_sha256"]
+        )
+    ):
+        raise ValueError("capture report is missing mapping executable provenance")
 
     samples = report.get("input_samples")
     pairs = report.get("input_pair_provenance")
