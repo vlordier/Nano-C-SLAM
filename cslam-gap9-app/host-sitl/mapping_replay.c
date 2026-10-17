@@ -116,14 +116,20 @@ static int emit_map(void) {
            "\"stored_constraint_count\":%d,"
            "\"optimizer_input_constraint_count\":%d,"
            "\"optimizer_input_unique_edge_count\":%d,"
-           "\"optimized_pose_count\":%d,\"main_graph_size\":%d,"
-           "\"has_nan\":%d,\"icp_constraint_accepted_endpoint_pairs\":[",
+           "\"finite_pose_count\":%d,\"main_graph_size\":%d,"
+           "\"main_solver_returned\":%d,\"successful_solver_call_count\":%d,"
+           "\"completed_solver_iteration_count\":%d,"
+           "\"optimization_completed\":%d,\"has_nan\":%d,"
+           "\"icp_constraint_accepted_endpoint_pairs\":[",
            icp_constraint_add_attempt_count,
            icp_constraint_accepted_insertion_count,
            (int)stored_constraint_count, (int)optimizer_input_constraint_count,
            (int)optimizer_input_unique_edge_count,
            last_slam_job.number_of_poses, last_slam_job.main_graph_size,
-           last_slam_job.has_nan);
+           last_slam_job.main_solver_returned,
+           last_slam_job.successful_solver_call_count,
+           last_slam_job.completed_solver_iteration_count,
+           last_slam_job.optimization_completed, last_slam_job.has_nan);
     for (int index = 0; index < icp_constraint_accepted_insertion_count;
          ++index)
         print_endpoint_pair(accepted_icp_endpoint_pairs[index], index > 0);

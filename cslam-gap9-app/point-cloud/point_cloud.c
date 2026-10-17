@@ -482,10 +482,16 @@ void pcl_optimize(slam_job_t *job) {
     optimizer_input_constraint_count = optimization_count;
     optimizer_input_unique_edge_count = count_unique_constraint_pairs(
         optimization_constraints, optimization_count);
-    if (!ls_slam(x, optimization_constraints, pose_nr, optimization_count)) {
+    int16_t main_iterations = 0;
+    if (!ls_slam_with_iterations(x, optimization_constraints, pose_nr,
+                                 optimization_count, &main_iterations)) {
+        job->completed_solver_iteration_count += main_iterations;
         job->has_nan = 1;
         return;
     }
+    job->main_solver_returned = 1;
+    job->successful_solver_call_count++;
+    job->completed_solver_iteration_count += main_iterations;
 
     for (int i = 0; i < pose_nr - 1; i++) {
         // Build subgraph
@@ -524,11 +530,16 @@ void pcl_optimize(slam_job_t *job) {
         measurement_from_poses(&x[3 * (i + 1)], x_subgraph, c_sub.z);
         if (subgraph_size > job->max_subgraph_size)
             job->max_subgraph_size = subgraph_size;
-        if (!ls_slam(x_subgraph, &c_sub, subgraph_size, 1) ||
+        int16_t subgraph_iterations = 0;
+        if (!ls_slam_with_iterations(x_subgraph, &c_sub, subgraph_size, 1,
+                                     &subgraph_iterations) ||
             !pcl_update(x_subgraph, from_pose_id, subgraph_size - 1)) {
+            job->completed_solver_iteration_count += subgraph_iterations;
             job->has_nan = 1;
             return;
         }
+        job->successful_solver_call_count++;
+        job->completed_solver_iteration_count += subgraph_iterations;
     }
 
     int16_t from_pose_id = pose_map[pose_nr - 1];
@@ -561,6 +572,7 @@ void pcl_optimize(slam_job_t *job) {
     }
 
     job->number_of_poses = pose_counter;
+    job->optimization_completed = 1;
 
     uint32_t t_stop = pi_time_get_us();
     job->time_ms = (uint16_t)((t_stop - t_start) / 1000);

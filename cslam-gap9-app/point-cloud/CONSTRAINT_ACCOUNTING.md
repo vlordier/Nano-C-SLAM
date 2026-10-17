@@ -18,6 +18,17 @@ to the solver, not successful convergence or objective improvement. The
 endpoint accessor returns compact graph-node indices from that reduced input;
 stored endpoint accessors return pose-table indices.
 
+`slam_job_t.main_solver_returned` records the main `ls_slam` bool result;
+`successful_solver_call_count` includes the main solve and successful subgraph
+solves; `completed_solver_iteration_count` counts fully applied fixed solver
+updates (three per successful `ls_slam` call); and `optimization_completed`
+means `pcl_optimize` reached the end, reconstructed every pose, and passed its
+finite-value check. `number_of_poses` is therefore reported as
+`finite_pose_count`, not as an optimization or accuracy metric. The replay
+validator requires these states to reconcile. The solver computes no
+validated objective/residual comparison and exposes no convergence test, so
+these fields do not claim convergence or improvement.
+
 The host replay separately records all nonempty adjacent scan pairs passed to
 ICP, candidates that passed the ICP result gate and called the insertion API,
 accepted ICP insertions, all stored canonical endpoint pairs, and the unique

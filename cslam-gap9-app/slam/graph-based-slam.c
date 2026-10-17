@@ -413,8 +413,10 @@ int16_t bandwidth_test(csr *mat, int N, int16_t *perm) {
     return bw_len;
 }
 
-bool ls_slam(float *x, constraint *constraints, int16_t nr_of_poses,
-             int16_t nr_of_constr) {
+bool ls_slam_with_iterations(float *x, constraint *constraints,
+                             int16_t nr_of_poses, int16_t nr_of_constr,
+                             int16_t *completed_iterations) {
+    if (completed_iterations != NULL) *completed_iterations = 0;
     if (!valid_pose_graph(x, constraints, nr_of_poses, nr_of_constr))
         return false;
 
@@ -448,6 +450,13 @@ bool ls_slam(float *x, constraint *constraints, int16_t nr_of_poses,
             if (!isfinite(x[i] + b[i])) return false;
         }
         for (int16_t i = 0; i < 3 * nr_of_poses; i++) x[i] += b[i];
+        if (completed_iterations != NULL) *completed_iterations = k + 1;
     }
     return true;
+}
+
+bool ls_slam(float *x, constraint *constraints, int16_t nr_of_poses,
+             int16_t nr_of_constr) {
+    return ls_slam_with_iterations(x, constraints, nr_of_poses, nr_of_constr,
+                                   NULL);
 }

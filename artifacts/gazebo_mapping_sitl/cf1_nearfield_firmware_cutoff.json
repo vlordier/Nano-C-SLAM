@@ -149,7 +149,6 @@
     "stored_constraint_count": 3,
     "optimizer_input_constraint_count": 3,
     "optimizer_input_unique_edge_count": 3,
-    "optimized_pose_count": 60,
     "main_graph_size": 3,
     "has_nan": 0,
     "icp_constraint_accepted_endpoint_pairs": [
@@ -1293,7 +1292,9 @@
         -0.3048376,
         -1.406662
       ]
-    ]
+    ],
+    "finite_pose_count": 60,
+    "solver_execution_evidence": "not-recorded-in-legacy-capture"
   },
   "mapping_claim": "host mapping pipeline execution only; map accuracy and completeness are not measured",
   "scan_window_in_range_sample_counts": [

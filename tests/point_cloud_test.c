@@ -78,6 +78,15 @@ bool ls_slam(float *poses, constraint *edges, int16_t pose_count, int16_t edge_c
     return !fail_slam;
 }
 
+bool ls_slam_with_iterations(float *poses, constraint *edges, int16_t pose_count,
+                             int16_t edge_count,
+                             int16_t *completed_iterations) {
+    if (completed_iterations != NULL) *completed_iterations = 0;
+    bool result = ls_slam(poses, edges, pose_count, edge_count);
+    if (result && completed_iterations != NULL) *completed_iterations = 3;
+    return result;
+}
+
 int main(void) {
     const float positions[] = {0, 0.1f, 1, 1.1f, 2};
     for (int i = 0; i < 5; i++) {
@@ -136,6 +145,10 @@ int main(void) {
     slam_job_t job;
     pcl_optimize(NULL);
     pcl_optimize(&job);
+    CHECK(job.main_solver_returned == 1);
+    CHECK(job.optimization_completed == 1);
+    CHECK(job.successful_solver_call_count == 3);
+    CHECK(job.completed_solver_iteration_count == 9);
     pcl_optimize(&job);
     CHECK(main_graph_calls == 2);
     CHECK(constraints[0].fromIdx == 2 && constraints[0].toIdx == 4);
@@ -143,6 +156,10 @@ int main(void) {
     fail_slam = 1;
     pcl_optimize(&job);
     CHECK(job.has_nan);
+    CHECK(job.main_solver_returned == 0);
+    CHECK(job.optimization_completed == 0);
+    CHECK(job.successful_solver_call_count == 0);
+    CHECK(job.completed_solver_iteration_count == 0);
     CHECK(main_graph_calls == 2);
     float after_failed_optimization[3];
     CHECK(pcl_to_poses(after_failed_optimization, 2, 1));

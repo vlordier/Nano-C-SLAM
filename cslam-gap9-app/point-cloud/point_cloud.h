@@ -33,6 +33,10 @@ typedef struct {
     int16_t max_subgraph_size;
     int16_t time_ms;
     int16_t has_nan;
+    int16_t main_solver_returned;
+    int16_t successful_solver_call_count;
+    int16_t completed_solver_iteration_count;
+    int16_t optimization_completed;
 } slam_job_t;
 
 typedef enum {

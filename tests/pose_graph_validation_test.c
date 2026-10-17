@@ -2,62 +2,15 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "../cslam-gap9-app/slam/cholesky.h"
 #include "../cslam-gap9-app/slam/graph-based-slam.h"
+#include "../cslam-gap9-app/slam/cholesky.h"
 #include "../cslam-gap9-app/slam/rcm/rcm-sparse-matrix.h"
 #include "../cslam-gap9-app/slam/utils_math.h"
 
-void insert_element(csr *mat, int16_t n, int16_t row, int16_t col, float value) {
-    (void)mat;
-    (void)n;
-    (void)row;
-    (void)col;
-    (void)value;
-    abort();
-}
-
-void add_to_element(csr *mat, int16_t n, int16_t row, int16_t col, float value) {
-    (void)mat;
-    (void)n;
-    (void)row;
-    (void)col;
-    (void)value;
-    abort();
-}
-
-float get_element(csr *mat, int16_t n, int16_t row, int16_t col) {
-    (void)n;
-    for (int32_t i = mat->row_ptr[row]; i < mat->row_ptr[row + 1]; ++i) {
-        if (mat->col_idx[i] == col)
-            return mat->data[i];
-    }
-    return 0.0f;
-}
-
-void cholesky_sparse_parallel(csr *mat, int16_t n, int16_t *perm) {
-    (void)mat;
-    (void)n;
-    (void)perm;
-    abort();
-}
-
-void permute_array(float *array, int16_t *perm, int16_t n) {
-    (void)array;
-    (void)perm;
-    (void)n;
-    abort();
-}
-
-void permutation_inverse(int16_t *perm, int16_t *inverse, int n) {
-    (void)perm;
-    (void)inverse;
-    (void)n;
-    abort();
-}
-
-void transpose_lower_triangular_in_place(csr *mat, int16_t n) {
-    (void)mat;
-    (void)n;
+void cholesky_sparse_parallel(csr *matrix, int16_t size, int16_t *permutation) {
+    (void)matrix;
+    (void)size;
+    (void)permutation;
     abort();
 }
 
@@ -67,7 +20,24 @@ void transpose_lower_triangular_in_place(csr *mat, int16_t n) {
             abort(); \
     } while (0)
 
+uint32_t pi_time_get_us(void) { return 0; }
+void pi_time_wait_us(uint32_t us) { (void)us; }
+
 int main(void) {
+    float invalid_graph_poses[6] = {0.0f};
+    constraint invalid_graph_edge = {
+        .fromIdx = 0, .toIdx = 2, .z = {1.0f, 0.0f, 0.0f}};
+    int16_t completed_iterations = -1;
+    CHECK(!ls_slam_with_iterations(invalid_graph_poses, &invalid_graph_edge, 2,
+                                   1, &completed_iterations));
+    CHECK(completed_iterations == 0);
+    invalid_graph_edge.toIdx = 1;
+    invalid_graph_edge.z[0] = NAN;
+    completed_iterations = -1;
+    CHECK(!ls_slam_with_iterations(invalid_graph_poses, &invalid_graph_edge, 2,
+                                   1, &completed_iterations));
+    CHECK(completed_iterations == 0);
+
     float singular[3][3] = {{1, 2, 3}, {2, 4, 6}, {0, 0, 0}};
     float inverse[3][3] = {{7, 7, 7}, {7, 7, 7}, {7, 7, 7}};
     CHECK(!matinv_3x3(singular, inverse));

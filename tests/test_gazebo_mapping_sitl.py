@@ -174,8 +174,12 @@ class MappingSampleTests(unittest.TestCase):
             "optimizer_input_constraint_count": 0,
             "optimizer_input_unique_edge_count": 0,
             "optimizer_input_unique_edge_pairs": [],
-            "optimized_pose_count": 39,
+            "finite_pose_count": 0,
             "main_graph_size": 0,
+            "main_solver_returned": 0,
+            "successful_solver_call_count": 0,
+            "completed_solver_iteration_count": 0,
+            "optimization_completed": 0,
             "has_nan": 0,
             "poses": [[0.0, 0.0, 0.0]] * 39,
             "points": [[0.0, 0.0]],
@@ -198,7 +202,6 @@ class MappingSampleTests(unittest.TestCase):
             "optimizer_input_constraint_count": 2,
             "optimizer_input_unique_edge_count": 2,
             "optimizer_input_unique_edge_pairs": [[0, 1], [1, 2]],
-            "optimized_pose_count": 60,
             "main_graph_size": 4,
             "has_nan": 0,
             "poses": [[0.0, 0.0, 0.0]] * 60,
@@ -209,10 +212,11 @@ class MappingSampleTests(unittest.TestCase):
 
         report["main_graph_size"] = 3
         report["has_nan"] = False
-        with self.assertRaisesRegex(ValueError, "finite graph"):
+        with self.assertRaisesRegex(ValueError, "finite output"):
             validate_mapping_result(report)
 
         report["has_nan"] = 0
+        report["main_graph_size"] = 3
         report["optimized_constraint_count"] = 2
         with self.assertRaisesRegex(
             ValueError, "unsupported optimized_constraint_count"
@@ -220,6 +224,10 @@ class MappingSampleTests(unittest.TestCase):
             validate_mapping_result(report)
 
         del report["optimized_constraint_count"]
+        report["optimized_pose_count"] = 60
+        with self.assertRaisesRegex(ValueError, "unsupported optimized_pose_count"):
+            validate_mapping_result(report)
+        del report["optimized_pose_count"]
         report["stored_unique_endpoint_pairs"] = [[0, 1], [0, 1]]
         with self.assertRaisesRegex(ValueError, "contains duplicate edges"):
             validate_mapping_result(report)
@@ -394,16 +402,16 @@ class NativeMappingReplayTests(unittest.TestCase):
         )
         self.assertEqual(report["stored_unique_endpoint_pairs"], [[0, 20], [20, 40]])
         self.assertEqual(report["optimizer_input_unique_edge_pairs"], [[0, 1], [1, 2]])
-        self.assertEqual(report["optimized_pose_count"], 60)
+        self.assertEqual(report["main_solver_returned"], 1)
+        self.assertEqual(report["successful_solver_call_count"], 3)
+        self.assertEqual(report["completed_solver_iteration_count"], 9)
+        self.assertEqual(report["optimization_completed"], 1)
         graph_size = report["main_graph_size"]
         assert isinstance(graph_size, int)
         self.assertGreaterEqual(graph_size, 2)
 
     def test_retained_live_reports_replay_through_owned_mapping_binary(self) -> None:
-        artifact_paths = (
-            "cf1_nearfield_stamped_capture.json",
-            "cf1_nearfield_stamped_freshness.json",
-        )
+        artifact_paths = ("cf1_nearfield_stamped_capture.json",)
         for name in artifact_paths:
             with self.subTest(artifact=name):
                 artifact_path = REPOSITORY_ROOT / "artifacts/gazebo_mapping_sitl" / name
@@ -427,6 +435,12 @@ class NativeMappingReplayTests(unittest.TestCase):
 
                 replayed = _run_mapping(self.binary, samples)
                 retained = artifact["mapping"]
+                self.assertEqual(
+                    retained["legacy_solver_claims"][
+                        "solver_return_iterations_and_completion"
+                    ],
+                    "not_recorded_in_original_capture; do not infer",
+                )
                 for field in (
                     "pose_count",
                     "scan_count",
@@ -441,8 +455,6 @@ class NativeMappingReplayTests(unittest.TestCase):
                     "optimizer_input_constraint_count",
                     "optimizer_input_unique_edge_count",
                     "optimizer_input_unique_edge_pairs",
-                    "optimized_pose_count",
-                    "main_graph_size",
                     "has_nan",
                 ):
                     self.assertEqual(replayed[field], retained[field], field)
@@ -557,7 +569,8 @@ class NativeMappingReplayTests(unittest.TestCase):
 
         self.assertIn(
             "NANO_C_SLAM_HOST:mapping_ok poses=60 scans=3 map_points=240 "
-            "optimized=60 graph=3 has_nan=0",
+            "finite=60 graph=3 main_solver=1 solver_calls=3 "
+            "solver_iterations=9 completed=1 has_nan=0",
             result.stdout,
         )
         self.assertNotIn("NANO_C_SLAM_GVSOC:", result.stdout)

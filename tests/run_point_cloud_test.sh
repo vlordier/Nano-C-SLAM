@@ -45,6 +45,11 @@ cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
     tests/pose_graph_validation_test.c \
     cslam-gap9-app/slam/graph-based-slam.c \
     cslam-gap9-app/slam/utils_math.c \
+    cslam-gap9-app/slam/sparse-matrix.c \
+    cslam-gap9-app/slam/rcm/rcm-sparse-matrix.c \
+    cslam-gap9-app/slam/rcm/circular-queue.c \
+    cslam-gap9-app/slam/rcm/heapsort.c \
+    cslam-gap9-app/slam/globals.c \
     "$linker_gc" -lm -o /tmp/pose_graph_validation_test
 /tmp/pose_graph_validation_test
 

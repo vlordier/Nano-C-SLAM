@@ -116,6 +116,10 @@ static int run_mapping_fixture(void) {
     const int passed = pose_count == 60 && scan_count == 3 && map.num == 240 &&
                        icp_constraint_count >= 2 && job.number_of_poses == 60 &&
                        job.main_graph_size == 3 && job.has_nan == 0 &&
+                       job.main_solver_returned == 1 &&
+                       job.successful_solver_call_count == 3 &&
+                       job.completed_solver_iteration_count == 9 &&
+                       job.optimization_completed == 1 &&
                        stored_constraints >= icp_constraint_count &&
                        optimizer_inputs >= 2 && optimizer_unique_edges >= 2 &&
                        optimizer_unique_edges <= optimizer_inputs &&
@@ -125,17 +129,25 @@ static int run_mapping_fixture(void) {
         printf("NANO_C_SLAM_%s:mapping_fail poses=%d scans=%u points=%zu "
                "icp_constraints=%d matches=%d icp_error_milli=%d "
                "icp_has_nan=%d "
-               "optimized=%d graph=%d has_nan=%d\n",
+               "finite=%d graph=%d main_solver=%d solver_calls=%d "
+               "solver_iterations=%d completed=%d has_nan=%d\n",
                EXECUTION_CLASS, pose_count, scan_count, map.num, icp_constraint_count,
                last_correspondence_count, (int)last_icp_error_milli, last_icp_has_nan,
-               job.number_of_poses, job.main_graph_size, job.has_nan);
+               job.number_of_poses, job.main_graph_size,
+               job.main_solver_returned, job.successful_solver_call_count,
+               job.completed_solver_iteration_count,
+               job.optimization_completed, job.has_nan);
         return -1;
     }
 
     printf("NANO_C_SLAM_%s:mapping_ok poses=%d scans=%u map_points=%zu "
-           "optimized=%d graph=%d has_nan=%d\n",
+           "finite=%d graph=%d main_solver=%d solver_calls=%d "
+           "solver_iterations=%d completed=%d has_nan=%d\n",
            EXECUTION_CLASS, pose_count, scan_count, map.num, job.number_of_poses,
-           job.main_graph_size, job.has_nan);
+           job.main_graph_size, job.main_solver_returned,
+           job.successful_solver_call_count,
+           job.completed_solver_iteration_count, job.optimization_completed,
+           job.has_nan);
     return 0;
 }
 

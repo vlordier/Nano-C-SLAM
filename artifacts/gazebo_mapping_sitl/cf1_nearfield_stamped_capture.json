@@ -1505,7 +1505,6 @@
     "stored_constraint_count": 11,
     "optimizer_input_constraint_count": 11,
     "optimizer_input_unique_edge_count": 11,
-    "optimized_pose_count": 170,
     "main_graph_size": 9,
     "has_nan": 0,
     "icp_constraint_accepted_endpoint_pairs": [
@@ -4835,7 +4834,11 @@
         -0.1993666,
         -1.378358
       ]
-    ]
+    ],
+    "legacy_solver_claims": {
+      "finite_pose_count_proven_by_capture": 170,
+      "solver_return_iterations_and_completion": "not_recorded_in_original_capture; do not infer"
+    }
   },
   "source_provenance": {
     "revision": "376520f8399fa488ab0edc4dedc563b5178411fb",

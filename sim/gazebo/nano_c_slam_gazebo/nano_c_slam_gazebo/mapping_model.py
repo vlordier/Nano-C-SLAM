@@ -156,7 +156,6 @@ def validate_mapping_result(
         "stored_constraint_count",
         "optimizer_input_constraint_count",
         "optimizer_input_unique_edge_count",
-        "optimized_pose_count",
         "main_graph_size",
     )
     counts: dict[str, int] = {}
@@ -185,8 +184,13 @@ def validate_mapping_result(
         > counts["stored_constraint_count"]
     ):
         raise ValueError("mapping constraint insertion counts are inconsistent")
-    if counts["optimized_pose_count"] != counts["pose_count"]:
-        raise ValueError("pose graph did not optimize all captured poses")
+    if "optimized_pose_count" in normalized_result:
+        raise ValueError("mapping result uses unsupported optimized_pose_count claim")
+    legacy_solver_evidence = normalized_result.get("solver_execution_evidence")
+    if legacy_solver_evidence is not None and legacy_solver_evidence != (
+        "not-recorded-in-legacy-capture"
+    ):
+        raise ValueError("legacy solver evidence must identify unrecorded fields")
     has_nan = normalized_result.get("has_nan")
     if (
         counts["main_graph_size"] < 3
@@ -194,7 +198,14 @@ def validate_mapping_result(
         or not isinstance(has_nan, int)
         or has_nan != 0
     ):
-        raise ValueError("pose graph optimization did not produce a finite graph")
+        raise ValueError("pose graph did not produce finite output")
+    legacy_claims = normalized_result.get("legacy_solver_claims")
+    if legacy_claims is not None and (
+        not isinstance(legacy_claims, dict)
+        or legacy_claims.get("solver_return_iterations_and_completion")
+        != "not_recorded_in_original_capture; do not infer"
+    ):
+        raise ValueError("legacy solver evidence must state unrecorded fields")
     if counts["main_graph_size"] > counts["scan_count"]:
         raise ValueError("pose graph cannot contain more nodes than captured scans")
     if (

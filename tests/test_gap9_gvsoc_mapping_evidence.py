@@ -39,17 +39,26 @@ class GvsocMappingEvidenceTests(unittest.TestCase):
     def test_accepts_exact_gvsoc_mapping_marker(self) -> None:
         result, report = self._capture(
             "NANO_C_SLAM_GVSOC:mapping_ok poses=60 scans=3 map_points=240 "
-            "optimized=60 graph=3 has_nan=0"
+            "finite=60 graph=3 main_solver=1 solver_calls=3 "
+            "solver_iterations=9 completed=1 has_nan=0"
         )
 
         self.assertEqual(result, 0)
         self.assertEqual(report["status"], "passed")
         self.assertEqual(report["evidence_class"], "gvsoc-target-execution")
+        observed = report["observed"]
+        self.assertIsInstance(observed, dict)
+        assert isinstance(observed, dict)
+        self.assertEqual(observed["successful_solver_calls"], 3)
+        self.assertEqual(observed["completed_solver_iterations"], 9)
+        self.assertTrue(observed["main_solver_returned"])
+        self.assertTrue(observed["optimization_completed"])
 
     def test_host_marker_cannot_be_captured_as_gvsoc_evidence(self) -> None:
         result, report = self._capture(
             "NANO_C_SLAM_HOST:mapping_ok poses=60 scans=3 map_points=240 "
-            "optimized=60 graph=3 has_nan=0"
+            "finite=60 graph=3 main_solver=1 solver_calls=3 "
+            "solver_iterations=9 completed=1 has_nan=0"
         )
 
         self.assertEqual(result, 1)
@@ -59,12 +68,22 @@ class GvsocMappingEvidenceTests(unittest.TestCase):
     def test_wrong_gvsoc_metrics_fail_capture(self) -> None:
         result, report = self._capture(
             "NANO_C_SLAM_GVSOC:mapping_ok poses=60 scans=3 map_points=240 "
-            "optimized=0 graph=0 has_nan=1"
+            "finite=0 graph=0 main_solver=0 solver_calls=0 "
+            "solver_iterations=0 completed=0 has_nan=1"
         )
 
         self.assertEqual(result, 1)
         self.assertEqual(report["status"], "failed")
         self.assertEqual(report["evidence_class"], "gvsoc-target-execution")
+
+    def test_rejects_wrong_iteration_or_completion_metrics(self) -> None:
+        result, report = self._capture(
+            "NANO_C_SLAM_GVSOC:mapping_ok poses=60 scans=3 map_points=240 "
+            "finite=60 graph=3 main_solver=1 solver_calls=3 "
+            "solver_iterations=8 completed=1 has_nan=0"
+        )
+        self.assertEqual(result, 1)
+        self.assertEqual(report["status"], "failed")
 
 
 if __name__ == "__main__":

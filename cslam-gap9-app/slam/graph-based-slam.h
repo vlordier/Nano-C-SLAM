@@ -124,6 +124,11 @@ bool backward_substitution(csr *L, float *b, int N);
 bool ls_slam(float *x, constraint *constraints, int16_t nr_of_poses,
              int16_t nr_of_constr);
 
+/** Run the fixed-iteration least-squares solver and report completed updates. */
+bool ls_slam_with_iterations(float *x, constraint *constraints,
+                             int16_t nr_of_poses, int16_t nr_of_constr,
+                             int16_t *completed_iterations);
+
 /**
  * Auxiliary function for computing the bandwidth of a matrix.
  *

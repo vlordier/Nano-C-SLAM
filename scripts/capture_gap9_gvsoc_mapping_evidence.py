@@ -10,9 +10,10 @@ from pathlib import Path
 
 MARKER = re.compile(
     r"NANO_C_SLAM_GVSOC:mapping_ok poses=(\d+) scans=(\d+) "
-    r"map_points=(\d+) optimized=(\d+) graph=(\d+) has_nan=(\d+)"
+    r"map_points=(\d+) finite=(\d+) graph=(\d+) main_solver=(\d+) "
+    r"solver_calls=(\d+) solver_iterations=(\d+) completed=(\d+) has_nan=(\d+)"
 )
-EXPECTED = ("60", "3", "240", "60", "3", "0")
+EXPECTED = ("60", "3", "240", "60", "3", "1", "3", "9", "1", "0")
 
 
 def sha256(path: Path) -> str:
@@ -49,8 +50,12 @@ def main() -> int:
             "poses": 60,
             "scans": 3,
             "map_points": 240,
-            "optimized": 60,
+            "finite_poses": 60,
             "graph_nodes": 3,
+            "main_solver_returned": True,
+            "successful_solver_calls": 3,
+            "completed_solver_iterations": 9,
+            "optimization_completed": True,
             "has_nan": False,
         },
         "observed": (
@@ -58,9 +63,13 @@ def main() -> int:
                 "poses": int(observed[0]),
                 "scans": int(observed[1]),
                 "map_points": int(observed[2]),
-                "optimized": int(observed[3]),
+                "finite_poses": int(observed[3]),
                 "graph_nodes": int(observed[4]),
-                "has_nan": observed[5] == "1",
+                "main_solver_returned": observed[5] == "1",
+                "successful_solver_calls": int(observed[6]),
+                "completed_solver_iterations": int(observed[7]),
+                "optimization_completed": observed[8] == "1",
+                "has_nan": observed[9] == "1",
             }
             if observed
             else None
