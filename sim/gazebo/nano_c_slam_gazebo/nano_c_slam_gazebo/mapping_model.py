@@ -114,7 +114,13 @@ def validate_mapping_result(
         )
     if counts["optimized_pose_count"] != counts["pose_count"]:
         raise ValueError("pose graph did not optimize all captured poses")
-    if counts["main_graph_size"] < 3 or normalized_result.get("has_nan") != 0:
+    has_nan = normalized_result.get("has_nan")
+    if (
+        counts["main_graph_size"] < 3
+        or isinstance(has_nan, bool)
+        or not isinstance(has_nan, int)
+        or has_nan != 0
+    ):
         raise ValueError("pose graph optimization did not produce a finite graph")
     if counts["main_graph_size"] > counts["scan_count"]:
         raise ValueError("pose graph cannot contain more nodes than captured scans")
@@ -171,7 +177,12 @@ def validate_capture_report(report: object) -> dict[str, object]:
             raise ValueError("capture report keys must be strings")
         normalized_report[key] = value
     report = normalized_report
-    if report.get("schema_version") != 1:
+    schema_version = report.get("schema_version")
+    if (
+        isinstance(schema_version, bool)
+        or not isinstance(schema_version, int)
+        or schema_version != 1
+    ):
         raise ValueError("capture report has an unsupported schema version")
     if report.get("evidence_class") != "host-execution-of-owned-gap9-mapping-core":
         raise ValueError("capture report has an unsupported evidence class")
@@ -283,7 +294,12 @@ def validate_capture_report(report: object) -> dict[str, object]:
                 if value <= 1400:
                     direction_accepted[direction] += 1
 
-    if report.get("mapping_range_limit_mm") != 1400:
+    range_limit = report.get("mapping_range_limit_mm")
+    if (
+        isinstance(range_limit, bool)
+        or not isinstance(range_limit, int)
+        or range_limit != 1400
+    ):
         raise ValueError("capture report does not use the exact 1400 mm cutoff")
     accounting = report.get("range_accounting")
     if not isinstance(accounting, dict):
@@ -298,7 +314,12 @@ def validate_capture_report(report: object) -> dict[str, object]:
         "accepted_at_or_below_limit": expected_accepted,
         "rejected_above_limit": expected_valid - expected_accepted,
     }
-    if any(accounting.get(key) != value for key, value in expected_counts.items()):
+    if any(
+        isinstance(accounting.get(key), bool)
+        or not isinstance(accounting.get(key), int)
+        or accounting.get(key) != value
+        for key, value in expected_counts.items()
+    ):
         raise ValueError("capture range accounting does not reconcile with samples")
     by_direction = accounting.get("by_direction")
     if not isinstance(by_direction, dict):
@@ -314,6 +335,12 @@ def validate_capture_report(report: object) -> dict[str, object]:
         values = by_direction.get(direction)
         if (
             not isinstance(values, dict)
+            or isinstance(values.get("valid"), bool)
+            or not isinstance(values.get("valid"), int)
+            or isinstance(values.get("accepted_at_or_below_limit"), bool)
+            or not isinstance(values.get("accepted_at_or_below_limit"), int)
+            or isinstance(values.get("distinct_accepted_values"), bool)
+            or not isinstance(values.get("distinct_accepted_values"), int)
             or values.get("valid") != valid
             or values.get("accepted_at_or_below_limit") != accepted
         ):
@@ -373,8 +400,13 @@ def validate_capture_report(report: object) -> dict[str, object]:
                 for record in window_samples
             )
         )
-    if window_counts != derived_windows or mapping["scan_count"] != len(
-        derived_windows
+    if (
+        not all(
+            isinstance(value, int) and not isinstance(value, bool)
+            for value in window_counts
+        )
+        or window_counts != derived_windows
+        or mapping["scan_count"] != len(derived_windows)
     ):
         raise ValueError(
             "scan count or window accounting does not match captured input"
@@ -387,6 +419,13 @@ def validate_capture_report(report: object) -> dict[str, object]:
         )
         for start in range(0, count, 20)
     ]
-    if three_direction_counts != derived_three_direction:
+    if (
+        not isinstance(three_direction_counts, list)
+        or not all(
+            isinstance(value, int) and not isinstance(value, bool)
+            for value in three_direction_counts
+        )
+        or three_direction_counts != derived_three_direction
+    ):
         raise ValueError("three-direction scan-window accounting does not reconcile")
     return report

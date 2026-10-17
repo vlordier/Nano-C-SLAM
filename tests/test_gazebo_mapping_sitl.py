@@ -117,6 +117,11 @@ class MappingSampleTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "more nodes than captured scans"):
             validate_mapping_result(report)
 
+        report["main_graph_size"] = 3
+        report["has_nan"] = False
+        with self.assertRaisesRegex(ValueError, "finite graph"):
+            validate_mapping_result(report)
+
     def test_live_capture_report_enforces_cross_field_provenance(self) -> None:
         report_path = (
             REPOSITORY_ROOT
@@ -152,6 +157,11 @@ class MappingSampleTests(unittest.TestCase):
 
         invalid = copy.deepcopy(report)
         invalid["mapping_range_limit_mm"] = 1401
+        with self.assertRaisesRegex(ValueError, "exact 1400 mm"):
+            validate_capture_report(invalid)
+
+        invalid = copy.deepcopy(report)
+        invalid["mapping_range_limit_mm"] = True
         with self.assertRaisesRegex(ValueError, "exact 1400 mm"):
             validate_capture_report(invalid)
 
