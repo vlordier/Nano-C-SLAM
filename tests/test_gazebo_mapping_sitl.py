@@ -95,7 +95,7 @@ class MappingSampleTests(unittest.TestCase):
             "poses": [[0.0, 0.0, 0.0]] * 39,
             "points": [[0.0, 0.0]],
         }
-        with self.assertRaisesRegex(ValueError, "two scan windows"):
+        with self.assertRaisesRegex(ValueError, "three scan windows"):
             validate_mapping_result(report, minimum_poses=40)
 
 
@@ -132,7 +132,10 @@ class NativeMappingReplayTests(unittest.TestCase):
         self.assertEqual(report["pose_count"], 60)
         self.assertEqual(report["scan_count"], 3)
         self.assertEqual(report["map_point_count"], 240)
-        self.assertEqual(report["icp_constraint_count"], 2)
+        self.assertEqual(report["icp_constraint_attempt_count"], 2)
+        self.assertEqual(report["stored_constraint_count"], 4)
+        self.assertEqual(report["optimized_constraint_count"], 4)
+        self.assertEqual(report["icp_constraint_count"], 4)
         self.assertEqual(report["optimized_pose_count"], 60)
         graph_size = report["main_graph_size"]
         assert isinstance(graph_size, int)

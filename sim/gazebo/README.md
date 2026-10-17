@@ -140,6 +140,18 @@ cd ~/Work/Nano-C-SLAM
 ./scripts/run_gazebo_macos.sh
 ```
 
+For the firmware-range host mapping run, generate a temporary near-field variant
+of the upstream world so the arena walls and mapping obstacles return points
+inside the unchanged 1.4 m gate:
+
+```sh
+cd ~/Work/Nano-C-SLAM
+NANO_C_SLAM_NEARFIELD_MAPPING=1 ./scripts/run_gazebo_macos.sh
+```
+
+The launcher derives the world from the installed Crazyswarm2 SDF and keeps the
+generated file in its temporary directory. The upstream checkout is not edited.
+
 In a second terminal, run the single-drone example mission (takeoff to 0.5 m, hover for 3 seconds, then land). The mission continuously enables the simulated Crazyflie, sends vertical velocity commands through the Gazebo bridge, and requires fresh measured odometry. It holds a zero vertical command and reports failure if odometry becomes stale or inconsistent, or if takeoff or landing exceeds its timeout:
 
 ```sh
@@ -201,12 +213,11 @@ repository root.
 
 ### Replay Gazebo data through the Nano-C-SLAM mapping core
 
-With Gazebo and the sensor bridge running, start the collector in one terminal
-before launching the mission in another. It samples fresh odometry and the
-four-ray range topic at 10 Hz, then builds and runs the owned C point-cloud,
-ICP, and pose-graph code on the captured data. The mapper discards returns
-above the firmware loop-closure limit of 1.4 m, even though Gazebo's lidar can
-report out to 3.49 m:
+With the near-field Gazebo instance and sensor bridge running, start the
+collector in one terminal before launching the mission in another. It samples
+fresh odometry and the four-ray range topic at 10 Hz, then builds and runs the
+owned C point-cloud, ICP, and pose-graph code on the captured data. The mapper
+discards returns above the firmware loop-closure limit of 1.4 m:
 
 ```sh
 cd ~/Work/Nano-C-SLAM
@@ -215,16 +226,18 @@ source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
 export GZ_PARTITION="nano_c_slam_$(id -u)"
 export ROS_DOMAIN_ID=42
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
-  python scripts/gazebo_mapping_sitl.py --drone cf1 --samples 150 --mapping-path \
+  python scripts/gazebo_mapping_sitl.py --drone cf1 --samples 60 --mapping-path \
+  --scene nearfield-mapping \
   --output /tmp/nano-c-slam-gazebo-map.json
 ```
 
 In a second terminal, run the single-drone mission from the previous section.
-The collector requires at least 40 samples (two 20-pose scan windows) and
-reports success only when it obtains finite map points and a successfully
-optimized graph. The JSON report contains optimized poses and projected map
-points. On Linux, use the ROS and workspace setup paths from the Linux section
-and replace the Python path with `/usr/bin/python3`.
+The collector requires at least 60 fresh samples (three 20-pose scan windows)
+and reports success only when it obtains finite map points, at least two
+stored/optimized constraints, and a finite three-node graph. The JSON report
+contains raw sample records, range accounting, optimized poses, and projected
+map points. On Linux, use the ROS and workspace setup paths from the Linux
+section and replace the Python path with `/usr/bin/python3`.
 
 For a bounded spatial mapping pass, enable the optional square path. It moves
 0.25 m along each side at no more than 0.25 m/s, holds at the target altitude,
@@ -239,34 +252,30 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
 
 Pass `--mapping-path` to the collector when launching the mission with
 `mapping_path:=True`; the report records raw odometry/range samples, x/y bounds,
-and cumulative horizontal travel. Build the host replay before flight and pass
+cumulative horizontal travel, and accepted/rejected readings at the cutoff.
+Build the host replay before flight and pass
 `--reuse-binary` to avoid compiling while Gazebo is running:
 
 ```sh
 scripts/build_host_mapping_sitl.sh
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
-  python scripts/gazebo_mapping_sitl.py --drone cf1 --samples 150 \
-  --mapping-path --reuse-binary --output /tmp/nano-c-slam-gazebo-map.json
+  python scripts/gazebo_mapping_sitl.py --drone cf1 --samples 60 \
+  --mapping-path --scene nearfield-mapping --reuse-binary \
+  --output /tmp/nano-c-slam-gazebo-map.json
 ```
 
 Run the collector concurrently to capture the spatial telemetry and replay it
-through the host mapping core. If the world does not produce enough returns
-inside 1.4 m, the collector reports that no map points were projected. The
-saved `cf1_native_gazebo_mapping_path.json` is an earlier broad-range baseline
-that used 3.49 m and must not be treated as firmware-faithful. The deterministic
-host fixture in `tests/test_gazebo_mapping_sitl.py` uses 0.9–1.2 m readings and
-checks three scans, 240 map points, and two ICP constraints under the firmware
-limit. The optional path improves spatial excitation; sensors remain simulated
-and mapping execution remains host-only.
+through the host mapping core. The default upstream arena is too large for the
+1.4 m gate and can correctly produce no points; the near-field option changes
+only scene geometry, not range values or the firmware cutoff. The older
+`cf1_native_gazebo_mapping_path.json` is a broad-range historical baseline and
+must not be treated as firmware-range evidence.
 
 This is host execution of the repository's GAP9 point-cloud, ICP, and graph
-optimization C modules. PMSIS cluster calls run through serial CPU stubs. The
-host adapter forms scan constraints with the Gazebo lidar's 3.49 m range; the
-firmware's internal scan-matching helper currently filters at 1.4 m, below the
-2.23 m ranges measured in this world. The replay therefore validates the
-mapping core and graph optimization, but does not execute GAP9 `main.c`, SPI,
-the on-board loop-closure policy, 8x8 ToF matrices, UWB, or flight firmware.
-One successful native macOS run is preserved in
-[`artifacts/gazebo_mapping_sitl/cf1_native_gazebo.json`](../../artifacts/gazebo_mapping_sitl/cf1_native_gazebo.json):
-60 captured poses, three scan windows, two ICP constraints, 240 map points, and
-a finite three-node optimized graph.
+optimization C modules. PMSIS cluster calls run through serial CPU stubs. A
+successful near-field run demonstrates pipeline execution with the 1.4 m
+range gate; it does not measure map accuracy, execute GAP9 `main.c` or SPI,
+model the hardware 8x8 ToF matrices/UWB, or validate flight firmware. Each
+report distinguishes accepted ICP results from constraints actually stored and
+passed to graph optimization. The retained first near-field capture is
+[`artifacts/gazebo_mapping_sitl/cf1_nearfield_firmware_cutoff.json`](../../artifacts/gazebo_mapping_sitl/cf1_nearfield_firmware_cutoff.json).

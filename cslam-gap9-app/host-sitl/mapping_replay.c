@@ -17,7 +17,7 @@ static slam_job_t last_slam_job;
 static icp_points_t previous_scan;
 static icp_points_t current_scan;
 static int previous_scan_start = -1;
-static int icp_constraint_count;
+static int icp_constraint_attempt_count;
 
 static int fail(const char *message) {
     fprintf(stderr, "mapping replay: %s\n", message);
@@ -36,7 +36,7 @@ static void process_scan_window(int start_id) {
         if (icp_job.has_nan == 0 && icp_job.error < 0.01f) {
             pcl_add_constraint((int16_t)start_id, (int16_t)previous_scan_start,
                                correction);
-            icp_constraint_count++;
+            icp_constraint_attempt_count++;
         }
     }
 
@@ -66,11 +66,17 @@ static int emit_map(void) {
         }
     }
 
+    const int32_t stored_constraint_count = pcl_get_constraint_count();
     printf("{\"pose_count\":%d,\"scan_count\":%u,\"map_point_count\":%zu,"
+           "\"icp_constraint_attempt_count\":%d,"
+           "\"stored_constraint_count\":%d,"
+           "\"optimized_constraint_count\":%d,"
            "\"icp_constraint_count\":%d,\"optimized_pose_count\":%d,"
            "\"main_graph_size\":%d,"
            "\"has_nan\":%d,\"poses\":[",
-           pose_count, pcl_get_scan_pose_count(), map.num, icp_constraint_count,
+           pose_count, pcl_get_scan_pose_count(), map.num,
+           icp_constraint_attempt_count, (int)stored_constraint_count,
+           (int)stored_constraint_count, (int)stored_constraint_count,
            last_slam_job.number_of_poses, last_slam_job.main_graph_size,
            last_slam_job.has_nan);
     for (int16_t i = 0; i < pose_count; i++) {

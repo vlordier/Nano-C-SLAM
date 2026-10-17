@@ -46,6 +46,8 @@ extern uint8_t verbose;
 
 uint16_t pcl_get_scan_pose_count() { return int_scan_pose_cnt; }
 
+int32_t pcl_get_constraint_count(void) { return constr_counter; }
+
 int16_t pcl_get_scan_pose_id(uint16_t idx) {
     if (idx >= int_scan_pose_cnt)
         return -1;

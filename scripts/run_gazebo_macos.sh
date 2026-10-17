@@ -6,6 +6,7 @@ gz_install="${GZ_MACOS_INSTALL:-$HOME/Work/gz-macOS/ws/install}"
 python311="/Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11"
 workspace="${CRAZYSWARM2_WS:-$HOME/Work/crazyswarm2_gazebo}"
 firmware_build="${CRAZYFLIE_FIRMWARE_BUILD:-$HOME/Work/Nano-C-SLAM/crazyflie-firmware/build}"
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 homebrew_prefix="$(brew --prefix)"
 abseil_opt="$homebrew_prefix/opt/abseil"
 abseil_old="$homebrew_prefix/opt/abseil@20260107.0"
@@ -82,6 +83,16 @@ export GZ_CONFIG_PATH="$gz_install/share/gz"
 export GZ_SIM_SYSTEM_PLUGIN_PATH="$gz_install/lib:$ros_prefix/lib/gz-sim-8/plugins:$ros_prefix/lib"
 export GZ_SIM_PHYSICS_ENGINE_PATH="$gz_install/lib/gz-physics-7/engine-plugins"
 gazebo_models="$(uv run --no-project --python "$python311" ros2 pkg prefix ros_gz_crazyflie_gazebo)/share/ros_gz_crazyflie_gazebo/models"
+nearfield_world=""
+if [[ "${NANO_C_SLAM_NEARFIELD_MAPPING:-0}" == "1" ]]; then
+    gazebo_worlds="$(uv run --no-project --python "$python311" ros2 pkg prefix ros_gz_crazyflie_gazebo)/share/ros_gz_crazyflie_gazebo/worlds"
+    nearfield_world="$temporary_dir/nano_c_slam_nearfield.sdf"
+    uv run --no-project --python "$python311" python \
+        "$repo_root/scripts/prepare_gazebo_nearfield_world.py" \
+        --source "$gazebo_worlds/crazyflie_swarm_world.sdf" \
+        --output "$nearfield_world"
+    printf 'Mapping scene: near-field walls/obstacles inside the 1.4 m gate\n'
+fi
 export GZ_SIM_RESOURCE_PATH="$gazebo_models:$gz_install/share/gz/gz-sim8/worlds"
 export GZ_RENDERING_PLUGIN_PATH="$gz_install/lib/gz-rendering-8/engine-plugins"
 export GZ_RENDERING_RESOURCE_PATH="$gz_install/share/gz/gz-rendering8"
@@ -98,5 +109,10 @@ printf 'Gazebo partition: %s\n' "$GZ_PARTITION"
 printf 'ROS domain ID: %s\n' "$ROS_DOMAIN_ID"
 printf 'Gazebo GUI will join after the server starts.\n'
 
-uv run --no-project --python "$python311" ros2 launch \
-    nano_c_slam_gazebo crazyswarm2_gazebo.launch.py
+if [[ -n "$nearfield_world" ]]; then
+    uv run --no-project --python "$python311" ros2 launch \
+        nano_c_slam_gazebo crazyswarm2_gazebo.launch.py "world:=$nearfield_world"
+else
+    uv run --no-project --python "$python311" ros2 launch \
+        nano_c_slam_gazebo crazyswarm2_gazebo.launch.py
+fi

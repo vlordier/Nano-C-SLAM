@@ -12,6 +12,7 @@
 #define POINT_CLOUD_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "../icp/icp.h"
 #include "../slam/graph-based-slam.h"
@@ -131,6 +132,9 @@ int16_t pcl_get_scan_pose_id(uint16_t idx);
  * @return Number of stored scan poses
  */
 uint16_t pcl_get_scan_pose_count();
+
+/** Return the number of valid pose-graph constraints currently stored. */
+int32_t pcl_get_constraint_count(void);
 
 /**
  * @brief Prints the stored augmented poses (only for debugging).

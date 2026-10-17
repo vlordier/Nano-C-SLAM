@@ -77,9 +77,9 @@ def summarize_sample_path(samples: Sequence[MappingSample]) -> dict[str, object]
 
 
 def validate_mapping_result(
-    result: object, *, minimum_poses: int = 40
+    result: object, *, minimum_poses: int = 60
 ) -> dict[str, object]:
-    """Require a nonempty, finite map with at least one optimized graph."""
+    """Require three scans, stored constraints, and a finite optimized graph."""
     if not isinstance(result, dict):
         raise ValueError("mapping output must be a JSON object")
     normalized_result: dict[str, object] = {}
@@ -102,19 +102,26 @@ def validate_mapping_result(
             raise ValueError(f"mapping result {name} must be a nonnegative integer")
         counts[name] = value
     if counts["pose_count"] < minimum_poses:
-        raise ValueError("mapping result contains too few poses for two scan windows")
+        raise ValueError("mapping result contains too few poses for three scan windows")
     if (
-        counts["scan_count"] < 2
+        counts["scan_count"] < 3
         or counts["map_point_count"] == 0
-        or counts["icp_constraint_count"] == 0
+        or counts["icp_constraint_count"] < 2
     ):
         raise ValueError(
-            "mapping result needs two scans, an ICP constraint, and map points"
+            "mapping result needs three scans, two stored constraints, and map points"
         )
     if counts["optimized_pose_count"] != counts["pose_count"]:
         raise ValueError("pose graph did not optimize all captured poses")
-    if counts["main_graph_size"] < 2 or normalized_result.get("has_nan") != 0:
+    if counts["main_graph_size"] < 3 or normalized_result.get("has_nan") != 0:
         raise ValueError("pose graph optimization did not produce a finite graph")
+    if (
+        normalized_result.get("stored_constraint_count")
+        != counts["icp_constraint_count"]
+        or normalized_result.get("optimized_constraint_count")
+        != counts["icp_constraint_count"]
+    ):
+        raise ValueError("pose graph did not consume all reported stored constraints")
     arrays: dict[str, list[list[float | int]]] = {}
     for name in ("poses", "points"):
         values = normalized_result.get(name)

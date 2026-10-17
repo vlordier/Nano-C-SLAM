@@ -34,7 +34,7 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     SUPPORTED_DRONE_NAMES,
 )
 
-MINIMUM_SAMPLES = 40
+MINIMUM_SAMPLES = 60
 MAXIMUM_SAMPLES = 170
 
 
@@ -85,13 +85,19 @@ def _parse_args(args: list[str] | None) -> argparse.Namespace:
         "--samples",
         type=int,
         default=60,
-        help="number of fresh 10 Hz samples (minimum 40 for two 20-pose scans)",
+        help="number of fresh 10 Hz samples (minimum 60 for three 20-pose scans)",
     )
     parser.add_argument("--timeout", type=float, default=60.0)
     parser.add_argument(
         "--mapping-path",
         action="store_true",
         help="record that sim_mission was launched with mapping_path:=True",
+    )
+    parser.add_argument(
+        "--scene",
+        choices=("default", "nearfield-mapping"),
+        default="default",
+        help="Gazebo scene used for capture; nearfield-mapping uses the 1.4 m walls",
     )
     parser.add_argument(
         "--reuse-binary",
@@ -283,6 +289,10 @@ def main(args: list[str] | None = None) -> int:
         raise FileNotFoundError(f"host mapping executable was not built: {binary}")
 
     samples = _capture_samples(options.drone, options.samples, options.timeout)
+    valid_readings = [
+        value for sample in samples for value in sample.ranges_mm if value >= 0
+    ]
+    in_gate_readings = [value for value in valid_readings if value <= 1400]
     mapping = _run_mapping(binary, samples)
     report: dict[str, Any] = {
         "schema_version": 1,
@@ -296,6 +306,7 @@ def main(args: list[str] | None = None) -> int:
         ),
         "drone": options.drone,
         "simulator": "Gazebo Harmonic Crazyswarm2 swarm world",
+        "scene": options.scene,
         "host": {"system": platform.system(), "machine": platform.machine()},
         "input_topics": [
             f"/{options.drone}/odom",
@@ -310,14 +321,17 @@ def main(args: list[str] | None = None) -> int:
             "end": samples[-1].timestamp_ms,
         },
         "input_valid_range_bounds_mm": {
-            "minimum": min(
-                value for sample in samples for value in sample.ranges_mm if value >= 0
-            ),
-            "maximum": max(
-                value for sample in samples for value in sample.ranges_mm if value >= 0
-            ),
+            "minimum": min(valid_readings),
+            "maximum": max(valid_readings),
         },
         "mapping_range_limit_mm": 1400,
+        "range_accounting": {
+            "readings_total": len(samples) * 4,
+            "invalid": len(samples) * 4 - len(valid_readings),
+            "valid": len(valid_readings),
+            "accepted_at_or_below_limit": len(in_gate_readings),
+            "rejected_above_limit": len(valid_readings) - len(in_gate_readings),
+        },
         "input_samples": [sample.to_record() for sample in samples],
         "tof_projection": "one four-ray reading per direction in central ToF column",
         "mapping": mapping,
