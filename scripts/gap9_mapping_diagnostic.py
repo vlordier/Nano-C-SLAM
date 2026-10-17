@@ -152,6 +152,17 @@ def validate_mapping_diagnostic(value: object) -> dict[str, Any]:
             )
         if any(mapping[field] is None for field in nullable_fields):
             raise ValueError("passed artifact contains unobserved mapping stages")
+        if mapping["icp_has_nan"] or not mapping["optimization_completed"]:
+            raise ValueError("passed artifact contradicts ICP or optimizer status")
+        if finite_poses != poses:
+            raise ValueError("passed artifact contains non-finite poses")
+        if (
+            not mapping["main_solver_returned"]
+            or mapping["successful_solver_calls"] == 0
+        ):
+            raise ValueError("passed artifact lacks successful solver evidence")
+        if mapping["icp_attempts"] == 0 or mapping["graph_nodes"] == 0:
+            raise ValueError("passed artifact lacks ICP or pose-graph evidence")
     if evidence_class == "host-pmsis-stubs" and "GVSOC target" in str(
         data["claim_boundary"]
     ):

@@ -22,6 +22,7 @@ static int run_mapping_fixture(void) {
     icp_points_t previous_scan = {0};
     icp_points_t current_scan = {0};
     int previous_scan_start = -1;
+    int icp_attempt_count = 0;
     int icp_constraint_count = 0;
     int32_t last_icp_error_milli = INT32_MAX;
     int last_icp_has_nan = 0;
@@ -64,6 +65,7 @@ static int run_mapping_fixture(void) {
                     for (size_t point = 0; point < previous_scan.num; point++)
                         last_correspondence_count += correspondences_p[point] >= 0;
                 }
+                icp_attempt_count++;
                 icp(&previous_scan, &current_scan, 25, 0.4f, correction, &icp_job);
                 if (isfinite(icp_job.error))
                     last_icp_error_milli = (int32_t)(icp_job.error * 1000.0f);
@@ -128,22 +130,30 @@ static int run_mapping_fixture(void) {
                "icp_constraints=%d matches=%d icp_error_milli=%d "
                "icp_has_nan=%d "
                "finite=%d graph=%d main_solver=%d solver_calls=%d "
-               "solver_iterations=%d completed=%d has_nan=%d\n",
+               "solver_iterations=%d completed=%d has_nan=%d "
+               "icp_attempts=%d accepted_constraints=%d optimizer_inputs=%d "
+               "optimizer_unique_edges=%d\n",
                EXECUTION_CLASS, pose_count, scan_count, map.num, icp_constraint_count,
                last_correspondence_count, (int)last_icp_error_milli, last_icp_has_nan,
                job.number_of_poses, job.main_graph_size, job.main_solver_returned,
                job.successful_solver_call_count, job.completed_solver_iteration_count,
-               job.optimization_completed, job.has_nan);
+               job.optimization_completed, job.has_nan, icp_attempt_count,
+               icp_constraint_count, optimizer_inputs, optimizer_unique_edges);
         return -1;
     }
 
     printf("NANO_C_SLAM_%s:mapping_ok poses=%d scans=%u map_points=%zu "
            "finite=%d graph=%d main_solver=%d solver_calls=%d "
-           "solver_iterations=%d completed=%d has_nan=%d\n",
+           "solver_iterations=%d completed=%d has_nan=%d "
+           "icp_attempts=%d accepted_constraints=%d optimizer_inputs=%d "
+           "optimizer_unique_edges=%d matches=%d icp_error_milli=%d "
+           "icp_has_nan=%d\n",
            EXECUTION_CLASS, pose_count, scan_count, map.num, job.number_of_poses,
            job.main_graph_size, job.main_solver_returned,
            job.successful_solver_call_count, job.completed_solver_iteration_count,
-           job.optimization_completed, job.has_nan);
+           job.optimization_completed, job.has_nan, icp_attempt_count,
+           icp_constraint_count, optimizer_inputs, optimizer_unique_edges,
+           last_correspondence_count, (int)last_icp_error_milli, last_icp_has_nan);
     return 0;
 }
 

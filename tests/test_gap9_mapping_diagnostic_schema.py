@@ -6,6 +6,7 @@ import copy
 import json
 import unittest
 from pathlib import Path
+from typing import cast
 
 from scripts.gap9_mapping_diagnostic import validate_mapping_diagnostic
 
@@ -16,7 +17,8 @@ class MappingDiagnosticSchemaTests(unittest.TestCase):
     def load_fixture(self, name: str) -> dict[str, object]:
         value = json.loads((FIXTURE_DIRECTORY / name).read_text(encoding="utf-8"))
         assert isinstance(value, dict)
-        return value
+        assert all(isinstance(key, str) for key in value)
+        return cast(dict[str, object], value)
 
     def test_accepts_host_stub_and_gvsoc_target_schema_examples(self) -> None:
         for name, evidence_class in (
@@ -103,6 +105,24 @@ class MappingDiagnosticSchemaTests(unittest.TestCase):
         self.assertEqual(
             validate_mapping_diagnostic(artifact)["status"], "reproduced-limitation"
         )
+
+    def test_pass_requires_finite_icp_and_completed_optimizer_evidence(self) -> None:
+        mutations = (
+            ("icp_has_nan", True),
+            ("optimization_completed", False),
+            ("finite_poses", 59),
+            ("main_solver_returned", False),
+            ("successful_solver_calls", 0),
+            ("icp_attempts", 0),
+            ("graph_nodes", 0),
+        )
+        for field, value in mutations:
+            artifact = self.load_fixture("host-pmsis-stubs.json")
+            mapping = artifact["mapping"]
+            assert isinstance(mapping, dict)
+            mapping[field] = value
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                validate_mapping_diagnostic(artifact)
 
 
 def _reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict[str, object]:

@@ -22,6 +22,8 @@ cd cslam-stm32-app && make all
 
 Build the full GAP9 application with `bash scripts/build_gap9_firmware.sh` when the GAP SDK and RISC-V toolchain are installed under `~/Work/da3_gap9`. Run the SDK-linked ICP SVD smoke on the local GVSOC model with `bash scripts/run_gap9_gvsoc_smoke.sh`; this writes a bounded evidence report under `artifacts/gap9_gvsoc_evidence/`. It does not establish full ICP or pose-graph behavior. Current runtime limits and memory use are recorded in [REPRODUCTION.md](REPRODUCTION.md). The Gazebo bridge and launch steps are documented in [sim/gazebo/README.md](sim/gazebo/README.md).
 
+Build and capture the deterministic mapping smoke through host PMSIS stubs with `bash scripts/capture_gap9_host_mapping_diagnostic.sh`. The command writes a schema-validated host-only artifact to `artifacts/gap9_gvsoc_evidence/host_mapping_diagnostic.json` by default; pass another path as its first argument to preserve multiple runs. This is a host regression baseline, not GVSOC target, sensor, SPI, flight, or hardware validation.
+
 To run the workflow locally with `act` and a Docker-compatible engine:
 
 ```sh

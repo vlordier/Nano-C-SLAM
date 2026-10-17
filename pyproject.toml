@@ -52,6 +52,8 @@ include = [
     "scripts/gazebo_mapping_sitl.py",
     "scripts/verify_gazebo_collector_ros.py",
     "scripts/diagnose_gazebo_odom.py",
+    "scripts/capture_gap9_host_mapping_diagnostic.py",
+    "scripts/gap9_mapping_diagnostic.py",
     "sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/mapping_model.py",
     "sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/telemetry_model.py",
     "tests/test_run_demo.py",
@@ -63,6 +65,8 @@ include = [
     "tests/test_gazebo_mapping_run.py",
     "tests/test_gazebo_mapping_run_processes.py",
     "tests/test_gazebo_mapping_run_cli.py",
+    "tests/test_gap9_host_mapping_diagnostic.py",
+    "tests/test_gap9_mapping_diagnostic_schema.py",
     "sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/mapping_run_processes.py",
     "scripts/gazebo_mapping_run.py",
 ]
