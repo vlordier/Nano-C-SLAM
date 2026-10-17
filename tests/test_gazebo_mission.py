@@ -254,6 +254,7 @@ class MissionStatusEventTests(unittest.TestCase):
         raw = valid.to_json()
         invalid_payloads = (
             "not json",
+            raw.replace(self.run_id, ""),
             raw.replace(self.run_id, "not-a-uuid"),
             raw.replace('"drone_name": "cf1"', '"drone_name": "cf2"'),
             raw.replace('"schema_version": 1', '"schema_version": 2'),
@@ -326,7 +327,13 @@ class MissionStatusEventTests(unittest.TestCase):
             path_complete=False,
         )
         hover = self.event(2, MissionPhase.HOVER, altitude_m=0.5)
-        for events in ([waiting], [waiting, waiting], [waiting, hover, takeoff]):
+        skipped = self.event(2, MissionPhase.HOVER, altitude_m=0.5)
+        for events in (
+            [waiting],
+            [waiting, waiting],
+            [waiting, skipped],
+            [waiting, hover, takeoff],
+        ):
             with self.subTest(events=events), self.assertRaises(ValueError):
                 validate_mission_status_events(events, self.run_id, "cf1")
 
