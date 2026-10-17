@@ -32,6 +32,11 @@ class MappingSample:
             math.isfinite(value) for value in (self.x_m, self.y_m, self.yaw_rad)
         ):
             raise ValueError("pose coordinates must be finite")
+        if any(
+            isinstance(value, bool) or not isinstance(value, int)
+            for value in self.ranges_mm
+        ):
+            raise ValueError("range values must be integer millimeters")
         if any(value < -1 or value > 32767 for value in self.ranges_mm):
             raise ValueError("range values must fit the Nano-C-SLAM int16 format")
         fields = (
@@ -74,6 +79,59 @@ def summarize_sample_path(samples: Sequence[MappingSample]) -> dict[str, object]
             max(sample.y_m for sample in samples),
         ],
         "horizontal_path_length_m": path_length_m,
+    }
+
+
+def summarize_range_accounting(
+    samples: Sequence[MappingSample], *, range_limit_mm: int = 1400
+) -> dict[str, object]:
+    """Reconcile raw, sensor-valid, and mapping-gate range counts."""
+    if (
+        isinstance(range_limit_mm, bool)
+        or not isinstance(range_limit_mm, int)
+        or range_limit_mm < 0
+    ):
+        raise ValueError("range limit must be a nonnegative integer millimeter value")
+    if not samples:
+        raise ValueError("at least one sample is required for range accounting")
+    for sample in samples:
+        sample.to_record()
+
+    directions = ("front", "back", "left", "right")
+    readings = [value for sample in samples for value in sample.ranges_mm]
+    valid = [value for value in readings if value >= 0]
+    if not valid:
+        raise ValueError("range accounting requires at least one valid reading")
+    accepted = [value for value in valid if value <= range_limit_mm]
+    by_direction = {
+        direction: {
+            "valid": sum(sample.ranges_mm[index] >= 0 for sample in samples),
+            "accepted_at_or_below_limit": sum(
+                0 <= sample.ranges_mm[index] <= range_limit_mm for sample in samples
+            ),
+            "distinct_accepted_values": len(
+                {
+                    sample.ranges_mm[index]
+                    for sample in samples
+                    if 0 <= sample.ranges_mm[index] <= range_limit_mm
+                }
+            ),
+        }
+        for index, direction in enumerate(directions)
+    }
+    return {
+        "input_valid_range_bounds_mm": {
+            "minimum": min(valid),
+            "maximum": max(valid),
+        },
+        "range_accounting": {
+            "readings_total": len(readings),
+            "invalid": len(readings) - len(valid),
+            "valid": len(valid),
+            "accepted_at_or_below_limit": len(accepted),
+            "rejected_above_limit": len(valid) - len(accepted),
+            "by_direction": by_direction,
+        },
     }
 
 

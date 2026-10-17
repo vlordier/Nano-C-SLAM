@@ -32,6 +32,7 @@ if str(REPOSITORY_ROOT) not in sys.path:
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
     MappingSample,
     quaternion_yaw,
+    summarize_range_accounting,
     summarize_sample_path,
     validate_capture_report,
     validate_mapping_result,
@@ -366,26 +367,7 @@ def main(args: list[str] | None = None) -> int:
 
     capture = _capture_samples(options.drone, options.samples, options.timeout)
     samples = capture.samples
-    valid_readings = [
-        value for sample in samples for value in sample.ranges_mm if value >= 0
-    ]
-    in_gate_readings = [value for value in valid_readings if value <= 1400]
-    range_accounting_by_direction = {
-        direction: {
-            "valid": sum(sample.ranges_mm[index] >= 0 for sample in samples),
-            "accepted_at_or_below_limit": sum(
-                0 <= sample.ranges_mm[index] <= 1400 for sample in samples
-            ),
-            "distinct_accepted_values": len(
-                {
-                    sample.ranges_mm[index]
-                    for sample in samples
-                    if 0 <= sample.ranges_mm[index] <= 1400
-                }
-            ),
-        }
-        for index, direction in enumerate(("front", "back", "left", "right"))
-    }
+    range_summary = summarize_range_accounting(samples, range_limit_mm=1400)
     scan_window_in_range_samples = [
         sum(
             any(0 <= value <= 1400 for value in sample.ranges_mm)
@@ -443,19 +425,9 @@ def main(args: list[str] | None = None) -> int:
             "start": samples[0].timestamp_ms,
             "end": samples[-1].timestamp_ms,
         },
-        "input_valid_range_bounds_mm": {
-            "minimum": min(valid_readings),
-            "maximum": max(valid_readings),
-        },
+        "input_valid_range_bounds_mm": range_summary["input_valid_range_bounds_mm"],
         "mapping_range_limit_mm": 1400,
-        "range_accounting": {
-            "readings_total": len(samples) * 4,
-            "invalid": len(samples) * 4 - len(valid_readings),
-            "valid": len(valid_readings),
-            "accepted_at_or_below_limit": len(in_gate_readings),
-            "rejected_above_limit": len(valid_readings) - len(in_gate_readings),
-            "by_direction": range_accounting_by_direction,
-        },
+        "range_accounting": range_summary["range_accounting"],
         "scan_window_in_range_sample_counts": scan_window_in_range_samples,
         "scan_window_three_direction_sample_counts": (
             scan_window_three_direction_samples

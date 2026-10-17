@@ -20,6 +20,7 @@ from scripts.gazebo_mapping_sitl import (
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
     MappingSample,
     quaternion_yaw,
+    summarize_range_accounting,
     summarize_sample_path,
     validate_capture_report,
     validate_mapping_result,
@@ -43,6 +44,24 @@ def _deterministic_samples(count: int) -> list[MappingSample]:
             )
         )
     return samples
+
+
+def _boundary_samples(count: int = 20) -> list[MappingSample]:
+    values = (-1, 0, 1, 1400, 1401)
+    return [
+        MappingSample(
+            sample_id=index,
+            timestamp_ms=(index + 1) * 100,
+            x_m=index * 0.001,
+            y_m=0.0,
+            yaw_rad=0.0,
+            ranges_mm=cast(
+                tuple[int, int, int, int],
+                tuple(values[(index * 4 + beam) % len(values)] for beam in range(4)),
+            ),
+        )
+        for index in range(count)
+    ]
 
 
 class MappingSampleTests(unittest.TestCase):
@@ -73,6 +92,48 @@ class MappingSampleTests(unittest.TestCase):
             MappingSample(0, 0, math.nan, 0, 0, (1, 1, 1, 1)).to_record()
         with self.assertRaisesRegex(ValueError, "nonzero"):
             quaternion_yaw(0, 0, 0, 0)
+        with self.assertRaisesRegex(ValueError, "integer millimeters"):
+            MappingSample(
+                0,
+                0,
+                0,
+                0,
+                0,
+                cast(tuple[int, int, int, int], (1000, 1000.5, 1000, 1000)),
+            ).to_record()
+        with self.assertRaisesRegex(ValueError, "integer millimeters"):
+            MappingSample(
+                0,
+                0,
+                0,
+                0,
+                0,
+                cast(tuple[int, int, int, int], (1000, math.nan, 1000, 1000)),
+            ).to_record()
+
+    def test_range_accounting_matches_exact_inclusive_gate_boundaries(self) -> None:
+        summary = summarize_range_accounting(_boundary_samples())
+        self.assertEqual(
+            summary["range_accounting"],
+            {
+                "readings_total": 80,
+                "invalid": 16,
+                "valid": 64,
+                "accepted_at_or_below_limit": 48,
+                "rejected_above_limit": 16,
+                "by_direction": {
+                    direction: {
+                        "valid": 16,
+                        "accepted_at_or_below_limit": 12,
+                        "distinct_accepted_values": 3,
+                    }
+                    for direction in ("front", "back", "left", "right")
+                },
+            },
+        )
+        self.assertEqual(
+            summary["input_valid_range_bounds_mm"], {"minimum": 0, "maximum": 1401}
+        )
 
     def test_converts_unit_quaternion_to_planar_yaw(self) -> None:
         yaw = math.pi / 3
@@ -350,6 +411,38 @@ class NativeMappingReplayTests(unittest.TestCase):
 
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("no projected lidar points", result.stderr)
+
+    def test_c_replay_uses_inclusive_1400_mm_gate_and_rejects_nonfinite_pose(
+        self,
+    ) -> None:
+        samples = _boundary_samples()
+        result = subprocess.run(  # noqa: S603 -- built fixture executable
+            [str(self.binary)],
+            input="\n".join(sample.to_record() for sample in samples) + "\n",
+            capture_output=True,
+            check=True,
+            text=True,
+            timeout=10,
+        )
+        mapping = json.loads(result.stdout)
+        self.assertEqual(mapping["map_point_count"], 48)
+        range_summary = summarize_range_accounting(samples)
+        accounting = range_summary["range_accounting"]
+        assert isinstance(accounting, dict)
+        self.assertEqual(
+            accounting["accepted_at_or_below_limit"], mapping["map_point_count"]
+        )
+
+        invalid_pose = subprocess.run(  # noqa: S603 -- built fixture executable
+            [str(self.binary)],
+            input="0 100 nan 0 0 0 1 1400 1401\n",
+            capture_output=True,
+            check=False,
+            text=True,
+            timeout=10,
+        )
+        self.assertNotEqual(invalid_pose.returncode, 0)
+        self.assertIn("sample IDs, timestamp, or pose are invalid", invalid_pose.stderr)
 
     def test_runs_the_same_embedded_scan_and_optimization_path_as_gvsoc(self) -> None:
         executable = REPOSITORY_ROOT / "cslam-gap9-app/BUILD-host/gap9_mapping_smoke"
