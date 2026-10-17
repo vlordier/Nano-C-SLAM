@@ -268,7 +268,9 @@ solver calls, and complete fixed iteration counts. The report names poses
 `finite_pose_count` because it records finite reconstructed output; it does
 not claim convergence or objective improvement. See
 [`CONSTRAINT_ACCOUNTING.md`](../../cslam-gap9-app/point-cloud/CONSTRAINT_ACCOUNTING.md)
-for the edge accounting contract. The retained run
+for edge accounting and
+[`SCAN_OBSERVABILITY.md`](../../cslam-gap9-app/point-cloud/SCAN_OBSERVABILITY.md)
+for the fixture-derived per-window spread check. The retained run
 had at least three directions within the cutoff in 19–20 poses per window, and
 each of the four directions had multiple in-range values over the capture; it
 does not claim every beam is valid in every pose. The JSON report contains raw

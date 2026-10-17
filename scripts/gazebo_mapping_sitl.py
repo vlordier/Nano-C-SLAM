@@ -32,6 +32,7 @@ if str(REPOSITORY_ROOT) not in sys.path:
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
     MappingSample,
     quaternion_yaw,
+    summarize_projected_scan,
     summarize_range_accounting,
     summarize_sample_path,
     validate_capture_report,
@@ -354,7 +355,15 @@ def _run_mapping(binary: Path, samples: list[MappingSample]) -> dict[str, object
         mapping = json.loads(result.stdout)
     except json.JSONDecodeError as error:
         raise RuntimeError("mapping replay did not return valid JSON") from error
-    return validate_mapping_result(mapping, minimum_poses=MINIMUM_SAMPLES)
+    validated = validate_mapping_result(mapping, minimum_poses=MINIMUM_SAMPLES)
+    windows = validated.get("projected_scan_windows")
+    if not isinstance(windows, list):
+        raise RuntimeError("mapping replay omitted projected scan windows")
+    for window in windows:
+        if not isinstance(window, dict) or not isinstance(window.get("points"), list):
+            raise RuntimeError("mapping replay returned malformed projected window")
+        window["observability"] = summarize_projected_scan(window["points"])
+    return validated
 
 
 def main(args: list[str] | None = None) -> int:

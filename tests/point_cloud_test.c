@@ -79,11 +79,12 @@ bool ls_slam(float *poses, constraint *edges, int16_t pose_count, int16_t edge_c
 }
 
 bool ls_slam_with_iterations(float *poses, constraint *edges, int16_t pose_count,
-                             int16_t edge_count,
-                             int16_t *completed_iterations) {
-    if (completed_iterations != NULL) *completed_iterations = 0;
+                             int16_t edge_count, int16_t *completed_iterations) {
+    if (completed_iterations != NULL)
+        *completed_iterations = 0;
     bool result = ls_slam(poses, edges, pose_count, edge_count);
-    if (result && completed_iterations != NULL) *completed_iterations = 3;
+    if (result && completed_iterations != NULL)
+        *completed_iterations = 3;
     return result;
 }
 

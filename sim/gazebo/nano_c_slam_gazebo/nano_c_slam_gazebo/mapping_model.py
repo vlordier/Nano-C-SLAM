@@ -8,6 +8,8 @@ from dataclasses import dataclass
 from itertools import pairwise
 from statistics import median
 
+MIN_SCAN_MINOR_EIGENVALUE_M2 = 0.1
+
 
 @dataclass(frozen=True)
 class MappingSample:
@@ -79,6 +81,40 @@ def summarize_sample_path(samples: Sequence[MappingSample]) -> dict[str, object]
             max(sample.y_m for sample in samples),
         ],
         "horizontal_path_length_m": path_length_m,
+    }
+
+
+def summarize_projected_scan(
+    points: Sequence[Sequence[float]],
+) -> dict[str, bool | float | int]:
+    """Describe 2D projected point spread; this is not an accuracy metric."""
+    if not points:
+        raise ValueError("projected scan must contain at least one point")
+    normalized: list[tuple[float, float]] = []
+    for point in points:
+        if len(point) != 2 or not all(math.isfinite(value) for value in point):
+            raise ValueError("projected scan points must be finite 2D coordinates")
+        normalized.append((float(point[0]), float(point[1])))
+    x_values = [point[0] for point in normalized]
+    y_values = [point[1] for point in normalized]
+    mean_x = sum(x_values) / len(normalized)
+    mean_y = sum(y_values) / len(normalized)
+    var_x = sum((value - mean_x) ** 2 for value in x_values) / len(normalized)
+    var_y = sum((value - mean_y) ** 2 for value in y_values) / len(normalized)
+    covariance = sum((x - mean_x) * (y - mean_y) for x, y in normalized) / len(
+        normalized
+    )
+    discriminant = math.hypot(var_x - var_y, 2 * covariance)
+    major = (var_x + var_y + discriminant) / 2
+    minor = max(0.0, (var_x + var_y - discriminant) / 2)
+    return {
+        "point_count": len(normalized),
+        "unique_point_count": len(set(normalized)),
+        "x_span_m": max(x_values) - min(x_values),
+        "y_span_m": max(y_values) - min(y_values),
+        "covariance_major_eigenvalue_m2": major,
+        "covariance_minor_eigenvalue_m2": minor,
+        "observable_2d": minor >= MIN_SCAN_MINOR_EIGENVALUE_M2,
     }
 
 
@@ -296,6 +332,53 @@ def validate_mapping_result(
         raise ValueError("mapping pose array does not match pose_count")
     if len(arrays["points"]) != counts["map_point_count"]:
         raise ValueError("mapping point array does not match map_point_count")
+    scan_windows = normalized_result.get("projected_scan_windows")
+    if scan_windows is not None:
+        if (
+            normalized_result.get("projection_source") != "pcl_extract_scan"
+            or normalized_result.get("projection_range_limit_mm") != 1400
+            or normalized_result.get("projection_window_pose_limit") != 20
+        ):
+            raise ValueError("projected scan window source or limits are invalid")
+        if not isinstance(scan_windows, list):
+            raise ValueError("projected scan windows must be a list")
+        expected_start = 0
+        projected_total = 0
+        for window in scan_windows:
+            if not isinstance(window, dict):
+                raise ValueError("projected scan window must be an object")
+            start = window.get("start_pose")
+            window_pose_count = window.get("pose_count")
+            window_points = window.get("points")
+            if (
+                isinstance(start, bool)
+                or not isinstance(start, int)
+                or start != expected_start
+                or isinstance(window_pose_count, bool)
+                or not isinstance(window_pose_count, int)
+                or not 1 <= window_pose_count <= 20
+                or not isinstance(window_points, list)
+            ):
+                raise ValueError("projected scan windows are missing or out of order")
+            for point in window_points:
+                if (
+                    not isinstance(point, list)
+                    or len(point) != 2
+                    or any(
+                        isinstance(value, bool)
+                        or not isinstance(value, (int, float))
+                        or not math.isfinite(value)
+                        for value in point
+                    )
+                ):
+                    raise ValueError("projected scan window contains invalid points")
+            expected_start += window_pose_count
+            projected_total += len(window_points)
+        if (
+            expected_start != counts["pose_count"]
+            or projected_total != counts["map_point_count"]
+        ):
+            raise ValueError("projected scan windows do not reconcile to mapping")
     return normalized_result
 
 
@@ -519,6 +602,21 @@ def validate_capture_report(report: object) -> dict[str, object]:
         raise ValueError("reported input frequency does not match source timestamps")
 
     mapping = validate_mapping_result(report.get("mapping"), minimum_poses=1)
+    if "projected_scan_windows" not in mapping:
+        raise ValueError("capture mapping is missing actual projected scan windows")
+    projected_windows = mapping.get("projected_scan_windows")
+    if not isinstance(projected_windows, list):
+        raise ValueError("capture mapping is missing actual projected scan windows")
+    for window in projected_windows:
+        if not isinstance(window, dict) or not isinstance(window.get("points"), list):
+            raise ValueError("capture mapping has malformed projected scan window")
+        expected_observability = summarize_projected_scan(window["points"])
+        if window.get("observability") != expected_observability:
+            raise ValueError(
+                "scan-window observability does not match projected points"
+            )
+        if expected_observability["observable_2d"] is not True:
+            raise ValueError("projected scan window has insufficient 2D spread")
     map_point_count = mapping["map_point_count"]
     if not isinstance(map_point_count, int):
         raise ValueError("mapping point count must be an integer")

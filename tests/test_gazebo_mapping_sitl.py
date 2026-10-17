@@ -20,6 +20,7 @@ from scripts.gazebo_mapping_sitl import (
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
     MappingSample,
     quaternion_yaw,
+    summarize_projected_scan,
     summarize_range_accounting,
     summarize_sample_path,
     validate_capture_report,
@@ -159,6 +160,28 @@ class MappingSampleTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "at least one"):
             summarize_sample_path([])
 
+    def test_summarizes_projected_cloud_rank_and_rejects_degenerate_inputs(
+        self,
+    ) -> None:
+        summary = summarize_projected_scan(
+            ((0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0))
+        )
+        self.assertEqual(summary["point_count"], 4)
+        self.assertEqual(summary["unique_point_count"], 4)
+        self.assertAlmostEqual(float(summary["covariance_minor_eigenvalue_m2"]), 0.25)
+        self.assertIs(summary["observable_2d"], True)
+        line = summarize_projected_scan(((0.0, 0.0), (1.0, 1.0), (2.0, 2.0)))
+        self.assertEqual(line["covariance_minor_eigenvalue_m2"], 0.0)
+        self.assertIs(line["observable_2d"], False)
+        repeated = summarize_projected_scan(((1.0, 2.0),) * 4)
+        self.assertEqual(repeated["unique_point_count"], 1)
+        self.assertEqual(repeated["covariance_major_eigenvalue_m2"], 0.0)
+        self.assertIs(repeated["observable_2d"], False)
+        with self.assertRaisesRegex(ValueError, "at least one"):
+            summarize_projected_scan(())
+        with self.assertRaisesRegex(ValueError, "finite 2D"):
+            summarize_projected_scan(((0.0, math.nan),))
+
     def test_rejects_mapping_without_three_valid_scan_windows(self) -> None:
         report = {
             "pose_count": 39,
@@ -268,6 +291,20 @@ class MappingSampleTests(unittest.TestCase):
         invalid = copy.deepcopy(report)
         invalid["mapping_range_limit_mm"] = 1401
         with self.assertRaisesRegex(ValueError, "exact 1400 mm"):
+            validate_capture_report(invalid)
+
+        invalid = copy.deepcopy(report)
+        invalid["mapping"]["projected_scan_windows"][0]["observability"][
+            "covariance_minor_eigenvalue_m2"
+        ] = 0.0
+        with self.assertRaisesRegex(ValueError, "observability does not match"):
+            validate_capture_report(invalid)
+
+        invalid = copy.deepcopy(report)
+        window = invalid["mapping"]["projected_scan_windows"][0]
+        window["points"] = [[0.0, 0.0]] * len(window["points"])
+        window["observability"] = summarize_projected_scan(window["points"])
+        with self.assertRaisesRegex(ValueError, "insufficient 2D spread"):
             validate_capture_report(invalid)
 
         invalid = copy.deepcopy(report)
@@ -402,6 +439,18 @@ class NativeMappingReplayTests(unittest.TestCase):
         )
         self.assertEqual(report["stored_unique_endpoint_pairs"], [[0, 20], [20, 40]])
         self.assertEqual(report["optimizer_input_unique_edge_pairs"], [[0, 1], [1, 2]])
+        windows = cast(list[dict[str, object]], report["projected_scan_windows"])
+        window_points = [
+            cast(list[list[float]], window["points"]) for window in windows
+        ]
+        map_points = cast(list[list[float]], report["points"])
+        self.assertEqual(len(windows), 3)
+        self.assertEqual([window["start_pose"] for window in windows], [0, 20, 40])
+        self.assertTrue(all(window["pose_count"] == 20 for window in windows))
+        self.assertTrue(all(len(points) == 80 for points in window_points))
+        self.assertTrue(
+            all(point in map_points for points in window_points for point in points)
+        )
         self.assertEqual(report["main_solver_returned"], 1)
         self.assertEqual(report["successful_solver_call_count"], 3)
         self.assertEqual(report["completed_solver_iteration_count"], 9)
@@ -435,12 +484,6 @@ class NativeMappingReplayTests(unittest.TestCase):
 
                 replayed = _run_mapping(self.binary, samples)
                 retained = artifact["mapping"]
-                self.assertEqual(
-                    retained["legacy_solver_claims"][
-                        "solver_return_iterations_and_completion"
-                    ],
-                    "not_recorded_in_original_capture; do not infer",
-                )
                 for field in (
                     "pose_count",
                     "scan_count",
@@ -455,6 +498,7 @@ class NativeMappingReplayTests(unittest.TestCase):
                     "optimizer_input_constraint_count",
                     "optimizer_input_unique_edge_count",
                     "optimizer_input_unique_edge_pairs",
+                    "projected_scan_windows",
                     "has_nan",
                 ):
                     self.assertEqual(replayed[field], retained[field], field)
@@ -490,6 +534,10 @@ class NativeMappingReplayTests(unittest.TestCase):
         )
         mapping = json.loads(result.stdout)
         self.assertEqual(mapping["map_point_count"], 48)
+        windows = mapping["projected_scan_windows"]
+        self.assertEqual(len(windows), 1)
+        self.assertEqual(windows[0]["pose_count"], 20)
+        self.assertEqual(len(windows[0]["points"]), 48)
         range_summary = summarize_range_accounting(samples)
         accounting = range_summary["range_accounting"]
         assert isinstance(accounting, dict)

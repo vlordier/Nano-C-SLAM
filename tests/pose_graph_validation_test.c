@@ -2,8 +2,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "../cslam-gap9-app/slam/graph-based-slam.h"
 #include "../cslam-gap9-app/slam/cholesky.h"
+#include "../cslam-gap9-app/slam/graph-based-slam.h"
 #include "../cslam-gap9-app/slam/rcm/rcm-sparse-matrix.h"
 #include "../cslam-gap9-app/slam/utils_math.h"
 
@@ -20,22 +20,25 @@ void cholesky_sparse_parallel(csr *matrix, int16_t size, int16_t *permutation) {
             abort(); \
     } while (0)
 
-uint32_t pi_time_get_us(void) { return 0; }
-void pi_time_wait_us(uint32_t us) { (void)us; }
+uint32_t pi_time_get_us(void) {
+    return 0;
+}
+void pi_time_wait_us(uint32_t us) {
+    (void)us;
+}
 
 int main(void) {
     float invalid_graph_poses[6] = {0.0f};
-    constraint invalid_graph_edge = {
-        .fromIdx = 0, .toIdx = 2, .z = {1.0f, 0.0f, 0.0f}};
+    constraint invalid_graph_edge = {.fromIdx = 0, .toIdx = 2, .z = {1.0f, 0.0f, 0.0f}};
     int16_t completed_iterations = -1;
-    CHECK(!ls_slam_with_iterations(invalid_graph_poses, &invalid_graph_edge, 2,
-                                   1, &completed_iterations));
+    CHECK(!ls_slam_with_iterations(invalid_graph_poses, &invalid_graph_edge, 2, 1,
+                                   &completed_iterations));
     CHECK(completed_iterations == 0);
     invalid_graph_edge.toIdx = 1;
     invalid_graph_edge.z[0] = NAN;
     completed_iterations = -1;
-    CHECK(!ls_slam_with_iterations(invalid_graph_poses, &invalid_graph_edge, 2,
-                                   1, &completed_iterations));
+    CHECK(!ls_slam_with_iterations(invalid_graph_poses, &invalid_graph_edge, 2, 1,
+                                   &completed_iterations));
     CHECK(completed_iterations == 0);
 
     float singular[3][3] = {{1, 2, 3}, {2, 4, 6}, {0, 0, 0}};

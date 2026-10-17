@@ -12,6 +12,7 @@
 #define MAX_LIDAR_RANGE_MM 3490
 #define MAPPING_RANGE_LIMIT_MM 1400
 #define MAX_SCAN_PAIR_ATTEMPTS (MAX_REPLAY_POSES / 20)
+#define SCAN_WINDOW_POSES 20
 
 typedef struct {
     int16_t first;
@@ -46,6 +47,32 @@ static void print_endpoint_pair(endpoint_pair_t pair, int comma) {
 static int fail(const char *message) {
     fprintf(stderr, "mapping replay: %s\n", message);
     return EXIT_FAILURE;
+}
+
+static void print_scan_windows(int pose_count) {
+    const int window_count =
+        (pose_count + SCAN_WINDOW_POSES - 1) / SCAN_WINDOW_POSES;
+    printf("\"projection_source\":\"pcl_extract_scan\",");
+    printf("\"projection_range_limit_mm\":%d,", MAPPING_RANGE_LIMIT_MM);
+    printf("\"projection_window_pose_limit\":%d,", SCAN_WINDOW_POSES);
+    printf("\"projected_scan_windows\":[");
+    for (int window = 0; window < window_count; ++window) {
+        const int start = window * SCAN_WINDOW_POSES;
+        const int end = start + SCAN_WINDOW_POSES < pose_count
+                            ? start + SCAN_WINDOW_POSES
+                            : pose_count;
+        icp_points_t points = {0};
+        pcl_extract_scan((int16_t)start, (int16_t)end, &points,
+                         MAPPING_RANGE_LIMIT_MM);
+        printf("%s{\"start_pose\":%d,\"pose_count\":%d,\"points\":[",
+               window == 0 ? "" : ",", start, end - start);
+        for (size_t index = 0; index < points.num; ++index) {
+            printf("%s[%.7g,%.7g]", index == 0 ? "" : ",",
+                   points.items[index].x, points.items[index].y);
+        }
+        printf("]}");
+    }
+    printf("],");
 }
 
 static void process_scan_window(int start_id) {
@@ -151,7 +178,9 @@ static int emit_map(void) {
         }
         print_endpoint_pair(canonical_pair(from, to), index > 0);
     }
-    printf("],\"poses\":[");
+    printf("],");
+    print_scan_windows(pose_count);
+    printf("\"poses\":[");
     for (int16_t i = 0; i < pose_count; i++) {
         printf("%s[%.7g,%.7g,%.7g]", i == 0 ? "" : ",", poses[3 * i],
                poses[3 * i + 1], poses[3 * i + 2]);
