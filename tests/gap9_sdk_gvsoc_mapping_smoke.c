@@ -3,9 +3,9 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "point_cloud.h"
-#include "pmsis.h"
 #include "icp.h"
+#include "pmsis.h"
+#include "point_cloud.h"
 
 struct pi_device cluster_dev;
 struct pi_cluster_conf cl_conf;
@@ -43,31 +43,28 @@ static int run_mapping_fixture(void) {
 
         if ((id + 1) % 20 == 0) {
             const int scan_start = id - 19;
-            pcl_extract_scan((int16_t)scan_start,
-                             (int16_t)(scan_start + 20), &current_scan, 1400);
+            pcl_extract_scan((int16_t)scan_start, (int16_t)(scan_start + 20),
+                             &current_scan, 1400);
             if (previous_scan_start >= 0 && previous_scan.num > 0 &&
                 current_scan.num > 0) {
                 float correction[3] = {0};
                 icp_job_t icp_job = {0};
                 static int16_t correspondences_p[SIZE_POINTS];
                 static int16_t correspondences_q[SIZE_POINTS];
-                if (compute_correspondences_parallel(
-                        &current_scan, &previous_scan, 0.4f,
-                        correspondences_p, correspondences_q)) {
+                if (compute_correspondences_parallel(&current_scan, &previous_scan,
+                                                     0.4f, correspondences_p,
+                                                     correspondences_q)) {
                     last_correspondence_count = 0;
                     for (size_t point = 0; point < previous_scan.num; point++)
-                        last_correspondence_count +=
-                            correspondences_p[point] >= 0;
+                        last_correspondence_count += correspondences_p[point] >= 0;
                 }
-                icp(&previous_scan, &current_scan, 25, 0.4f, correction,
-                    &icp_job);
+                icp(&previous_scan, &current_scan, 25, 0.4f, correction, &icp_job);
                 if (isfinite(icp_job.error))
                     last_icp_error_milli = (int32_t)(icp_job.error * 1000.0f);
                 last_icp_has_nan = icp_job.has_nan;
                 if (icp_job.has_nan == 0 && icp_job.error < 0.01f) {
                     pcl_add_constraint((int16_t)scan_start,
-                                       (int16_t)previous_scan_start,
-                                       correction);
+                                       (int16_t)previous_scan_start, correction);
                     icp_constraint_count++;
                 }
             }
@@ -83,25 +80,23 @@ static int run_mapping_fixture(void) {
     icp_points_t map = {0};
     pcl_extract_scan(0, pose_count, &map, 1400);
     const int passed = pose_count == 60 && scan_count == 3 && map.num == 240 &&
-                       icp_constraint_count >= 2 &&
-                       job.number_of_poses == 60 && job.main_graph_size == 3 &&
-                       job.has_nan == 0;
+                       icp_constraint_count >= 2 && job.number_of_poses == 60 &&
+                       job.main_graph_size == 3 && job.has_nan == 0;
     if (!passed) {
         printf("NANO_C_SLAM_GVSOC:mapping_fail poses=%d scans=%u points=%zu "
                "icp_constraints=%d matches=%d icp_error_milli=%d "
                "icp_has_nan=%d "
                "optimized=%d graph=%d has_nan=%d\n",
                pose_count, scan_count, map.num, icp_constraint_count,
-               last_correspondence_count, (int)last_icp_error_milli,
-               last_icp_has_nan,
+               last_correspondence_count, (int)last_icp_error_milli, last_icp_has_nan,
                job.number_of_poses, job.main_graph_size, job.has_nan);
         return -1;
     }
 
     printf("NANO_C_SLAM_GVSOC:mapping_ok poses=%d scans=%u map_points=%zu "
            "optimized=%d graph=%d has_nan=%d\n",
-           pose_count, scan_count, map.num, job.number_of_poses,
-           job.main_graph_size, job.has_nan);
+           pose_count, scan_count, map.num, job.number_of_poses, job.main_graph_size,
+           job.has_nan);
     return 0;
 }
 

@@ -41,9 +41,10 @@ jobs:
         run: sh tests/run_point_cloud_test.sh
       - name: Check owned C formatting
         run: |
-          find cslam-gap9-app cslam-stm32-app/src tests -type f \
+          find cslam-gap9-app cslam-stm32-app/src tests \
+            -type d \( -name BUILD -o -name 'BUILD-*' \) -prune -o \
+            -type f \
             \( -name '*.c' -o -name '*.h' \) \
-            ! -path 'cslam-gap9-app/BUILD/*' \
             ! -path 'cslam-stm32-app/src/tof-matrix/drivers/vl53l5cx_api.*' \
             ! -path 'cslam-stm32-app/src/tof-matrix/drivers/vl53l5cx_buffers.h' \
             -print0 | xargs -0 clang-format-18 --dry-run --Werror

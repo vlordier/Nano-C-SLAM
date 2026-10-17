@@ -1,4 +1,5 @@
-/* Replay captured Gazebo poses and four-ray ranges through the owned SLAM core. */
+/* Replay captured Gazebo poses and four-ray ranges through the owned SLAM core.
+ */
 #include <errno.h>
 #include <math.h>
 #include <stdint.h>
@@ -33,8 +34,8 @@ static void process_scan_window(int start_id) {
         icp_job_t icp_job = {0};
         icp(&previous_scan, &current_scan, 25, 0.4f, correction, &icp_job);
         if (icp_job.has_nan == 0 && icp_job.error < 0.01f) {
-            pcl_add_constraint((int16_t)start_id,
-                               (int16_t)previous_scan_start, correction);
+            pcl_add_constraint((int16_t)start_id, (int16_t)previous_scan_start,
+                               correction);
             icp_constraint_count++;
         }
     }
@@ -69,9 +70,9 @@ static int emit_map(void) {
            "\"icp_constraint_count\":%d,\"optimized_pose_count\":%d,"
            "\"main_graph_size\":%d,"
            "\"has_nan\":%d,\"poses\":[",
-           pose_count, pcl_get_scan_pose_count(), map.num,
-           icp_constraint_count, last_slam_job.number_of_poses,
-           last_slam_job.main_graph_size, last_slam_job.has_nan);
+           pose_count, pcl_get_scan_pose_count(), map.num, icp_constraint_count,
+           last_slam_job.number_of_poses, last_slam_job.main_graph_size,
+           last_slam_job.has_nan);
     for (int16_t i = 0; i < pose_count; i++) {
         printf("%s[%.7g,%.7g,%.7g]", i == 0 ? "" : ",", poses[3 * i],
                poses[3 * i + 1], poses[3 * i + 2]);
@@ -97,16 +98,17 @@ int main(void) {
 
     verbose = 0;
     while (1) {
-        int parsed = scanf("%d %d %f %f %f %d %d %d %d", &id, &timestamp_ms,
-                           &x, &y, &yaw, &ranges[0], &ranges[1], &ranges[2],
-                           &ranges[3]);
+        int parsed =
+            scanf("%d %d %f %f %f %d %d %d %d", &id, &timestamp_ms, &x, &y,
+                  &yaw, &ranges[0], &ranges[1], &ranges[2], &ranges[3]);
         if (parsed == EOF) break;
         if (parsed != 9) return fail("malformed replay sample");
         if (sample_count >= MAX_REPLAY_POSES)
-            return fail("replay exceeds the supported pose/map buffer capacity");
+            return fail(
+                "replay exceeds the supported pose/map buffer capacity");
         if (id != sample_count || id > INT16_MAX || timestamp_ms < 0 ||
-            timestamp_ms <= last_timestamp_ms ||
-            !isfinite(x) || !isfinite(y) || !isfinite(yaw))
+            timestamp_ms <= last_timestamp_ms || !isfinite(x) || !isfinite(y) ||
+            !isfinite(yaw))
             return fail("sample IDs, timestamp, or pose are invalid");
 
         pcl_pose_t pose = {0};
