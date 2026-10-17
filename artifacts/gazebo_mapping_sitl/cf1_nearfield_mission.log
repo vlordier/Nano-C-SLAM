@@ -1,7 +1,7 @@
-[INFO] [1792247419.349295000] [nano_c_slam_sim_mission]: Waiting for /cf1/odom before takeoff to 0.50 m
-[INFO] [1792247419.432072000] [nano_c_slam_sim_mission]: cf1 mission phase: takeoff at altitude -0.000 m
-[INFO] [1792247421.096189000] [nano_c_slam_sim_mission]: Starting bounded square mapping path at measured position
-[INFO] [1792247421.096575000] [nano_c_slam_sim_mission]: cf1 mission phase: hover at altitude 0.502 m
-[INFO] [1792247433.692743000] [nano_c_slam_sim_mission]: Mapping path complete; beginning configured hover interval
-[INFO] [1792247439.222772000] [nano_c_slam_sim_mission]: cf1 mission phase: land at altitude 0.800 m
-[INFO] [1792247442.940605000] [nano_c_slam_sim_mission]: cf1 completed takeoff, hover, and landing at altitude 0.063 m
+[INFO] [1792247873.543676000] [nano_c_slam_sim_mission]: Waiting for /cf1/odom before takeoff to 0.50 m
+[INFO] [1792247873.548535000] [nano_c_slam_sim_mission]: cf1 mission phase: takeoff at altitude -0.000 m
+[INFO] [1792247874.807251000] [nano_c_slam_sim_mission]: Starting bounded square mapping path at measured position
+[INFO] [1792247874.809391000] [nano_c_slam_sim_mission]: cf1 mission phase: hover at altitude 0.506 m
+[INFO] [1792247886.062050000] [nano_c_slam_sim_mission]: Mapping path complete; beginning configured hover interval
+[INFO] [1792247889.086682000] [nano_c_slam_sim_mission]: cf1 mission phase: land at altitude 0.796 m
+[INFO] [1792247890.641575000] [nano_c_slam_sim_mission]: cf1 completed takeoff, hover, and landing at altitude 0.085 m

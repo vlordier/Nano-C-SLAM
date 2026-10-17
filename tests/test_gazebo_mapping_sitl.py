@@ -83,7 +83,7 @@ class MappingSampleTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "at least one"):
             summarize_sample_path([])
 
-    def test_rejects_mapping_without_two_valid_scan_windows(self) -> None:
+    def test_rejects_mapping_without_three_valid_scan_windows(self) -> None:
         report = {
             "pose_count": 39,
             "scan_count": 1,
@@ -96,7 +96,55 @@ class MappingSampleTests(unittest.TestCase):
             "points": [[0.0, 0.0]],
         }
         with self.assertRaisesRegex(ValueError, "three scan windows"):
-            validate_mapping_result(report, minimum_poses=40)
+            validate_mapping_result(report, minimum_poses=60)
+
+    def test_retained_nearfield_report_reconciles_four_beams_and_scan_windows(
+        self,
+    ) -> None:
+        report_path = (
+            REPOSITORY_ROOT
+            / "artifacts/gazebo_mapping_sitl/cf1_nearfield_firmware_cutoff.json"
+        )
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+        mapping = validate_mapping_result(report["mapping"], minimum_poses=60)
+        samples = report["input_samples"]
+        expected_directions = ("front", "back", "left", "right")
+
+        self.assertEqual(len(samples), 60)
+        self.assertEqual(report["mapping_range_limit_mm"], 1400)
+        self.assertEqual(mapping["stored_constraint_count"], 4)
+        self.assertEqual(mapping["optimized_constraint_count"], 4)
+        for index, direction in enumerate(expected_directions, start=5):
+            values = [int(sample.split()[index]) for sample in samples]
+            accepted = [value for value in values if 0 <= value <= 1400]
+            self.assertGreater(len(set(accepted)), 1)
+            self.assertEqual(
+                report["range_accounting"]["by_direction"][direction][
+                    "accepted_at_or_below_limit"
+                ],
+                len(accepted),
+            )
+
+        in_range_per_window = [
+            sum(
+                any(0 <= int(value) <= 1400 for value in sample.split()[5:9])
+                for sample in samples[start : start + 20]
+            )
+            for start in range(0, len(samples), 20)
+        ]
+        self.assertEqual(in_range_per_window, [20, 20, 20])
+        self.assertEqual(report["scan_window_in_range_sample_counts"], [20, 20, 20])
+        three_direction_per_window = [
+            sum(
+                sum(0 <= int(value) <= 1400 for value in sample.split()[5:9]) >= 3
+                for sample in samples[start : start + 20]
+            )
+            for start in range(0, len(samples), 20)
+        ]
+        self.assertEqual(three_direction_per_window, [20, 19, 20])
+        self.assertEqual(
+            report["scan_window_three_direction_sample_counts"], [20, 19, 20]
+        )
 
 
 class NativeMappingReplayTests(unittest.TestCase):

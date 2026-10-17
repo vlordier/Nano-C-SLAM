@@ -234,8 +234,11 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
 In a second terminal, run the single-drone mission from the previous section.
 The collector requires at least 60 fresh samples (three 20-pose scan windows)
 and reports success only when it obtains finite map points, at least two
-stored/optimized constraints, and a finite three-node graph. The JSON report
-contains raw sample records, range accounting, optimized poses, and projected
+stored/optimized constraints, and a finite three-node graph. The retained run
+had at least three directions within the cutoff in 19–20 poses per window, and
+each of the four directions had multiple in-range values over the capture; it
+does not claim every beam is valid in every pose. The JSON report contains raw
+sample records, per-direction range accounting, optimized poses, and projected
 map points. On Linux, use the ROS and workspace setup paths from the Linux
 section and replace the Python path with `/usr/bin/python3`.
 

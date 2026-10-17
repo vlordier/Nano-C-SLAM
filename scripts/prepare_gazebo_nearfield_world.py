@@ -10,11 +10,11 @@ from pathlib import Path
 WALL_POSITIONS = {
     "wall1": (1.5, 0.0),
     "wall2": (-1.5, 0.0),
-    "wall3": (0.0, 1.5),
+    "wall3": (0.0, 0.95),
     "wall4": (0.0, -1.5),
 }
 OBSTACLE_POSES = {
-    "obstacle1": (0.65, -0.55, 0.25),
+    "obstacle1": (0.65, -0.15, 0.25),
     "obstacle2": (-0.55, -1.0, 0.2),
     "obstacle3": (-1.0, -0.55, 0.2),
 }
@@ -72,6 +72,7 @@ def prepare_nearfield_world(source: Path, destination: Path) -> None:
         if pose is None:
             raise ValueError(f"model {name!r} has no pose")
         pose.text = f"{x} {y} {z} 0 0 0"
+    _set_box_size(_required_model(world, "obstacle1"), "0.3 0.8 0.5")
 
     ET.indent(tree, space="  ")
     destination.parent.mkdir(parents=True, exist_ok=True)

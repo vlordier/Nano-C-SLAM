@@ -44,11 +44,17 @@ class NearfieldWorldTests(unittest.TestCase):
                 if model.get("name", "").startswith("wall")
             }
             self.assertEqual(len(walls), 4)
-            for wall in walls.values():
+            expected_extent = {
+                "wall1": 1.5,
+                "wall2": 1.5,
+                "wall3": 0.95,
+                "wall4": 1.5,
+            }
+            for name, wall in walls.items():
                 pose = wall.findtext("pose")
                 assert pose is not None
                 x, y = (float(value) for value in pose.split()[:2])
-                self.assertAlmostEqual(max(abs(x), abs(y)), 1.5)
+                self.assertAlmostEqual(max(abs(x), abs(y)), expected_extent[name])
                 size = wall.findtext("link/collision/geometry/box/size")
                 self.assertEqual(size, "0.2 3.0 1")
 
@@ -58,7 +64,13 @@ class NearfieldWorldTests(unittest.TestCase):
                 if model.get("name", "").startswith("obstacle")
             }
             self.assertEqual(len(obstacles), 3)
-            self.assertIn("0.65 -0.55", obstacles["obstacle1"] or "")
+            self.assertIn("0.65 -0.15", obstacles["obstacle1"] or "")
+            self.assertEqual(
+                world.findtext(
+                    "model[@name='obstacle1']/link/collision/geometry/box/size"
+                ),
+                "0.3 0.8 0.5",
+            )
 
     def test_rejects_world_missing_required_boundary(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
