@@ -11,13 +11,37 @@
 #define MAX_REPLAY_POSES 170
 #define MAX_LIDAR_RANGE_MM 3490
 #define MAPPING_RANGE_LIMIT_MM 1400
+#define MAX_SCAN_PAIR_ATTEMPTS (MAX_REPLAY_POSES / 20)
+
+typedef struct {
+    int16_t first;
+    int16_t second;
+} endpoint_pair_t;
 
 uint8_t verbose = 0;
 static slam_job_t last_slam_job;
 static icp_points_t previous_scan;
 static icp_points_t current_scan;
 static int previous_scan_start = -1;
-static int icp_constraint_attempt_count;
+static int icp_pair_attempt_count;
+static endpoint_pair_t icp_pair_attempts[MAX_SCAN_PAIR_ATTEMPTS];
+static int icp_constraint_add_attempt_count;
+static int icp_constraint_accepted_insertion_count;
+static endpoint_pair_t accepted_icp_endpoint_pairs[MAX_SCAN_PAIR_ATTEMPTS];
+
+static endpoint_pair_t canonical_pair(int16_t first, int16_t second) {
+    endpoint_pair_t pair = {.first = first, .second = second};
+    if (pair.first > pair.second) {
+        int16_t temporary = pair.first;
+        pair.first = pair.second;
+        pair.second = temporary;
+    }
+    return pair;
+}
+
+static void print_endpoint_pair(endpoint_pair_t pair, int comma) {
+    printf("%s[%d,%d]", comma ? "," : "", pair.first, pair.second);
+}
 
 static int fail(const char *message) {
     fprintf(stderr, "mapping replay: %s\n", message);
@@ -32,11 +56,20 @@ static void process_scan_window(int start_id) {
     if (previous_scan_start >= 0 && previous_scan.num > 0) {
         float correction[3] = {0};
         icp_job_t icp_job = {0};
+        if (icp_pair_attempt_count < MAX_SCAN_PAIR_ATTEMPTS) {
+            icp_pair_attempts[icp_pair_attempt_count++] =
+                canonical_pair((int16_t)start_id, (int16_t)previous_scan_start);
+        }
         icp(&previous_scan, &current_scan, 25, 0.4f, correction, &icp_job);
         if (icp_job.has_nan == 0 && icp_job.error < 0.01f) {
-            pcl_add_constraint((int16_t)start_id, (int16_t)previous_scan_start,
-                               correction);
-            icp_constraint_attempt_count++;
+            icp_constraint_add_attempt_count++;
+            if (pcl_add_constraint((int16_t)start_id,
+                                   (int16_t)previous_scan_start, correction)) {
+                accepted_icp_endpoint_pairs
+                    [icp_constraint_accepted_insertion_count++] =
+                        canonical_pair((int16_t)start_id,
+                                       (int16_t)previous_scan_start);
+            }
         }
     }
 
@@ -67,18 +100,52 @@ static int emit_map(void) {
     }
 
     const int32_t stored_constraint_count = pcl_get_constraint_count();
+    const int32_t optimizer_input_constraint_count =
+        pcl_get_optimizer_input_constraint_count();
+    const int32_t optimizer_input_unique_edge_count =
+        pcl_get_optimizer_input_unique_edge_count();
     printf("{\"pose_count\":%d,\"scan_count\":%u,\"map_point_count\":%zu,"
-           "\"icp_constraint_attempt_count\":%d,"
-           "\"stored_constraint_count\":%d,"
-           "\"optimized_constraint_count\":%d,"
-           "\"icp_constraint_count\":%d,\"optimized_pose_count\":%d,"
-           "\"main_graph_size\":%d,"
-           "\"has_nan\":%d,\"poses\":[",
+           "\"icp_pair_attempt_count\":%d,"
+           "\"icp_pair_attempt_pairs\":[",
            pose_count, pcl_get_scan_pose_count(), map.num,
-           icp_constraint_attempt_count, (int)stored_constraint_count,
-           (int)stored_constraint_count, (int)stored_constraint_count,
+           icp_pair_attempt_count);
+    for (int index = 0; index < icp_pair_attempt_count; ++index)
+        print_endpoint_pair(icp_pair_attempts[index], index > 0);
+    printf("],\"icp_constraint_add_attempt_count\":%d,"
+           "\"icp_constraint_accepted_insertion_count\":%d,"
+           "\"stored_constraint_count\":%d,"
+           "\"optimizer_input_constraint_count\":%d,"
+           "\"optimizer_input_unique_edge_count\":%d,"
+           "\"optimized_pose_count\":%d,\"main_graph_size\":%d,"
+           "\"has_nan\":%d,\"icp_constraint_accepted_endpoint_pairs\":[",
+           icp_constraint_add_attempt_count,
+           icp_constraint_accepted_insertion_count,
+           (int)stored_constraint_count, (int)optimizer_input_constraint_count,
+           (int)optimizer_input_unique_edge_count,
            last_slam_job.number_of_poses, last_slam_job.main_graph_size,
            last_slam_job.has_nan);
+    for (int index = 0; index < icp_constraint_accepted_insertion_count;
+         ++index)
+        print_endpoint_pair(accepted_icp_endpoint_pairs[index], index > 0);
+    printf("],\"stored_unique_endpoint_pairs\":[");
+    for (int32_t index = 0; index < stored_constraint_count; ++index) {
+        int16_t from, to;
+        if (!pcl_get_constraint_endpoints(index, &from, &to)) {
+            free(poses);
+            return fail("could not enumerate stored constraint endpoints");
+        }
+        print_endpoint_pair(canonical_pair(from, to), index > 0);
+    }
+    printf("],\"optimizer_input_unique_edge_pairs\":[");
+    for (int32_t index = 0; index < optimizer_input_constraint_count; ++index) {
+        int16_t from, to;
+        if (!pcl_get_optimizer_input_endpoints(index, &from, &to)) {
+            free(poses);
+            return fail("could not enumerate optimizer input endpoints");
+        }
+        print_endpoint_pair(canonical_pair(from, to), index > 0);
+    }
+    printf("],\"poses\":[");
     for (int16_t i = 0; i < pose_count; i++) {
         printf("%s[%.7g,%.7g,%.7g]", i == 0 ? "" : ",", poses[3 * i],
                poses[3 * i + 1], poses[3 * i + 2]);

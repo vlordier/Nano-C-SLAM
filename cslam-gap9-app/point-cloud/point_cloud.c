@@ -37,6 +37,8 @@ PI_L2 float x_subgraph[MAX_SIZE];
 PI_L2 constraint constraints[MAX_CONSTRAINTS];
 PI_L2 static constraint optimization_constraints[MAX_CONSTRAINTS];
 static int32_t constr_counter = 0;
+static int32_t optimizer_input_constraint_count = 0;
+static int32_t optimizer_input_unique_edge_count = 0;
 
 static uint16_t int_scan_pose_ids[100];
 static uint16_t int_scan_pose_cnt = 0;
@@ -47,6 +49,58 @@ extern uint8_t verbose;
 uint16_t pcl_get_scan_pose_count() { return int_scan_pose_cnt; }
 
 int32_t pcl_get_constraint_count(void) { return constr_counter; }
+
+bool pcl_get_constraint_endpoints(int32_t index, int16_t *from, int16_t *to) {
+    if (index < 0 || index >= constr_counter || from == NULL || to == NULL)
+        return false;
+    *from = constraints[index].fromIdx;
+    *to = constraints[index].toIdx;
+    return true;
+}
+
+int32_t pcl_get_optimizer_input_constraint_count(void) {
+    return optimizer_input_constraint_count;
+}
+
+int32_t pcl_get_optimizer_input_unique_edge_count(void) {
+    return optimizer_input_unique_edge_count;
+}
+
+bool pcl_get_optimizer_input_endpoints(int32_t index, int16_t *from,
+                                       int16_t *to) {
+    if (index < 0 || index >= optimizer_input_constraint_count ||
+        from == NULL || to == NULL)
+        return false;
+    *from = optimization_constraints[index].fromIdx;
+    *to = optimization_constraints[index].toIdx;
+    return true;
+}
+
+static int same_undirected_pair(int16_t from_a, int16_t to_a, int16_t from_b,
+                                int16_t to_b) {
+    return (from_a == from_b && to_a == to_b) ||
+           (from_a == to_b && to_a == from_b);
+}
+
+static int constraint_pair_exists(constraint *items, int32_t count,
+                                  int16_t from, int16_t to) {
+    for (int32_t index = 0; index < count; ++index) {
+        if (same_undirected_pair(items[index].fromIdx, items[index].toIdx, from,
+                                 to))
+            return 1;
+    }
+    return 0;
+}
+
+static int32_t count_unique_constraint_pairs(constraint *items, int32_t count) {
+    int32_t unique_count = 0;
+    for (int32_t index = 0; index < count; ++index) {
+        if (!constraint_pair_exists(items, index, items[index].fromIdx,
+                                    items[index].toIdx))
+            ++unique_count;
+    }
+    return unique_count;
+}
 
 int16_t pcl_get_scan_pose_id(uint16_t idx) {
     if (idx >= int_scan_pose_cnt)
@@ -213,34 +267,44 @@ static constraint comp_constr(float *icp_res, float *ref_pose, float *cur_pose,
     return constraint;
 }
 
-void pcl_add_constraint(int16_t from_node, int16_t to_node, float *icp) {
+bool pcl_add_constraint(int16_t from_node, int16_t to_node, float *icp) {
     if (constr_counter >= MAX_CONSTRAINTS || from_node < 0 || to_node < 0 ||
-        from_node >= pose_counter || to_node >= pose_counter || icp == NULL ||
-        !isfinite(icp[0]) || !isfinite(icp[1]) || !isfinite(icp[2]) ||
+        from_node == to_node || from_node >= pose_counter ||
+        to_node >= pose_counter || icp == NULL || !isfinite(icp[0]) ||
+        !isfinite(icp[1]) || !isfinite(icp[2]) ||
         !isfinite(p_cloud[to_node].pos[0]) ||
         !isfinite(p_cloud[to_node].pos[1]) ||
         !isfinite(p_cloud[to_node].pos[2]) ||
         !isfinite(p_cloud[from_node].pos[0]) ||
         !isfinite(p_cloud[from_node].pos[1]) ||
         !isfinite(p_cloud[from_node].pos[2]))
-        return;
+        return false;
+    if (constraint_pair_exists(constraints, constr_counter, from_node, to_node))
+        return false;
     constraint c = comp_constr(icp, p_cloud[to_node].pos,
                                p_cloud[from_node].pos, to_node, from_node);
-    if (!isfinite(c.z[0]) || !isfinite(c.z[1]) || !isfinite(c.z[2])) return;
+    if (!isfinite(c.z[0]) || !isfinite(c.z[1]) || !isfinite(c.z[2]))
+        return false;
     c.external = 0;
     constraints[constr_counter] = c;
     constr_counter++;
     // add_scan_pose_id(from_node);
     // add_scan_pose_id(to_node);
+    return true;
 }
 
-void pcl_add_external_constraint(constraint c) {
+bool pcl_add_external_constraint(constraint c) {
     if (constr_counter >= MAX_CONSTRAINTS || c.fromIdx < 0 || c.toIdx < 0 ||
-        c.fromIdx >= pose_counter || c.toIdx >= pose_counter ||
-        !isfinite(c.z[0]) || !isfinite(c.z[1]) || !isfinite(c.z[2]))
-        return;
+        c.fromIdx == c.toIdx || c.fromIdx >= pose_counter ||
+        c.toIdx >= pose_counter || !isfinite(c.z[0]) || !isfinite(c.z[1]) ||
+        !isfinite(c.z[2]))
+        return false;
+    if (constraint_pair_exists(constraints, constr_counter, c.fromIdx, c.toIdx))
+        return false;
+    c.external = 1;
     constraints[constr_counter] = c;
     constr_counter++;
+    return true;
 }
 
 static inline float calc_dist(float *p1, float *p2) {
@@ -345,6 +409,8 @@ static bool pcl_update(float *x, int16_t from_id, int16_t nr_of_poses) {
 void pcl_optimize(slam_job_t *job) {
     if (job == NULL) return;
     memset(job, 0, sizeof(slam_job_t));
+    optimizer_input_constraint_count = 0;
+    optimizer_input_unique_edge_count = 0;
 
     uint32_t t_start = pi_time_get_us();
 
@@ -357,6 +423,13 @@ void pcl_optimize(slam_job_t *job) {
     for (int16_t i = 0; i < ext_const_cnt; i++) {
         if (optimization_count >= MAX_CONSTRAINTS) break;
         constraint c = get_ext_constraint(i);
+        if (c.fromIdx < 0 || c.fromIdx >= pose_counter || c.toIdx < 0 ||
+            c.toIdx >= pose_counter || c.fromIdx == c.toIdx ||
+            !isfinite(c.z[0]) || !isfinite(c.z[1]) || !isfinite(c.z[2]))
+            continue;
+        if (constraint_pair_exists(optimization_constraints, optimization_count,
+                                   c.fromIdx, c.toIdx))
+            continue;
         optimization_constraints[optimization_count++] = c;
         // printf("External from %d to %d: %.3f %.3f %.3f\n", c.fromIdx,
         // c.toIdx, c.z[0], c.z[1], c.z[2]);
@@ -406,6 +479,9 @@ void pcl_optimize(slam_job_t *job) {
     }
 
     job->main_graph_size = pose_nr;
+    optimizer_input_constraint_count = optimization_count;
+    optimizer_input_unique_edge_count = count_unique_constraint_pairs(
+        optimization_constraints, optimization_count);
     if (!ls_slam(x, optimization_constraints, pose_nr, optimization_count)) {
         job->has_nan = 1;
         return;

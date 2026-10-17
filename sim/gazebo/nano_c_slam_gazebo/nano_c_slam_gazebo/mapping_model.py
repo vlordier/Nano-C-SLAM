@@ -150,7 +150,12 @@ def validate_mapping_result(
         "pose_count",
         "scan_count",
         "map_point_count",
-        "icp_constraint_count",
+        "icp_pair_attempt_count",
+        "icp_constraint_add_attempt_count",
+        "icp_constraint_accepted_insertion_count",
+        "stored_constraint_count",
+        "optimizer_input_constraint_count",
+        "optimizer_input_unique_edge_count",
         "optimized_pose_count",
         "main_graph_size",
     )
@@ -160,16 +165,26 @@ def validate_mapping_result(
         if isinstance(value, bool) or not isinstance(value, int) or value < 0:
             raise ValueError(f"mapping result {name} must be a nonnegative integer")
         counts[name] = value
+    for obsolete_name in ("optimized_constraint_count", "icp_constraint_count"):
+        if obsolete_name in normalized_result:
+            raise ValueError(f"mapping result uses unsupported {obsolete_name} claim")
     if counts["pose_count"] < minimum_poses:
         raise ValueError("mapping result contains too few poses for three scan windows")
     if (
         counts["scan_count"] < 3
         or counts["map_point_count"] == 0
-        or counts["icp_constraint_count"] < 2
+        or counts["optimizer_input_unique_edge_count"] < 2
     ):
         raise ValueError(
-            "mapping result needs three scans, two stored constraints, and map points"
+            "mapping result needs three scans, two optimizer edges, and map points"
         )
+    if (
+        counts["icp_constraint_accepted_insertion_count"]
+        > counts["icp_constraint_add_attempt_count"]
+        or counts["icp_constraint_accepted_insertion_count"]
+        > counts["stored_constraint_count"]
+    ):
+        raise ValueError("mapping constraint insertion counts are inconsistent")
     if counts["optimized_pose_count"] != counts["pose_count"]:
         raise ValueError("pose graph did not optimize all captured poses")
     has_nan = normalized_result.get("has_nan")
@@ -183,12 +198,64 @@ def validate_mapping_result(
     if counts["main_graph_size"] > counts["scan_count"]:
         raise ValueError("pose graph cannot contain more nodes than captured scans")
     if (
-        normalized_result.get("stored_constraint_count")
-        != counts["icp_constraint_count"]
-        or normalized_result.get("optimized_constraint_count")
-        != counts["icp_constraint_count"]
+        counts["optimizer_input_constraint_count"] < counts["stored_constraint_count"]
+        or counts["optimizer_input_unique_edge_count"]
+        != counts["optimizer_input_constraint_count"]
     ):
-        raise ValueError("pose graph did not consume all reported stored constraints")
+        raise ValueError("optimizer input does not reconcile to unique stored edges")
+    pair_fields = (
+        ("icp_pair_attempt_count", "icp_pair_attempt_pairs"),
+        (
+            "icp_constraint_accepted_insertion_count",
+            "icp_constraint_accepted_endpoint_pairs",
+        ),
+        ("stored_constraint_count", "stored_unique_endpoint_pairs"),
+        (
+            "optimizer_input_unique_edge_count",
+            "optimizer_input_unique_edge_pairs",
+        ),
+    )
+    normalized_pairs: dict[str, list[tuple[int, int]]] = {}
+    for count_field, pairs_field in pair_fields:
+        pair_values = normalized_result.get(pairs_field)
+        if not isinstance(pair_values, list) or len(pair_values) != counts[count_field]:
+            raise ValueError(f"mapping result {pairs_field} does not match its count")
+        pairs: list[tuple[int, int]] = []
+        for pair in pair_values:
+            if (
+                not isinstance(pair, list)
+                or len(pair) != 2
+                or any(
+                    isinstance(index, bool) or not isinstance(index, int) or index < 0
+                    for index in pair
+                )
+                or pair[0] >= pair[1]
+            ):
+                raise ValueError(f"mapping result {pairs_field} has invalid endpoints")
+            pairs.append((pair[0], pair[1]))
+        if len(set(pairs)) != len(pairs):
+            raise ValueError(f"mapping result {pairs_field} contains duplicate edges")
+        normalized_pairs[pairs_field] = pairs
+
+    attempts = normalized_pairs["icp_pair_attempt_pairs"]
+    accepted = normalized_pairs["icp_constraint_accepted_endpoint_pairs"]
+    stored = normalized_pairs["stored_unique_endpoint_pairs"]
+    optimizer_edges = normalized_pairs["optimizer_input_unique_edge_pairs"]
+    if (
+        counts["icp_constraint_add_attempt_count"] > len(attempts)
+        or counts["icp_constraint_accepted_insertion_count"]
+        > counts["icp_constraint_add_attempt_count"]
+        or counts["icp_constraint_accepted_insertion_count"] > len(stored)
+        or not set(accepted).issubset(attempts)
+        or not set(accepted).issubset(stored)
+        or any(second >= counts["pose_count"] for _, second in stored)
+        or any(second >= counts["main_graph_size"] for _, second in optimizer_edges)
+    ):
+        raise ValueError("mapping constraint endpoint accounting is inconsistent")
+    if not set(normalized_pairs["icp_constraint_accepted_endpoint_pairs"]).issubset(
+        normalized_pairs["stored_unique_endpoint_pairs"]
+    ):
+        raise ValueError("accepted ICP endpoints are missing from stored constraints")
     arrays: dict[str, list[list[float | int]]] = {}
     for name in ("poses", "points"):
         values = normalized_result.get(name)

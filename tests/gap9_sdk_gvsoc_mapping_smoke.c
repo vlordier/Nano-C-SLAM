@@ -42,8 +42,8 @@ static int run_mapping_fixture(void) {
             pose.tof[direction][3] = ranges_mm[direction];
         }
         if (!pcl_add_augmented_pose(pose)) {
-            printf("NANO_C_SLAM_%s:mapping_fail rejected_pose=%d\n",
-                   EXECUTION_CLASS, id);
+            printf("NANO_C_SLAM_%s:mapping_fail rejected_pose=%d\n", EXECUTION_CLASS,
+                   id);
             return -1;
         }
 
@@ -69,9 +69,9 @@ static int run_mapping_fixture(void) {
                     last_icp_error_milli = (int32_t)(icp_job.error * 1000.0f);
                 last_icp_has_nan = icp_job.has_nan;
                 if (icp_job.has_nan == 0 && icp_job.error < 0.01f) {
-                    pcl_add_constraint((int16_t)scan_start,
-                                       (int16_t)previous_scan_start, correction);
-                    icp_constraint_count++;
+                    if (pcl_add_constraint((int16_t)scan_start,
+                                           (int16_t)previous_scan_start, correction))
+                        icp_constraint_count++;
                 }
             }
             add_scan_pose_id((uint16_t)scan_start);
@@ -85,9 +85,42 @@ static int run_mapping_fixture(void) {
     const uint16_t scan_count = pcl_get_scan_pose_count();
     icp_points_t map = {0};
     pcl_extract_scan(0, pose_count, &map, 1400);
+    const int32_t stored_constraints = pcl_get_constraint_count();
+    const int32_t optimizer_inputs = pcl_get_optimizer_input_constraint_count();
+    const int32_t optimizer_unique_edges = pcl_get_optimizer_input_unique_edge_count();
+    int16_t duplicate_from = -1;
+    int16_t duplicate_to = -1;
+    float finite_measurement[3] = {0};
+    float nonfinite_measurement[3] = {NAN, 0, 0};
+    const int duplicate_pair_found =
+        pcl_get_constraint_endpoints(0, &duplicate_from, &duplicate_to);
+    const int duplicate_rejected =
+        duplicate_pair_found &&
+        !pcl_add_constraint(duplicate_from, duplicate_to, finite_measurement) &&
+        !pcl_add_constraint(duplicate_to, duplicate_from, finite_measurement);
+    constraint external_duplicate = {0};
+    external_duplicate.fromIdx = duplicate_from;
+    external_duplicate.toIdx = duplicate_to;
+    external_duplicate.external = 1;
+    const int duplicate_external_rejected =
+        duplicate_pair_found && !pcl_add_external_constraint(external_duplicate);
+    const int invalid_pairs_rejected =
+        !pcl_add_constraint(-1, 0, finite_measurement) &&
+        !pcl_add_constraint(0, 0, finite_measurement) &&
+        !pcl_add_constraint(0, 1, nonfinite_measurement) &&
+        !pcl_get_constraint_endpoints(-1, &duplicate_from, &duplicate_to) &&
+        !pcl_get_optimizer_input_endpoints(optimizer_inputs, &duplicate_from,
+                                           &duplicate_to);
+    const int insertion_count_unchanged =
+        pcl_get_constraint_count() == stored_constraints;
     const int passed = pose_count == 60 && scan_count == 3 && map.num == 240 &&
                        icp_constraint_count >= 2 && job.number_of_poses == 60 &&
-                       job.main_graph_size == 3 && job.has_nan == 0;
+                       job.main_graph_size == 3 && job.has_nan == 0 &&
+                       stored_constraints >= icp_constraint_count &&
+                       optimizer_inputs >= 2 && optimizer_unique_edges >= 2 &&
+                       optimizer_unique_edges <= optimizer_inputs &&
+                       duplicate_rejected && duplicate_external_rejected &&
+                       invalid_pairs_rejected && insertion_count_unchanged;
     if (!passed) {
         printf("NANO_C_SLAM_%s:mapping_fail poses=%d scans=%u points=%zu "
                "icp_constraints=%d matches=%d icp_error_milli=%d "
@@ -101,8 +134,8 @@ static int run_mapping_fixture(void) {
 
     printf("NANO_C_SLAM_%s:mapping_ok poses=%d scans=%u map_points=%zu "
            "optimized=%d graph=%d has_nan=%d\n",
-           EXECUTION_CLASS, pose_count, scan_count, map.num, job.number_of_poses, job.main_graph_size,
-           job.has_nan);
+           EXECUTION_CLASS, pose_count, scan_count, map.num, job.number_of_poses,
+           job.main_graph_size, job.has_nan);
     return 0;
 }
 

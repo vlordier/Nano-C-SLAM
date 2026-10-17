@@ -164,7 +164,16 @@ class MappingSampleTests(unittest.TestCase):
             "pose_count": 39,
             "scan_count": 1,
             "map_point_count": 1,
-            "icp_constraint_count": 0,
+            "icp_pair_attempt_count": 0,
+            "icp_pair_attempt_pairs": [],
+            "icp_constraint_add_attempt_count": 0,
+            "icp_constraint_accepted_insertion_count": 0,
+            "icp_constraint_accepted_endpoint_pairs": [],
+            "stored_constraint_count": 0,
+            "stored_unique_endpoint_pairs": [],
+            "optimizer_input_constraint_count": 0,
+            "optimizer_input_unique_edge_count": 0,
+            "optimizer_input_unique_edge_pairs": [],
             "optimized_pose_count": 39,
             "main_graph_size": 0,
             "has_nan": 0,
@@ -179,9 +188,16 @@ class MappingSampleTests(unittest.TestCase):
             "pose_count": 60,
             "scan_count": 3,
             "map_point_count": 3,
-            "icp_constraint_count": 2,
+            "icp_pair_attempt_count": 2,
+            "icp_pair_attempt_pairs": [[0, 1], [1, 2]],
+            "icp_constraint_add_attempt_count": 2,
+            "icp_constraint_accepted_insertion_count": 2,
+            "icp_constraint_accepted_endpoint_pairs": [[0, 1], [1, 2]],
             "stored_constraint_count": 2,
-            "optimized_constraint_count": 2,
+            "stored_unique_endpoint_pairs": [[0, 1], [1, 2]],
+            "optimizer_input_constraint_count": 2,
+            "optimizer_input_unique_edge_count": 2,
+            "optimizer_input_unique_edge_pairs": [[0, 1], [1, 2]],
             "optimized_pose_count": 60,
             "main_graph_size": 4,
             "has_nan": 0,
@@ -194,6 +210,18 @@ class MappingSampleTests(unittest.TestCase):
         report["main_graph_size"] = 3
         report["has_nan"] = False
         with self.assertRaisesRegex(ValueError, "finite graph"):
+            validate_mapping_result(report)
+
+        report["has_nan"] = 0
+        report["optimized_constraint_count"] = 2
+        with self.assertRaisesRegex(
+            ValueError, "unsupported optimized_constraint_count"
+        ):
+            validate_mapping_result(report)
+
+        del report["optimized_constraint_count"]
+        report["stored_unique_endpoint_pairs"] = [[0, 1], [0, 1]]
+        with self.assertRaisesRegex(ValueError, "contains duplicate edges"):
             validate_mapping_result(report)
 
     def test_live_capture_report_enforces_cross_field_provenance(self) -> None:
@@ -278,8 +306,17 @@ class MappingSampleTests(unittest.TestCase):
 
         self.assertEqual(len(samples), 60)
         self.assertEqual(report["mapping_range_limit_mm"], 1400)
-        self.assertEqual(mapping["stored_constraint_count"], 4)
-        self.assertEqual(mapping["optimized_constraint_count"], 4)
+        self.assertEqual(mapping["stored_constraint_count"], 3)
+        self.assertEqual(mapping["optimizer_input_constraint_count"], 3)
+        self.assertEqual(mapping["optimizer_input_unique_edge_count"], 3)
+        self.assertEqual(
+            mapping["stored_unique_endpoint_pairs"],
+            [[0, 20], [20, 40], [0, 40]],
+        )
+        self.assertEqual(
+            mapping["optimizer_input_unique_edge_pairs"],
+            [[0, 1], [1, 2], [0, 2]],
+        )
         for index, direction in enumerate(expected_directions, start=5):
             values = [int(sample.split()[index]) for sample in samples]
             accepted = [value for value in values if 0 <= value <= 1400]
@@ -346,10 +383,17 @@ class NativeMappingReplayTests(unittest.TestCase):
         self.assertEqual(report["pose_count"], 60)
         self.assertEqual(report["scan_count"], 3)
         self.assertEqual(report["map_point_count"], 240)
-        self.assertEqual(report["icp_constraint_attempt_count"], 2)
-        self.assertEqual(report["stored_constraint_count"], 4)
-        self.assertEqual(report["optimized_constraint_count"], 4)
-        self.assertEqual(report["icp_constraint_count"], 4)
+        self.assertEqual(report["icp_constraint_add_attempt_count"], 2)
+        self.assertEqual(report["icp_constraint_accepted_insertion_count"], 2)
+        self.assertEqual(report["stored_constraint_count"], 2)
+        self.assertEqual(report["optimizer_input_constraint_count"], 2)
+        self.assertEqual(report["optimizer_input_unique_edge_count"], 2)
+        self.assertEqual(report["icp_pair_attempt_pairs"], [[0, 20], [20, 40]])
+        self.assertEqual(
+            report["icp_constraint_accepted_endpoint_pairs"], [[0, 20], [20, 40]]
+        )
+        self.assertEqual(report["stored_unique_endpoint_pairs"], [[0, 20], [20, 40]])
+        self.assertEqual(report["optimizer_input_unique_edge_pairs"], [[0, 1], [1, 2]])
         self.assertEqual(report["optimized_pose_count"], 60)
         graph_size = report["main_graph_size"]
         assert isinstance(graph_size, int)
@@ -387,8 +431,16 @@ class NativeMappingReplayTests(unittest.TestCase):
                     "pose_count",
                     "scan_count",
                     "map_point_count",
+                    "icp_pair_attempt_count",
+                    "icp_pair_attempt_pairs",
+                    "icp_constraint_add_attempt_count",
+                    "icp_constraint_accepted_insertion_count",
+                    "icp_constraint_accepted_endpoint_pairs",
                     "stored_constraint_count",
-                    "optimized_constraint_count",
+                    "stored_unique_endpoint_pairs",
+                    "optimizer_input_constraint_count",
+                    "optimizer_input_unique_edge_count",
+                    "optimizer_input_unique_edge_pairs",
                     "optimized_pose_count",
                     "main_graph_size",
                     "has_nan",

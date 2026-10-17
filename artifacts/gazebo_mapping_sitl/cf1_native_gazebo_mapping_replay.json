@@ -28,7 +28,6 @@
     "pose_count": 60,
     "scan_count": 2,
     "map_point_count": 132,
-    "icp_constraint_count": 1,
     "optimized_pose_count": 60,
     "main_graph_size": 2,
     "has_nan": 0,
@@ -863,6 +862,10 @@
         -0.450427,
         -2.882427
       ]
-    ]
+    ],
+    "constraint_accounting": {
+      "status": "legacy-unverifiable",
+      "reason": "The capture retained a scalar icp_constraint_count but not endpoint pairs or the ls_slam input. It cannot establish unique stored edges or optimizer input."
+    }
   }
 }

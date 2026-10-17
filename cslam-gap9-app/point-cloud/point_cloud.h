@@ -64,16 +64,18 @@ void pcl_extract_scan(int16_t start_id, int16_t end_id, icp_points_t *points,
                       int16_t range_limit);
 
 /**
- * @brief Add a loop closure constraint to the pose graph.
+ * @brief Add a loop closure constraint if its undirected endpoint pair is new.
  *
- * @param from_node The constrained is from the node with this id
- * @param to_node The constrained is to the node with this id
- * @param icp Pointer to the ICP result that is used to derive the constraint
+ * The first accepted measurement for a pair wins; same-direction and reversed
+ * duplicates, self-edges, invalid indices, and invalid measurements are
+ * rejected without changing storage.
+ *
+ * @return true when a unique constraint was stored, otherwise false.
  */
-void pcl_add_constraint(int16_t from_node, int16_t to_node, float *icp);
+bool pcl_add_constraint(int16_t from_node, int16_t to_node, float *icp);
 
-/** Add an already-formed finite pose-graph constraint. */
-void pcl_add_external_constraint(constraint c);
+/** Add a finite external constraint if its undirected endpoint pair is new. */
+bool pcl_add_external_constraint(constraint c);
 
 /**
  * @brief Start hierarchical pose graph optimization.
@@ -135,6 +137,23 @@ uint16_t pcl_get_scan_pose_count();
 
 /** Return the number of valid pose-graph constraints currently stored. */
 int32_t pcl_get_constraint_count(void);
+
+/** Return stored endpoint indices for a constraint, or false for invalid args.
+ */
+bool pcl_get_constraint_endpoints(int32_t index, int16_t *from, int16_t *to);
+
+/** Return constraints in the most recent graph submitted to ls_slam. */
+int32_t pcl_get_optimizer_input_constraint_count(void);
+
+/** Return unique undirected endpoint pairs in the most recent ls_slam input. */
+int32_t pcl_get_optimizer_input_unique_edge_count(void);
+
+/**
+ * Return compact graph-node endpoints from the most recent ls_slam input.
+ * The indices refer to the reduced graph passed to ls_slam, not pose-table IDs.
+ */
+bool pcl_get_optimizer_input_endpoints(int32_t index, int16_t *from,
+                                       int16_t *to);
 
 /**
  * @brief Prints the stored augmented poses (only for debugging).
