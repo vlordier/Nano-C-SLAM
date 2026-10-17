@@ -1,0 +1,1194 @@
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_pdm_out_0, slave: udma / sfu_pdm_out_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_pdm_out_1, slave: udma / sfu_pdm_out_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_pdm_out_0, slave: udma / sfu_pdm_out_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_pdm_out_1, slave: udma / sfu_pdm_out_3) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_pdm_out_0, slave: udma / sfu_pdm_out_4) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_pdm_out_1, slave: udma / sfu_pdm_out_5) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_pdm_in_0, slave: udma / sfu_pdm_in_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_pdm_in_1, slave: udma / sfu_pdm_in_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_pdm_in_2, slave: udma / sfu_pdm_in_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_pdm_in_3, slave: udma / sfu_pdm_in_3) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_pdm_in_0, slave: udma / sfu_pdm_in_4) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_pdm_in_1, slave: udma / sfu_pdm_in_5) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_pdm_in_2, slave: udma / sfu_pdm_in_6) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_pdm_in_3, slave: udma / sfu_pdm_in_7) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_pdm_in_0, slave: udma / sfu_pdm_in_8) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_pdm_in_1, slave: udma / sfu_pdm_in_9) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_pdm_in_2, slave: udma / sfu_pdm_in_10) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_pdm_in_3, slave: udma / sfu_pdm_in_11) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_ws_out, slave: udma / sfu_ws_in_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_ws_out, slave: udma / sfu_ws_in_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_ws_out, slave: udma / sfu_ws_in_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_0, slave: udma / stream_in_ready_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_1, slave: udma / stream_in_ready_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_2, slave: udma / stream_in_ready_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_3, slave: udma / stream_in_ready_3) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_4, slave: udma / stream_in_ready_4) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_5, slave: udma / stream_in_ready_5) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_6, slave: udma / stream_in_ready_6) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_7, slave: udma / stream_in_ready_7) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_8, slave: udma / stream_in_ready_8) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_9, slave: udma / stream_in_ready_9) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_10, slave: udma / stream_in_ready_10) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_11, slave: udma / stream_in_ready_11) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_12, slave: udma / stream_in_ready_12) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_13, slave: udma / stream_in_ready_13) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_14, slave: udma / stream_in_ready_14) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_15, slave: udma / stream_in_ready_15) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_0, slave: udma / sfu_stream_in_data_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_1, slave: udma / sfu_stream_in_data_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_2, slave: udma / sfu_stream_in_data_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_3, slave: udma / sfu_stream_in_data_3) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_4, slave: udma / sfu_stream_in_data_4) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_5, slave: udma / sfu_stream_in_data_5) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_6, slave: udma / sfu_stream_in_data_6) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_7, slave: udma / sfu_stream_in_data_7) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_8, slave: udma / sfu_stream_in_data_8) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_9, slave: udma / sfu_stream_in_data_9) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_10, slave: udma / sfu_stream_in_data_10) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_11, slave: udma / sfu_stream_in_data_11) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_12, slave: udma / sfu_stream_in_data_12) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_13, slave: udma / sfu_stream_in_data_13) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_14, slave: udma / sfu_stream_in_data_14) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_15, slave: udma / sfu_stream_in_data_15) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_0, slave: udma / sfu_stream_out_ready_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_1, slave: udma / sfu_stream_out_ready_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_2, slave: udma / sfu_stream_out_ready_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_3, slave: udma / sfu_stream_out_ready_3) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_4, slave: udma / sfu_stream_out_ready_4) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_5, slave: udma / sfu_stream_out_ready_5) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_6, slave: udma / sfu_stream_out_ready_6) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_7, slave: udma / sfu_stream_out_ready_7) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_8, slave: udma / sfu_stream_out_ready_8) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_9, slave: udma / sfu_stream_out_ready_9) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_10, slave: udma / sfu_stream_out_ready_10) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_11, slave: udma / sfu_stream_out_ready_11) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_12, slave: udma / sfu_stream_out_ready_12) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_13, slave: udma / sfu_stream_out_ready_13) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_14, slave: udma / sfu_stream_out_ready_14) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_15, slave: udma / sfu_stream_out_ready_15) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_0, slave: udma / stream_out_data_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_1, slave: udma / stream_out_data_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_2, slave: udma / stream_out_data_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_3, slave: udma / stream_out_data_3) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_4, slave: udma / stream_out_data_4) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_5, slave: udma / stream_out_data_5) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_6, slave: udma / stream_out_data_6) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_7, slave: udma / stream_out_data_7) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_8, slave: udma / stream_out_data_8) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_9, slave: udma / stream_out_data_9) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_10, slave: udma / stream_out_data_10) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_11, slave: udma / stream_out_data_11) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_12, slave: udma / stream_out_data_12) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_13, slave: udma / stream_out_data_13) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_14, slave: udma / stream_out_data_14) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_15, slave: udma / stream_out_data_15) — skipping
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=4
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=76 reverse_count=20
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c09ad60 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c09b2d8 total=80 nonzero=4 p0=76 p0_count=20
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=4
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=76 reverse_count=20
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=4 p0=76 p0_count=20
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=4 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=centered-sample index=76 p=(bef80c64,3f67eb13) q=(bef4dc25,3f735103) count=20
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=center p=(3e3680e4,3d9e9823) q=(3e4453ca,3d1f18f9)
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=covariance values=(42242e6b,40b31309,c14cdaf6,42351e6f)
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=svd sigma=(42413f27,421fcf51) u=(3f15bea9,bf4fa2b1,3f4fa2b1,3f15bea9) v=(3ece57b9,3f6a4a2c,bf6a4a2c,3ece57b9)
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=transform t=(3aa6c800,39872880) r=(3f7a603d,3e557683,be557682,3f7a603d)
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=error bits=3c79d665
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=42
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=36 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=42 p0=36 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=42 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=centered-sample index=36 p=(be91e85f,3f7cad64) q=(be8fb6c1,3f7fb27c) count=1
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=center p=(3e4453ca,3d1f18fb) q=(3e4924c2,3ce2c50d)
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=covariance values=(422561fe,bf37431d,c0a55cf0,423cbc5e)
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=svd sigma=(4241dc32,4220b4b4) u=(3ed0a7eb,bf69c6e8,3f69c6e8,3ed0a7eb) v=(3eb8e947,3f6eb8b5,bf6eb8b5,3eb8e947)
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=transform t=(3b444140,bac25080) r=(3f7fad4d,3d4db556,bd4db55b,3f7fad4d)
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=error bits=3b9b0c8a
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=52
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=28 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=52 p0=28 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=52 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=centered-sample index=28 p=(be70b003,3f8002dc) q=(be72528c,3f80aec9) count=1
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=center p=(3e4924c0,3ce2c513) q=(3e462436,3cc242c3)
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=covariance values=(4224daac,bfb7d7d6,c0798708,423e2d6c)
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=svd sigma=(4242246a,422106a8) u=(3eb64739,bf6f3a2b,3f6f3a2b,3eb64739) v=(3ea8f041,3f71a9b2,bf71a9b2,3ea8f041)
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=transform t=(bb6d7f40,3ac34f10) r=(3f7fe6ca,3ce33317,bce33308,3f7fe6ca)
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=error bits=3b17b022
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=56
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=24 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=56 p0=24 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=56 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=centered-sample index=24 p=(be54314d,3f80cbdc) q=(be5d6be6,3f811736) count=1
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=center p=(3e462439,3cc242c6) q=(3e4652a2,3cad8988)
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=covariance values=(42248f45,bffa444a,c04712ef,423eb3e5)
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=svd sigma=(42422f35,42211ba7) u=(3ea8e6eb,bf71ab54,3f71ab54,3ea8e6eb) v=(3ea299d7,3f72bf4d,bf72bf4d,3ea299d7)
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=transform t=(b8f14000,b736e800) r=(3f7ffa75,3c551b68,bc551b6f,3f7ffa75)
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=error bits=3acf8a3a
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=60
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=20 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=60 p0=20 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=60 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=centered-sample index=20 p=(be46c5c4,3f812164) q=(be487f4b,3f817889) count=1
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=center p=(3e46529e,3cad8995) q=(3e467d76,3c973717)
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=covariance values=(42245a22,bfe8ba64,c0440039,423f0153)
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=svd sigma=(42423716,42212d4a) u=(3ea29041,bf72c0e7,3f72c0e7,3ea29041) v=(3e9bbf78,3f73de3b,bf73de3b,3e9bbf78)
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=transform t=(b8ef9000,b72db000) r=(3f7ff991,3c657608,bc65760e,3f7ff992)
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=error bits=3a83b3d0
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=64
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=16 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=64 p0=16 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=64 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=centered-sample index=16 p=(be3848f8,3f81773b) q=(be338ddc,3f81d2be) count=1
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=center p=(3e467d76,3c973714) q=(3e46a3ac,3c7e9820)
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=covariance values=(42241f72,bfd625e3,c0406767,423f4e14)
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=svd sigma=(42423c4a,42213b7a) u=(3e9bb5bc,bf73dfc9,3f73dfc9,3e9bb5bc) v=(3e945fe7,3f7503c9,bf7503c9,3e945fe7)
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=transform t=(b8e55800,b71e2800) r=(3f7ff89f,3c75cfca,bc75cfb6,3f7ff8a0)
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=error bits=3a1688b6
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=65
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=65 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=65 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=centered-sample index=12 p=(be28b9a3,3f81cbfa) q=(be23e9b4,3f824088) count=1
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=center p=(3e46a3ad,3c7e9820) q=(3e4c153b,3c3e3740)
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=covariance values=(4223fae1,bff6af4b,c029d9e5,423f2d88)
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=svd sigma=(4241fb7e,42212ff6) u=(3e9791c6,bf748682,3f748682,3e9791c6) v=(3e938fd2,3f752331,bf752331,3e938fd2)
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=transform t=(3baa3d60,bb196ee4) r=(3f7ffdcf,3c06178e,bc061774,3f7ffdce)
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=error bits=39edc47a
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=centered-sample index=12 p=(be203899,3f81f70d) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=center p=(3e4c153a,3c3e3756) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=covariance values=(4223d1cf,bfed6895,c0232c53,423fb0d0)
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=svd sigma=(42423f27,42214641) u=(3e90529e,bf759e7d,3f759e7d,3e90529e) v=(3e8c7a5c,3f762cfc,bf762cfc,3e8c7a5c)
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=transform t=(bbace580,3b1b8ec8) r=(3f7ffdff,3c0015c3,bc0015bb,3f7ffe00)
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=centered-sample index=12 p=(be181686,3f821e1e) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=center p=(3e46c440,3c4b9280) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=covariance values=(4223c1ae,c00b310f,c00b30dd,423fc3bf)
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=svd sigma=(42423f2b,42214641) u=(3e8c7a3e,bf762d00,3f762d00,3e8c7a3e) v=(3e8c7a45,3f762cff,bf762cff,3e8c7a45)
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=transform t=(00000000,b2c80000) r=(3f800000,b46f7288,34598420,3f7fffff)
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=error bits=3992f012
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=centered-sample index=12 p=(be18169a,3f821e1d) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=center p=(3e46c445,3c4b92a2) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=covariance values=(4223c1ae,c00b30ea,c00b310d,423fc3bd)
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=svd sigma=(42423f2a,42214642) u=(3e8c7a4d,bf762cfe,3f762cfe,3e8c7a4d) v=(3e8c7a4d,3f762cfe,bf762cfe,3e8c7a4d)
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=transform t=(b3a00000,b2a00000) r=(3f800000,324928cc,324928cc,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=error bits=3992f017
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=centered-sample index=12 p=(be181694,3f821e1d) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=center p=(3e46c43b,3c4b9296) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=covariance values=(4223c1ae,c00b30e8,c00b310a,423fc3bd)
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=svd sigma=(42423f2a,42214642) u=(3e8c7a4d,bf762cfe,3f762cfe,3e8c7a4d) v=(3e8c7a4d,3f762cfe,bf762cfe,3e8c7a4d)
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=transform t=(33a00000,b2000000) r=(3f800000,324928cc,324928cc,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=error bits=3992f018
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=centered-sample index=12 p=(be181699,3f821e1d) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=center p=(3e46c445,3c4b9296) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=covariance values=(4223c1ae,c00b30e8,c00b310b,423fc3bd)
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=svd sigma=(42423f2a,42214642) u=(3e8c7a4d,bf762cfe,3f762cfe,3e8c7a4d) v=(3e8c7a4d,3f762cfe,bf762cfe,3e8c7a4d)
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=transform t=(b3a00000,b2000000) r=(3f800000,324928cc,324928cc,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=error bits=3992f017
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=centered-sample index=12 p=(be181693,3f821e1d) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=center p=(3e46c43b,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=covariance values=(4223c1ae,c00b30e7,c00b3109,423fc3bd)
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=svd sigma=(42423f2a,42214642) u=(3e8c7a4d,bf762cfe,3f762cfe,3e8c7a4d) v=(3e8c7a4d,3f762cfe,bf762cfe,3e8c7a4d)
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=transform t=(33a00000,b1000000) r=(3f800000,324928cc,324928cc,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=error bits=3992f018
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=centered-sample index=12 p=(be181697,3f821e1d) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=center p=(3e46c445,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=covariance values=(4223c1ae,c00b30e6,c00b3109,423fc3bd)
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=svd sigma=(42423f2a,42214642) u=(3e8c7a4d,bf762cfe,3f762cfe,3e8c7a4d) v=(3e8c7a4d,3f762cfe,bf762cfe,3e8c7a4d)
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=transform t=(b3a00000,b1000000) r=(3f800000,324928cc,324928cc,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=error bits=3992f017
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=centered-sample index=12 p=(be181692,3f821e1d) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=center p=(3e46c43b,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=covariance values=(4223c1ad,c00b30e5,c00b3106,423fc3bd)
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=svd sigma=(42423f2a,42214640) u=(3e8c7a45,bf762cff,3f762cff,3e8c7a45) v=(3e8c7a45,3f762cff,bf762cff,3e8c7a45)
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=transform t=(33c00000,b0800000) r=(3f7fffff,31fe9aec,31fe9aec,3f7fffff)
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=error bits=3992f012
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=centered-sample index=12 p=(be181693,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=center p=(3e46c443,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=covariance values=(4223c1ad,c00b30e5,c00b3107,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=transform t=(b3400000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=centered-sample index=12 p=(be181693,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=center p=(3e46c440,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=covariance values=(4223c1ad,c00b30e5,c00b3106,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=transform t=(00000000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=centered-sample index=12 p=(be181693,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=center p=(3e46c440,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=covariance values=(4223c1ad,c00b30e5,c00b3106,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=transform t=(00000000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=centered-sample index=12 p=(be181692,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=center p=(3e46c440,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=covariance values=(4223c1ad,c00b30e5,c00b3106,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=transform t=(00000000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=centered-sample index=12 p=(be181692,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=center p=(3e46c440,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=covariance values=(4223c1ad,c00b30e5,c00b3106,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=transform t=(00000000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=centered-sample index=12 p=(be181692,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=center p=(3e46c440,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=covariance values=(4223c1ad,c00b30e5,c00b3105,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=transform t=(00000000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=centered-sample index=12 p=(be181692,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=center p=(3e46c440,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=covariance values=(4223c1ad,c00b30e5,c00b3105,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=transform t=(00000000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=centered-sample index=12 p=(be181692,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=center p=(3e46c440,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=covariance values=(4223c1ad,c00b30e5,c00b3105,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=transform t=(00000000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=centered-sample index=12 p=(be181691,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=center p=(3e46c440,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=covariance values=(4223c1ad,c00b30e5,c00b3105,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=transform t=(00000000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=centered-sample index=12 p=(be181691,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=center p=(3e46c440,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=covariance values=(4223c1ad,c00b30e5,c00b3105,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=transform t=(00000000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=4
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=76 reverse_count=20
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=4 p0=76 p0_count=20
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=4 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=centered-sample index=76 p=(bef80c64,3f67eb13) q=(bef4dc25,3f735103) count=20
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=center p=(3e3680e4,3d9e9823) q=(3e4453ca,3d1f18f9)
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=covariance values=(42242e6b,40b31309,c14cdaf6,42351e6f)
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=svd sigma=(42413f27,421fcf51) u=(3f15bea9,bf4fa2b1,3f4fa2b1,3f15bea9) v=(3ece57b9,3f6a4a2c,bf6a4a2c,3ece57b9)
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=transform t=(3aa6c800,39872880) r=(3f7a603d,3e557683,be557682,3f7a603d)
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=error bits=3c79d665
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=42
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=36 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=42 p0=36 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=42 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=centered-sample index=36 p=(be91e85f,3f7cad64) q=(be8fb6c1,3f7fb27c) count=1
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=center p=(3e4453ca,3d1f18fb) q=(3e4924c2,3ce2c50d)
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=covariance values=(422561fe,bf37431d,c0a55cf0,423cbc5e)
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=svd sigma=(4241dc32,4220b4b4) u=(3ed0a7eb,bf69c6e8,3f69c6e8,3ed0a7eb) v=(3eb8e947,3f6eb8b5,bf6eb8b5,3eb8e947)
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=transform t=(3b444140,bac25080) r=(3f7fad4d,3d4db556,bd4db55b,3f7fad4d)
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=error bits=3b9b0c8a
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=52
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=28 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=52 p0=28 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=52 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=centered-sample index=28 p=(be70b003,3f8002dc) q=(be72528c,3f80aec9) count=1
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=center p=(3e4924c0,3ce2c513) q=(3e462436,3cc242c3)
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=covariance values=(4224daac,bfb7d7d6,c0798708,423e2d6c)
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=svd sigma=(4242246a,422106a8) u=(3eb64739,bf6f3a2b,3f6f3a2b,3eb64739) v=(3ea8f041,3f71a9b2,bf71a9b2,3ea8f041)
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=transform t=(bb6d7f40,3ac34f10) r=(3f7fe6ca,3ce33317,bce33308,3f7fe6ca)
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=error bits=3b17b022
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=56
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=24 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=56 p0=24 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=56 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=centered-sample index=24 p=(be54314d,3f80cbdc) q=(be5d6be6,3f811736) count=1
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=center p=(3e462439,3cc242c6) q=(3e4652a2,3cad8988)
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=covariance values=(42248f45,bffa444a,c04712ef,423eb3e5)
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=svd sigma=(42422f35,42211ba7) u=(3ea8e6eb,bf71ab54,3f71ab54,3ea8e6eb) v=(3ea299d7,3f72bf4d,bf72bf4d,3ea299d7)
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=transform t=(b8f14000,b736e800) r=(3f7ffa75,3c551b68,bc551b6f,3f7ffa75)
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=error bits=3acf8a3a
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=60
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=20 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=60 p0=20 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=60 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=centered-sample index=20 p=(be46c5c4,3f812164) q=(be487f4b,3f817889) count=1
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=center p=(3e46529e,3cad8995) q=(3e467d76,3c973717)
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=covariance values=(42245a22,bfe8ba64,c0440039,423f0153)
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=svd sigma=(42423716,42212d4a) u=(3ea29041,bf72c0e7,3f72c0e7,3ea29041) v=(3e9bbf78,3f73de3b,bf73de3b,3e9bbf78)
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=transform t=(b8ef9000,b72db000) r=(3f7ff991,3c657608,bc65760e,3f7ff992)
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=error bits=3a83b3d0
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=64
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=16 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=64 p0=16 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=64 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=centered-sample index=16 p=(be3848f8,3f81773b) q=(be338ddc,3f81d2be) count=1
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=center p=(3e467d76,3c973714) q=(3e46a3ac,3c7e9820)
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=covariance values=(42241f72,bfd625e3,c0406767,423f4e14)
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=svd sigma=(42423c4a,42213b7a) u=(3e9bb5bc,bf73dfc9,3f73dfc9,3e9bb5bc) v=(3e945fe7,3f7503c9,bf7503c9,3e945fe7)
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=transform t=(b8e55800,b71e2800) r=(3f7ff89f,3c75cfca,bc75cfb6,3f7ff8a0)
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=error bits=3a1688b6
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=65
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=65 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=65 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=centered-sample index=12 p=(be28b9a3,3f81cbfa) q=(be23e9b4,3f824088) count=1
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=center p=(3e46a3ad,3c7e9820) q=(3e4c153b,3c3e3740)
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=covariance values=(4223fae1,bff6af4b,c029d9e5,423f2d88)
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=svd sigma=(4241fb7e,42212ff6) u=(3e9791c6,bf748682,3f748682,3e9791c6) v=(3e938fd2,3f752331,bf752331,3e938fd2)
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=transform t=(3baa3d60,bb196ee4) r=(3f7ffdcf,3c06178e,bc061774,3f7ffdce)
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=error bits=39edc47a
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=centered-sample index=12 p=(be203899,3f81f70d) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=center p=(3e4c153a,3c3e3756) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=covariance values=(4223d1cf,bfed6895,c0232c53,423fb0d0)
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=svd sigma=(42423f27,42214641) u=(3e90529e,bf759e7d,3f759e7d,3e90529e) v=(3e8c7a5c,3f762cfc,bf762cfc,3e8c7a5c)
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=transform t=(bbace580,3b1b8ec8) r=(3f7ffdff,3c0015c3,bc0015bb,3f7ffe00)
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=centered-sample index=12 p=(be181686,3f821e1e) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=center p=(3e46c440,3c4b9280) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=covariance values=(4223c1ae,c00b310f,c00b30dd,423fc3bf)
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=svd sigma=(42423f2b,42214641) u=(3e8c7a3e,bf762d00,3f762d00,3e8c7a3e) v=(3e8c7a45,3f762cff,bf762cff,3e8c7a45)
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=transform t=(00000000,b2c80000) r=(3f800000,b46f7288,34598420,3f7fffff)
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=error bits=3992f012
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=centered-sample index=12 p=(be18169a,3f821e1d) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=center p=(3e46c445,3c4b92a2) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=covariance values=(4223c1ae,c00b30ea,c00b310d,423fc3bd)
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=svd sigma=(42423f2a,42214642) u=(3e8c7a4d,bf762cfe,3f762cfe,3e8c7a4d) v=(3e8c7a4d,3f762cfe,bf762cfe,3e8c7a4d)
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=transform t=(b3a00000,b2a00000) r=(3f800000,324928cc,324928cc,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=error bits=3992f017
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=centered-sample index=12 p=(be181694,3f821e1d) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=center p=(3e46c43b,3c4b9296) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=covariance values=(4223c1ae,c00b30e8,c00b310a,423fc3bd)
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=svd sigma=(42423f2a,42214642) u=(3e8c7a4d,bf762cfe,3f762cfe,3e8c7a4d) v=(3e8c7a4d,3f762cfe,bf762cfe,3e8c7a4d)
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=transform t=(33a00000,b2000000) r=(3f800000,324928cc,324928cc,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=error bits=3992f018
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=centered-sample index=12 p=(be181699,3f821e1d) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=center p=(3e46c445,3c4b9296) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=covariance values=(4223c1ae,c00b30e8,c00b310b,423fc3bd)
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=svd sigma=(42423f2a,42214642) u=(3e8c7a4d,bf762cfe,3f762cfe,3e8c7a4d) v=(3e8c7a4d,3f762cfe,bf762cfe,3e8c7a4d)
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=transform t=(b3a00000,b2000000) r=(3f800000,324928cc,324928cc,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=error bits=3992f017
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=centered-sample index=12 p=(be181693,3f821e1d) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=center p=(3e46c43b,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=covariance values=(4223c1ae,c00b30e7,c00b3109,423fc3bd)
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=svd sigma=(42423f2a,42214642) u=(3e8c7a4d,bf762cfe,3f762cfe,3e8c7a4d) v=(3e8c7a4d,3f762cfe,bf762cfe,3e8c7a4d)
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=transform t=(33a00000,b1000000) r=(3f800000,324928cc,324928cc,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=error bits=3992f018
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=centered-sample index=12 p=(be181697,3f821e1d) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=center p=(3e46c445,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=covariance values=(4223c1ae,c00b30e6,c00b3109,423fc3bd)
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=svd sigma=(42423f2a,42214642) u=(3e8c7a4d,bf762cfe,3f762cfe,3e8c7a4d) v=(3e8c7a4d,3f762cfe,bf762cfe,3e8c7a4d)
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=transform t=(b3a00000,b1000000) r=(3f800000,324928cc,324928cc,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=error bits=3992f017
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=centered-sample index=12 p=(be181692,3f821e1d) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=center p=(3e46c43b,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=covariance values=(4223c1ad,c00b30e5,c00b3106,423fc3bd)
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=svd sigma=(42423f2a,42214640) u=(3e8c7a45,bf762cff,3f762cff,3e8c7a45) v=(3e8c7a45,3f762cff,bf762cff,3e8c7a45)
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=transform t=(33c00000,b0800000) r=(3f7fffff,31fe9aec,31fe9aec,3f7fffff)
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=error bits=3992f012
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=centered-sample index=12 p=(be181693,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=center p=(3e46c443,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=covariance values=(4223c1ad,c00b30e5,c00b3107,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=transform t=(b3400000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=centered-sample index=12 p=(be181693,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=center p=(3e46c440,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=covariance values=(4223c1ad,c00b30e5,c00b3106,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=transform t=(00000000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=centered-sample index=12 p=(be181693,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=center p=(3e46c440,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=covariance values=(4223c1ad,c00b30e5,c00b3106,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=transform t=(00000000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=centered-sample index=12 p=(be181692,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=center p=(3e46c440,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=covariance values=(4223c1ad,c00b30e5,c00b3106,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=transform t=(00000000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=centered-sample index=12 p=(be181692,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=center p=(3e46c440,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=covariance values=(4223c1ad,c00b30e5,c00b3106,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=transform t=(00000000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=centered-sample index=12 p=(be181692,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=center p=(3e46c440,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=covariance values=(4223c1ad,c00b30e5,c00b3105,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=transform t=(00000000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=centered-sample index=12 p=(be181692,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=center p=(3e46c440,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=covariance values=(4223c1ad,c00b30e5,c00b3105,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=transform t=(00000000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=centered-sample index=12 p=(be181692,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=center p=(3e46c440,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=covariance values=(4223c1ad,c00b30e5,c00b3105,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=transform t=(00000000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=centered-sample index=12 p=(be181691,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=center p=(3e46c440,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=covariance values=(4223c1ad,c00b30e5,c00b3105,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=transform t=(00000000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=centered-sample index=12 p=(be181691,3f821e1c) q=(be1e98b9,3f8225d2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=center p=(3e46c440,3c4b9290) q=(3e46c440,3c4b9290)
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=covariance values=(4223c1ad,c00b30e5,c00b3105,423fc3bc)
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=svd sigma=(42423f28,42214640) u=(3e8c7a49,bf762cff,3f762cff,3e8c7a49) v=(3e8c7a49,3f762cff,bf762cff,3e8c7a49)
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=transform t=(00000000,b0800000) r=(3f800000,3142d5b8,3142d5b8,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=error bits=3992f013
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=4
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=76 reverse_count=20
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c09ad60 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c09b2d8 total=80 nonzero=4 p0=76 p0_count=20
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=4
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=76 reverse_count=20
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=4 p0=76 p0_count=20
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=4 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=centered-sample index=76 p=(bf4c8c0e,3f255044) q=(bf4f8472,3f306ecc) count=20
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=center p=(3e093792,3e101b96) q=(3e25572b,3de22d20)
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=covariance values=(42311721,40a572c3,c153ab0f,422835b8)
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=svd sigma=(42413f26,421fcf50) u=(3f5ac7f5,bf04ee85,3f04ee85,3f5ac7f5) v=(3f3a4384,3f2f9e4f,bf2f9e4f,3f3a4384)
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=transform t=(3a8c7380,3a402300) r=(3f7a603c,3e557680,be55767e,3f7a603c)
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=error bits=3c79d663
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=42
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=36 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=42 p0=36 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=42 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=centered-sample index=36 p=(bf259796,3f4c5256) q=(bf25c200,3f4f87c1) count=1
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=center p=(3e25572a,3de22d1a) q=(3e2e3a1a,3dd0e00e)
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=covariance values=(42315d7b,bff577af,c0cbd276,4230c0d7)
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=svd sigma=(4241dc2d,4220b4af) u=(3f3b2119,bf2eb221,3f2eb221,3f3b2119) v=(3f321ea0,3f37df92,bf37df92,3f321ea0)
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=transform t=(3b5a99c0,b950fe00) r=(3f7fad4d,3d4db547,bd4db540,3f7fad4c)
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=error bits=3b9b0c7e
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=52
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=28 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=52 p0=28 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=52 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=centered-sample index=28 p=(bf1b1f2e,3f54614e) q=(bf1c0574,3f557548) count=1
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=center p=(3e2e3a18,3dd0e010) q=(3e2d0b54,3dc70d23)
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=covariance values=(4230594a,c03977be,c0ab8984,4232aecd)
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=svd sigma=(4242246a,422106a8) u=(3f311ab6,bf38d9f7,3f38d9f7,3f311ab6) v=(3f2be8d2,3f3db136,bf3db136,3f2be8d2)
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=transform t=(bb8063c0,b8229000) r=(3f7fe6ca,3ce33386,bce3337b,3f7fe6ca)
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=error bits=3b17b00a
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=56
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=24 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=56 p0=24 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=56 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=centered-sample index=24 p=(bf152c00,3f5899c2) q=(bf1786b8,3f583e8c) count=1
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=center p=(3e2d0b5a,3dc70d25) q=(3e2e3856,3dc26bb0)
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=covariance values=(422fcac3,c061fff2,c095f847,42337868)
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=svd sigma=(42422f36,42211ba8) u=(3f2be51b,bf3db494,3f3db494,3f2be51b) v=(3f2969b5,3f3fecd6,bf3fecd6,3f2969b5)
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=transform t=(b8d55000,b8661000) r=(3f7ffa74,3c551ac3,bc551ac7,3f7ffa75)
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=error bits=3acf8a1b
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=60
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=20 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=60 p0=20 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=60 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=centered-sample index=20 p=(bf12578a,3f5a85c6) q=(bf130110,3f5afb54) count=1
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=center p=(3e2e3852,3dc26bae) q=(3e2f75f3,3dbd6933)
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=covariance values=(422f6576,c05df3fb,c096cb8e,4233f601)
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=svd sigma=(42423719,42212d4b) u=(3f2965e5,bf3ff034,3f3ff034,3f2965e5) v=(3f26b17b,3f424abc,bf424abc,3f26b17b)
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=transform t=(b8d44000,b862a800) r=(3f7ff993,3c657619,bc6575ff,3f7ff993)
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=error bits=3a83b3b8
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=64
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=16 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=64 p0=16 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=64 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=centered-sample index=16 p=(bf0f4464,3f5c8cf9) q=(bf0e74c5,3f5dab75) count=1
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=center p=(3e2f75f3,3dbd6932) q=(3e30c333,3db8050d)
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=covariance values=(422ef55a,c059a73d,c0977de9,42347829)
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=svd sigma=(42423c49,42213b79) u=(3f26ada2,bf424e08,3f424e08,3f26ada2) v=(3f23be8a,3f44c89e,bf44c89e,3f23be8a)
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=transform t=(b8cb8800,b856d800) r=(3f7ff8a0,3c75d023,bc75d050,3f7ff8a0)
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=error bits=3a16888a
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=65
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=65 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=65 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=centered-sample index=12 p=(bf0bf12a,3f5eace2) q=(bf0b3044,3f5ffb89) count=1
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=center p=(3e30c336,3db8050e) q=(3e3757df,3db4d8e7)
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=covariance values=(422ead53,c06af71e,c08cbcac,42347b17)
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=svd sigma=(4241fb81,42212ff5) u=(3f250655,bf43b60a,3f43b60a,3f250655) v=(3f236adf,3f450e1e,bf450e1e,3f236adf)
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=transform t=(3bbaace0,b90bc000) r=(3f7ffdcd,3c061746,bc061732,3f7ffdcd)
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=error bits=39edc443
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=centered-sample index=12 p=(bf0a1d6c,3f5fd02c) q=(bf09e213,3f604ed2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=center p=(3e3757e2,3db4d8ea) q=(3e321f1b,3db23e9d)
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=covariance values=(422e5d74,c06be824,c08c301a,4235252a)
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=svd sigma=(42423f27,4221463f) u=(3f221d0e,bf462119,3f462119,3f221d0e) v=(3f208f45,3f4763fc,bf4763fc,3f208f45)
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=transform t=(bbbd89e0,3909ec00) r=(3f7ffdff,3c00154d,bc00153f,3f7ffdff)
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=error bits=3992efd4
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=centered-sample index=12 p=(bf085c6c,3f60e2d5) q=(bf09e213,3f604ed2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=center p=(3e321f16,3db23e99) q=(3e321f1b,3db23e9d)
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=covariance values=(422e3e95,c080daca,c080dacb,423546cf)
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=svd sigma=(42423f26,4221463e) u=(3f208f4c,bf4763f7,3f4763f7,3f208f4c) v=(3f208f4c,3f4763f7,bf4763f7,3f208f4c)
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=transform t=(33a00000,33000000) r=(3f800000,b1bacd60,b1bacd60,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=error bits=3992efdc
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=centered-sample index=12 p=(bf085c6c,3f60e2d4) q=(bf09e213,3f604ed2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=center p=(3e321f1d,3db23e9d) q=(3e321f1b,3db23e9d)
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=covariance values=(422e3e95,c080dacb,c080dac9,423546cf)
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=svd sigma=(42423f26,4221463e) u=(3f208f4c,bf4763f7,3f4763f7,3f208f4c) v=(3f208f4c,3f4763f7,bf4763f7,3f208f4c)
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=transform t=(b3000000,00000000) r=(3f800000,b1bacd60,b1bacd60,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=error bits=3992efdb
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=centered-sample index=12 p=(bf085c6c,3f60e2d4) q=(bf09e213,3f604ed2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=center p=(3e321f1a,3db23e9d) q=(3e321f1b,3db23e9d)
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=covariance values=(422e3e95,c080dacb,c080dacc,423546cf)
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=svd sigma=(42423f26,4221463e) u=(3f208f4c,bf4763f7,3f4763f7,3f208f4c) v=(3f208f4c,3f4763f7,bf4763f7,3f208f4c)
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=transform t=(32800000,00000000) r=(3f800000,b1bacd60,b1bacd60,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=error bits=3992efdd
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=centered-sample index=12 p=(bf085c6c,3f60e2d4) q=(bf09e213,3f604ed2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=center p=(3e321f1a,3db23e9d) q=(3e321f1b,3db23e9d)
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=covariance values=(422e3e95,c080dacb,c080dacb,423546cf)
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=svd sigma=(42423f26,4221463e) u=(3f208f4c,bf4763f7,3f4763f7,3f208f4c) v=(3f208f4c,3f4763f7,bf4763f7,3f208f4c)
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=transform t=(32800000,00000000) r=(3f800000,b1bacd60,b1bacd60,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=error bits=3992efdd
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=centered-sample index=12 p=(bf085c6c,3f60e2d4) q=(bf09e213,3f604ed2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=center p=(3e321f1a,3db23e9d) q=(3e321f1b,3db23e9d)
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=covariance values=(422e3e95,c080dacb,c080dacb,423546cf)
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=svd sigma=(42423f26,4221463e) u=(3f208f4c,bf4763f7,3f4763f7,3f208f4c) v=(3f208f4c,3f4763f7,bf4763f7,3f208f4c)
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=transform t=(32800000,00000000) r=(3f800000,b1bacd60,b1bacd60,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=error bits=3992efdd
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=centered-sample index=12 p=(bf085c6c,3f60e2d4) q=(bf09e213,3f604ed2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=center p=(3e321f1a,3db23e9d) q=(3e321f1b,3db23e9d)
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=covariance values=(422e3e95,c080dacb,c080dacb,423546cf)
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=svd sigma=(42423f26,4221463e) u=(3f208f4c,bf4763f7,3f4763f7,3f208f4c) v=(3f208f4c,3f4763f7,bf4763f7,3f208f4c)
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=transform t=(32800000,00000000) r=(3f800000,b1bacd60,b1bacd60,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=error bits=3992efdd
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=centered-sample index=12 p=(bf085c6c,3f60e2d4) q=(bf09e213,3f604ed2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=center p=(3e321f1a,3db23e9d) q=(3e321f1b,3db23e9d)
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=covariance values=(422e3e95,c080dacb,c080dacb,423546cf)
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=svd sigma=(42423f26,4221463e) u=(3f208f4c,bf4763f7,3f4763f7,3f208f4c) v=(3f208f4c,3f4763f7,bf4763f7,3f208f4c)
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=transform t=(32800000,00000000) r=(3f800000,b1bacd60,b1bacd60,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=error bits=3992efdd
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=centered-sample index=12 p=(bf085c6c,3f60e2d4) q=(bf09e213,3f604ed2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=center p=(3e321f1a,3db23e9d) q=(3e321f1b,3db23e9d)
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=covariance values=(422e3e95,c080dacb,c080dacb,423546cf)
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=svd sigma=(42423f26,4221463e) u=(3f208f4c,bf4763f7,3f4763f7,3f208f4c) v=(3f208f4c,3f4763f7,bf4763f7,3f208f4c)
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=transform t=(32800000,00000000) r=(3f800000,b1bacd60,b1bacd60,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=error bits=3992efdd
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=centered-sample index=12 p=(bf085c6c,3f60e2d4) q=(bf09e213,3f604ed2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=center p=(3e321f1a,3db23e9d) q=(3e321f1b,3db23e9d)
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=covariance values=(422e3e95,c080dacb,c080dacb,423546cf)
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=svd sigma=(42423f26,4221463e) u=(3f208f4c,bf4763f7,3f4763f7,3f208f4c) v=(3f208f4c,3f4763f7,bf4763f7,3f208f4c)
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=transform t=(32800000,00000000) r=(3f800000,b1bacd60,b1bacd60,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=error bits=3992efdd
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=centered-sample index=12 p=(bf085c6c,3f60e2d4) q=(bf09e213,3f604ed2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=center p=(3e321f1a,3db23e9d) q=(3e321f1b,3db23e9d)
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=covariance values=(422e3e95,c080dacb,c080dacb,423546cf)
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=svd sigma=(42423f26,4221463e) u=(3f208f4c,bf4763f7,3f4763f7,3f208f4c) v=(3f208f4c,3f4763f7,bf4763f7,3f208f4c)
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=transform t=(32800000,00000000) r=(3f800000,b1bacd60,b1bacd60,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=error bits=3992efdd
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=centered-sample index=12 p=(bf085c6c,3f60e2d4) q=(bf09e213,3f604ed2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=center p=(3e321f1a,3db23e9d) q=(3e321f1b,3db23e9d)
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=covariance values=(422e3e95,c080dacb,c080dacb,423546cf)
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=svd sigma=(42423f26,4221463e) u=(3f208f4c,bf4763f7,3f4763f7,3f208f4c) v=(3f208f4c,3f4763f7,bf4763f7,3f208f4c)
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=transform t=(32800000,00000000) r=(3f800000,b1bacd60,b1bacd60,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=error bits=3992efdd
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=centered-sample index=12 p=(bf085c6c,3f60e2d4) q=(bf09e213,3f604ed2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=center p=(3e321f1a,3db23e9d) q=(3e321f1b,3db23e9d)
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=covariance values=(422e3e95,c080dacb,c080dacb,423546cf)
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=svd sigma=(42423f26,4221463e) u=(3f208f4c,bf4763f7,3f4763f7,3f208f4c) v=(3f208f4c,3f4763f7,bf4763f7,3f208f4c)
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=transform t=(32800000,00000000) r=(3f800000,b1bacd60,b1bacd60,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=error bits=3992efdd
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=centered-sample index=12 p=(bf085c6c,3f60e2d4) q=(bf09e213,3f604ed2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=center p=(3e321f1a,3db23e9d) q=(3e321f1b,3db23e9d)
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=covariance values=(422e3e95,c080dacb,c080dacb,423546cf)
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=svd sigma=(42423f26,4221463e) u=(3f208f4c,bf4763f7,3f4763f7,3f208f4c) v=(3f208f4c,3f4763f7,bf4763f7,3f208f4c)
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=transform t=(32800000,00000000) r=(3f800000,b1bacd60,b1bacd60,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=error bits=3992efdd
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=centered-sample index=12 p=(bf085c6c,3f60e2d4) q=(bf09e213,3f604ed2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=center p=(3e321f1a,3db23e9d) q=(3e321f1b,3db23e9d)
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=covariance values=(422e3e95,c080dacb,c080dacb,423546cf)
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=svd sigma=(42423f26,4221463e) u=(3f208f4c,bf4763f7,3f4763f7,3f208f4c) v=(3f208f4c,3f4763f7,bf4763f7,3f208f4c)
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=transform t=(32800000,00000000) r=(3f800000,b1bacd60,b1bacd60,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=error bits=3992efdd
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=centered-sample index=12 p=(bf085c6c,3f60e2d4) q=(bf09e213,3f604ed2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=center p=(3e321f1a,3db23e9d) q=(3e321f1b,3db23e9d)
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=covariance values=(422e3e95,c080dacb,c080dacb,423546cf)
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=svd sigma=(42423f26,4221463e) u=(3f208f4c,bf4763f7,3f4763f7,3f208f4c) v=(3f208f4c,3f4763f7,bf4763f7,3f208f4c)
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=transform t=(32800000,00000000) r=(3f800000,b1bacd60,b1bacd60,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=error bits=3992efdd
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=centered-sample index=12 p=(bf085c6c,3f60e2d4) q=(bf09e213,3f604ed2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=center p=(3e321f1a,3db23e9d) q=(3e321f1b,3db23e9d)
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=covariance values=(422e3e95,c080dacb,c080dacb,423546cf)
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=svd sigma=(42423f26,4221463e) u=(3f208f4c,bf4763f7,3f4763f7,3f208f4c) v=(3f208f4c,3f4763f7,bf4763f7,3f208f4c)
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=transform t=(32800000,00000000) r=(3f800000,b1bacd60,b1bacd60,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=error bits=3992efdd
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=centered-sample index=12 p=(bf085c6c,3f60e2d4) q=(bf09e213,3f604ed2) count=1
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=center p=(3e321f1a,3db23e9d) q=(3e321f1b,3db23e9d)
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=covariance values=(422e3e95,c080dacb,c080dacb,423546cf)
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=svd sigma=(42423f26,4221463e) u=(3f208f4c,bf4763f7,3f4763f7,3f208f4c) v=(3f208f4c,3f4763f7,bf4763f7,3f208f4c)
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=transform t=(32800000,00000000) r=(3f800000,b1bacd60,b1bacd60,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=error bits=3992efdd
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=4
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=76 reverse_count=20
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=4 p0=76 p0_count=20
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=4 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=centered-sample index=76 p=(bf4c8c0e,3f255044) q=(bf47598f,3f399c8d) count=20
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=center p=(3e093792,3e101b96) q=(3e26f190,3ddb4a90)
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=covariance values=(422e861a,40e1f6f8,c17365ab,42271b26)
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=svd sigma=(42413f26,421fcf50) u=(3f5ac7f8,bf04ee7f,3f04ee7f,3f5ac7f8) v=(3f322796,3f37d6e4,bf37d6e4,3f322796)
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=transform t=(bb0cb480,3b9a8750) r=(3f77b6f2,3e81346c,be81346b,3f77b6f2)
+NANO_C_SLAM_ICP_DIAG:iter=0 stage=error bits=3c79d666
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=42
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=36 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=42 p0=36 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=42 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=centered-sample index=36 p=(bf1c35a8,3f5394d1) q=(bf1bf75d,3f57002c) count=1
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=center p=(3e26f18e,3ddb4a8b) q=(3e2f7838,3dc93ee1)
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=covariance values=(422fd3e6,bff1c52e,c0cbce96,4232505d)
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=svd sigma=(4241dc16,4220bc2e) u=(3f32c83f,bf373aaa,3f373aaa,3f32c83f) v=(3f294b30,3f4007c3,bf4007c3,3f294b30)
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=transform t=(3b4cad40,b9e42f00) r=(3f7fac42,3d4f00ff,bd4f0104,3f7fac42)
+NANO_C_SLAM_ICP_DIAG:iter=1 stage=error bits=3b99f88a
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=52
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=28 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=52 p0=28 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=52 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=centered-sample index=28 p=(bf11512c,3f5b349a) q=(bf12022c,3f5c7088) count=1
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=center p=(3e2f7839,3dc93ee2) q=(3e2e7306,3dc02c31)
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=covariance values=(422edcf6,c037a391,c0a9b183,42342bc4)
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=svd sigma=(42422472,42210670) u=(3f288960,bf40b1f4,3f40b1f4,3f288960) v=(3f233129,3f453dec,bf453dec,3f233129)
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=transform t=(bb6d94c0,399ef400) r=(3f7fe762,3ce0856f,bce08577,3f7fe762)
+NANO_C_SLAM_ICP_DIAG:iter=2 stage=error bits=3b17c6ee
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=56
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=24 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=56 p0=24 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=56 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=centered-sample index=24 p=(bf0b4130,3f5f1b1c) q=(bf0d6158,3f5f061e) count=1
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=center p=(3e2e7303,3dc02c31) q=(3e2f979b,3dbb8bcb)
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=covariance values=(422e5201,c05e4c0b,c0941da7,4234f0f4)
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=svd sigma=(42422f3d,42211b69) u=(3f232da5,bf4540d5,3f4540d5,3f232da5) v=(3f20995a,3f475bde,bf475bde,3f20995a)
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=transform t=(b8bc7000,b8149800) r=(3f7ffa76,3c551700,bc5516f2,3f7ffa76)
+NANO_C_SLAM_ICP_DIAG:iter=3 stage=error bits=3acfb430
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=60
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=20 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=60 p0=20 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=60 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=centered-sample index=20 p=(bf085757,3f60e5f0) q=(bf08ba7c,3f618e8b) count=1
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=center p=(3e2f979e,3dbb8bcc) q=(3e30cc27,3db68aa1)
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=covariance values=(422deeed,c0599e58,c094a001,42356c53)
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=svd sigma=(42423722,42212d0a) u=(3f20959f,bf475edf,3f475edf,3f20959f) v=(3f1dc6d4,3f499993,bf499993,3f1dc6d4)
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=transform t=(b8b9e800,b80b7000) r=(3f7ff992,3c65721e,bc657210,3f7ff992)
+NANO_C_SLAM_ICP_DIAG:iter=4 stage=error bits=3a83d975
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=64
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=16 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=64 p0=16 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=64 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=centered-sample index=16 p=(bf052da2,3f62c915) q=(bf040ddf,3f6409ae) count=1
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=center p=(3e30cc24,3db68a9f) q=(3e320fb7,3db12813)
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=covariance values=(422d8170,c054a4fe,c094fc19,4235ebdc)
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=svd sigma=(42423c54,42213b36) u=(3f1dc312,bf499c85,3f499c85,3f1dc312) v=(3f1ab838,3f4bf49b,bf4bf49b,3f1ab838)
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=transform t=(b8aef000,b7f48000) r=(3f7ff8a1,3c75cc0e,bc75cbf9,3f7ff8a0)
+NANO_C_SLAM_ICP_DIAG:iter=5 stage=error bits=3a16cae0
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=65
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=16 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=65 p0=16 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=65 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=centered-sample index=16 p=(bf01c2cf,3f64c208) q=(bf04c34c,3f65275a) count=1
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=center p=(3e320fb6,3db12813) q=(3e34e56a,3da83ab0)
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=covariance values=(422d4b69,c0641102,c08bba63,42362473)
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=svd sigma=(424230f6,4221429e) u=(3f1bb902,bf4b30cf,3f4b30cf,3f1bb902) v=(3f19e15c,3f4c96e7,bf4c96e7,3f19e15c)
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=transform t=(3b02aa80,bb367820) r=(3f7ffd53,3c140b81,bc140b77,3f7ffd53)
+NANO_C_SLAM_ICP_DIAG:iter=6 stage=error bits=39ed25bd
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=centered-sample index=12 p=(beff6094,3f65ebce) q=(befeb780,3f66776e) count=1
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=center p=(3e34e56b,3da83ab0) q=(3e33614b,3dab638d)
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=covariance values=(422cea31,c068599c,c087fc42,423698c0)
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=svd sigma=(42423f2f,422145f7) u=(3f18db13,bf4d5b28,3f4d5b28,3f18db13) v=(3f176bf4,3f4e6a70,bf4e6a70,3f176bf4)
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=transform t=(bb063f40,3b35e0a0) r=(3f7ffe69,3be43cb0,bbe43cca,3f7ffe69)
+NANO_C_SLAM_ICP_DIAG:iter=7 stage=error bits=399362bc
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=centered-sample index=12 p=(befc2b0f,3f66ce0f) q=(befeb780,3f66776e) count=1
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=center p=(3e33614e,3dab6390) q=(3e33614b,3dab638d)
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=covariance values=(422ccf39,c07b9d5e,c07b9d68,4236b5eb)
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=svd sigma=(42423f2e,422145f6) u=(3f176bfa,bf4e6a6c,3f4e6a6c,3f176bfa) v=(3f176bfa,3f4e6a6c,bf4e6a6c,3f176bfa)
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=transform t=(b3400000,b2c00000) r=(3f800000,b273ba20,b273ba20,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=8 stage=error bits=399362bd
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=centered-sample index=12 p=(befc2b10,3f66ce0f) q=(befeb780,3f66776e) count=1
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=center p=(3e33614b,3dab638e) q=(3e33614b,3dab638d)
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=covariance values=(422ccf39,c07b9d5c,c07b9d68,4236b5eb)
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=svd sigma=(42423f2e,422145f6) u=(3f176bf9,bf4e6a6c,3f4e6a6c,3f176bf9) v=(3f176bf9,3f4e6a6c,bf4e6a6c,3f176bf9)
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=transform t=(32800000,b2000000) r=(3f7fffff,b1358f40,b1358f40,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=9 stage=error bits=399362be
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=centered-sample index=12 p=(befc2b0d,3f66ce0f) q=(befeb780,3f66776e) count=1
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=center p=(3e33614a,3dab638e) q=(3e33614b,3dab638d)
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=covariance values=(422ccf38,c07b9d5c,c07b9d60,4236b5eb)
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=svd sigma=(42423f2e,422145f6) u=(3f176bf6,bf4e6a6e,3f4e6a6e,3f176bf6) v=(3f176bf6,3f4e6a6e,bf4e6a6e,3f176bf6)
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=transform t=(33000000,00000000) r=(3f7fffff,3260fed0,3260fed0,3f7fffff)
+NANO_C_SLAM_ICP_DIAG:iter=10 stage=error bits=399362bc
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=centered-sample index=12 p=(befc2b0b,3f66ce0e) q=(befeb780,3f66776e) count=1
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=center p=(3e33614a,3dab638e) q=(3e33614b,3dab638d)
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=covariance values=(422ccf38,c07b9d5f,c07b9d60,4236b5ea)
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=svd sigma=(42423f2c,422145f6) u=(3f176bf9,bf4e6a6c,3f4e6a6c,3f176bf9) v=(3f176bf9,3f4e6a6c,bf4e6a6c,3f176bf9)
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=transform t=(33000000,b2000000) r=(3f7fffff,b1358f40,b1358f40,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=11 stage=error bits=399362b8
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=centered-sample index=12 p=(befc2b0b,3f66ce0e) q=(befeb780,3f66776e) count=1
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=center p=(3e33614e,3dab638e) q=(3e33614b,3dab638d)
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=covariance values=(422ccf38,c07b9d5f,c07b9d61,4236b5ea)
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=svd sigma=(42423f2c,422145f6) u=(3f176bf9,bf4e6a6c,3f4e6a6c,3f176bf9) v=(3f176bf9,3f4e6a6c,bf4e6a6c,3f176bf9)
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=transform t=(b3000000,b2000000) r=(3f7fffff,b1358f40,b1358f40,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=12 stage=error bits=399362bb
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=centered-sample index=12 p=(befc2b08,3f66ce0e) q=(befeb780,3f66776e) count=1
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=center p=(3e336149,3dab638e) q=(3e33614b,3dab638d)
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=covariance values=(422ccf36,c07b9d5f,c07b9d63,4236b5ea)
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=svd sigma=(42423f2c,422145f4) u=(3f176bf3,bf4e6a70,3f4e6a70,3f176bf3) v=(3f176bf3,3f4e6a70,bf4e6a70,3f176bf3)
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=transform t=(33400000,00000000) r=(3f7fffff,b084f600,b084f600,3f7fffff)
+NANO_C_SLAM_ICP_DIAG:iter=13 stage=error bits=399362b8
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=centered-sample index=12 p=(befc2b08,3f66ce0d) q=(befeb780,3f66776e) count=1
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=center p=(3e33614c,3dab638e) q=(3e33614b,3dab638d)
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=covariance values=(422ccf35,c07b9d5d,c07b9d63,4236b5ea)
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=svd sigma=(42423f2c,422145f4) u=(3f176bf0,bf4e6a73,3f4e6a73,3f176bf0) v=(3f176bf0,3f4e6a73,bf4e6a73,3f176bf0)
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=transform t=(b2800000,b2000000) r=(3f800000,b2248cc0,b2248cc0,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=14 stage=error bits=399362b8
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=centered-sample index=12 p=(befc2b08,3f66ce0d) q=(befeb780,3f66776e) count=1
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=center p=(3e33614c,3dab638e) q=(3e33614b,3dab638d)
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=covariance values=(422ccf35,c07b9d5d,c07b9d63,4236b5ea)
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=svd sigma=(42423f2c,422145f4) u=(3f176bf0,bf4e6a73,3f4e6a73,3f176bf0) v=(3f176bf0,3f4e6a73,bf4e6a73,3f176bf0)
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=transform t=(b2800000,b2000000) r=(3f800000,b2248cc0,b2248cc0,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=15 stage=error bits=399362b8
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=centered-sample index=12 p=(befc2b08,3f66ce0d) q=(befeb780,3f66776e) count=1
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=center p=(3e33614c,3dab638e) q=(3e33614b,3dab638d)
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=covariance values=(422ccf35,c07b9d5d,c07b9d63,4236b5ea)
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=svd sigma=(42423f2c,422145f4) u=(3f176bf0,bf4e6a73,3f4e6a73,3f176bf0) v=(3f176bf0,3f4e6a73,bf4e6a73,3f176bf0)
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=transform t=(b2800000,b2000000) r=(3f800000,b2248cc0,b2248cc0,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=16 stage=error bits=399362b8
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=centered-sample index=12 p=(befc2b08,3f66ce0d) q=(befeb780,3f66776e) count=1
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=center p=(3e33614c,3dab638e) q=(3e33614b,3dab638d)
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=covariance values=(422ccf35,c07b9d5d,c07b9d63,4236b5ea)
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=svd sigma=(42423f2c,422145f4) u=(3f176bf0,bf4e6a73,3f4e6a73,3f176bf0) v=(3f176bf0,3f4e6a73,bf4e6a73,3f176bf0)
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=transform t=(b2800000,b2000000) r=(3f800000,b2248cc0,b2248cc0,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=17 stage=error bits=399362b8
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=centered-sample index=12 p=(befc2b08,3f66ce0d) q=(befeb780,3f66776e) count=1
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=center p=(3e33614c,3dab638e) q=(3e33614b,3dab638d)
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=covariance values=(422ccf35,c07b9d5d,c07b9d63,4236b5ea)
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=svd sigma=(42423f2c,422145f4) u=(3f176bf0,bf4e6a73,3f4e6a73,3f176bf0) v=(3f176bf0,3f4e6a73,bf4e6a73,3f176bf0)
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=transform t=(b2800000,b2000000) r=(3f800000,b2248cc0,b2248cc0,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=18 stage=error bits=399362b8
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=centered-sample index=12 p=(befc2b08,3f66ce0d) q=(befeb780,3f66776e) count=1
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=center p=(3e33614c,3dab638e) q=(3e33614b,3dab638d)
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=covariance values=(422ccf35,c07b9d5d,c07b9d63,4236b5ea)
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=svd sigma=(42423f2c,422145f4) u=(3f176bf0,bf4e6a73,3f4e6a73,3f176bf0) v=(3f176bf0,3f4e6a73,bf4e6a73,3f176bf0)
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=transform t=(b2800000,b2000000) r=(3f800000,b2248cc0,b2248cc0,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=19 stage=error bits=399362b8
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=centered-sample index=12 p=(befc2b08,3f66ce0d) q=(befeb780,3f66776e) count=1
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=center p=(3e33614c,3dab638e) q=(3e33614b,3dab638d)
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=covariance values=(422ccf35,c07b9d5d,c07b9d63,4236b5ea)
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=svd sigma=(42423f2c,422145f4) u=(3f176bf0,bf4e6a73,3f4e6a73,3f176bf0) v=(3f176bf0,3f4e6a73,bf4e6a73,3f176bf0)
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=transform t=(b2800000,b2000000) r=(3f800000,b2248cc0,b2248cc0,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=20 stage=error bits=399362b8
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=centered-sample index=12 p=(befc2b08,3f66ce0d) q=(befeb780,3f66776e) count=1
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=center p=(3e33614c,3dab638e) q=(3e33614b,3dab638d)
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=covariance values=(422ccf35,c07b9d5d,c07b9d63,4236b5ea)
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=svd sigma=(42423f2c,422145f4) u=(3f176bf0,bf4e6a73,3f4e6a73,3f176bf0) v=(3f176bf0,3f4e6a73,bf4e6a73,3f176bf0)
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=transform t=(b2800000,b2000000) r=(3f800000,b2248cc0,b2248cc0,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=21 stage=error bits=399362b8
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=centered-sample index=12 p=(befc2b08,3f66ce0d) q=(befeb780,3f66776e) count=1
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=center p=(3e33614c,3dab638e) q=(3e33614b,3dab638d)
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=covariance values=(422ccf35,c07b9d5d,c07b9d63,4236b5ea)
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=svd sigma=(42423f2c,422145f4) u=(3f176bf0,bf4e6a73,3f4e6a73,3f176bf0) v=(3f176bf0,3f4e6a73,bf4e6a73,3f176bf0)
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=transform t=(b2800000,b2000000) r=(3f800000,b2248cc0,b2248cc0,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=22 stage=error bits=399362b8
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=centered-sample index=12 p=(befc2b08,3f66ce0d) q=(befeb780,3f66776e) count=1
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=center p=(3e33614c,3dab638e) q=(3e33614b,3dab638d)
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=covariance values=(422ccf35,c07b9d5d,c07b9d63,4236b5ea)
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=svd sigma=(42423f2c,422145f4) u=(3f176bf0,bf4e6a73,3f4e6a73,3f176bf0) v=(3f176bf0,3f4e6a73,bf4e6a73,3f176bf0)
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=transform t=(b2800000,b2000000) r=(3f800000,b2248cc0,b2248cc0,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=23 stage=error bits=399362b8
+NANO_C_SLAM_ICP_DIAG:stage=reverse-cluster total=80 nonzero=68
+NANO_C_SLAM_ICP_DIAG:stage=cluster-pair p0=12 reverse_count=1
+NANO_C_SLAM_ICP_DIAG:stage=forward-output address=1c03a9e8 readback_matches=80
+NANO_C_SLAM_ICP_DIAG:stage=reverse-output address=1c03a470 total=80 nonzero=68 p0=12 p0_count=1
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=correspondence p=80 q=80 forward=80 reverse=80 reverse_nonzero=68 invalid_forward=0 invalid_reverse=0
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=centered-sample index=12 p=(befc2b08,3f66ce0d) q=(befeb780,3f66776e) count=1
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=center p=(3e33614c,3dab638e) q=(3e33614b,3dab638d)
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=covariance values=(422ccf35,c07b9d5d,c07b9d63,4236b5ea)
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=svd sigma=(42423f2c,422145f4) u=(3f176bf0,bf4e6a73,3f4e6a73,3f176bf0) v=(3f176bf0,3f4e6a73,bf4e6a73,3f176bf0)
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=transform t=(b2800000,b2000000) r=(3f800000,b2248cc0,b2248cc0,3f800000)
+NANO_C_SLAM_ICP_DIAG:iter=24 stage=error bits=399362b8
+NANO_C_SLAM_GVSOC:mapping_ok poses=60 scans=3 map_points=240 finite=60 graph=12 main_solver=1 solver_calls=6 solver_iterations=18 completed=1 has_nan=0 icp_attempts=2 accepted_constraints=2 optimizer_inputs=2 optimizer_unique_edges=2 matches=80 icp_error_milli=0 icp_has_nan=0

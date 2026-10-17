@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "../dma/dma_transfers.h"
 #include "assert.h"
@@ -16,8 +17,16 @@
 
 #ifdef NANO_C_SLAM_ICP_DIAGNOSTICS
 #define ICP_DIAG(...) printf("NANO_C_SLAM_ICP_DIAG:" __VA_ARGS__)
+static uint32_t diagnostic_float_bits(float value) {
+    uint32_t bits;
+    _Static_assert(sizeof(bits) == sizeof(value), "float must be 32-bit");
+    memcpy(&bits, &value, sizeof(bits));
+    return bits;
+}
+#define ICP_FLOAT_BITS(value) ((unsigned)diagnostic_float_bits(value))
 #else
 #define ICP_DIAG(...) ((void)0)
+#define ICP_FLOAT_BITS(value) ((void)(value), 0U)
 #endif
 
 extern struct pi_device cluster_dev;
@@ -132,8 +141,61 @@ void master_core_delegate_correspondences(void *args) {
         for (int16_t k = 1; k < NUM_CORES; k++)
             cor_Q_cl[0][j] += cor_Q_cl[k][j];
 
-    cl_memcpy_to_l2(job_fc->cor_P, cor_P_cl, p_num * sizeof(int16_t));
-    cl_memcpy_to_l2(job_fc->cor_Q, cor_Q_cl[0], q_num * sizeof(int16_t));
+#ifdef NANO_C_SLAM_ICP_DIAGNOSTICS
+    int32_t cluster_reverse_total = 0;
+    int32_t cluster_reverse_nonzero = 0;
+    for (int16_t j = 0; j < q_num; ++j) {
+        cluster_reverse_total += cor_Q_cl[0][j];
+        cluster_reverse_nonzero += cor_Q_cl[0][j] > 0;
+    }
+    ICP_DIAG("stage=reverse-cluster total=%ld nonzero=%ld\n",
+             (long)cluster_reverse_total, (long)cluster_reverse_nonzero);
+    int16_t first_cluster_match = cor_P_cl[0];
+    int16_t first_cluster_count =
+        first_cluster_match >= 0 && first_cluster_match < q_num
+            ? cor_Q_cl[0][first_cluster_match]
+            : -1;
+    ICP_DIAG("stage=cluster-pair p0=%d reverse_count=%d\n", first_cluster_match,
+             first_cluster_count);
+#endif
+
+    // Preserve both correspondence outputs with bounded L2 stores. Target
+    // diagnostics show that DMA readback does not preserve these small
+    // int16_t arrays: cor_P indices become zero and cor_Q counts disappear,
+    // despite correct cluster-local values. The FC consumes both arrays in
+    // the very next ICP stage.
+    for (int16_t i = 0; i < p_num; ++i) {
+        job_fc->cor_P[i] = cor_P_cl[i];
+    }
+    for (int16_t j = 0; j < q_num; ++j) {
+        job_fc->cor_Q[j] = cor_Q_cl[0][j];
+    }
+#ifdef NANO_C_SLAM_ICP_DIAGNOSTICS
+    int16_t *readback = cor_Q_cl[NUM_CORES - 1];
+    cl_memcpy_from_l2(readback, job_fc->cor_P, p_num * sizeof(int16_t));
+    int32_t forward_readback_matches = 0;
+    for (int16_t i = 0; i < p_num; ++i)
+        forward_readback_matches += readback[i] >= 0;
+    ICP_DIAG("stage=forward-output address=%08x readback_matches=%d\n",
+             (unsigned)(uintptr_t)job_fc->cor_P, forward_readback_matches);
+    // The cluster's direct L2 view can be stale in its local cache. Read the
+    // DMA destination back into an otherwise-unused row to verify the bytes
+    // visible to the FC before attributing a zero count to the DMA transfer.
+    cl_memcpy_from_l2(readback, job_fc->cor_Q, q_num * sizeof(int16_t));
+    int32_t output_reverse_total = 0;
+    int32_t output_reverse_nonzero = 0;
+    for (int16_t j = 0; j < q_num; ++j) {
+        output_reverse_total += readback[j];
+        output_reverse_nonzero += readback[j] > 0;
+    }
+    ICP_DIAG("stage=reverse-output address=%08x total=%ld nonzero=%ld "
+             "p0=%d p0_count=%d\n",
+             (unsigned)(uintptr_t)job_fc->cor_Q, (long)output_reverse_total,
+             (long)output_reverse_nonzero, job_fc->cor_P[0],
+             job_fc->cor_P[0] >= 0 && job_fc->cor_P[0] < q_num
+                 ? job_fc->cor_Q[job_fc->cor_P[0]]
+                 : -1);
+#endif
 }
 
 bool compute_correspondences_parallel(const icp_points_t *P,
@@ -372,23 +434,41 @@ void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
         icp_point_t center_of_P, center_of_Q;
         center_data_P(P_copy, cor_P, &center_of_P, P_centered);
         center_data_Q(Q, cor_Q, &center_of_Q, Q_centered);
-        ICP_DIAG("iter=%d stage=center p=(%.9g,%.9g) q=(%.9g,%.9g)\n",
-                 iteration, center_of_P.x, center_of_P.y, center_of_Q.x,
-                 center_of_Q.y);
+#ifdef NANO_C_SLAM_ICP_DIAGNOSTICS
+        int16_t first_match = cor_P[0];
+        if (first_match >= 0 && (size_t)first_match < Q->num) {
+            ICP_DIAG("iter=%d stage=centered-sample index=%d "
+                     "p=(%08x,%08x) q=(%08x,%08x) count=%d\n",
+                     iteration, first_match,
+                     ICP_FLOAT_BITS(P_centered->items[0].x),
+                     ICP_FLOAT_BITS(P_centered->items[0].y),
+                     ICP_FLOAT_BITS(Q_centered->items[first_match].x),
+                     ICP_FLOAT_BITS(Q_centered->items[first_match].y),
+                     cor_Q[first_match]);
+        }
+#endif
+        ICP_DIAG("iter=%d stage=center p=(%08x,%08x) q=(%08x,%08x)\n",
+                 iteration, ICP_FLOAT_BITS(center_of_P.x),
+                 ICP_FLOAT_BITS(center_of_P.y), ICP_FLOAT_BITS(center_of_Q.x),
+                 ICP_FLOAT_BITS(center_of_Q.y));
 
         // Computer the cross variance on centered data
         float cov[4];
         compute_cross_variance(P_centered, Q_centered, cor_P, cov);
-        ICP_DIAG("iter=%d stage=covariance values=(%.9g,%.9g,%.9g,%.9g)\n",
-                 iteration, cov[0], cov[1], cov[2], cov[3]);
+        ICP_DIAG("iter=%d stage=covariance values=(%08x,%08x,%08x,%08x)\n",
+                 iteration, ICP_FLOAT_BITS(cov[0]), ICP_FLOAT_BITS(cov[1]),
+                 ICP_FLOAT_BITS(cov[2]), ICP_FLOAT_BITS(cov[3]));
 
         // Execute SVD to obtain transformation
         float u[4], sigma[4], v[4], r[4];
         svd(cov, u, sigma, v);
-        ICP_DIAG("iter=%d stage=svd sigma=(%.9g,%.9g) u=(%.9g,%.9g,%.9g,%.9g) "
-                 "v=(%.9g,%.9g,%.9g,%.9g)\n",
-                 iteration, sigma[0], sigma[3], u[0], u[1], u[2], u[3], v[0],
-                 v[1], v[2], v[3]);
+        ICP_DIAG("iter=%d stage=svd sigma=(%08x,%08x) "
+                 "u=(%08x,%08x,%08x,%08x) v=(%08x,%08x,%08x,%08x)\n",
+                 iteration, ICP_FLOAT_BITS(sigma[0]), ICP_FLOAT_BITS(sigma[3]),
+                 ICP_FLOAT_BITS(u[0]), ICP_FLOAT_BITS(u[1]),
+                 ICP_FLOAT_BITS(u[2]), ICP_FLOAT_BITS(u[3]),
+                 ICP_FLOAT_BITS(v[0]), ICP_FLOAT_BITS(v[1]),
+                 ICP_FLOAT_BITS(v[2]), ICP_FLOAT_BITS(v[3]));
 
         matmul_2x2(u, v, r);
         icp_point_t t = matpointmul(r, center_of_P);
@@ -401,8 +481,11 @@ void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
             job->error = INFINITY;
             return;
         }
-        ICP_DIAG("iter=%d stage=transform t=(%.9g,%.9g) r=(%.9g,%.9g,%.9g,%.9g)\n",
-                 iteration, t.x, t.y, r[0], r[1], r[2], r[3]);
+        ICP_DIAG("iter=%d stage=transform t=(%08x,%08x) "
+                 "r=(%08x,%08x,%08x,%08x)\n",
+                 iteration, ICP_FLOAT_BITS(t.x), ICP_FLOAT_BITS(t.y),
+                 ICP_FLOAT_BITS(r[0]), ICP_FLOAT_BITS(r[1]),
+                 ICP_FLOAT_BITS(r[2]), ICP_FLOAT_BITS(r[3]));
 
         // Chain transformations using homogenous coordinates
         float transform[9] = {
@@ -435,7 +518,8 @@ void icp(const icp_points_t *Q, const icp_points_t *P, int max_iterations,
             icp_error += points_dist_squared(P_copy->items[i], Q->items[j]);
         }
         job->error = icp_error / (float)matched;
-        ICP_DIAG("iter=%d stage=error value=%.9g\n", iteration, job->error);
+        ICP_DIAG("iter=%d stage=error bits=%08x\n", iteration,
+                 ICP_FLOAT_BITS(job->error));
         if (!isfinite(job->error)) {
             job->has_nan = 1;
             job->error = INFINITY;
