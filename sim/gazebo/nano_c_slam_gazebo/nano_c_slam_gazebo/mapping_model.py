@@ -8,6 +8,8 @@ from dataclasses import dataclass
 from itertools import pairwise
 from statistics import median
 
+from .mission_model import validate_run_id
+
 MIN_SCAN_MINOR_EIGENVALUE_M2 = 0.1
 
 
@@ -415,6 +417,8 @@ def validate_capture_report(report: object) -> dict[str, object]:
     provenance = report.get("source_provenance")
     if not isinstance(drone, str) or not drone:
         raise ValueError("capture report is missing drone identity")
+    if "run_id" in report:
+        validate_run_id(report["run_id"])
     if (
         not isinstance(provenance, dict)
         or not isinstance(provenance.get("revision"), str)

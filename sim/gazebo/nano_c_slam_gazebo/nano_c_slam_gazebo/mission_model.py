@@ -240,7 +240,7 @@ def _require_finite(value: object, field_name: str) -> None:
         raise ValueError(f"{field_name} must be finite numeric data")
 
 
-def _validate_run_id(value: object, field_name: str) -> None:
+def _validate_run_id(value: object, field_name: str) -> str:
     if not isinstance(value, str):
         raise ValueError(f"{field_name} must be a canonical UUID")
     try:
@@ -249,6 +249,12 @@ def _validate_run_id(value: object, field_name: str) -> None:
         raise ValueError(f"{field_name} must be a canonical UUID") from error
     if canonical != value:
         raise ValueError(f"{field_name} must be a canonical UUID")
+    return value
+
+
+def validate_run_id(value: object, field_name: str = "run_id") -> str:
+    """Validate and return a canonical UUID for evidence identity fields."""
+    return _validate_run_id(value, field_name)
 
 
 def _unique_json_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:

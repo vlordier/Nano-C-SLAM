@@ -41,6 +41,8 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
 )
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     SUPPORTED_DRONE_NAMES,
+    create_run_id,
+    validate_run_id,
 )
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.telemetry_model import (
     PairingLimits,
@@ -107,6 +109,10 @@ def _parse_args(args: list[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--drone", choices=SUPPORTED_DRONE_NAMES, default="cf1")
     parser.add_argument(
+        "--run-id",
+        help="canonical UUID shared with sim_mission; generated when omitted",
+    )
+    parser.add_argument(
         "--samples",
         type=int,
         default=60,
@@ -135,6 +141,14 @@ def _parse_args(args: list[str] | None) -> argparse.Namespace:
         default=REPOSITORY_ROOT / "cslam-gap9-app/BUILD-host/mapping_replay",
     )
     options = parser.parse_args(args)
+    try:
+        options.run_id = (
+            create_run_id()
+            if options.run_id is None
+            else validate_run_id(options.run_id)
+        )
+    except ValueError as error:
+        parser.error(str(error))
     if not MINIMUM_SAMPLES <= options.samples <= MAXIMUM_SAMPLES:
         parser.error(
             f"--samples must be between {MINIMUM_SAMPLES} and {MAXIMUM_SAMPLES}"
@@ -454,6 +468,7 @@ def main(args: list[str] | None = None) -> int:
             "cutoff; not GAP9 GVSOC, real 8x8 ToF, UWB, or hardware validation."
         ),
         "drone": options.drone,
+        "run_id": options.run_id,
         "simulator": "Gazebo Harmonic Crazyswarm2 swarm world",
         "scene": options.scene,
         "host": {"system": platform.system(), "machine": platform.machine()},

@@ -9,6 +9,7 @@ import os
 import subprocess
 import tempfile
 import unittest
+import uuid
 from pathlib import Path
 from typing import cast
 
@@ -71,6 +72,11 @@ class MappingSampleTests(unittest.TestCase):
 
         self.assertTrue(options.reuse_binary)
         self.assertEqual(options.samples, 60)
+        self.assertEqual(str(uuid.UUID(options.run_id)), options.run_id)
+        supplied_run_id = str(uuid.uuid4())
+        self.assertEqual(
+            _parse_args(["--run-id", supplied_run_id]).run_id, supplied_run_id
+        )
 
     def test_capture_timeout_reports_named_pairing_rejections(self) -> None:
         message = _format_capture_timeout(
@@ -281,6 +287,11 @@ class MappingSampleTests(unittest.TestCase):
         invalid = copy.deepcopy(report)
         invalid.pop("source_provenance")
         with self.assertRaisesRegex(ValueError, "source provenance"):
+            validate_capture_report(invalid)
+
+        invalid = copy.deepcopy(report)
+        invalid["run_id"] = ""
+        with self.assertRaisesRegex(ValueError, "run_id"):
             validate_capture_report(invalid)
 
         invalid = copy.deepcopy(report)
