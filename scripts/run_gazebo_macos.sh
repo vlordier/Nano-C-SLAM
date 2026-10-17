@@ -75,6 +75,14 @@ source "$ros_prefix/setup.bash"
 source "$workspace/install/local_setup.bash"
 # shellcheck source=/dev/null
 source "$gz_install/setup.bash"
+if [[ -n "${NANO_C_SLAM_OVERLAY_SETUP:-}" ]]; then
+    if [[ ! -f "$NANO_C_SLAM_OVERLAY_SETUP" ]]; then
+        echo "Nano-C-SLAM ROS overlay setup not found: $NANO_C_SLAM_OVERLAY_SETUP" >&2
+        exit 1
+    fi
+    # shellcheck source=/dev/null
+    source "$NANO_C_SLAM_OVERLAY_SETUP"
+fi
 set -u
 # Keep the source-built Gazebo CLI ahead of Homebrew's ROS-bundled CLI.
 export PATH="$gz_install/bin:$PATH"

@@ -144,6 +144,10 @@ cd ~/Work/Nano-C-SLAM
 ./scripts/run_gazebo_macos.sh
 ```
 
+To try a local colcon build without replacing packages in the Crazyswarm2
+workspace, set `NANO_C_SLAM_OVERLAY_SETUP` to that build's `local_setup.bash`.
+The helper sources the overlay after ROS, Crazyswarm2, and Gazebo.
+
 For the firmware-range host mapping run, generate a temporary near-field variant
 of the upstream world so the arena walls and mapping obstacles return points
 inside the unchanged 1.4 m gate:
