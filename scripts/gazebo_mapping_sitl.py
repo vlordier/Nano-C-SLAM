@@ -12,6 +12,7 @@ import json
 import math
 import os
 import platform
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -32,6 +33,7 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
     MappingSample,
     quaternion_yaw,
     summarize_sample_path,
+    validate_capture_report,
     validate_mapping_result,
 )
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
@@ -244,6 +246,8 @@ def _capture_samples(drone: str, sample_limit: int, timeout_s: float) -> _Captur
                     "range_stamp_ns": pair.ranges.stamp_ns,
                     "odometry_stamp_ns": pair.odometry.stamp_ns,
                     "pair_skew_ns": pair.skew_ns,
+                    "range_age_ns": now_ns - pair.ranges.stamp_ns,
+                    "odometry_age_ns": now_ns - pair.odometry.stamp_ns,
                 }
             )
             if len(self.samples) % 10 == 0:
@@ -286,6 +290,28 @@ def _build_host_runner(binary: Path) -> None:
         cwd=REPOSITORY_ROOT,
         env=environment,
     )
+
+
+def _source_provenance() -> dict[str, str | bool]:
+    """Bind a capture report to its checkout revision and dirty state."""
+    git = shutil.which("git")
+    if git is None:
+        raise FileNotFoundError("git is required to record mapping source provenance")
+    revision = subprocess.run(  # noqa: S603 -- fixed git commands from PATH
+        [git, "rev-parse", "HEAD"],
+        check=True,
+        capture_output=True,
+        cwd=REPOSITORY_ROOT,
+        text=True,
+    ).stdout.strip()
+    status = subprocess.run(  # noqa: S603 -- fixed git commands from PATH
+        [git, "status", "--porcelain", "--untracked-files=all"],
+        check=True,
+        capture_output=True,
+        cwd=REPOSITORY_ROOT,
+        text=True,
+    ).stdout
+    return {"revision": revision, "worktree_dirty": bool(status)}
 
 
 def _run_mapping(binary: Path, samples: list[MappingSample]) -> dict[str, object]:
@@ -367,7 +393,12 @@ def main(args: list[str] | None = None) -> int:
     report: dict[str, Any] = {
         "schema_version": 1,
         "captured_at_utc": datetime.now(UTC).isoformat(),
+        "source_provenance": _source_provenance(),
         "evidence_class": "host-execution-of-owned-gap9-mapping-core",
+        "mapping_claim": (
+            "host mapping pipeline execution only; map accuracy and completeness "
+            "are not measured"
+        ),
         "claim_boundary": (
             "Gazebo four-ray lidar and simulated odometry replayed through the "
             "Nano-C-SLAM C mapping/ICP/pose-graph modules with CPU PMSIS stubs; "
@@ -417,6 +448,7 @@ def main(args: list[str] | None = None) -> int:
         "tof_projection": "one four-ray reading per direction in central ToF column",
         "mapping": mapping,
     }
+    validate_capture_report(report)
     options.output.parent.mkdir(parents=True, exist_ok=True)
     options.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(

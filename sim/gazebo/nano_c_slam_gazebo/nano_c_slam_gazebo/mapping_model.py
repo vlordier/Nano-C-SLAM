@@ -6,6 +6,7 @@ import math
 from collections.abc import Sequence
 from dataclasses import dataclass
 from itertools import pairwise
+from statistics import median
 
 
 @dataclass(frozen=True)
@@ -115,6 +116,8 @@ def validate_mapping_result(
         raise ValueError("pose graph did not optimize all captured poses")
     if counts["main_graph_size"] < 3 or normalized_result.get("has_nan") != 0:
         raise ValueError("pose graph optimization did not produce a finite graph")
+    if counts["main_graph_size"] > counts["scan_count"]:
+        raise ValueError("pose graph cannot contain more nodes than captured scans")
     if (
         normalized_result.get("stored_constraint_count")
         != counts["icp_constraint_count"]
@@ -152,3 +155,238 @@ def validate_mapping_result(
     if len(arrays["points"]) != counts["map_point_count"]:
         raise ValueError("mapping point array does not match map_point_count")
     return normalized_result
+
+
+def validate_capture_report(report: object) -> dict[str, object]:
+    """Validate cross-field invariants for a live stamped Gazebo capture.
+
+    This deliberately does not accept synthetic replay fixtures: those validate
+    through ``validate_mapping_result`` and carry no live capture provenance.
+    """
+    if not isinstance(report, dict):
+        raise ValueError("capture report must be a JSON object")
+    normalized_report: dict[str, object] = {}
+    for key, value in report.items():
+        if not isinstance(key, str):
+            raise ValueError("capture report keys must be strings")
+        normalized_report[key] = value
+    report = normalized_report
+    if report.get("schema_version") != 1:
+        raise ValueError("capture report has an unsupported schema version")
+    if report.get("evidence_class") != "host-execution-of-owned-gap9-mapping-core":
+        raise ValueError("capture report has an unsupported evidence class")
+    if report.get("mapping_claim") != (
+        "host mapping pipeline execution only; map accuracy and completeness "
+        "are not measured"
+    ):
+        raise ValueError("capture report must state the bounded mapping claim")
+
+    drone = report.get("drone")
+    provenance = report.get("source_provenance")
+    if not isinstance(drone, str) or not drone:
+        raise ValueError("capture report is missing drone identity")
+    if (
+        not isinstance(provenance, dict)
+        or not isinstance(provenance.get("revision"), str)
+        or not provenance["revision"]
+        or not isinstance(provenance.get("worktree_dirty"), bool)
+    ):
+        raise ValueError("capture report is missing source provenance")
+
+    samples = report.get("input_samples")
+    pairs = report.get("input_pair_provenance")
+    count = report.get("input_sample_count")
+    if isinstance(count, bool) or not isinstance(count, int) or count <= 0:
+        raise ValueError("capture report sample count must be positive")
+    if not isinstance(samples, list) or len(samples) != count:
+        raise ValueError("capture samples do not match input_sample_count")
+    if not isinstance(pairs, list) or len(pairs) != count:
+        raise ValueError("pair provenance does not match input_sample_count")
+    limits = report.get("pairing_limits")
+    if not isinstance(limits, dict):
+        raise ValueError("capture report is missing pairing limits")
+    max_age = limits.get("maximum_age_ns")
+    max_skew = limits.get("maximum_skew_ns")
+    if any(
+        isinstance(v, bool) or not isinstance(v, int) or v < 0
+        for v in (max_age, max_skew)
+    ):
+        raise ValueError("capture pairing limits must be nonnegative integers")
+
+    previous_stamp = -1
+    previous_sequence = -1
+    valid_ranges: list[int] = []
+    direction_valid = [0, 0, 0, 0]
+    direction_accepted = [0, 0, 0, 0]
+    for index, (record, pair) in enumerate(zip(samples, pairs, strict=True)):
+        if not isinstance(record, str) or not isinstance(pair, dict):
+            raise ValueError("capture sample or pair provenance has invalid format")
+        fields = record.split()
+        if len(fields) != 9:
+            raise ValueError("capture sample must contain pose and four range fields")
+        try:
+            sample_id = int(fields[0])
+            timestamp_ms = int(fields[1])
+            pose = tuple(float(value) for value in fields[2:5])
+            ranges = tuple(int(value) for value in fields[5:])
+        except ValueError as error:
+            raise ValueError("capture sample contains non-integer fields") from error
+        if (
+            sample_id != index
+            or timestamp_ms < 0
+            or len(pose) != 3
+            or not all(math.isfinite(value) for value in pose)
+            or len(ranges) != 4
+        ):
+            raise ValueError("capture sample identity or timestamp is inconsistent")
+        if pair.get("drone_id") != drone:
+            raise ValueError("capture pair belongs to a different drone")
+        range_stamp = pair.get("range_stamp_ns")
+        odom_stamp = pair.get("odometry_stamp_ns")
+        skew = pair.get("pair_skew_ns")
+        range_age = pair.get("range_age_ns")
+        odometry_age = pair.get("odometry_age_ns")
+        pair_sequence = pair.get("range_sequence")
+        ints = (range_stamp, odom_stamp, skew, pair_sequence)
+        if any(isinstance(v, bool) or not isinstance(v, int) for v in ints):
+            raise ValueError("capture pair timestamps and sequence must be integers")
+        if range_stamp < previous_stamp or range_stamp < 0 or odom_stamp < 0:
+            raise ValueError("capture source timestamps are missing or out of order")
+        if pair_sequence <= previous_sequence:
+            raise ValueError("capture range sequences are not strictly increasing")
+        previous_stamp = range_stamp
+        previous_sequence = pair_sequence
+        if abs(range_stamp - odom_stamp) != skew or skew > max_skew:
+            raise ValueError("capture pair skew is inconsistent or exceeds its limit")
+        if range_age is not None or odometry_age is not None:
+            if any(
+                isinstance(age, bool) or not isinstance(age, int)
+                for age in (range_age, odometry_age)
+            ):
+                raise ValueError("capture pair ages must be recorded together")
+            if any(age < 0 or age > max_age for age in (range_age, odometry_age)):
+                raise ValueError(
+                    "capture pair age is inconsistent or exceeds its limit"
+                )
+            if range_age - odometry_age != odom_stamp - range_stamp:
+                raise ValueError("capture pair ages do not match source timestamps")
+        if timestamp_ms != odom_stamp // 1_000_000:
+            raise ValueError(
+                "sample timestamp does not match source odometry timestamp"
+            )
+        for direction, value in enumerate(ranges):
+            if value < -1 or value > 32767:
+                raise ValueError("capture range is outside the packet's int16 domain")
+            if value >= 0:
+                valid_ranges.append(value)
+                direction_valid[direction] += 1
+                if value <= 1400:
+                    direction_accepted[direction] += 1
+
+    if report.get("mapping_range_limit_mm") != 1400:
+        raise ValueError("capture report does not use the exact 1400 mm cutoff")
+    accounting = report.get("range_accounting")
+    if not isinstance(accounting, dict):
+        raise ValueError("capture report is missing range accounting")
+    expected_total = count * 4
+    expected_valid = len(valid_ranges)
+    expected_accepted = sum(value <= 1400 for value in valid_ranges)
+    expected_counts = {
+        "readings_total": expected_total,
+        "invalid": expected_total - expected_valid,
+        "valid": expected_valid,
+        "accepted_at_or_below_limit": expected_accepted,
+        "rejected_above_limit": expected_valid - expected_accepted,
+    }
+    if any(accounting.get(key) != value for key, value in expected_counts.items()):
+        raise ValueError("capture range accounting does not reconcile with samples")
+    by_direction = accounting.get("by_direction")
+    if not isinstance(by_direction, dict):
+        raise ValueError("capture report is missing per-direction range accounting")
+    for index, (direction, valid, accepted) in enumerate(
+        zip(
+            ("front", "back", "left", "right"),
+            direction_valid,
+            direction_accepted,
+            strict=True,
+        )
+    ):
+        values = by_direction.get(direction)
+        if (
+            not isinstance(values, dict)
+            or values.get("valid") != valid
+            or values.get("accepted_at_or_below_limit") != accepted
+        ):
+            raise ValueError("per-direction range accounting does not reconcile")
+        distinct = len(
+            {
+                int(record.split()[5 + index])
+                for record in samples
+                if 0 <= int(record.split()[5 + index]) <= 1400
+            }
+        )
+        if values.get("distinct_accepted_values") != distinct:
+            raise ValueError(
+                "per-direction distinct range accounting does not reconcile"
+            )
+
+    bounds = report.get("input_valid_range_bounds_mm")
+    if bounds != {"minimum": min(valid_ranges), "maximum": max(valid_ranges)}:
+        raise ValueError("reported range bounds do not match captured input")
+    sim_time = report.get("input_sim_time_ms")
+    if sim_time != {
+        "start": int(samples[0].split()[1]),
+        "end": int(samples[-1].split()[1]),
+    }:
+        raise ValueError("reported simulation time does not match captured input")
+    range_stamps = [int(pair["range_stamp_ns"]) for pair in pairs]
+    intervals = [
+        current - previous
+        for previous, current in pairwise(range_stamps)
+        if current > previous
+    ]
+    measured_frequency = 1_000_000_000 / median(intervals) if intervals else 0.0
+    reported_frequency = report.get("median_input_frequency_hz")
+    if (
+        isinstance(reported_frequency, bool)
+        or not isinstance(reported_frequency, (int, float))
+        or not math.isfinite(reported_frequency)
+        or not math.isclose(reported_frequency, measured_frequency, rel_tol=1e-9)
+    ):
+        raise ValueError("reported input frequency does not match source timestamps")
+
+    mapping = validate_mapping_result(report.get("mapping"), minimum_poses=1)
+    map_point_count = mapping["map_point_count"]
+    if not isinstance(map_point_count, int):
+        raise ValueError("mapping point count must be an integer")
+    if map_point_count > expected_accepted:
+        raise ValueError("mapping contains more points than accepted input rays")
+    window_counts = report.get("scan_window_in_range_sample_counts")
+    if not isinstance(window_counts, list):
+        raise ValueError("capture report is missing scan-window accounting")
+    derived_windows = []
+    for start in range(0, count, 20):
+        window_samples = samples[start : start + 20]
+        derived_windows.append(
+            sum(
+                any(0 <= int(value) <= 1400 for value in record.split()[5:])
+                for record in window_samples
+            )
+        )
+    if window_counts != derived_windows or mapping["scan_count"] != len(
+        derived_windows
+    ):
+        raise ValueError(
+            "scan count or window accounting does not match captured input"
+        )
+    three_direction_counts = report.get("scan_window_three_direction_sample_counts")
+    derived_three_direction = [
+        sum(
+            sum(0 <= int(value) <= 1400 for value in record.split()[5:]) >= 3
+            for record in samples[start : start + 20]
+        )
+        for start in range(0, count, 20)
+    ]
+    if three_direction_counts != derived_three_direction:
+        raise ValueError("three-direction scan-window accounting does not reconcile")
+    return report

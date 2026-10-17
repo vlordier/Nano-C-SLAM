@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import json
 import math
 import os
@@ -9,12 +10,14 @@ import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from typing import cast
 
-from scripts.gazebo_mapping_sitl import _parse_args
+from scripts.gazebo_mapping_sitl import _parse_args, _run_mapping
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
     MappingSample,
     quaternion_yaw,
     summarize_sample_path,
+    validate_capture_report,
     validate_mapping_result,
 )
 
@@ -96,6 +99,67 @@ class MappingSampleTests(unittest.TestCase):
         }
         with self.assertRaisesRegex(ValueError, "three scan windows"):
             validate_mapping_result(report, minimum_poses=60)
+
+    def test_mapping_validator_rejects_graph_larger_than_scan_set(self) -> None:
+        report = {
+            "pose_count": 60,
+            "scan_count": 3,
+            "map_point_count": 3,
+            "icp_constraint_count": 2,
+            "stored_constraint_count": 2,
+            "optimized_constraint_count": 2,
+            "optimized_pose_count": 60,
+            "main_graph_size": 4,
+            "has_nan": 0,
+            "poses": [[0.0, 0.0, 0.0]] * 60,
+            "points": [[0.0, 0.0]] * 3,
+        }
+        with self.assertRaisesRegex(ValueError, "more nodes than captured scans"):
+            validate_mapping_result(report)
+
+    def test_live_capture_report_enforces_cross_field_provenance(self) -> None:
+        report_path = (
+            REPOSITORY_ROOT
+            / "artifacts/gazebo_mapping_sitl/cf1_nearfield_stamped_capture.json"
+        )
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+        self.assertEqual(validate_capture_report(report), report)
+
+        invalid = copy.deepcopy(report)
+        invalid["range_accounting"]["accepted_at_or_below_limit"] += 1
+        with self.assertRaisesRegex(ValueError, "does not reconcile"):
+            validate_capture_report(invalid)
+
+        invalid = copy.deepcopy(report)
+        invalid["input_pair_provenance"][0]["drone_id"] = "cf2"
+        with self.assertRaisesRegex(ValueError, "different drone"):
+            validate_capture_report(invalid)
+
+        invalid = copy.deepcopy(report)
+        invalid["evidence_class"] = "synthetic-unit-fixture"
+        with self.assertRaisesRegex(ValueError, "unsupported evidence class"):
+            validate_capture_report(invalid)
+
+        invalid = copy.deepcopy(report)
+        invalid.pop("source_provenance")
+        with self.assertRaisesRegex(ValueError, "source provenance"):
+            validate_capture_report(invalid)
+
+        invalid = copy.deepcopy(report)
+        invalid["input_pair_provenance"][0].pop("odometry_stamp_ns")
+        with self.assertRaisesRegex(ValueError, "must be integers"):
+            validate_capture_report(invalid)
+
+        invalid = copy.deepcopy(report)
+        invalid["mapping_range_limit_mm"] = 1401
+        with self.assertRaisesRegex(ValueError, "exact 1400 mm"):
+            validate_capture_report(invalid)
+
+        invalid = copy.deepcopy(report)
+        invalid["input_pair_provenance"][0]["range_age_ns"] = 500_000_001
+        invalid["input_pair_provenance"][0]["odometry_age_ns"] = 500_000_001
+        with self.assertRaisesRegex(ValueError, "exceeds its limit"):
+            validate_capture_report(invalid)
 
     def test_retained_nearfield_report_reconciles_four_beams_and_scan_windows(
         self,
@@ -187,6 +251,43 @@ class NativeMappingReplayTests(unittest.TestCase):
         graph_size = report["main_graph_size"]
         assert isinstance(graph_size, int)
         self.assertGreaterEqual(graph_size, 2)
+
+    def test_retained_live_report_replays_through_owned_mapping_binary(self) -> None:
+        artifact_path = (
+            REPOSITORY_ROOT
+            / "artifacts/gazebo_mapping_sitl/cf1_nearfield_stamped_capture.json"
+        )
+        artifact = json.loads(artifact_path.read_text(encoding="utf-8"))
+        samples = []
+        for record in artifact["input_samples"]:
+            fields = record.split()
+            samples.append(
+                MappingSample(
+                    sample_id=int(fields[0]),
+                    timestamp_ms=int(fields[1]),
+                    x_m=float(fields[2]),
+                    y_m=float(fields[3]),
+                    yaw_rad=float(fields[4]),
+                    ranges_mm=cast(
+                        tuple[int, int, int, int],
+                        tuple(int(value) for value in fields[5:]),
+                    ),
+                )
+            )
+
+        replayed = _run_mapping(self.binary, samples)
+        retained = artifact["mapping"]
+        for field in (
+            "pose_count",
+            "scan_count",
+            "map_point_count",
+            "stored_constraint_count",
+            "optimized_constraint_count",
+            "optimized_pose_count",
+            "main_graph_size",
+            "has_nan",
+        ):
+            self.assertEqual(replayed[field], retained[field], field)
 
     def test_drops_ranges_beyond_firmware_loop_closure_limit(self) -> None:
         samples = [
