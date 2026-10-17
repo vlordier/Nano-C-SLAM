@@ -1,0 +1,16 @@
+[INFO] [1792265544.559651000] [nano_c_slam_sim_mission]: Mission run 8064b75f-025a-4cb2-9474-ba4817e3a447; waiting for /cf1/odom before takeoff to 0.50 m
+[INFO] [1792265544.560191000] [nano_c_slam_sim_mission]: mission_status={"altitude_m": null, "drone_name": "cf1", "failure_reason": null, "landing_height_m": 0.1, "mapping_path_complete": false, "mapping_path_requested": true, "phase": "WAITING", "run_id": "8064b75f-025a-4cb2-9474-ba4817e3a447", "schema_version": 1, "sequence": 0, "sim_time_s": 0.0}
+Traceback (most recent call last):
+  File "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.zCbEre/install/nano_c_slam_gazebo/lib/nano_c_slam_gazebo/sim_mission", line 33, in <module>
+    sys.exit(load_entry_point('nano-c-slam-gazebo==0.1.0', 'console_scripts', 'sim_mission')())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.zCbEre/install/nano_c_slam_gazebo/lib/python3.11/site-packages/nano_c_slam_gazebo/sim_mission.py", line 219, in main
+    node.destroy_node()
+  File "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.zCbEre/install/nano_c_slam_gazebo/lib/python3.11/site-packages/nano_c_slam_gazebo/sim_mission.py", line 169, in destroy_node
+    self._publish_zero_command()
+  File "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.zCbEre/install/nano_c_slam_gazebo/lib/python3.11/site-packages/nano_c_slam_gazebo/sim_mission.py", line 165, in _publish_zero_command
+    self._publisher.publish(Twist())
+  File "/opt/homebrew/opt/ros2-jazzy/lib/python3.11/site-packages/rclpy/publisher.py", line 70, in publish
+    self.__publisher.publish(msg)
+rclpy._rclpy_pybind11.RCLError: Failed to publish: publisher's context is invalid, at /Users/runner/work/ros2_macOS/ros2_macOS/ros2/rcl/rcl/src/rcl/publisher.c:423
+[ros2run]: Process exited with failure 1

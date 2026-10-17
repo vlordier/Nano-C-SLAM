@@ -1,0 +1,22 @@
+Traceback (most recent call last):
+  File "/Users/vincent/Work/Nano-C-SLAM/scripts/gazebo_mapping_sitl.py", line 611, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/Users/vincent/Work/Nano-C-SLAM/scripts/gazebo_mapping_sitl.py", line 513, in main
+    capture = _capture_samples(
+              ^^^^^^^^^^^^^^^^^
+  File "/Users/vincent/Work/Nano-C-SLAM/scripts/gazebo_mapping_sitl.py", line 363, in _capture_samples
+    rclpy.spin_once(node, timeout_sec=0.1)
+  File "/opt/homebrew/opt/ros2-jazzy/lib/python3.11/site-packages/rclpy/__init__.py", line 226, in spin_once
+    executor.spin_once(timeout_sec=timeout_sec)
+  File "/opt/homebrew/opt/ros2-jazzy/lib/python3.11/site-packages/rclpy/executors.py", line 926, in spin_once
+    self._spin_once_impl(timeout_sec)
+  File "/opt/homebrew/opt/ros2-jazzy/lib/python3.11/site-packages/rclpy/executors.py", line 907, in _spin_once_impl
+    handler, entity, node = self.wait_for_ready_callbacks(
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/opt/ros2-jazzy/lib/python3.11/site-packages/rclpy/executors.py", line 877, in wait_for_ready_callbacks
+    return next(self._cb_iter)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/opt/ros2-jazzy/lib/python3.11/site-packages/rclpy/executors.py", line 781, in _wait_for_ready_callbacks
+    wait_set.wait(timeout_nsec)
+KeyboardInterrupt

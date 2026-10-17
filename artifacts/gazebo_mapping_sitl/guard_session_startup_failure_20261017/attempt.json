@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "claim": "per-launch guard exercised against a real isolated Nano-C-SLAM Gazebo launch",
+  "launch_session_id": "68243443-90ea-4589-b253-8c8e0996572c",
+  "gazebo_partition": "nano_c_slam_guard_test_501",
+  "ros_domain_id": 45,
+  "scene": "nearfield-mapping",
+  "overlay": "build/gazebo-ros-overlay.zCbEre",
+  "launch_command": "NANO_C_SLAM_NEARFIELD_MAPPING=1 NANO_C_SLAM_GZ_PARTITION=nano_c_slam_guard_test_501 NANO_C_SLAM_ROS_DOMAIN_ID=45 NANO_C_SLAM_OVERLAY_SETUP=$PWD/build/gazebo-ros-overlay.zCbEre/install/local_setup.bash ./scripts/run_gazebo_macos.sh",
+  "first_run_id": "8064b75f-025a-4cb2-9474-ba4817e3a447",
+  "first_run_command": "uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 python scripts/gazebo_mapping_run.py --drone cf1 --samples 60 --scene nearfield-mapping --timeout 120 --output artifacts/gazebo_mapping_sitl/guard_session_first_20261017.json",
+  "first_run_outcome": "interrupted-before-takeoff",
+  "first_runner_exit_code": 130,
+  "first_mission_phase": "WAITING",
+  "collector_readiness_seen": true,
+  "collector_log_empty": true,
+  "first_success_report_created": false,
+  "second_run_exit_code": 1,
+  "second_run_command": "uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 python scripts/gazebo_mapping_run.py --drone cf1 --samples 60 --scene nearfield-mapping --timeout 120 --output /tmp/ncs-guard-repeat-rejected-20261017.json",
+  "second_run_rejection": "this Gazebo launch already has a mapping-run claim; restart the near-field Gazebo world before another mapping run",
+  "second_success_report_created": false,
+  "duplicate_launch_lock_rejected": true,
+  "observations": [
+    "Gazebo transport published /model/cf1/odometry and /world/swarm_demo/stats during the attempt.",
+    "The mission status remained WAITING for odometry; the telemetry collector did not capture a sample.",
+    "A ROS 2 Fast DDS shared-memory port lock error was observed while several simulator processes were active; causation is not established.",
+    "Only the test launch on nano_c_slam_guard_test_501 and its runner were interrupted; other simulator partitions were left running."
+  ],
+  "result": "partial-integration-pass",
+  "boundary": "The real launch created and locked its session, and the duplicate invocation failed before ROS initialization or child startup. The first-run mapping success gate was not validated."
+}

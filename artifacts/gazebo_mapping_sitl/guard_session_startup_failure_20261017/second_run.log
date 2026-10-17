@@ -1,0 +1,3 @@
+Gazebo mapping run failed: this Gazebo launch already has a mapping-run claim; restart the near-field Gazebo world before another mapping run
+exit_code=1
+report_created=false

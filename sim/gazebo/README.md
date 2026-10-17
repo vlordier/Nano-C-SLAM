@@ -160,6 +160,21 @@ To try a local colcon build without replacing packages in the Crazyswarm2
 workspace, set `NANO_C_SLAM_OVERLAY_SETUP` to that build's `local_setup.bash`.
 The helper sources the overlay after ROS, Crazyswarm2, and Gazebo.
 
+For repeatable development builds of the two owned ROS packages, first source
+ROS Jazzy and the built Crazyswarm2 workspace, then run:
+
+```sh
+cd ~/Work/Nano-C-SLAM
+source /opt/homebrew/opt/ros2-jazzy/setup.zsh
+source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
+./scripts/build_gazebo_ros_overlay.sh
+```
+
+The script creates a unique build/install/log tree under ignored `build/`, so
+colcon never tries to clean editable-install metadata left by an older build.
+It prints the `local_setup.bash` path; set `NANO_C_SLAM_OVERLAY_SETUP` to that
+path before starting `run_gazebo_macos.sh` to test the rebuilt launch code.
+
 For the firmware-range host mapping run, generate a temporary near-field variant
 of the upstream world so the arena walls and mapping obstacles return points
 inside the unchanged 1.4 m gate:
