@@ -10,6 +10,7 @@ from enum import Enum, auto
 from typing import Any
 
 SUPPORTED_DRONE_NAMES = ("cf1", "cf3", "cf4")
+MAX_ODOMETRY_FUTURE_SKEW_S = 0.1
 
 
 class MissionPhase(Enum):
@@ -344,7 +345,7 @@ def validate_mission_odometry(
     now_s: float,
     previous_stamp_s: float | None,
     max_age_s: float = 0.5,
-    max_future_skew_s: float = 0.1,
+    max_future_skew_s: float = MAX_ODOMETRY_FUTURE_SKEW_S,
 ) -> None:
     """Reject malformed or temporally invalid odometry before mission readiness.
 
@@ -358,7 +359,7 @@ def validate_mission_odometry(
         raise ValueError("odometry timestamp is not finite")
     if previous_stamp_s is not None and stamp_s < previous_stamp_s:
         raise ValueError("odometry timestamp moved backwards")
-    if stamp_s - now_s > max_future_skew_s:
+    if stamp_s - now_s > max_future_skew_s + 1e-9:
         raise ValueError("odometry timestamp is ahead of simulation time")
     if now_s - stamp_s > max_age_s:
         raise ValueError("odometry data is stale")
@@ -408,6 +409,8 @@ class MissionSequence:
             return self.fail("odometry altitude is unavailable")
         if odometry_stamp_s is None:
             return self.fail("odometry timestamp is unavailable")
+        if odometry_stamp_s - now_s > MAX_ODOMETRY_FUTURE_SKEW_S + 1e-9:
+            return self.fail("odometry timestamp is ahead of simulation time")
         if now_s - odometry_stamp_s > self.config.odometry_timeout_s:
             return self.fail("odometry data is stale")
         if self.phase is MissionPhase.WAITING:

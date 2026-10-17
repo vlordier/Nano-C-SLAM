@@ -78,8 +78,8 @@ UUID through the `run_id` ROS parameter) and publishes versioned JSON phase
 events on `/<drone_name>/mission_status` (`std_msgs/String`). Events include the
 run and drone identity, simulation-clock time, measured altitude, requested and
 completed mapping-path state, and landing-height limit. A `COMPLETE` event is
-emitted only with a measured altitude within the configured landing bound and,
-when requested, a completed bounded path. `FAILED` exits with status 1;
+emitted when one fresh odometry sample is within the configured landing-height
+bound and, when requested, the bounded path is complete. `FAILED` exits with status 1;
 interrupt exits with status 130. The transient-local topic retains the phase
 history for a collector that joins after mission startup. This status stream is evidence for later
 single-run orchestration; launching the mission separately still does not bind
@@ -222,9 +222,13 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
   ros2 launch nano_c_slam_gazebo swarm_mission.launch.py
 ```
 
-The mission process exits after it sends its final zero-velocity command on a
-successful landing. It remains alive after a phase timeout so the vehicle stays
-under a zero-velocity hold command until you stop it.
+On successful completion the mission process publishes one final zero-velocity
+command and exits. On phase failure it publishes a zero-velocity command,
+publishes `FAILED`, and exits nonzero. The node does not currently prove that a
+zero command remains active after process exit, and this simulator behavior has
+not been failure-injection validated; do not interpret it as a verified hold,
+landing, or hardware safety response. See beads `ncs-ju6.6.8` and
+`ncs-ju6.6.10` for the decision and live validation work.
 
 Check sensor output while the first terminal is running:
 

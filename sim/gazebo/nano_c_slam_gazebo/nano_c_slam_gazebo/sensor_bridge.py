@@ -12,7 +12,11 @@ from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Float32MultiArray, MultiArrayDimension
 
-from .mission_model import SUPPORTED_DRONE_NAMES, validate_drone_names
+from .mission_model import (
+    MAX_ODOMETRY_FUTURE_SKEW_S,
+    SUPPORTED_DRONE_NAMES,
+    validate_drone_names,
+)
 from .sensor_model import (
     laser_scan_ranges_mm,
     pairwise_ranges_m,
@@ -20,7 +24,7 @@ from .sensor_model import (
 )
 
 MAX_ODOMETRY_AGE_S = 0.5
-MAX_ODOMETRY_SKEW_S = 0.1
+MAX_ODOMETRY_SKEW_S = MAX_ODOMETRY_FUTURE_SKEW_S
 ODOMETRY_WARNING_INTERVAL_S = 2.0
 
 

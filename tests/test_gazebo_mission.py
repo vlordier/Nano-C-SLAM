@@ -141,6 +141,20 @@ class MissionSequenceTests(unittest.TestCase):
         self.assertIs(mission.phase, MissionPhase.FAILED)
         self.assertEqual(mission.failure_reason, "odometry data is stale")
 
+    def test_future_odometry_obeys_shared_skew_boundary(self) -> None:
+        mission = MissionSequence()
+
+        self.assertEqual(mission.step(1.0, 0.0, 1.1), 0.5)
+        self.assertIs(mission.phase, MissionPhase.TAKEOFF)
+
+        rejected = MissionSequence()
+        self.assertEqual(rejected.step(1.0, 0.0, 1.100001), 0.0)
+        self.assertIs(rejected.phase, MissionPhase.FAILED)
+        self.assertEqual(
+            rejected.failure_reason,
+            "odometry timestamp is ahead of simulation time",
+        )
+
     def test_odometry_timestamp_regression_fails_safe(self) -> None:
         mission = MissionSequence()
 
