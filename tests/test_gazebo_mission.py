@@ -1,6 +1,7 @@
 """Tests for the hardware-free Gazebo flight sequence."""
 
 import unittest
+import uuid
 
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_path import (
     MappingPath,
@@ -10,9 +11,13 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     MissionConfig,
     MissionPhase,
     MissionSequence,
+    MissionStatusEvent,
     create_mission_config,
+    create_run_id,
+    mission_exit_code,
     validate_drone_name,
     validate_drone_names,
+    validate_mission_status_events,
 )
 
 
@@ -153,6 +158,248 @@ class MissionSequenceTests(unittest.TestCase):
         self.assertEqual(mission.step(7.0, 0.5, 7.0), -0.5)
 
 
+class MissionStatusEventTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.run_id = create_run_id()
+
+    def event(
+        self,
+        sequence: int,
+        phase: MissionPhase,
+        *,
+        sim_time_s: float | None = None,
+        altitude_m: float | None = 0.05,
+        path_requested: bool = True,
+        path_complete: bool = True,
+        failure_reason: str | None = None,
+    ) -> MissionStatusEvent:
+        return MissionStatusEvent(
+            run_id=self.run_id,
+            drone_name="cf1",
+            sequence=sequence,
+            sim_time_s=float(sequence) if sim_time_s is None else sim_time_s,
+            phase=phase,
+            altitude_m=altitude_m,
+            mapping_path_requested=path_requested,
+            mapping_path_complete=path_complete,
+            landing_height_m=0.1,
+            failure_reason=failure_reason,
+        )
+
+    def successful_events(
+        self, *, path_requested: bool = True
+    ) -> list[MissionStatusEvent]:
+        return [
+            self.event(
+                0,
+                MissionPhase.WAITING,
+                altitude_m=None,
+                path_requested=path_requested,
+                path_complete=False,
+            ),
+            self.event(
+                1,
+                MissionPhase.TAKEOFF,
+                altitude_m=0.0,
+                path_requested=path_requested,
+                path_complete=False,
+            ),
+            self.event(
+                2,
+                MissionPhase.HOVER,
+                altitude_m=0.5,
+                path_requested=path_requested,
+                path_complete=path_requested,
+            ),
+            self.event(
+                3,
+                MissionPhase.LAND,
+                altitude_m=0.5,
+                path_requested=path_requested,
+                path_complete=path_requested,
+            ),
+            self.event(
+                4,
+                MissionPhase.COMPLETE,
+                altitude_m=0.05,
+                path_requested=path_requested,
+                path_complete=path_requested,
+            ),
+        ]
+
+    def test_generated_run_id_is_canonical_uuid(self) -> None:
+        self.assertEqual(str(uuid.UUID(self.run_id)), self.run_id)
+
+    def test_process_exit_code_fails_closed_on_nonterminal_and_failed_states(
+        self,
+    ) -> None:
+        self.assertEqual(mission_exit_code(MissionPhase.COMPLETE), 0)
+        self.assertEqual(mission_exit_code(MissionPhase.FAILED), 1)
+        self.assertEqual(mission_exit_code(MissionPhase.WAITING), 1)
+        self.assertEqual(
+            mission_exit_code(MissionPhase.COMPLETE, interrupted=True), 130
+        )
+
+    def test_json_round_trip_preserves_terminal_evidence(self) -> None:
+        events = self.successful_events()
+
+        decoded = [MissionStatusEvent.from_json(event.to_json()) for event in events]
+        terminal = validate_mission_status_events(decoded, self.run_id, "cf1")
+
+        self.assertIs(terminal.phase, MissionPhase.COMPLETE)
+        self.assertEqual(terminal.altitude_m, 0.05)
+
+    def test_rejects_bad_identity_numbers_and_schema(self) -> None:
+        valid = self.event(0, MissionPhase.TAKEOFF, altitude_m=0.0)
+        raw = valid.to_json()
+        invalid_payloads = (
+            "not json",
+            raw.replace(self.run_id, "not-a-uuid"),
+            raw.replace('"drone_name": "cf1"', '"drone_name": "cf2"'),
+            raw.replace('"schema_version": 1', '"schema_version": 2'),
+            raw.replace('"sequence": 0', '"sequence": true'),
+            raw.replace('"sim_time_s": 0.0', '"sim_time_s": NaN'),
+            raw[:-1] + ', "unrecognized": true}',
+            raw[:-1] + ', "sequence": 0}',
+        )
+        for payload in invalid_payloads:
+            with self.subTest(payload=payload), self.assertRaises(ValueError):
+                MissionStatusEvent.from_json(payload)
+
+    def test_rejects_nonfinite_values_and_missing_failed_reason(self) -> None:
+        with self.assertRaisesRegex(ValueError, "sim_time_s"):
+            self.event(0, MissionPhase.TAKEOFF, sim_time_s=float("inf"))
+        with self.assertRaisesRegex(ValueError, "sim_time_s"):
+            self.event(0, MissionPhase.TAKEOFF, sim_time_s=10**1000)
+        with self.assertRaisesRegex(ValueError, "altitude_m"):
+            self.event(0, MissionPhase.TAKEOFF, altitude_m=float("nan"))
+        with self.assertRaisesRegex(ValueError, "failure_reason"):
+            self.event(0, MissionPhase.FAILED, failure_reason=None)
+
+    def test_success_requires_bounded_landing_and_completed_requested_path(
+        self,
+    ) -> None:
+        for altitude, path_complete in ((0.11, True), (0.1, False), (None, True)):
+            with (
+                self.subTest(altitude=altitude, path_complete=path_complete),
+                self.assertRaises(ValueError),
+            ):
+                self.event(
+                    0,
+                    MissionPhase.COMPLETE,
+                    altitude_m=altitude,
+                    path_complete=path_complete,
+                )
+        boundary = self.event(0, MissionPhase.COMPLETE, altitude_m=0.1)
+        self.assertEqual(boundary.altitude_m, boundary.landing_height_m)
+        no_path_events = self.successful_events(path_requested=False)
+        no_path = no_path_events[-1]
+        self.assertFalse(no_path.mapping_path_requested)
+        with self.assertRaisesRegex(ValueError, "without requesting"):
+            validate_mission_status_events(
+                no_path_events, self.run_id, "cf1", require_mapping_path=True
+            )
+
+    def test_rejects_path_completion_without_a_requested_path(self) -> None:
+        with self.assertRaisesRegex(ValueError, "unrequested mapping path"):
+            self.event(
+                0,
+                MissionPhase.TAKEOFF,
+                altitude_m=0.0,
+                path_requested=False,
+                path_complete=True,
+            )
+
+    def test_stream_rejects_missing_terminal_and_duplicate_or_reordered_events(
+        self,
+    ) -> None:
+        waiting = self.event(
+            0,
+            MissionPhase.WAITING,
+            altitude_m=None,
+            path_complete=False,
+        )
+        takeoff = self.event(
+            1,
+            MissionPhase.TAKEOFF,
+            altitude_m=0.0,
+            path_complete=False,
+        )
+        hover = self.event(2, MissionPhase.HOVER, altitude_m=0.5)
+        for events in ([waiting], [waiting, waiting], [waiting, hover, takeoff]):
+            with self.subTest(events=events), self.assertRaises(ValueError):
+                validate_mission_status_events(events, self.run_id, "cf1")
+
+    def test_stream_rejects_time_regression_identity_mismatch_and_events_after_terminal(
+        self,
+    ) -> None:
+        waiting = self.event(
+            0,
+            MissionPhase.WAITING,
+            sim_time_s=1.0,
+            altitude_m=None,
+            path_complete=False,
+        )
+        takeoff = self.event(
+            1,
+            MissionPhase.TAKEOFF,
+            sim_time_s=1.0,
+            altitude_m=0.0,
+            path_complete=False,
+        )
+        hover = self.event(2, MissionPhase.HOVER, sim_time_s=0.5, altitude_m=0.5)
+        with self.assertRaisesRegex(ValueError, "backwards"):
+            validate_mission_status_events(
+                [waiting, takeoff, hover], self.run_id, "cf1"
+            )
+        with self.assertRaisesRegex(ValueError, "drone_name"):
+            validate_mission_status_events(
+                [self.event(0, MissionPhase.COMPLETE)], self.run_id, "cf3"
+            )
+        with self.assertRaisesRegex(ValueError, "run_id"):
+            validate_mission_status_events(
+                [self.event(0, MissionPhase.COMPLETE)], create_run_id(), "cf1"
+            )
+        complete = self.successful_events()
+        following = self.event(
+            5,
+            MissionPhase.FAILED,
+            altitude_m=0.05,
+            failure_reason="unexpected trailing event",
+        )
+        with self.assertRaisesRegex(ValueError, "final event"):
+            validate_mission_status_events([*complete, following], self.run_id, "cf1")
+
+    def test_failed_terminal_event_is_not_success(self) -> None:
+        failed = self.event(
+            2,
+            MissionPhase.FAILED,
+            altitude_m=0.4,
+            path_complete=False,
+            failure_reason="landing timed out",
+        )
+        with self.assertRaisesRegex(ValueError, "mission failed"):
+            validate_mission_status_events(
+                [
+                    self.event(
+                        0,
+                        MissionPhase.WAITING,
+                        altitude_m=None,
+                        path_complete=False,
+                    ),
+                    self.event(
+                        1,
+                        MissionPhase.TAKEOFF,
+                        altitude_m=0.0,
+                        path_complete=False,
+                    ),
+                    failed,
+                ],
+                self.run_id,
+                "cf1",
+            )
+
+
 class MappingPathTests(unittest.TestCase):
     def test_tracks_square_with_bounded_world_frame_commands(self) -> None:
         path = MappingPath(2.0, -1.0, 0.0)
@@ -192,13 +439,14 @@ class MappingPathTests(unittest.TestCase):
         self.assertIn("non-finite", invalid.failure_reason or "")
 
     def test_rejects_unbounded_or_invalid_paths(self) -> None:
-        for options in (
-            {"offsets_m": ()},
-            {"offsets_m": ((0.6, 0.0),)},
-            {"waypoint_timeout_s": float("inf")},
-        ):
-            with self.subTest(options=options), self.assertRaises(ValueError):
-                MappingPath(0.0, 0.0, 0.0, **options)
+        invalid_paths = (
+            lambda: MappingPath(0.0, 0.0, 0.0, offsets_m=()),
+            lambda: MappingPath(0.0, 0.0, 0.0, offsets_m=((0.6, 0.0),)),
+            lambda: MappingPath(0.0, 0.0, 0.0, waypoint_timeout_s=float("inf")),
+        )
+        for invalid_path in invalid_paths:
+            with self.subTest(invalid_path=invalid_path), self.assertRaises(ValueError):
+                invalid_path()
 
 
 if __name__ == "__main__":

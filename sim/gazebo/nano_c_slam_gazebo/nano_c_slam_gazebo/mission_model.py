@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import json
 import math
+import uuid
 from dataclasses import dataclass
 from enum import Enum, auto
+from typing import Any
 
 SUPPORTED_DRONE_NAMES = ("cf1", "cf3", "cf4")
 
@@ -16,6 +19,245 @@ class MissionPhase(Enum):
     LAND = auto()
     COMPLETE = auto()
     FAILED = auto()
+
+
+MISSION_STATUS_SCHEMA_VERSION = 1
+
+
+def create_run_id() -> str:
+    """Create a canonical run identifier suitable for binding simulator evidence."""
+    return str(uuid.uuid4())
+
+
+def mission_exit_code(phase: MissionPhase, *, interrupted: bool = False) -> int:
+    """Map actual terminal state to a process status, failing closed otherwise."""
+    if interrupted:
+        return 130
+    return 0 if phase is MissionPhase.COMPLETE else 1
+
+
+@dataclass(frozen=True)
+class MissionStatusEvent:
+    """One machine-readable mission state observation, independent of ROS."""
+
+    run_id: str
+    drone_name: str
+    sequence: int
+    sim_time_s: float
+    phase: MissionPhase
+    altitude_m: float | None
+    mapping_path_requested: bool
+    mapping_path_complete: bool
+    landing_height_m: float
+    failure_reason: str | None = None
+    schema_version: int = MISSION_STATUS_SCHEMA_VERSION
+
+    def __post_init__(self) -> None:
+        _validate_run_id(self.run_id, "run_id")
+        validate_drone_name(self.drone_name)
+        if (
+            isinstance(self.sequence, bool)
+            or not isinstance(self.sequence, int)
+            or self.sequence < 0
+        ):
+            raise ValueError("sequence must be a nonnegative integer")
+        _require_finite(self.sim_time_s, "sim_time_s")
+        _require_finite(self.landing_height_m, "landing_height_m")
+        if self.landing_height_m < 0:
+            raise ValueError("landing_height_m must be nonnegative")
+        if self.altitude_m is not None:
+            _require_finite(self.altitude_m, "altitude_m")
+        if (
+            isinstance(self.schema_version, bool)
+            or not isinstance(self.schema_version, int)
+            or self.schema_version != MISSION_STATUS_SCHEMA_VERSION
+        ):
+            raise ValueError("unsupported mission status schema_version")
+        if not isinstance(self.phase, MissionPhase):
+            raise ValueError("phase must be a MissionPhase")
+        if not isinstance(self.mapping_path_requested, bool) or not isinstance(
+            self.mapping_path_complete, bool
+        ):
+            raise ValueError("mapping path status fields must be booleans")
+        if self.mapping_path_complete and not self.mapping_path_requested:
+            raise ValueError("unrequested mapping path cannot be complete")
+        if self.failure_reason is not None and not isinstance(self.failure_reason, str):
+            raise ValueError("failure_reason must be text or null")
+        if self.phase is MissionPhase.FAILED and not self.failure_reason:
+            raise ValueError("FAILED status requires failure_reason")
+        if self.phase is not MissionPhase.FAILED and self.failure_reason is not None:
+            raise ValueError("failure_reason is only valid for FAILED status")
+        if self.phase is MissionPhase.COMPLETE:
+            self.validate_success()
+
+    def validate_success(self) -> None:
+        """Reject terminal success unless measured mission evidence supports it."""
+        if self.phase is not MissionPhase.COMPLETE:
+            raise ValueError("mission did not reach COMPLETE")
+        if self.mapping_path_requested and not self.mapping_path_complete:
+            raise ValueError("requested mapping path did not complete")
+        if self.altitude_m is None:
+            raise ValueError("terminal success requires measured landing altitude")
+        if self.altitude_m > self.landing_height_m:
+            raise ValueError("landing altitude exceeds configured limit")
+
+    def to_json(self) -> str:
+        """Serialize with nonstandard NaN/Infinity JSON values forbidden."""
+        payload = {
+            "schema_version": self.schema_version,
+            "run_id": self.run_id,
+            "drone_name": self.drone_name,
+            "sequence": self.sequence,
+            "sim_time_s": self.sim_time_s,
+            "phase": self.phase.name,
+            "altitude_m": self.altitude_m,
+            "mapping_path_requested": self.mapping_path_requested,
+            "mapping_path_complete": self.mapping_path_complete,
+            "landing_height_m": self.landing_height_m,
+            "failure_reason": self.failure_reason,
+        }
+        return json.dumps(payload, allow_nan=False, sort_keys=True)
+
+    @classmethod
+    def from_json(cls, payload: str) -> MissionStatusEvent:
+        """Parse and strictly validate one serialized status event."""
+        try:
+            data: Any = json.loads(payload, object_pairs_hook=_unique_json_object)
+        except (json.JSONDecodeError, TypeError) as error:
+            raise ValueError("mission status is not valid JSON") from error
+        expected = {
+            "schema_version",
+            "run_id",
+            "drone_name",
+            "sequence",
+            "sim_time_s",
+            "phase",
+            "altitude_m",
+            "mapping_path_requested",
+            "mapping_path_complete",
+            "landing_height_m",
+            "failure_reason",
+        }
+        if not isinstance(data, dict) or set(data) != expected:
+            raise ValueError("mission status fields do not match schema")
+        if not isinstance(data["mapping_path_requested"], bool) or not isinstance(
+            data["mapping_path_complete"], bool
+        ):
+            raise ValueError("mapping path status fields must be booleans")
+        try:
+            phase = MissionPhase[data["phase"]]
+        except (KeyError, TypeError) as error:
+            raise ValueError("mission status phase is invalid") from error
+        return cls(
+            schema_version=data["schema_version"],
+            run_id=data["run_id"],
+            drone_name=data["drone_name"],
+            sequence=data["sequence"],
+            sim_time_s=data["sim_time_s"],
+            phase=phase,
+            altitude_m=data["altitude_m"],
+            mapping_path_requested=data["mapping_path_requested"],
+            mapping_path_complete=data["mapping_path_complete"],
+            landing_height_m=data["landing_height_m"],
+            failure_reason=data["failure_reason"],
+        )
+
+
+def validate_mission_status_events(
+    events: list[MissionStatusEvent],
+    expected_run_id: str,
+    expected_drone_name: str,
+    *,
+    require_mapping_path: bool = False,
+) -> MissionStatusEvent:
+    """Validate a complete, ordered event stream and return terminal success."""
+    if not events:
+        raise ValueError("mission status stream is empty")
+    _validate_run_id(expected_run_id, "expected_run_id")
+    validate_drone_name(expected_drone_name)
+    previous_time = -math.inf
+    previous_phase: MissionPhase | None = None
+    path_requested: bool | None = None
+    path_complete = False
+    allowed_transitions = {
+        MissionPhase.WAITING: {
+            MissionPhase.TAKEOFF,
+            MissionPhase.HOVER,
+            MissionPhase.FAILED,
+        },
+        MissionPhase.TAKEOFF: {MissionPhase.HOVER, MissionPhase.FAILED},
+        MissionPhase.HOVER: {MissionPhase.LAND, MissionPhase.FAILED},
+        MissionPhase.LAND: {MissionPhase.COMPLETE, MissionPhase.FAILED},
+    }
+    for index, event in enumerate(events):
+        if event.run_id != expected_run_id:
+            raise ValueError("mission status run_id does not match capture")
+        if event.drone_name != expected_drone_name:
+            raise ValueError("mission status drone_name does not match capture")
+        if event.sequence != index:
+            raise ValueError(
+                "mission status sequence is missing, duplicate, or reordered"
+            )
+        if event.sim_time_s < previous_time:
+            raise ValueError("mission status simulation time moved backwards")
+        previous_time = event.sim_time_s
+        if index == 0 and event.phase is not MissionPhase.WAITING:
+            raise ValueError("mission status stream must start at WAITING")
+        if previous_phase is not None and event.phase not in allowed_transitions.get(
+            previous_phase, set()
+        ):
+            raise ValueError("mission status phase transition is invalid")
+        previous_phase = event.phase
+        if path_requested is None:
+            path_requested = event.mapping_path_requested
+        elif event.mapping_path_requested != path_requested:
+            raise ValueError("mapping path request changed during mission")
+        if path_complete and not event.mapping_path_complete:
+            raise ValueError("mapping path completion regressed")
+        path_complete = event.mapping_path_complete
+        if (
+            event.phase in (MissionPhase.COMPLETE, MissionPhase.FAILED)
+            and index != len(events) - 1
+        ):
+            raise ValueError("terminal mission event must be the final event")
+    terminal = events[-1]
+    if terminal.phase is MissionPhase.FAILED:
+        raise ValueError(f"mission failed: {terminal.failure_reason}")
+    terminal.validate_success()
+    if require_mapping_path and not terminal.mapping_path_requested:
+        raise ValueError("mapping run completed without requesting a bounded path")
+    return terminal
+
+
+def _require_finite(value: object, field_name: str) -> None:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"{field_name} must be finite numeric data")
+    try:
+        finite = math.isfinite(value)
+    except OverflowError as error:
+        raise ValueError(f"{field_name} must be finite numeric data") from error
+    if not finite:
+        raise ValueError(f"{field_name} must be finite numeric data")
+
+
+def _validate_run_id(value: object, field_name: str) -> None:
+    if not isinstance(value, str):
+        raise ValueError(f"{field_name} must be a canonical UUID")
+    try:
+        canonical = str(uuid.UUID(value))
+    except (AttributeError, TypeError, ValueError) as error:
+        raise ValueError(f"{field_name} must be a canonical UUID") from error
+    if canonical != value:
+        raise ValueError(f"{field_name} must be a canonical UUID")
+
+
+def _unique_json_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"mission status contains duplicate field {key!r}")
+        result[key] = value
+    return result
 
 
 @dataclass(frozen=True)
@@ -149,6 +391,7 @@ class MissionSequence:
             if now_s - hover_started_s >= self.config.hover_duration_s:
                 self.phase = MissionPhase.LAND
                 self._phase_started_s = now_s
+                return -self.config.vertical_speed_m_s
             else:
                 return 0.0
 

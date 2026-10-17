@@ -2,19 +2,23 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Sequence
 
 import rclpy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from rclpy.node import Node
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, String
 
 from .mapping_path import MappingPath
 from .mission_model import (
     MissionPhase,
     MissionSequence,
+    MissionStatusEvent,
     create_mission_config,
+    create_run_id,
+    mission_exit_code,
     validate_drone_name,
 )
 
@@ -25,10 +29,15 @@ class SimMission(Node):
     def __init__(self) -> None:
         super().__init__("nano_c_slam_sim_mission")
         self.declare_parameter("drone_name", "cf1")
+        self.declare_parameter("run_id", "")
         self.declare_parameter("hover_height_m", 0.5)
         self.declare_parameter("hover_duration_s", 3.0)
         self.declare_parameter("mapping_path", False)
         self._drone_name = validate_drone_name(self.get_parameter("drone_name").value)
+        configured_run_id = self.get_parameter("run_id").value
+        self._run_id = (
+            create_run_id() if configured_run_id == "" else str(configured_run_id)
+        )
         config = create_mission_config(
             self.get_parameter("hover_height_m").value,
             self.get_parameter("hover_duration_s").value,
@@ -42,11 +51,15 @@ class SimMission(Node):
         self._last_phase = MissionPhase.WAITING
         self._mapping_path: MappingPath | None = None
         self._mapping_path_finished = False
+        self._status_sequence = 0
         self._publisher = self.create_publisher(
             Twist, f"/{self._drone_name}/cmd_vel", 10
         )
         self._enable_publisher = self.create_publisher(
             Bool, f"/{self._drone_name}/enable", 10
+        )
+        self._status_publisher = self.create_publisher(
+            String, f"/{self._drone_name}/mission_status", 10
         )
         self.create_subscription(
             Odometry,
@@ -56,9 +69,11 @@ class SimMission(Node):
         )
         self._timer = self.create_timer(0.05, self._step)
         self.get_logger().info(
-            f"Waiting for /{self._drone_name}/odom before takeoff to "
+            f"Mission run {self._run_id}; waiting for "
+            f"/{self._drone_name}/odom before takeoff to "
             f"{sequence.config.hover_height_m:.2f} m"
         )
+        self._publish_status(self.get_clock().now().nanoseconds / 1e9)
 
     def _on_odometry(self, message: Odometry) -> None:
         self._altitude_m = float(message.pose.pose.position.z)
@@ -117,6 +132,7 @@ class SimMission(Node):
         if self._sequence.phase is self._last_phase:
             return
         self._last_phase = self._sequence.phase
+        self._publish_status(now_s)
         altitude = (
             "unknown" if self._altitude_m is None else f"{self._altitude_m:.3f} m"
         )
@@ -140,10 +156,34 @@ class SimMission(Node):
         """Keep the controller commanded to hover after the mission terminates."""
         self._publisher.publish(Twist())
 
+    def _publish_status(self, sim_time_s: float) -> None:
+        """Publish structured evidence for each mission phase transition."""
+        altitude_m = self._altitude_m
+        if altitude_m is not None and not math.isfinite(altitude_m):
+            altitude_m = None
+        event = MissionStatusEvent(
+            run_id=self._run_id,
+            drone_name=self._drone_name,
+            sequence=self._status_sequence,
+            sim_time_s=sim_time_s,
+            phase=self._sequence.phase,
+            altitude_m=altitude_m,
+            mapping_path_requested=self._mapping_path_enabled,
+            mapping_path_complete=self._mapping_path_finished,
+            landing_height_m=self._sequence.config.landing_height_m,
+            failure_reason=self._sequence.failure_reason,
+        )
+        message = String()
+        message.data = event.to_json()
+        self._status_publisher.publish(message)
+        self._status_sequence += 1
+        self.get_logger().info(f"mission_status={message.data}")
 
-def main(args: Sequence[str] | None = None) -> None:
+
+def main(args: Sequence[str] | None = None) -> int:
     rclpy.init(args=args)
     node: SimMission | None = None
+    exit_code = mission_exit_code(MissionPhase.FAILED, interrupted=True)
     try:
         node = SimMission()
         while rclpy.ok() and node._sequence.phase not in (
@@ -151,13 +191,15 @@ def main(args: Sequence[str] | None = None) -> None:
             MissionPhase.FAILED,
         ):
             rclpy.spin_once(node, timeout_sec=0.1)
+        exit_code = mission_exit_code(node._sequence.phase)
     except KeyboardInterrupt:
-        pass
+        exit_code = mission_exit_code(MissionPhase.FAILED, interrupted=True)
     finally:
         if node is not None:
             node.destroy_node()
         if rclpy.ok():
             rclpy.shutdown()
+    return exit_code
 
 
 if __name__ == "__main__":

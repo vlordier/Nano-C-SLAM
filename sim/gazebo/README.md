@@ -73,6 +73,17 @@ uv run --no-project --python /usr/bin/python3 \
 The mission takes off to 0.5 m, hovers for three seconds, and lands using fresh
 odometry. To fly all three vehicles together, run this in place of `sim_mission`:
 
+Each `sim_mission` process generates a UUID run ID (or accepts an orchestrator's
+UUID through the `run_id` ROS parameter) and publishes versioned JSON phase
+events on `/<drone_name>/mission_status` (`std_msgs/String`). Events include the
+run and drone identity, simulation-clock time, measured altitude, requested and
+completed mapping-path state, and landing-height limit. A `COMPLETE` event is
+emitted only with a measured altitude within the configured landing bound and,
+when requested, a completed bounded path. `FAILED` exits with status 1;
+interrupt exits with status 130. This status stream is evidence for later
+single-run orchestration; launching the mission separately still does not bind
+it to a telemetry capture.
+
 ```sh
 uv run --no-project --python /usr/bin/python3 \
   /opt/ros/jazzy/bin/ros2 launch nano_c_slam_gazebo swarm_mission.launch.py
