@@ -47,6 +47,8 @@ The default Gazebo arena returns no projected points under the firmware's 1.4 m 
 
 A newer stamped capture at `artifacts/gazebo_mapping_sitl/cf1_nearfield_stamped_capture.json` contains 170 same-drone range/odometry pairs, 9 scans, 588 projected points, 14 stored constraints reported as consumed, and a finite 9-node graph. The source timestamps had 0 ns pair skew and 10 Hz median frequency; 680 readings reconcile to 11 invalid, 588 within the exact 1400 mm cutoff, and 81 valid readings above it. The report now carries source revision and a bounded claim, and the collector validates report cross-fields before writing. This demonstrates execution of the owned host mapping path on captured Gazebo telemetry. It does not establish distinct graph endpoint pairs, optimizer convergence or map accuracy, nor does it bind the mission's human-readable landing result to this capture; those remain open beads.
 
+`artifacts/gazebo_mapping_sitl/cf1_nearfield_stamped_freshness.json` is a separate native freshness capture with per-pair age measurements: 170 pairs at 10 Hz, 100–112 ms source age, and 0 ns range/odometry skew. The host mapping replay also completed (170 poses, 9 scans, 645 projected points, 16 stored/optimizer-consumed constraints). Adversarial review found only 2.7 µm horizontal path length, so this artifact supports telemetry freshness and replay execution only; it does not demonstrate spatial excitation or a useful map. A subsequent attempt at a clean square mapping run failed when Gazebo odometry went stale, and that failed run wrote no report.
+
 ## Python demo
 
 The demo dependencies are locked in `pyproject.toml` and `uv.lock`. The tested environment uses Python 3.12 and `cflib` 0.1.34:

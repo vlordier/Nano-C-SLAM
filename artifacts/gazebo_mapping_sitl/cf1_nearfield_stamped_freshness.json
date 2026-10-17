@@ -1,0 +1,5254 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-10-17T16:37:20.633567+00:00",
+  "source_provenance": {
+    "revision": "64716ccff45beccd625003b0b5ddaf3ffed8fddc",
+    "worktree_dirty": true
+  },
+  "evidence_class": "host-execution-of-owned-gap9-mapping-core",
+  "mapping_claim": "host mapping pipeline execution only; map accuracy and completeness are not measured",
+  "claim_boundary": "Gazebo four-ray lidar and simulated odometry replayed through the Nano-C-SLAM C mapping/ICP/pose-graph modules with CPU PMSIS stubs; the replay applies the firmware loop-closure helper's 1.4 m scan cutoff; not GAP9 GVSOC, real 8x8 ToF, UWB, or hardware validation.",
+  "drone": "cf1",
+  "simulator": "Gazebo Harmonic Crazyswarm2 swarm world",
+  "scene": "nearfield-mapping",
+  "host": {
+    "system": "Darwin",
+    "machine": "arm64"
+  },
+  "input_topics": [
+    "/cf1/odom",
+    "/nano_c_slam/sim/cf1/ranges_mm"
+  ],
+  "input_sample_count": 170,
+  "median_input_frequency_hz": 10.0,
+  "source_clock": "ROS simulation clock",
+  "pairing_limits": {
+    "maximum_age_ns": 500000000,
+    "maximum_skew_ns": 100000000
+  },
+  "input_horizontal_path": {
+    "x_bounds_m": [
+      -0.5000002536956871,
+      -0.49999984203693676
+    ],
+    "y_bounds_m": [
+      -0.5000000782397185,
+      -0.4999990922790417
+    ],
+    "horizontal_path_length_m": 2.720760362428527e-06
+  },
+  "input_sim_time_ms": {
+    "start": 8600,
+    "end": 25500
+  },
+  "input_valid_range_bounds_mm": {
+    "minimum": 100,
+    "maximum": 1900
+  },
+  "mapping_range_limit_mm": 1400,
+  "range_accounting": {
+    "readings_total": 680,
+    "invalid": 0,
+    "valid": 680,
+    "accepted_at_or_below_limit": 645,
+    "rejected_above_limit": 35,
+    "by_direction": {
+      "front": {
+        "valid": 170,
+        "accepted_at_or_below_limit": 135,
+        "distinct_accepted_values": 1
+      },
+      "back": {
+        "valid": 170,
+        "accepted_at_or_below_limit": 170,
+        "distinct_accepted_values": 2
+      },
+      "left": {
+        "valid": 170,
+        "accepted_at_or_below_limit": 170,
+        "distinct_accepted_values": 2
+      },
+      "right": {
+        "valid": 170,
+        "accepted_at_or_below_limit": 170,
+        "distinct_accepted_values": 2
+      }
+    }
+  },
+  "scan_window_in_range_sample_counts": [
+    20,
+    20,
+    20,
+    20,
+    20,
+    20,
+    20,
+    20,
+    10
+  ],
+  "scan_window_three_direction_sample_counts": [
+    20,
+    20,
+    20,
+    20,
+    20,
+    20,
+    20,
+    20,
+    10
+  ],
+  "input_samples": [
+    "0 8600 -0.5 -0.5 -2.49776773e-18 1000 200 1350 100",
+    "1 8700 -0.5 -0.5 -2.49776773e-18 1000 200 1350 100",
+    "2 8800 -0.5 -0.5 -2.49776773e-18 1000 200 1350 100",
+    "3 8900 -0.5 -0.5 -2.49776773e-18 1000 200 1350 100",
+    "4 9000 -0.5 -0.5 -2.49776773e-18 1000 200 1350 100",
+    "5 9100 -0.5 -0.5 -2.49776773e-18 1000 200 1350 100",
+    "6 9200 -0.5 -0.5 -2.49776773e-18 1000 200 1350 100",
+    "7 9300 -0.5 -0.5 -2.49776773e-18 1000 200 1350 100",
+    "8 9400 -0.5 -0.5 -2.49776773e-18 1000 200 1350 100",
+    "9 9500 -0.5 -0.5 -2.49776773e-18 1000 200 1350 100",
+    "10 9600 -0.5 -0.5 -2.49776773e-18 1000 200 1350 100",
+    "11 9700 -0.5 -0.5 -5.16176132e-17 1000 200 1350 100",
+    "12 9800 -0.5 -0.5 -5.08308287e-17 1000 200 1350 100",
+    "13 9900 -0.5 -0.5 -4.46773906e-17 1000 200 1350 100",
+    "14 10000 -0.5 -0.5 -4.38827769e-17 1000 200 1350 100",
+    "15 10100 -0.5 -0.5 -4.27561685e-17 1000 200 1350 100",
+    "16 10200 -0.5 -0.5 -3.58960172e-17 1000 200 1350 100",
+    "17 10300 -0.5 -0.5 -3.1211756e-17 1000 200 1350 100",
+    "18 10400 -0.5 -0.5 -2.76566879e-17 1000 200 1350 100",
+    "19 10500 -0.5 -0.5 -2.10845841e-17 1000 200 1350 100",
+    "20 10600 -0.5 -0.5 -2.21137536e-17 1000 200 1350 100",
+    "21 10700 -0.5 -0.5 -1.9792815e-17 1000 900 1350 900",
+    "22 10800 -0.5 -0.5 -1.77682134e-17 1900 900 1350 900",
+    "23 10900 -0.5 -0.5 -1.14757359e-17 1900 900 1350 900",
+    "24 11000 -0.5 -0.5 -7.89138568e-18 1900 900 1350 900",
+    "25 11100 -0.5 -0.5 -4.32469083e-18 1900 900 1350 900",
+    "26 11200 -0.5 -0.5 -2.76729605e-18 1900 900 1350 900",
+    "27 11300 -0.5 -0.5 -2.75424603e-19 1900 900 1350 900",
+    "28 11400 -0.5 -0.5 -1.52953168e-19 1900 900 1350 900",
+    "29 11500 -0.5 -0.5 1.56792778e-18 1900 900 1350 900",
+    "30 11600 -0.5 -0.5 4.87227102e-18 1900 900 1350 900",
+    "31 11700 -0.5 -0.5 8.49772154e-18 1900 900 1350 900",
+    "32 11800 -0.5 -0.5 1.38263101e-17 1900 900 1350 900",
+    "33 11900 -0.5 -0.5 2.82902518e-17 1900 900 1350 900",
+    "34 12000 -0.5 -0.5 -1.07887597e-16 1900 900 1350 900",
+    "35 12100 -0.5 -0.5 -1.07887597e-16 1900 900 1350 900",
+    "36 12200 -0.5 -0.5 -1.07887597e-16 1900 900 1350 900",
+    "37 12300 -0.5 -0.5 3.29626436e-15 1900 900 1350 900",
+    "38 12400 -0.5 -0.5 3.29626436e-15 1900 900 1350 900",
+    "39 12500 -0.5 -0.5 3.29626436e-15 1900 900 1350 900",
+    "40 12600 -0.5 -0.5 -2.70437153e-13 1900 900 1350 900",
+    "41 12700 -0.5 -0.5 2.70965977e-12 1900 900 1350 900",
+    "42 12800 -0.5 -0.5 2.70965977e-12 1900 900 1350 900",
+    "43 12900 -0.5 -0.5 2.70965977e-12 1900 900 1350 900",
+    "44 13000 -0.500000002 -0.499999999 2.27863274e-09 1900 900 1350 900",
+    "45 13100 -0.499999969 -0.50000002 -4.04757946e-08 1900 900 1350 900",
+    "46 13200 -0.500000254 -0.499999853 -1.21957766e-06 1900 900 1350 900",
+    "47 13300 -0.499999842 -0.500000078 -1.73043742e-06 1900 900 1350 900",
+    "48 13400 -0.500000047 -0.499999816 -4.73351271e-06 1900 900 1350 900",
+    "49 13500 -0.500000117 -0.499999579 -5.99179107e-06 1900 900 1350 900",
+    "50 13600 -0.499999905 -0.499999652 -6.70813373e-06 1900 900 1350 900",
+    "51 13700 -0.500000177 -0.499999377 -9.25450439e-06 1900 900 1350 900",
+    "52 13800 -0.500000194 -0.499999239 -1.02989155e-05 1900 900 1350 900",
+    "53 13900 -0.499999966 -0.499999338 -1.10304312e-05 1900 900 1350 900",
+    "54 14000 -0.500000131 -0.499999117 -1.18456355e-05 1900 900 1350 900",
+    "55 14100 -0.500000133 -0.499999099 -1.15908992e-05 1900 900 1350 900",
+    "56 14200 -0.500000133 -0.499999095 -1.15459047e-05 1900 900 1350 900",
+    "57 14300 -0.500000133 -0.499999093 -1.15413553e-05 1000 900 1350 900",
+    "58 14400 -0.500000133 -0.499999092 -1.1541808e-05 1000 200 1350 100",
+    "59 14500 -0.500000133 -0.499999092 -1.15421469e-05 1000 200 1350 100",
+    "60 14600 -0.500000133 -0.499999092 -1.15422544e-05 1000 200 1350 100",
+    "61 14700 -0.500000133 -0.499999092 -1.15422785e-05 1000 200 1350 100",
+    "62 14800 -0.500000133 -0.499999092 -1.15422824e-05 1000 200 1350 100",
+    "63 14900 -0.500000133 -0.499999092 -1.15422828e-05 1000 200 1350 100",
+    "64 15000 -0.500000133 -0.499999092 -1.15422828e-05 1000 200 1350 100",
+    "65 15100 -0.500000133 -0.499999092 -1.15422829e-05 1000 200 1350 100",
+    "66 15200 -0.500000133 -0.499999092 -1.15422829e-05 1000 200 988 100",
+    "67 15300 -0.500000133 -0.499999092 -1.15422829e-05 1000 200 1350 100",
+    "68 15400 -0.500000133 -0.499999092 -1.15422829e-05 1000 200 1350 100",
+    "69 15500 -0.500000133 -0.499999092 -1.1542283e-05 1000 200 1350 100",
+    "70 15600 -0.500000133 -0.499999092 -1.1542283e-05 1000 200 1350 100",
+    "71 15700 -0.500000133 -0.499999092 -1.1542283e-05 1000 200 1350 100",
+    "72 15800 -0.500000133 -0.499999092 -1.1542283e-05 1000 200 1350 100",
+    "73 15900 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "74 16000 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "75 16100 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "76 16200 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "77 16300 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "78 16400 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "79 16500 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "80 16600 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "81 16700 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "82 16800 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "83 16900 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "84 17000 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "85 17100 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "86 17200 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "87 17300 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "88 17400 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "89 17500 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "90 17600 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "91 17700 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "92 17800 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "93 17900 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "94 18000 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "95 18100 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "96 18200 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "97 18300 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "98 18400 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "99 18500 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "100 18600 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "101 18700 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "102 18800 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "103 18900 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "104 19000 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "105 19100 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "106 19200 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "107 19300 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "108 19400 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "109 19500 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "110 19600 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "111 19700 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "112 19800 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "113 19900 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "114 20000 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "115 20100 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "116 20200 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "117 20300 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "118 20400 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "119 20500 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "120 20600 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "121 20700 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "122 20800 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "123 20900 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "124 21000 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "125 21100 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "126 21200 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "127 21300 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "128 21400 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "129 21500 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "130 21600 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "131 21700 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "132 21800 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "133 21900 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "134 22000 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "135 22100 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "136 22200 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "137 22300 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "138 22400 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "139 22500 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "140 22600 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "141 22700 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "142 22800 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "143 22900 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "144 23000 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "145 23100 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "146 23200 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "147 23300 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "148 23400 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "149 23500 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "150 23600 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "151 23700 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "152 23800 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "153 23900 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "154 24000 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "155 24100 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "156 24200 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "157 24300 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "158 24400 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "159 24500 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "160 24600 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "161 24700 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "162 24800 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "163 24900 -0.500000133 -0.499999092 -1.15422831e-05 1000 200 1350 100",
+    "164 25000 -0.500000133 -0.499999092 -1.15422854e-05 1000 200 1350 100",
+    "165 25100 -0.500000133 -0.499999092 -1.15422854e-05 1000 200 1350 100",
+    "166 25200 -0.500000133 -0.499999092 -1.15422855e-05 1000 200 1350 100",
+    "167 25300 -0.500000133 -0.499999092 -1.15422855e-05 1000 200 1350 100",
+    "168 25400 -0.500000133 -0.499999092 -1.15422855e-05 1000 200 1350 100",
+    "169 25500 -0.500000133 -0.499999092 -1.15422855e-05 1000 200 1350 100"
+  ],
+  "input_pair_provenance": [
+    {
+      "drone_id": "cf1",
+      "range_sequence": 85,
+      "range_stamp_ns": 8600000000,
+      "odometry_stamp_ns": 8600000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 104000000,
+      "odometry_age_ns": 104000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 86,
+      "range_stamp_ns": 8700000000,
+      "odometry_stamp_ns": 8700000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 87,
+      "range_stamp_ns": 8800000000,
+      "odometry_stamp_ns": 8800000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 88,
+      "range_stamp_ns": 8900000000,
+      "odometry_stamp_ns": 8900000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 89,
+      "range_stamp_ns": 9000000000,
+      "odometry_stamp_ns": 9000000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 112000000,
+      "odometry_age_ns": 112000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 90,
+      "range_stamp_ns": 9100000000,
+      "odometry_stamp_ns": 9100000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 91,
+      "range_stamp_ns": 9200000000,
+      "odometry_stamp_ns": 9200000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 92,
+      "range_stamp_ns": 9300000000,
+      "odometry_stamp_ns": 9300000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 93,
+      "range_stamp_ns": 9400000000,
+      "odometry_stamp_ns": 9400000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 104000000,
+      "odometry_age_ns": 104000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 94,
+      "range_stamp_ns": 9500000000,
+      "odometry_stamp_ns": 9500000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 95,
+      "range_stamp_ns": 9600000000,
+      "odometry_stamp_ns": 9600000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 96,
+      "range_stamp_ns": 9700000000,
+      "odometry_stamp_ns": 9700000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 97,
+      "range_stamp_ns": 9800000000,
+      "odometry_stamp_ns": 9800000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 98,
+      "range_stamp_ns": 9900000000,
+      "odometry_stamp_ns": 9900000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 105000000,
+      "odometry_age_ns": 105000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 99,
+      "range_stamp_ns": 10000000000,
+      "odometry_stamp_ns": 10000000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 105000000,
+      "odometry_age_ns": 105000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 100,
+      "range_stamp_ns": 10100000000,
+      "odometry_stamp_ns": 10100000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 106000000,
+      "odometry_age_ns": 106000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 101,
+      "range_stamp_ns": 10200000000,
+      "odometry_stamp_ns": 10200000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 102,
+      "range_stamp_ns": 10300000000,
+      "odometry_stamp_ns": 10300000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 103,
+      "range_stamp_ns": 10400000000,
+      "odometry_stamp_ns": 10400000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 104,
+      "range_stamp_ns": 10500000000,
+      "odometry_stamp_ns": 10500000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 105,
+      "range_stamp_ns": 10600000000,
+      "odometry_stamp_ns": 10600000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 106,
+      "range_stamp_ns": 10700000000,
+      "odometry_stamp_ns": 10700000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 107,
+      "range_stamp_ns": 10800000000,
+      "odometry_stamp_ns": 10800000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 108,
+      "range_stamp_ns": 10900000000,
+      "odometry_stamp_ns": 10900000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 109,
+      "range_stamp_ns": 11000000000,
+      "odometry_stamp_ns": 11000000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 110,
+      "range_stamp_ns": 11100000000,
+      "odometry_stamp_ns": 11100000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 111,
+      "range_stamp_ns": 11200000000,
+      "odometry_stamp_ns": 11200000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 112,
+      "range_stamp_ns": 11300000000,
+      "odometry_stamp_ns": 11300000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 113,
+      "range_stamp_ns": 11400000000,
+      "odometry_stamp_ns": 11400000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 104000000,
+      "odometry_age_ns": 104000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 114,
+      "range_stamp_ns": 11500000000,
+      "odometry_stamp_ns": 11500000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 115,
+      "range_stamp_ns": 11600000000,
+      "odometry_stamp_ns": 11600000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 116,
+      "range_stamp_ns": 11700000000,
+      "odometry_stamp_ns": 11700000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 117,
+      "range_stamp_ns": 11800000000,
+      "odometry_stamp_ns": 11800000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 118,
+      "range_stamp_ns": 11900000000,
+      "odometry_stamp_ns": 11900000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 119,
+      "range_stamp_ns": 12000000000,
+      "odometry_stamp_ns": 12000000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 120,
+      "range_stamp_ns": 12100000000,
+      "odometry_stamp_ns": 12100000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 121,
+      "range_stamp_ns": 12200000000,
+      "odometry_stamp_ns": 12200000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 105000000,
+      "odometry_age_ns": 105000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 122,
+      "range_stamp_ns": 12300000000,
+      "odometry_stamp_ns": 12300000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 123,
+      "range_stamp_ns": 12400000000,
+      "odometry_stamp_ns": 12400000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 124,
+      "range_stamp_ns": 12500000000,
+      "odometry_stamp_ns": 12500000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 105000000,
+      "odometry_age_ns": 105000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 125,
+      "range_stamp_ns": 12600000000,
+      "odometry_stamp_ns": 12600000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 126,
+      "range_stamp_ns": 12700000000,
+      "odometry_stamp_ns": 12700000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 105000000,
+      "odometry_age_ns": 105000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 127,
+      "range_stamp_ns": 12800000000,
+      "odometry_stamp_ns": 12800000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 128,
+      "range_stamp_ns": 12900000000,
+      "odometry_stamp_ns": 12900000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 129,
+      "range_stamp_ns": 13000000000,
+      "odometry_stamp_ns": 13000000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 130,
+      "range_stamp_ns": 13100000000,
+      "odometry_stamp_ns": 13100000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 131,
+      "range_stamp_ns": 13200000000,
+      "odometry_stamp_ns": 13200000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 132,
+      "range_stamp_ns": 13300000000,
+      "odometry_stamp_ns": 13300000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 133,
+      "range_stamp_ns": 13400000000,
+      "odometry_stamp_ns": 13400000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 105000000,
+      "odometry_age_ns": 105000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 134,
+      "range_stamp_ns": 13500000000,
+      "odometry_stamp_ns": 13500000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 105000000,
+      "odometry_age_ns": 105000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 135,
+      "range_stamp_ns": 13600000000,
+      "odometry_stamp_ns": 13600000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 105000000,
+      "odometry_age_ns": 105000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 136,
+      "range_stamp_ns": 13700000000,
+      "odometry_stamp_ns": 13700000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 137,
+      "range_stamp_ns": 13800000000,
+      "odometry_stamp_ns": 13800000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 138,
+      "range_stamp_ns": 13900000000,
+      "odometry_stamp_ns": 13900000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 139,
+      "range_stamp_ns": 14000000000,
+      "odometry_stamp_ns": 14000000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 140,
+      "range_stamp_ns": 14100000000,
+      "odometry_stamp_ns": 14100000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 141,
+      "range_stamp_ns": 14200000000,
+      "odometry_stamp_ns": 14200000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 142,
+      "range_stamp_ns": 14300000000,
+      "odometry_stamp_ns": 14300000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 143,
+      "range_stamp_ns": 14400000000,
+      "odometry_stamp_ns": 14400000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 104000000,
+      "odometry_age_ns": 104000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 144,
+      "range_stamp_ns": 14500000000,
+      "odometry_stamp_ns": 14500000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 105000000,
+      "odometry_age_ns": 105000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 145,
+      "range_stamp_ns": 14600000000,
+      "odometry_stamp_ns": 14600000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 146,
+      "range_stamp_ns": 14700000000,
+      "odometry_stamp_ns": 14700000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 147,
+      "range_stamp_ns": 14800000000,
+      "odometry_stamp_ns": 14800000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 148,
+      "range_stamp_ns": 14900000000,
+      "odometry_stamp_ns": 14900000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 149,
+      "range_stamp_ns": 15000000000,
+      "odometry_stamp_ns": 15000000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 105000000,
+      "odometry_age_ns": 105000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 150,
+      "range_stamp_ns": 15100000000,
+      "odometry_stamp_ns": 15100000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 151,
+      "range_stamp_ns": 15200000000,
+      "odometry_stamp_ns": 15200000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 152,
+      "range_stamp_ns": 15300000000,
+      "odometry_stamp_ns": 15300000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 153,
+      "range_stamp_ns": 15400000000,
+      "odometry_stamp_ns": 15400000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 105000000,
+      "odometry_age_ns": 105000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 154,
+      "range_stamp_ns": 15500000000,
+      "odometry_stamp_ns": 15500000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 155,
+      "range_stamp_ns": 15600000000,
+      "odometry_stamp_ns": 15600000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 156,
+      "range_stamp_ns": 15700000000,
+      "odometry_stamp_ns": 15700000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 105000000,
+      "odometry_age_ns": 105000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 157,
+      "range_stamp_ns": 15800000000,
+      "odometry_stamp_ns": 15800000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 158,
+      "range_stamp_ns": 15900000000,
+      "odometry_stamp_ns": 15900000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 105000000,
+      "odometry_age_ns": 105000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 159,
+      "range_stamp_ns": 16000000000,
+      "odometry_stamp_ns": 16000000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 160,
+      "range_stamp_ns": 16100000000,
+      "odometry_stamp_ns": 16100000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 161,
+      "range_stamp_ns": 16200000000,
+      "odometry_stamp_ns": 16200000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 162,
+      "range_stamp_ns": 16300000000,
+      "odometry_stamp_ns": 16300000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 163,
+      "range_stamp_ns": 16400000000,
+      "odometry_stamp_ns": 16400000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 105000000,
+      "odometry_age_ns": 105000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 164,
+      "range_stamp_ns": 16500000000,
+      "odometry_stamp_ns": 16500000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 165,
+      "range_stamp_ns": 16600000000,
+      "odometry_stamp_ns": 16600000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 166,
+      "range_stamp_ns": 16700000000,
+      "odometry_stamp_ns": 16700000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 167,
+      "range_stamp_ns": 16800000000,
+      "odometry_stamp_ns": 16800000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 168,
+      "range_stamp_ns": 16900000000,
+      "odometry_stamp_ns": 16900000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 169,
+      "range_stamp_ns": 17000000000,
+      "odometry_stamp_ns": 17000000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 170,
+      "range_stamp_ns": 17100000000,
+      "odometry_stamp_ns": 17100000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 171,
+      "range_stamp_ns": 17200000000,
+      "odometry_stamp_ns": 17200000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 172,
+      "range_stamp_ns": 17300000000,
+      "odometry_stamp_ns": 17300000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 173,
+      "range_stamp_ns": 17400000000,
+      "odometry_stamp_ns": 17400000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 174,
+      "range_stamp_ns": 17500000000,
+      "odometry_stamp_ns": 17500000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 175,
+      "range_stamp_ns": 17600000000,
+      "odometry_stamp_ns": 17600000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 176,
+      "range_stamp_ns": 17700000000,
+      "odometry_stamp_ns": 17700000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 177,
+      "range_stamp_ns": 17800000000,
+      "odometry_stamp_ns": 17800000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 178,
+      "range_stamp_ns": 17900000000,
+      "odometry_stamp_ns": 17900000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 179,
+      "range_stamp_ns": 18000000000,
+      "odometry_stamp_ns": 18000000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 180,
+      "range_stamp_ns": 18100000000,
+      "odometry_stamp_ns": 18100000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 181,
+      "range_stamp_ns": 18200000000,
+      "odometry_stamp_ns": 18200000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 182,
+      "range_stamp_ns": 18300000000,
+      "odometry_stamp_ns": 18300000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 183,
+      "range_stamp_ns": 18400000000,
+      "odometry_stamp_ns": 18400000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 184,
+      "range_stamp_ns": 18500000000,
+      "odometry_stamp_ns": 18500000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 185,
+      "range_stamp_ns": 18600000000,
+      "odometry_stamp_ns": 18600000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 104000000,
+      "odometry_age_ns": 104000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 186,
+      "range_stamp_ns": 18700000000,
+      "odometry_stamp_ns": 18700000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 187,
+      "range_stamp_ns": 18800000000,
+      "odometry_stamp_ns": 18800000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 188,
+      "range_stamp_ns": 18900000000,
+      "odometry_stamp_ns": 18900000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 189,
+      "range_stamp_ns": 19000000000,
+      "odometry_stamp_ns": 19000000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 190,
+      "range_stamp_ns": 19100000000,
+      "odometry_stamp_ns": 19100000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 191,
+      "range_stamp_ns": 19200000000,
+      "odometry_stamp_ns": 19200000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 192,
+      "range_stamp_ns": 19300000000,
+      "odometry_stamp_ns": 19300000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 193,
+      "range_stamp_ns": 19400000000,
+      "odometry_stamp_ns": 19400000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 194,
+      "range_stamp_ns": 19500000000,
+      "odometry_stamp_ns": 19500000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 195,
+      "range_stamp_ns": 19600000000,
+      "odometry_stamp_ns": 19600000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 196,
+      "range_stamp_ns": 19700000000,
+      "odometry_stamp_ns": 19700000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 197,
+      "range_stamp_ns": 19800000000,
+      "odometry_stamp_ns": 19800000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 105000000,
+      "odometry_age_ns": 105000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 198,
+      "range_stamp_ns": 19900000000,
+      "odometry_stamp_ns": 19900000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 199,
+      "range_stamp_ns": 20000000000,
+      "odometry_stamp_ns": 20000000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 200,
+      "range_stamp_ns": 20100000000,
+      "odometry_stamp_ns": 20100000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 104000000,
+      "odometry_age_ns": 104000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 201,
+      "range_stamp_ns": 20200000000,
+      "odometry_stamp_ns": 20200000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 202,
+      "range_stamp_ns": 20300000000,
+      "odometry_stamp_ns": 20300000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 203,
+      "range_stamp_ns": 20400000000,
+      "odometry_stamp_ns": 20400000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 104000000,
+      "odometry_age_ns": 104000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 204,
+      "range_stamp_ns": 20500000000,
+      "odometry_stamp_ns": 20500000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 205,
+      "range_stamp_ns": 20600000000,
+      "odometry_stamp_ns": 20600000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 206,
+      "range_stamp_ns": 20700000000,
+      "odometry_stamp_ns": 20700000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 105000000,
+      "odometry_age_ns": 105000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 207,
+      "range_stamp_ns": 20800000000,
+      "odometry_stamp_ns": 20800000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 208,
+      "range_stamp_ns": 20900000000,
+      "odometry_stamp_ns": 20900000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 209,
+      "range_stamp_ns": 21000000000,
+      "odometry_stamp_ns": 21000000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 210,
+      "range_stamp_ns": 21100000000,
+      "odometry_stamp_ns": 21100000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 211,
+      "range_stamp_ns": 21200000000,
+      "odometry_stamp_ns": 21200000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 212,
+      "range_stamp_ns": 21300000000,
+      "odometry_stamp_ns": 21300000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 213,
+      "range_stamp_ns": 21400000000,
+      "odometry_stamp_ns": 21400000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 104000000,
+      "odometry_age_ns": 104000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 214,
+      "range_stamp_ns": 21500000000,
+      "odometry_stamp_ns": 21500000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 215,
+      "range_stamp_ns": 21600000000,
+      "odometry_stamp_ns": 21600000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 216,
+      "range_stamp_ns": 21700000000,
+      "odometry_stamp_ns": 21700000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 217,
+      "range_stamp_ns": 21800000000,
+      "odometry_stamp_ns": 21800000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 105000000,
+      "odometry_age_ns": 105000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 218,
+      "range_stamp_ns": 21900000000,
+      "odometry_stamp_ns": 21900000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 104000000,
+      "odometry_age_ns": 104000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 219,
+      "range_stamp_ns": 22000000000,
+      "odometry_stamp_ns": 22000000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 220,
+      "range_stamp_ns": 22100000000,
+      "odometry_stamp_ns": 22100000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 221,
+      "range_stamp_ns": 22200000000,
+      "odometry_stamp_ns": 22200000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 222,
+      "range_stamp_ns": 22300000000,
+      "odometry_stamp_ns": 22300000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 105000000,
+      "odometry_age_ns": 105000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 223,
+      "range_stamp_ns": 22400000000,
+      "odometry_stamp_ns": 22400000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 224,
+      "range_stamp_ns": 22500000000,
+      "odometry_stamp_ns": 22500000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 225,
+      "range_stamp_ns": 22600000000,
+      "odometry_stamp_ns": 22600000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 226,
+      "range_stamp_ns": 22700000000,
+      "odometry_stamp_ns": 22700000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 104000000,
+      "odometry_age_ns": 104000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 227,
+      "range_stamp_ns": 22800000000,
+      "odometry_stamp_ns": 22800000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 228,
+      "range_stamp_ns": 22900000000,
+      "odometry_stamp_ns": 22900000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 229,
+      "range_stamp_ns": 23000000000,
+      "odometry_stamp_ns": 23000000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 230,
+      "range_stamp_ns": 23100000000,
+      "odometry_stamp_ns": 23100000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 104000000,
+      "odometry_age_ns": 104000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 231,
+      "range_stamp_ns": 23200000000,
+      "odometry_stamp_ns": 23200000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 232,
+      "range_stamp_ns": 23300000000,
+      "odometry_stamp_ns": 23300000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 233,
+      "range_stamp_ns": 23400000000,
+      "odometry_stamp_ns": 23400000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 234,
+      "range_stamp_ns": 23500000000,
+      "odometry_stamp_ns": 23500000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 235,
+      "range_stamp_ns": 23600000000,
+      "odometry_stamp_ns": 23600000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 236,
+      "range_stamp_ns": 23700000000,
+      "odometry_stamp_ns": 23700000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 237,
+      "range_stamp_ns": 23800000000,
+      "odometry_stamp_ns": 23800000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 238,
+      "range_stamp_ns": 23900000000,
+      "odometry_stamp_ns": 23900000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 239,
+      "range_stamp_ns": 24000000000,
+      "odometry_stamp_ns": 24000000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 240,
+      "range_stamp_ns": 24100000000,
+      "odometry_stamp_ns": 24100000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 241,
+      "range_stamp_ns": 24200000000,
+      "odometry_stamp_ns": 24200000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 242,
+      "range_stamp_ns": 24300000000,
+      "odometry_stamp_ns": 24300000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 243,
+      "range_stamp_ns": 24400000000,
+      "odometry_stamp_ns": 24400000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 244,
+      "range_stamp_ns": 24500000000,
+      "odometry_stamp_ns": 24500000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 245,
+      "range_stamp_ns": 24600000000,
+      "odometry_stamp_ns": 24600000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 246,
+      "range_stamp_ns": 24700000000,
+      "odometry_stamp_ns": 24700000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 247,
+      "range_stamp_ns": 24800000000,
+      "odometry_stamp_ns": 24800000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 248,
+      "range_stamp_ns": 24900000000,
+      "odometry_stamp_ns": 24900000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 104000000,
+      "odometry_age_ns": 104000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 249,
+      "range_stamp_ns": 25000000000,
+      "odometry_stamp_ns": 25000000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 250,
+      "range_stamp_ns": 25100000000,
+      "odometry_stamp_ns": 25100000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 102000000,
+      "odometry_age_ns": 102000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 251,
+      "range_stamp_ns": 25200000000,
+      "odometry_stamp_ns": 25200000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 103000000,
+      "odometry_age_ns": 103000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 252,
+      "range_stamp_ns": 25300000000,
+      "odometry_stamp_ns": 25300000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 104000000,
+      "odometry_age_ns": 104000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 253,
+      "range_stamp_ns": 25400000000,
+      "odometry_stamp_ns": 25400000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 101000000,
+      "odometry_age_ns": 101000000
+    },
+    {
+      "drone_id": "cf1",
+      "range_sequence": 254,
+      "range_stamp_ns": 25500000000,
+      "odometry_stamp_ns": 25500000000,
+      "pair_skew_ns": 0,
+      "range_age_ns": 100000000,
+      "odometry_age_ns": 100000000
+    }
+  ],
+  "capture_rejections": {
+    "superseded_odometry": 678
+  },
+  "tof_projection": "one four-ray reading per direction in central ToF column",
+  "mapping": {
+    "pose_count": 170,
+    "scan_count": 9,
+    "map_point_count": 645,
+    "icp_constraint_attempt_count": 8,
+    "stored_constraint_count": 16,
+    "optimized_constraint_count": 16,
+    "icp_constraint_count": 16,
+    "optimized_pose_count": 170,
+    "main_graph_size": 9,
+    "has_nan": 0,
+    "poses": [
+      [
+        -0.4999993,
+        -0.5000047,
+        1.428158e-06
+      ],
+      [
+        -0.4999993,
+        -0.5000048,
+        1.563245e-06
+      ],
+      [
+        -0.4999994,
+        -0.5000049,
+        1.698331e-06
+      ],
+      [
+        -0.4999992,
+        -0.500005,
+        1.833418e-06
+      ],
+      [
+        -0.4999991,
+        -0.5000052,
+        1.968504e-06
+      ],
+      [
+        -0.4999991,
+        -0.5000052,
+        2.10359e-06
+      ],
+      [
+        -0.4999989,
+        -0.5000054,
+        2.238677e-06
+      ],
+      [
+        -0.499999,
+        -0.5000055,
+        2.373763e-06
+      ],
+      [
+        -0.4999988,
+        -0.5000057,
+        2.50885e-06
+      ],
+      [
+        -0.4999988,
+        -0.5000058,
+        2.643936e-06
+      ],
+      [
+        -0.4999988,
+        -0.500006,
+        2.779023e-06
+      ],
+      [
+        -0.4999986,
+        -0.5000061,
+        2.914109e-06
+      ],
+      [
+        -0.4999986,
+        -0.5000064,
+        3.049195e-06
+      ],
+      [
+        -0.4999987,
+        -0.5000065,
+        3.184282e-06
+      ],
+      [
+        -0.4999987,
+        -0.5000067,
+        3.319368e-06
+      ],
+      [
+        -0.4999987,
+        -0.5000068,
+        3.454454e-06
+      ],
+      [
+        -0.4999985,
+        -0.5000069,
+        3.58954e-06
+      ],
+      [
+        -0.4999985,
+        -0.5000069,
+        3.724627e-06
+      ],
+      [
+        -0.4999987,
+        -0.5000071,
+        3.859713e-06
+      ],
+      [
+        -0.4999985,
+        -0.5000073,
+        3.9948e-06
+      ],
+      [
+        -0.4999985,
+        -0.5000075,
+        4.136639e-06
+      ],
+      [
+        -0.4999984,
+        -0.5000077,
+        4.693777e-06
+      ],
+      [
+        -0.4999983,
+        -0.5000082,
+        5.250914e-06
+      ],
+      [
+        -0.4999982,
+        -0.5000084,
+        5.80805e-06
+      ],
+      [
+        -0.4999982,
+        -0.5000085,
+        6.365188e-06
+      ],
+      [
+        -0.4999981,
+        -0.5000089,
+        6.922325e-06
+      ],
+      [
+        -0.4999982,
+        -0.5000094,
+        7.479463e-06
+      ],
+      [
+        -0.4999981,
+        -0.5000095,
+        8.0366e-06
+      ],
+      [
+        -0.4999981,
+        -0.5000099,
+        8.593739e-06
+      ],
+      [
+        -0.4999979,
+        -0.5000102,
+        9.150876e-06
+      ],
+      [
+        -0.4999978,
+        -0.5000103,
+        9.70801e-06
+      ],
+      [
+        -0.4999977,
+        -0.5000107,
+        1.026515e-05
+      ],
+      [
+        -0.4999975,
+        -0.500011,
+        1.082229e-05
+      ],
+      [
+        -0.4999976,
+        -0.5000111,
+        1.137942e-05
+      ],
+      [
+        -0.4999973,
+        -0.5000114,
+        1.193656e-05
+      ],
+      [
+        -0.4999973,
+        -0.5000117,
+        1.24937e-05
+      ],
+      [
+        -0.4999972,
+        -0.500012,
+        1.305084e-05
+      ],
+      [
+        -0.4999971,
+        -0.5000122,
+        1.360798e-05
+      ],
+      [
+        -0.4999972,
+        -0.5000126,
+        1.416511e-05
+      ],
+      [
+        -0.4999972,
+        -0.5000129,
+        1.472225e-05
+      ],
+      [
+        -0.4999972,
+        -0.5000131,
+        1.521404e-05
+      ],
+      [
+        -0.500035,
+        -0.4997719,
+        -6.56531e-05
+      ],
+      [
+        -0.5000726,
+        -0.4995308,
+        -0.0001465203
+      ],
+      [
+        -0.5001104,
+        -0.4992898,
+        -0.0002273874
+      ],
+      [
+        -0.5001479,
+        -0.4990486,
+        -0.0003082521
+      ],
+      [
+        -0.5001854,
+        -0.4988073,
+        -0.000389162
+      ],
+      [
+        -0.5002235,
+        -0.4985662,
+        -0.0004712082
+      ],
+      [
+        -0.5002608,
+        -0.4983255,
+        -0.0005525859
+      ],
+      [
+        -0.5002987,
+        -0.4980842,
+        -0.0006364568
+      ],
+      [
+        -0.5003363,
+        -0.497843,
+        -0.0007185821
+      ],
+      [
+        -0.5003738,
+        -0.4976019,
+        -0.0008001656
+      ],
+      [
+        -0.5004116,
+        -0.4973605,
+        -0.0008835792
+      ],
+      [
+        -0.5004492,
+        -0.4971192,
+        -0.0009654911
+      ],
+      [
+        -0.5004869,
+        -0.4968781,
+        -0.00104709
+      ],
+      [
+        -0.5005244,
+        -0.4966367,
+        -0.001128772
+      ],
+      [
+        -0.500562,
+        -0.4963956,
+        -0.001209386
+      ],
+      [
+        -0.5005997,
+        -0.4961547,
+        -0.001290208
+      ],
+      [
+        -0.5006375,
+        -0.4959138,
+        -0.001371071
+      ],
+      [
+        -0.500675,
+        -0.4956727,
+        -0.001451938
+      ],
+      [
+        -0.5007127,
+        -0.4954317,
+        -0.001532806
+      ],
+      [
+        -0.5007534,
+        -0.4951786,
+        -0.001624283
+      ],
+      [
+        -0.5007532,
+        -0.4951804,
+        -0.001623336
+      ],
+      [
+        -0.5007529,
+        -0.4951822,
+        -0.001622389
+      ],
+      [
+        -0.5007526,
+        -0.4951839,
+        -0.001621442
+      ],
+      [
+        -0.5007523,
+        -0.4951857,
+        -0.001620495
+      ],
+      [
+        -0.500752,
+        -0.4951874,
+        -0.001619548
+      ],
+      [
+        -0.5007517,
+        -0.4951892,
+        -0.001618601
+      ],
+      [
+        -0.5007514,
+        -0.4951909,
+        -0.001617654
+      ],
+      [
+        -0.5007512,
+        -0.4951927,
+        -0.001616707
+      ],
+      [
+        -0.5007507,
+        -0.4951944,
+        -0.00161576
+      ],
+      [
+        -0.5007505,
+        -0.4951962,
+        -0.001614813
+      ],
+      [
+        -0.5007502,
+        -0.495198,
+        -0.001613866
+      ],
+      [
+        -0.5007499,
+        -0.4951999,
+        -0.001612919
+      ],
+      [
+        -0.5007497,
+        -0.4952016,
+        -0.001611972
+      ],
+      [
+        -0.5007494,
+        -0.4952034,
+        -0.001611025
+      ],
+      [
+        -0.5007492,
+        -0.4952052,
+        -0.001610078
+      ],
+      [
+        -0.5007489,
+        -0.495207,
+        -0.001609132
+      ],
+      [
+        -0.5007487,
+        -0.4952088,
+        -0.001608185
+      ],
+      [
+        -0.5007485,
+        -0.4952106,
+        -0.001607238
+      ],
+      [
+        -0.5007483,
+        -0.4952123,
+        -0.001606291
+      ],
+      [
+        -0.5000056,
+        -0.4999653,
+        -1.155072e-05
+      ],
+      [
+        -0.5000056,
+        -0.4999655,
+        -1.116231e-05
+      ],
+      [
+        -0.5000055,
+        -0.4999656,
+        -1.07739e-05
+      ],
+      [
+        -0.5000056,
+        -0.4999658,
+        -1.038549e-05
+      ],
+      [
+        -0.5000055,
+        -0.499966,
+        -9.997076e-06
+      ],
+      [
+        -0.5000056,
+        -0.4999661,
+        -9.608662e-06
+      ],
+      [
+        -0.5000055,
+        -0.4999664,
+        -9.220251e-06
+      ],
+      [
+        -0.5000055,
+        -0.4999665,
+        -8.831839e-06
+      ],
+      [
+        -0.5000055,
+        -0.4999667,
+        -8.443427e-06
+      ],
+      [
+        -0.5000055,
+        -0.4999669,
+        -8.055016e-06
+      ],
+      [
+        -0.5000055,
+        -0.4999671,
+        -7.666604e-06
+      ],
+      [
+        -0.5000054,
+        -0.4999672,
+        -7.278192e-06
+      ],
+      [
+        -0.5000054,
+        -0.4999674,
+        -6.88978e-06
+      ],
+      [
+        -0.5000055,
+        -0.4999676,
+        -6.501368e-06
+      ],
+      [
+        -0.5000054,
+        -0.4999678,
+        -6.112956e-06
+      ],
+      [
+        -0.5000054,
+        -0.4999679,
+        -5.724545e-06
+      ],
+      [
+        -0.5000054,
+        -0.4999681,
+        -5.336132e-06
+      ],
+      [
+        -0.5000054,
+        -0.4999683,
+        -4.94772e-06
+      ],
+      [
+        -0.5000054,
+        -0.4999685,
+        -4.559309e-06
+      ],
+      [
+        -0.5000054,
+        -0.4999686,
+        -4.170896e-06
+      ],
+      [
+        -0.4999997,
+        -0.5000044,
+        1.11639e-06
+      ],
+      [
+        -0.4999996,
+        -0.5000046,
+        1.494582e-06
+      ],
+      [
+        -0.4999996,
+        -0.5000046,
+        1.872774e-06
+      ],
+      [
+        -0.4999996,
+        -0.5000048,
+        2.250967e-06
+      ],
+      [
+        -0.4999996,
+        -0.500005,
+        2.629159e-06
+      ],
+      [
+        -0.4999996,
+        -0.5000052,
+        3.007351e-06
+      ],
+      [
+        -0.4999996,
+        -0.5000054,
+        3.385544e-06
+      ],
+      [
+        -0.4999996,
+        -0.5000055,
+        3.763736e-06
+      ],
+      [
+        -0.4999996,
+        -0.5000057,
+        4.141928e-06
+      ],
+      [
+        -0.4999996,
+        -0.5000058,
+        4.520121e-06
+      ],
+      [
+        -0.4999996,
+        -0.5000059,
+        4.898314e-06
+      ],
+      [
+        -0.4999996,
+        -0.5000061,
+        5.276506e-06
+      ],
+      [
+        -0.4999996,
+        -0.5000063,
+        5.654698e-06
+      ],
+      [
+        -0.4999996,
+        -0.5000065,
+        6.03289e-06
+      ],
+      [
+        -0.4999995,
+        -0.5000065,
+        6.411083e-06
+      ],
+      [
+        -0.4999995,
+        -0.5000067,
+        6.789275e-06
+      ],
+      [
+        -0.4999995,
+        -0.5000069,
+        7.167467e-06
+      ],
+      [
+        -0.4999996,
+        -0.5000071,
+        7.54566e-06
+      ],
+      [
+        -0.4999996,
+        -0.5000072,
+        7.923852e-06
+      ],
+      [
+        -0.4999995,
+        -0.5000074,
+        8.302044e-06
+      ],
+      [
+        -0.4999996,
+        -0.5000043,
+        8.893423e-07
+      ],
+      [
+        -0.4999996,
+        -0.5000045,
+        1.232371e-06
+      ],
+      [
+        -0.4999996,
+        -0.5000046,
+        1.575399e-06
+      ],
+      [
+        -0.4999995,
+        -0.5000048,
+        1.918428e-06
+      ],
+      [
+        -0.4999995,
+        -0.5000049,
+        2.261457e-06
+      ],
+      [
+        -0.4999996,
+        -0.5000051,
+        2.604485e-06
+      ],
+      [
+        -0.4999995,
+        -0.5000052,
+        2.947514e-06
+      ],
+      [
+        -0.4999995,
+        -0.5000054,
+        3.290542e-06
+      ],
+      [
+        -0.4999994,
+        -0.5000055,
+        3.633571e-06
+      ],
+      [
+        -0.4999994,
+        -0.5000057,
+        3.9766e-06
+      ],
+      [
+        -0.4999993,
+        -0.5000058,
+        4.319628e-06
+      ],
+      [
+        -0.4999993,
+        -0.500006,
+        4.662656e-06
+      ],
+      [
+        -0.4999993,
+        -0.5000062,
+        5.005685e-06
+      ],
+      [
+        -0.4999993,
+        -0.5000064,
+        5.348713e-06
+      ],
+      [
+        -0.4999993,
+        -0.5000065,
+        5.691742e-06
+      ],
+      [
+        -0.4999993,
+        -0.5000066,
+        6.03477e-06
+      ],
+      [
+        -0.4999992,
+        -0.5000068,
+        6.377799e-06
+      ],
+      [
+        -0.4999993,
+        -0.5000069,
+        6.720828e-06
+      ],
+      [
+        -0.4999992,
+        -0.500007,
+        7.063856e-06
+      ],
+      [
+        -0.4999992,
+        -0.5000072,
+        7.406885e-06
+      ],
+      [
+        -0.4999993,
+        -0.5000041,
+        -2.03006e-07
+      ],
+      [
+        -0.4999993,
+        -0.5000042,
+        -5.008739e-08
+      ],
+      [
+        -0.4999993,
+        -0.5000043,
+        1.028313e-07
+      ],
+      [
+        -0.4999993,
+        -0.5000044,
+        2.557499e-07
+      ],
+      [
+        -0.4999992,
+        -0.5000045,
+        4.086685e-07
+      ],
+      [
+        -0.4999992,
+        -0.5000046,
+        5.615872e-07
+      ],
+      [
+        -0.4999992,
+        -0.5000047,
+        7.145058e-07
+      ],
+      [
+        -0.4999992,
+        -0.5000048,
+        8.674244e-07
+      ],
+      [
+        -0.4999992,
+        -0.5000049,
+        1.020343e-06
+      ],
+      [
+        -0.4999992,
+        -0.5000049,
+        1.173262e-06
+      ],
+      [
+        -0.4999991,
+        -0.5000051,
+        1.333826e-06
+      ],
+      [
+        -0.4999991,
+        -0.5000051,
+        1.333826e-06
+      ],
+      [
+        -0.4999991,
+        -0.5000051,
+        1.333826e-06
+      ],
+      [
+        -0.4999991,
+        -0.5000051,
+        1.333826e-06
+      ],
+      [
+        -0.4999991,
+        -0.5000051,
+        1.333826e-06
+      ],
+      [
+        -0.4999991,
+        -0.5000051,
+        1.333826e-06
+      ],
+      [
+        -0.4999991,
+        -0.5000051,
+        1.333826e-06
+      ],
+      [
+        -0.4999991,
+        -0.5000051,
+        1.333826e-06
+      ],
+      [
+        -0.4999991,
+        -0.5000051,
+        1.333826e-06
+      ],
+      [
+        -0.4999991,
+        -0.5000051,
+        1.333826e-06
+      ],
+      [
+        -0.4999997,
+        -0.5000017,
+        -6.638495e-06
+      ],
+      [
+        -0.4999997,
+        -0.5000017,
+        -6.638495e-06
+      ],
+      [
+        -0.4999997,
+        -0.5000017,
+        -6.638495e-06
+      ],
+      [
+        -0.4999997,
+        -0.5000017,
+        -6.638495e-06
+      ],
+      [
+        -0.4999997,
+        -0.5000017,
+        -6.638498e-06
+      ],
+      [
+        -0.4999997,
+        -0.5000017,
+        -6.638498e-06
+      ],
+      [
+        -0.4999997,
+        -0.5000017,
+        -6.638498e-06
+      ],
+      [
+        -0.4999997,
+        -0.5000017,
+        -6.638498e-06
+      ],
+      [
+        -0.4999997,
+        -0.5000017,
+        -6.638498e-06
+      ],
+      [
+        -0.4999997,
+        -0.5000017,
+        -6.638498e-06
+      ]
+    ],
+    "points": [
+      [
+        0.5250006,
+        -0.4508764
+      ],
+      [
+        -0.6749993,
+        -0.5098303
+      ],
+      [
+        -0.5663226,
+        0.8699952
+      ],
+      [
+        -0.4950865,
+        -0.5800047
+      ],
+      [
+        0.5250006,
+        -0.4508764
+      ],
+      [
+        -0.6749992,
+        -0.5098305
+      ],
+      [
+        -0.5663227,
+        0.8699951
+      ],
+      [
+        -0.4950865,
+        -0.5800048
+      ],
+      [
+        0.5250005,
+        -0.4508764
+      ],
+      [
+        -0.6749994,
+        -0.5098306
+      ],
+      [
+        -0.566323,
+        0.8699949
+      ],
+      [
+        -0.4950866,
+        -0.5800049
+      ],
+      [
+        0.5250007,
+        -0.4508762
+      ],
+      [
+        -0.6749992,
+        -0.5098307
+      ],
+      [
+        -0.566323,
+        0.8699949
+      ],
+      [
+        -0.4950864,
+        -0.580005
+      ],
+      [
+        0.5250007,
+        -0.4508763
+      ],
+      [
+        -0.6749991,
+        -0.5098309
+      ],
+      [
+        -0.5663232,
+        0.8699947
+      ],
+      [
+        -0.4950863,
+        -0.5800052
+      ],
+      [
+        0.5250008,
+        -0.4508762
+      ],
+      [
+        -0.6749991,
+        -0.509831
+      ],
+      [
+        -0.5663233,
+        0.8699946
+      ],
+      [
+        -0.4950862,
+        -0.5800052
+      ],
+      [
+        0.5250009,
+        -0.4508762
+      ],
+      [
+        -0.6749989,
+        -0.5098311
+      ],
+      [
+        -0.5663233,
+        0.8699945
+      ],
+      [
+        -0.4950861,
+        -0.5800053
+      ],
+      [
+        0.5250009,
+        -0.4508762
+      ],
+      [
+        -0.6749989,
+        -0.5098312
+      ],
+      [
+        -0.5663235,
+        0.8699943
+      ],
+      [
+        -0.4950861,
+        -0.5800055
+      ],
+      [
+        0.525001,
+        -0.4508762
+      ],
+      [
+        -0.6749988,
+        -0.5098315
+      ],
+      [
+        -0.5663236,
+        0.8699942
+      ],
+      [
+        -0.495086,
+        -0.5800056
+      ],
+      [
+        0.525001,
+        -0.4508763
+      ],
+      [
+        -0.6749988,
+        -0.5098317
+      ],
+      [
+        -0.5663237,
+        0.869994
+      ],
+      [
+        -0.4950859,
+        -0.5800058
+      ],
+      [
+        0.525001,
+        -0.4508763
+      ],
+      [
+        -0.6749988,
+        -0.5098319
+      ],
+      [
+        -0.5663239,
+        0.8699938
+      ],
+      [
+        -0.4950859,
+        -0.580006
+      ],
+      [
+        0.5250012,
+        -0.4508763
+      ],
+      [
+        -0.6749986,
+        -0.509832
+      ],
+      [
+        -0.5663239,
+        0.8699937
+      ],
+      [
+        -0.4950857,
+        -0.5800061
+      ],
+      [
+        0.5250012,
+        -0.4508764
+      ],
+      [
+        -0.6749985,
+        -0.5098323
+      ],
+      [
+        -0.5663242,
+        0.8699934
+      ],
+      [
+        -0.4950857,
+        -0.5800064
+      ],
+      [
+        0.5250011,
+        -0.4508764
+      ],
+      [
+        -0.6749986,
+        -0.5098324
+      ],
+      [
+        -0.5663244,
+        0.8699933
+      ],
+      [
+        -0.4950857,
+        -0.5800065
+      ],
+      [
+        0.5250011,
+        -0.4508764
+      ],
+      [
+        -0.6749986,
+        -0.5098326
+      ],
+      [
+        -0.5663246,
+        0.8699931
+      ],
+      [
+        -0.4950857,
+        -0.5800067
+      ],
+      [
+        0.5250011,
+        -0.4508764
+      ],
+      [
+        -0.6749986,
+        -0.5098327
+      ],
+      [
+        -0.5663247,
+        0.869993
+      ],
+      [
+        -0.4950857,
+        -0.5800068
+      ],
+      [
+        0.5250013,
+        -0.4508764
+      ],
+      [
+        -0.6749984,
+        -0.5098329
+      ],
+      [
+        -0.5663247,
+        0.8699929
+      ],
+      [
+        -0.4950855,
+        -0.5800069
+      ],
+      [
+        0.5250013,
+        -0.4508762
+      ],
+      [
+        -0.6749985,
+        -0.5098329
+      ],
+      [
+        -0.5663249,
+        0.8699929
+      ],
+      [
+        -0.4950855,
+        -0.5800069
+      ],
+      [
+        0.5250011,
+        -0.4508763
+      ],
+      [
+        -0.6749986,
+        -0.5098331
+      ],
+      [
+        -0.5663252,
+        0.8699927
+      ],
+      [
+        -0.4950857,
+        -0.5800071
+      ],
+      [
+        0.5250013,
+        -0.4508763
+      ],
+      [
+        -0.6749984,
+        -0.5098333
+      ],
+      [
+        -0.5663254,
+        0.8699924
+      ],
+      [
+        -0.4950855,
+        -0.5800073
+      ],
+      [
+        0.5250013,
+        -0.4508764
+      ],
+      [
+        -0.6749984,
+        -0.5098336
+      ],
+      [
+        -0.5663255,
+        0.8699922
+      ],
+      [
+        -0.4950855,
+        -0.5800075
+      ],
+      [
+        0.5250013,
+        -0.450876
+      ],
+      [
+        -1.374998,
+        -0.5442261
+      ],
+      [
+        -0.5663261,
+        0.869992
+      ],
+      [
+        -0.4557802,
+        -1.380008
+      ],
+      [
+        -1.374998,
+        -0.5442271
+      ],
+      [
+        -0.5663268,
+        0.8699914
+      ],
+      [
+        -0.4557795,
+        -1.380008
+      ],
+      [
+        -1.374998,
+        -0.5442277
+      ],
+      [
+        -0.5663275,
+        0.8699912
+      ],
+      [
+        -0.4557789,
+        -1.380008
+      ],
+      [
+        -1.374998,
+        -0.5442284
+      ],
+      [
+        -0.5663282,
+        0.8699911
+      ],
+      [
+        -0.4557785,
+        -1.380008
+      ],
+      [
+        -1.374998,
+        -0.5442293
+      ],
+      [
+        -0.5663289,
+        0.8699906
+      ],
+      [
+        -0.4557779,
+        -1.380009
+      ],
+      [
+        -1.374998,
+        -0.5442302
+      ],
+      [
+        -0.5663298,
+        0.8699901
+      ],
+      [
+        -0.4557774,
+        -1.380009
+      ],
+      [
+        -1.374998,
+        -0.5442308
+      ],
+      [
+        -0.5663304,
+        0.86999
+      ],
+      [
+        -0.4557769,
+        -1.380009
+      ],
+      [
+        -1.374998,
+        -0.5442317
+      ],
+      [
+        -0.5663311,
+        0.8699895
+      ],
+      [
+        -0.4557764,
+        -1.38001
+      ],
+      [
+        -1.374997,
+        -0.5442324
+      ],
+      [
+        -0.5663317,
+        0.8699892
+      ],
+      [
+        -0.4557756,
+        -1.38001
+      ],
+      [
+        -1.374997,
+        -0.5442331
+      ],
+      [
+        -0.5663323,
+        0.869989
+      ],
+      [
+        -0.4557752,
+        -1.38001
+      ],
+      [
+        -1.374997,
+        -0.544234
+      ],
+      [
+        -0.5663331,
+        0.8699886
+      ],
+      [
+        -0.4557746,
+        -1.38001
+      ],
+      [
+        -1.374997,
+        -0.5442347
+      ],
+      [
+        -0.5663337,
+        0.8699883
+      ],
+      [
+        -0.4557739,
+        -1.380011
+      ],
+      [
+        -1.374997,
+        -0.5442354
+      ],
+      [
+        -0.5663344,
+        0.8699881
+      ],
+      [
+        -0.4557735,
+        -1.380011
+      ],
+      [
+        -1.374997,
+        -0.5442361
+      ],
+      [
+        -0.566335,
+        0.8699878
+      ],
+      [
+        -0.4557727,
+        -1.380011
+      ],
+      [
+        -1.374997,
+        -0.5442368
+      ],
+      [
+        -0.5663358,
+        0.8699874
+      ],
+      [
+        -0.4557722,
+        -1.380011
+      ],
+      [
+        -1.374997,
+        -0.5442377
+      ],
+      [
+        -0.5663363,
+        0.8699871
+      ],
+      [
+        -0.4557717,
+        -1.380011
+      ],
+      [
+        -1.374997,
+        -0.5442384
+      ],
+      [
+        -0.566337,
+        0.8699869
+      ],
+      [
+        -0.4557711,
+        -1.380012
+      ],
+      [
+        -1.374997,
+        -0.5442392
+      ],
+      [
+        -0.5663379,
+        0.8699865
+      ],
+      [
+        -0.4557706,
+        -1.380012
+      ],
+      [
+        -1.374997,
+        -0.5442401
+      ],
+      [
+        -0.5663387,
+        0.8699862
+      ],
+      [
+        -0.4557702,
+        -1.380012
+      ],
+      [
+        -1.374996,
+        -0.5442407
+      ],
+      [
+        -0.5663394,
+        0.8699859
+      ],
+      [
+        -0.4557697,
+        -1.380012
+      ],
+      [
+        -1.375038,
+        -0.5439288
+      ],
+      [
+        -0.5662664,
+        0.8702324
+      ],
+      [
+        -0.4558787,
+        -1.379775
+      ],
+      [
+        -1.375079,
+        -0.5436168
+      ],
+      [
+        -0.5661932,
+        0.8704789
+      ],
+      [
+        -0.4559874,
+        -1.379537
+      ],
+      [
+        -1.37512,
+        -0.543305
+      ],
+      [
+        -0.5661203,
+        0.8707253
+      ],
+      [
+        -0.4560963,
+        -1.3793
+      ],
+      [
+        -1.375161,
+        -0.5429931
+      ],
+      [
+        -0.5660468,
+        0.8709718
+      ],
+      [
+        -0.456205,
+        -1.379062
+      ],
+      [
+        -1.375203,
+        -0.5426811
+      ],
+      [
+        -0.5659735,
+        0.8712184
+      ],
+      [
+        -0.4563138,
+        -1.378824
+      ],
+      [
+        -1.375244,
+        -0.5423682
+      ],
+      [
+        -0.5658992,
+        0.8714648
+      ],
+      [
+        -0.456424,
+        -1.378587
+      ],
+      [
+        -1.375285,
+        -0.5420561
+      ],
+      [
+        -0.5658251,
+        0.871711
+      ],
+      [
+        -0.4565329,
+        -1.37835
+      ],
+      [
+        -1.375327,
+        -0.5417417
+      ],
+      [
+        -0.5657481,
+        0.8719577
+      ],
+      [
+        -0.4566447,
+        -1.378112
+      ],
+      [
+        -1.375368,
+        -0.5414284
+      ],
+      [
+        -0.5656732,
+        0.8722044
+      ],
+      [
+        -0.4567546,
+        -1.377875
+      ],
+      [
+        -1.375409,
+        -0.5411161
+      ],
+      [
+        -0.565599,
+        0.8724507
+      ],
+      [
+        -0.4568639,
+        -1.377637
+      ],
+      [
+        -1.37545,
+        -0.5408016
+      ],
+      [
+        -0.5655224,
+        0.8726975
+      ],
+      [
+        -0.4569751,
+        -1.377399
+      ],
+      [
+        -1.375491,
+        -0.5404885
+      ],
+      [
+        -0.5654478,
+        0.8729442
+      ],
+      [
+        -0.4570848,
+        -1.377161
+      ],
+      [
+        -1.375533,
+        -0.5401761
+      ],
+      [
+        -0.5653735,
+        0.8731906
+      ],
+      [
+        -0.4571942,
+        -1.376924
+      ],
+      [
+        -1.375574,
+        -0.5398633
+      ],
+      [
+        -0.5652992,
+        0.8734373
+      ],
+      [
+        -0.4573036,
+        -1.376686
+      ],
+      [
+        -1.375615,
+        -0.5395516
+      ],
+      [
+        -0.5652264,
+        0.8736836
+      ],
+      [
+        -0.4574121,
+        -1.376449
+      ],
+      [
+        -1.375656,
+        -0.5392399
+      ],
+      [
+        -0.5651534,
+        0.8739297
+      ],
+      [
+        -0.457521,
+        -1.376211
+      ],
+      [
+        0.5244289,
+        -0.4481923
+      ],
+      [
+        -1.375697,
+        -0.5389282
+      ],
+      [
+        -0.5650804,
+        0.8741758
+      ],
+      [
+        -0.4576299,
+        -1.375974
+      ],
+      [
+        0.5243952,
+        -0.4480341
+      ],
+      [
+        -0.6756891,
+        -0.505244
+      ],
+      [
+        -0.5650071,
+        0.8744221
+      ],
+      [
+        -0.4958785,
+        -0.5756798
+      ],
+      [
+        0.5243614,
+        -0.447876
+      ],
+      [
+        -0.6757275,
+        -0.5049888
+      ],
+      [
+        -0.564934,
+        0.8746684
+      ],
+      [
+        -0.4959226,
+        -0.5754391
+      ],
+      [
+        0.524325,
+        -0.4477167
+      ],
+      [
+        -0.6757692,
+        -0.5047197
+      ],
+      [
+        -0.5648494,
+        0.8749273
+      ],
+      [
+        -0.4959707,
+        -0.5751864
+      ],
+      [
+        0.5243252,
+        -0.4477176
+      ],
+      [
+        -0.6757689,
+        -0.5047217
+      ],
+      [
+        -0.5648503,
+        0.8749254
+      ],
+      [
+        -0.4959704,
+        -0.5751883
+      ],
+      [
+        0.5243254,
+        -0.4477184
+      ],
+      [
+        -0.6757686,
+        -0.5047237
+      ],
+      [
+        -0.5648514,
+        0.8749236
+      ],
+      [
+        -0.4959701,
+        -0.5751901
+      ],
+      [
+        0.5243257,
+        -0.4477192
+      ],
+      [
+        -0.6757683,
+        -0.5047256
+      ],
+      [
+        -0.5648524,
+        0.8749218
+      ],
+      [
+        -0.4959696,
+        -0.5751918
+      ],
+      [
+        0.5243259,
+        -0.4477199
+      ],
+      [
+        -0.675768,
+        -0.5047275
+      ],
+      [
+        -0.5648534,
+        0.87492
+      ],
+      [
+        -0.4959693,
+        -0.5751935
+      ],
+      [
+        0.5243262,
+        -0.4477207
+      ],
+      [
+        -0.6757677,
+        -0.5047293
+      ],
+      [
+        -0.5648544,
+        0.8749182
+      ],
+      [
+        -0.4959689,
+        -0.5751952
+      ],
+      [
+        0.5243264,
+        -0.4477215
+      ],
+      [
+        -0.6757674,
+        -0.5047313
+      ],
+      [
+        -0.5476574,
+        0.5128881
+      ],
+      [
+        -0.4959685,
+        -0.575197
+      ],
+      [
+        0.5243266,
+        -0.4477223
+      ],
+      [
+        -0.6757671,
+        -0.5047333
+      ],
+      [
+        -0.5648564,
+        0.8749145
+      ],
+      [
+        -0.4959682,
+        -0.5751988
+      ],
+      [
+        0.5243269,
+        -0.4477231
+      ],
+      [
+        -0.6757668,
+        -0.5047352
+      ],
+      [
+        -0.5648575,
+        0.8749127
+      ],
+      [
+        -0.4959679,
+        -0.5752006
+      ],
+      [
+        0.5243273,
+        -0.4477238
+      ],
+      [
+        -0.6757663,
+        -0.5047371
+      ],
+      [
+        -0.5648583,
+        0.874911
+      ],
+      [
+        -0.4959673,
+        -0.5752022
+      ],
+      [
+        0.5243274,
+        -0.4477246
+      ],
+      [
+        -0.6757662,
+        -0.504739
+      ],
+      [
+        -0.5648594,
+        0.8749091
+      ],
+      [
+        -0.495967,
+        -0.575204
+      ],
+      [
+        0.5243276,
+        -0.4477254
+      ],
+      [
+        -0.6757659,
+        -0.504741
+      ],
+      [
+        -0.5648605,
+        0.8749073
+      ],
+      [
+        -0.4959667,
+        -0.5752058
+      ],
+      [
+        0.5243279,
+        -0.4477263
+      ],
+      [
+        -0.6757656,
+        -0.504743
+      ],
+      [
+        -0.5648615,
+        0.8749053
+      ],
+      [
+        -0.4959663,
+        -0.5752077
+      ],
+      [
+        0.5243281,
+        -0.4477271
+      ],
+      [
+        -0.6757653,
+        -0.5047449
+      ],
+      [
+        -0.5648625,
+        0.8749035
+      ],
+      [
+        -0.495966,
+        -0.5752094
+      ],
+      [
+        0.5243284,
+        -0.4477279
+      ],
+      [
+        -0.675765,
+        -0.5047469
+      ],
+      [
+        -0.5648636,
+        0.8749016
+      ],
+      [
+        -0.4959656,
+        -0.5752112
+      ],
+      [
+        0.5243285,
+        -0.4477288
+      ],
+      [
+        -0.6757647,
+        -0.5047488
+      ],
+      [
+        -0.5648646,
+        0.8748997
+      ],
+      [
+        -0.4959653,
+        -0.575213
+      ],
+      [
+        0.5243287,
+        -0.4477296
+      ],
+      [
+        -0.6757645,
+        -0.5047508
+      ],
+      [
+        -0.5648657,
+        0.8748979
+      ],
+      [
+        -0.495965,
+        -0.5752148
+      ],
+      [
+        0.5243289,
+        -0.4477304
+      ],
+      [
+        -0.6757643,
+        -0.5047528
+      ],
+      [
+        -0.5648668,
+        0.874896
+      ],
+      [
+        -0.4959646,
+        -0.5752166
+      ],
+      [
+        0.5243291,
+        -0.4477312
+      ],
+      [
+        -0.6757641,
+        -0.5047547
+      ],
+      [
+        -0.5648679,
+        0.8748942
+      ],
+      [
+        -0.4959644,
+        -0.5752183
+      ],
+      [
+        0.5243292,
+        -0.447732
+      ],
+      [
+        -0.6757639,
+        -0.5047566
+      ],
+      [
+        -0.5648689,
+        0.8748924
+      ],
+      [
+        -0.4959642,
+        -0.5752201
+      ],
+      [
+        0.524995,
+        -0.4508503
+      ],
+      [
+        -0.6750057,
+        -0.5097887
+      ],
+      [
+        -0.5663111,
+        0.8700355
+      ],
+      [
+        -0.4950939,
+        -0.5799654
+      ],
+      [
+        0.5249949,
+        -0.4508501
+      ],
+      [
+        -0.6750057,
+        -0.5097889
+      ],
+      [
+        -0.5663115,
+        0.8700353
+      ],
+      [
+        -0.4950938,
+        -0.5799655
+      ],
+      [
+        0.524995,
+        -0.4508498
+      ],
+      [
+        -0.6750057,
+        -0.5097892
+      ],
+      [
+        -0.5663121,
+        0.8700351
+      ],
+      [
+        -0.4950937,
+        -0.5799657
+      ],
+      [
+        0.5249949,
+        -0.4508496
+      ],
+      [
+        -0.6750057,
+        -0.5097893
+      ],
+      [
+        -0.5663127,
+        0.8700349
+      ],
+      [
+        -0.4950938,
+        -0.5799659
+      ],
+      [
+        0.5249949,
+        -0.4508494
+      ],
+      [
+        -0.6750057,
+        -0.5097896
+      ],
+      [
+        -0.5663131,
+        0.8700346
+      ],
+      [
+        -0.4950936,
+        -0.5799661
+      ],
+      [
+        0.5249949,
+        -0.4508491
+      ],
+      [
+        -0.6750057,
+        -0.5097899
+      ],
+      [
+        -0.5663137,
+        0.8700345
+      ],
+      [
+        -0.4950937,
+        -0.5799662
+      ],
+      [
+        0.5249949,
+        -0.4508489
+      ],
+      [
+        -0.6750057,
+        -0.5097901
+      ],
+      [
+        -0.5663143,
+        0.8700342
+      ],
+      [
+        -0.4950936,
+        -0.5799664
+      ],
+      [
+        0.5249949,
+        -0.4508488
+      ],
+      [
+        -0.6750056,
+        -0.5097904
+      ],
+      [
+        -0.5663147,
+        0.8700341
+      ],
+      [
+        -0.4950935,
+        -0.5799666
+      ],
+      [
+        0.5249949,
+        -0.4508485
+      ],
+      [
+        -0.6750056,
+        -0.5097907
+      ],
+      [
+        -0.5663152,
+        0.8700338
+      ],
+      [
+        -0.4950935,
+        -0.5799668
+      ],
+      [
+        0.5249949,
+        -0.4508483
+      ],
+      [
+        -0.6750056,
+        -0.5097908
+      ],
+      [
+        -0.5663157,
+        0.8700337
+      ],
+      [
+        -0.4950935,
+        -0.579967
+      ],
+      [
+        0.5249949,
+        -0.4508481
+      ],
+      [
+        -0.6750056,
+        -0.5097911
+      ],
+      [
+        -0.5663163,
+        0.8700334
+      ],
+      [
+        -0.4950934,
+        -0.5799671
+      ],
+      [
+        0.5249949,
+        -0.4508479
+      ],
+      [
+        -0.6750055,
+        -0.5097913
+      ],
+      [
+        -0.5663168,
+        0.8700333
+      ],
+      [
+        -0.4950933,
+        -0.5799673
+      ],
+      [
+        0.5249949,
+        -0.4508476
+      ],
+      [
+        -0.6750055,
+        -0.5097916
+      ],
+      [
+        -0.5663173,
+        0.8700331
+      ],
+      [
+        -0.4950933,
+        -0.5799674
+      ],
+      [
+        0.5249948,
+        -0.4508474
+      ],
+      [
+        -0.6750056,
+        -0.5097919
+      ],
+      [
+        -0.5663178,
+        0.8700328
+      ],
+      [
+        -0.4950933,
+        -0.5799676
+      ],
+      [
+        0.5249949,
+        -0.4508472
+      ],
+      [
+        -0.6750054,
+        -0.5097921
+      ],
+      [
+        -0.5663183,
+        0.8700326
+      ],
+      [
+        -0.4950932,
+        -0.5799679
+      ],
+      [
+        0.5249949,
+        -0.450847
+      ],
+      [
+        -0.6750054,
+        -0.5097923
+      ],
+      [
+        -0.5663188,
+        0.8700324
+      ],
+      [
+        -0.4950932,
+        -0.5799679
+      ],
+      [
+        0.5249948,
+        -0.4508467
+      ],
+      [
+        -0.6750055,
+        -0.5097926
+      ],
+      [
+        -0.5663193,
+        0.8700323
+      ],
+      [
+        -0.4950932,
+        -0.5799681
+      ],
+      [
+        0.5249949,
+        -0.4508465
+      ],
+      [
+        -0.6750054,
+        -0.5097928
+      ],
+      [
+        -0.5663198,
+        0.8700321
+      ],
+      [
+        -0.4950931,
+        -0.5799683
+      ],
+      [
+        0.5249949,
+        -0.4508463
+      ],
+      [
+        -0.6750054,
+        -0.509793
+      ],
+      [
+        -0.5663205,
+        0.8700318
+      ],
+      [
+        -0.495093,
+        -0.5799685
+      ],
+      [
+        0.5249948,
+        -0.450846
+      ],
+      [
+        -0.6750054,
+        -0.5097933
+      ],
+      [
+        -0.566321,
+        0.8700317
+      ],
+      [
+        -0.495093,
+        -0.5799686
+      ],
+      [
+        0.5250003,
+        -0.4508764
+      ],
+      [
+        -0.6749997,
+        -0.50983
+      ],
+      [
+        -0.5663224,
+        0.8699955
+      ],
+      [
+        -0.4950869,
+        -0.5800044
+      ],
+      [
+        0.5250003,
+        -0.4508762
+      ],
+      [
+        -0.6749997,
+        -0.5098302
+      ],
+      [
+        -0.5663231,
+        0.8699953
+      ],
+      [
+        -0.4950868,
+        -0.5800046
+      ],
+      [
+        0.5250002,
+        -0.4508759
+      ],
+      [
+        -0.6749997,
+        -0.5098304
+      ],
+      [
+        -0.5663236,
+        0.8699952
+      ],
+      [
+        -0.4950868,
+        -0.5800046
+      ],
+      [
+        0.5250002,
+        -0.4508756
+      ],
+      [
+        -0.6749997,
+        -0.5098306
+      ],
+      [
+        -0.5663241,
+        0.869995
+      ],
+      [
+        -0.4950868,
+        -0.5800048
+      ],
+      [
+        0.5250002,
+        -0.4508755
+      ],
+      [
+        -0.6749996,
+        -0.5098308
+      ],
+      [
+        -0.5663245,
+        0.8699948
+      ],
+      [
+        -0.4950867,
+        -0.580005
+      ],
+      [
+        0.5250002,
+        -0.4508752
+      ],
+      [
+        -0.6749996,
+        -0.5098311
+      ],
+      [
+        -0.5663251,
+        0.8699946
+      ],
+      [
+        -0.4950867,
+        -0.5800052
+      ],
+      [
+        0.5250002,
+        -0.450875
+      ],
+      [
+        -0.6749995,
+        -0.5098313
+      ],
+      [
+        -0.5663255,
+        0.8699944
+      ],
+      [
+        -0.4950866,
+        -0.5800053
+      ],
+      [
+        0.5250002,
+        -0.4508747
+      ],
+      [
+        -0.6749995,
+        -0.5098315
+      ],
+      [
+        -0.5663261,
+        0.8699943
+      ],
+      [
+        -0.4950866,
+        -0.5800055
+      ],
+      [
+        0.5250002,
+        -0.4508746
+      ],
+      [
+        -0.6749995,
+        -0.5098317
+      ],
+      [
+        -0.5663266,
+        0.869994
+      ],
+      [
+        -0.4950866,
+        -0.5800056
+      ],
+      [
+        0.5250002,
+        -0.4508743
+      ],
+      [
+        -0.6749995,
+        -0.509832
+      ],
+      [
+        -0.5663271,
+        0.8699939
+      ],
+      [
+        -0.4950866,
+        -0.5800058
+      ],
+      [
+        0.5250002,
+        -0.450874
+      ],
+      [
+        -0.6749995,
+        -0.5098321
+      ],
+      [
+        -0.5663276,
+        0.8699938
+      ],
+      [
+        -0.4950865,
+        -0.5800059
+      ],
+      [
+        0.5250001,
+        -0.4508739
+      ],
+      [
+        -0.6749995,
+        -0.5098324
+      ],
+      [
+        -0.5663281,
+        0.8699935
+      ],
+      [
+        -0.4950865,
+        -0.5800061
+      ],
+      [
+        0.525,
+        -0.4508736
+      ],
+      [
+        -0.6749995,
+        -0.5098326
+      ],
+      [
+        -0.5663286,
+        0.8699934
+      ],
+      [
+        -0.4950865,
+        -0.5800062
+      ],
+      [
+        0.5250002,
+        -0.4508734
+      ],
+      [
+        -0.6749995,
+        -0.5098329
+      ],
+      [
+        -0.5663292,
+        0.8699931
+      ],
+      [
+        -0.4950864,
+        -0.5800065
+      ],
+      [
+        0.5250002,
+        -0.4508731
+      ],
+      [
+        -0.6749995,
+        -0.509833
+      ],
+      [
+        -0.5663297,
+        0.8699931
+      ],
+      [
+        -0.4950863,
+        -0.5800064
+      ],
+      [
+        0.5250001,
+        -0.4508729
+      ],
+      [
+        -0.6749994,
+        -0.5098333
+      ],
+      [
+        -0.5663301,
+        0.8699928
+      ],
+      [
+        -0.4950863,
+        -0.5800067
+      ],
+      [
+        0.5250001,
+        -0.4508727
+      ],
+      [
+        -0.6749994,
+        -0.5098335
+      ],
+      [
+        -0.5663306,
+        0.8699926
+      ],
+      [
+        -0.4950863,
+        -0.5800068
+      ],
+      [
+        0.525,
+        -0.4508725
+      ],
+      [
+        -0.6749995,
+        -0.5098338
+      ],
+      [
+        -0.5663312,
+        0.8699924
+      ],
+      [
+        -0.4950863,
+        -0.580007
+      ],
+      [
+        0.525,
+        -0.4508722
+      ],
+      [
+        -0.6749995,
+        -0.5098339
+      ],
+      [
+        -0.5663316,
+        0.8699923
+      ],
+      [
+        -0.4950863,
+        -0.5800071
+      ],
+      [
+        0.525,
+        -0.450872
+      ],
+      [
+        -0.6749995,
+        -0.5098342
+      ],
+      [
+        -0.5663323,
+        0.8699921
+      ],
+      [
+        -0.4950862,
+        -0.5800073
+      ],
+      [
+        0.5250003,
+        -0.4508765
+      ],
+      [
+        -0.6749996,
+        -0.5098298
+      ],
+      [
+        -0.5663221,
+        0.8699957
+      ],
+      [
+        -0.4950869,
+        -0.5800043
+      ],
+      [
+        0.5250003,
+        -0.4508764
+      ],
+      [
+        -0.6749996,
+        -0.5098301
+      ],
+      [
+        -0.5663225,
+        0.8699955
+      ],
+      [
+        -0.4950868,
+        -0.5800045
+      ],
+      [
+        0.5250003,
+        -0.4508761
+      ],
+      [
+        -0.6749996,
+        -0.5098302
+      ],
+      [
+        -0.566323,
+        0.8699953
+      ],
+      [
+        -0.4950868,
+        -0.5800046
+      ],
+      [
+        0.5250003,
+        -0.4508759
+      ],
+      [
+        -0.6749995,
+        -0.5098305
+      ],
+      [
+        -0.5663235,
+        0.8699951
+      ],
+      [
+        -0.4950867,
+        -0.5800048
+      ],
+      [
+        0.5250003,
+        -0.4508758
+      ],
+      [
+        -0.6749995,
+        -0.5098307
+      ],
+      [
+        -0.5663239,
+        0.8699949
+      ],
+      [
+        -0.4950867,
+        -0.5800049
+      ],
+      [
+        0.5250003,
+        -0.4508755
+      ],
+      [
+        -0.6749995,
+        -0.5098309
+      ],
+      [
+        -0.5663245,
+        0.8699948
+      ],
+      [
+        -0.4950867,
+        -0.580005
+      ],
+      [
+        0.5250003,
+        -0.4508753
+      ],
+      [
+        -0.6749995,
+        -0.5098311
+      ],
+      [
+        -0.5663249,
+        0.8699946
+      ],
+      [
+        -0.4950866,
+        -0.5800052
+      ],
+      [
+        0.5250003,
+        -0.4508751
+      ],
+      [
+        -0.6749994,
+        -0.5098313
+      ],
+      [
+        -0.5663254,
+        0.8699944
+      ],
+      [
+        -0.4950865,
+        -0.5800053
+      ],
+      [
+        0.5250004,
+        -0.450875
+      ],
+      [
+        -0.6749994,
+        -0.5098315
+      ],
+      [
+        -0.5663257,
+        0.8699942
+      ],
+      [
+        -0.4950865,
+        -0.5800055
+      ],
+      [
+        0.5250004,
+        -0.4508748
+      ],
+      [
+        -0.6749994,
+        -0.5098318
+      ],
+      [
+        -0.5663261,
+        0.869994
+      ],
+      [
+        -0.4950864,
+        -0.5800057
+      ],
+      [
+        0.5250004,
+        -0.4508746
+      ],
+      [
+        -0.6749993,
+        -0.509832
+      ],
+      [
+        -0.5663266,
+        0.8699939
+      ],
+      [
+        -0.4950863,
+        -0.5800058
+      ],
+      [
+        0.5250005,
+        -0.4508744
+      ],
+      [
+        -0.6749992,
+        -0.5098322
+      ],
+      [
+        -0.566327,
+        0.8699937
+      ],
+      [
+        -0.4950863,
+        -0.580006
+      ],
+      [
+        0.5250005,
+        -0.4508742
+      ],
+      [
+        -0.6749992,
+        -0.5098324
+      ],
+      [
+        -0.5663275,
+        0.8699934
+      ],
+      [
+        -0.4950863,
+        -0.5800062
+      ],
+      [
+        0.5250005,
+        -0.450874
+      ],
+      [
+        -0.6749992,
+        -0.5098327
+      ],
+      [
+        -0.566328,
+        0.8699933
+      ],
+      [
+        -0.4950862,
+        -0.5800064
+      ],
+      [
+        0.5250004,
+        -0.4508738
+      ],
+      [
+        -0.6749992,
+        -0.5098329
+      ],
+      [
+        -0.5663284,
+        0.8699932
+      ],
+      [
+        -0.4950861,
+        -0.5800065
+      ],
+      [
+        0.5250004,
+        -0.4508736
+      ],
+      [
+        -0.6749992,
+        -0.509833
+      ],
+      [
+        -0.5663289,
+        0.869993
+      ],
+      [
+        -0.4950861,
+        -0.5800066
+      ],
+      [
+        0.5250005,
+        -0.4508734
+      ],
+      [
+        -0.6749992,
+        -0.5098333
+      ],
+      [
+        -0.5663294,
+        0.8699928
+      ],
+      [
+        -0.495086,
+        -0.5800067
+      ],
+      [
+        0.5250003,
+        -0.4508731
+      ],
+      [
+        -0.6749992,
+        -0.5098335
+      ],
+      [
+        -0.5663297,
+        0.8699927
+      ],
+      [
+        -0.495086,
+        -0.5800068
+      ],
+      [
+        0.5250004,
+        -0.450873
+      ],
+      [
+        -0.6749992,
+        -0.5098336
+      ],
+      [
+        -0.5663302,
+        0.8699925
+      ],
+      [
+        -0.495086,
+        -0.580007
+      ],
+      [
+        0.5250005,
+        -0.4508728
+      ],
+      [
+        -0.6749991,
+        -0.5098339
+      ],
+      [
+        -0.5663306,
+        0.8699923
+      ],
+      [
+        -0.4950859,
+        -0.5800071
+      ],
+      [
+        0.5250007,
+        -0.4508774
+      ],
+      [
+        -0.6749993,
+        -0.5098295
+      ],
+      [
+        -0.5663202,
+        0.8699959
+      ],
+      [
+        -0.4950866,
+        -0.5800041
+      ],
+      [
+        0.5250007,
+        -0.4508774
+      ],
+      [
+        -0.6749993,
+        -0.5098296
+      ],
+      [
+        -0.5663206,
+        0.8699958
+      ],
+      [
+        -0.4950866,
+        -0.5800042
+      ],
+      [
+        0.5250007,
+        -0.4508773
+      ],
+      [
+        -0.6749992,
+        -0.5098296
+      ],
+      [
+        -0.5663207,
+        0.8699957
+      ],
+      [
+        -0.4950866,
+        -0.5800043
+      ],
+      [
+        0.5250007,
+        -0.4508773
+      ],
+      [
+        -0.6749992,
+        -0.5098298
+      ],
+      [
+        -0.5663209,
+        0.8699956
+      ],
+      [
+        -0.4950866,
+        -0.5800044
+      ],
+      [
+        0.5250008,
+        -0.4508772
+      ],
+      [
+        -0.6749992,
+        -0.5098299
+      ],
+      [
+        -0.566321,
+        0.8699955
+      ],
+      [
+        -0.4950865,
+        -0.5800045
+      ],
+      [
+        0.5250008,
+        -0.4508771
+      ],
+      [
+        -0.6749992,
+        -0.5098301
+      ],
+      [
+        -0.5663214,
+        0.8699954
+      ],
+      [
+        -0.4950865,
+        -0.5800046
+      ],
+      [
+        0.5250008,
+        -0.4508771
+      ],
+      [
+        -0.6749992,
+        -0.5098302
+      ],
+      [
+        -0.5663215,
+        0.8699952
+      ],
+      [
+        -0.4950865,
+        -0.5800047
+      ],
+      [
+        0.5250008,
+        -0.450877
+      ],
+      [
+        -0.6749992,
+        -0.5098303
+      ],
+      [
+        -0.5663217,
+        0.8699952
+      ],
+      [
+        -0.4950865,
+        -0.5800048
+      ],
+      [
+        0.5250008,
+        -0.450877
+      ],
+      [
+        -0.6749992,
+        -0.5098304
+      ],
+      [
+        -0.566322,
+        0.8699951
+      ],
+      [
+        -0.4950864,
+        -0.5800049
+      ],
+      [
+        0.5250008,
+        -0.4508769
+      ],
+      [
+        -0.6749992,
+        -0.5098305
+      ],
+      [
+        -0.5663221,
+        0.869995
+      ],
+      [
+        -0.4950864,
+        -0.5800049
+      ],
+      [
+        0.5250008,
+        -0.4508768
+      ],
+      [
+        -0.6749991,
+        -0.5098307
+      ],
+      [
+        -0.5663223,
+        0.8699948
+      ],
+      [
+        -0.4950864,
+        -0.580005
+      ],
+      [
+        0.5250008,
+        -0.4508768
+      ],
+      [
+        -0.6749991,
+        -0.5098307
+      ],
+      [
+        -0.5663223,
+        0.8699948
+      ],
+      [
+        -0.4950864,
+        -0.580005
+      ],
+      [
+        0.5250008,
+        -0.4508768
+      ],
+      [
+        -0.6749991,
+        -0.5098307
+      ],
+      [
+        -0.5663223,
+        0.8699948
+      ],
+      [
+        -0.4950864,
+        -0.580005
+      ],
+      [
+        0.5250008,
+        -0.4508768
+      ],
+      [
+        -0.6749991,
+        -0.5098307
+      ],
+      [
+        -0.5663223,
+        0.8699948
+      ],
+      [
+        -0.4950864,
+        -0.580005
+      ],
+      [
+        0.5250008,
+        -0.4508768
+      ],
+      [
+        -0.6749991,
+        -0.5098307
+      ],
+      [
+        -0.5663223,
+        0.8699948
+      ],
+      [
+        -0.4950864,
+        -0.580005
+      ],
+      [
+        0.5250008,
+        -0.4508768
+      ],
+      [
+        -0.6749991,
+        -0.5098307
+      ],
+      [
+        -0.5663223,
+        0.8699948
+      ],
+      [
+        -0.4950864,
+        -0.580005
+      ],
+      [
+        0.5250008,
+        -0.4508768
+      ],
+      [
+        -0.6749991,
+        -0.5098307
+      ],
+      [
+        -0.5663223,
+        0.8699948
+      ],
+      [
+        -0.4950864,
+        -0.580005
+      ],
+      [
+        0.5250008,
+        -0.4508768
+      ],
+      [
+        -0.6749991,
+        -0.5098307
+      ],
+      [
+        -0.5663223,
+        0.8699948
+      ],
+      [
+        -0.4950864,
+        -0.580005
+      ],
+      [
+        0.5250008,
+        -0.4508768
+      ],
+      [
+        -0.6749991,
+        -0.5098307
+      ],
+      [
+        -0.5663223,
+        0.8699948
+      ],
+      [
+        -0.4950864,
+        -0.580005
+      ],
+      [
+        0.5250008,
+        -0.4508768
+      ],
+      [
+        -0.6749991,
+        -0.5098307
+      ],
+      [
+        -0.5663223,
+        0.8699948
+      ],
+      [
+        -0.4950864,
+        -0.580005
+      ],
+      [
+        0.5250006,
+        -0.4508816
+      ],
+      [
+        -0.6749997,
+        -0.5098259
+      ],
+      [
+        -0.5663118,
+        0.8699988
+      ],
+      [
+        -0.4950876,
+        -0.5800017
+      ],
+      [
+        0.5250006,
+        -0.4508816
+      ],
+      [
+        -0.6749997,
+        -0.5098259
+      ],
+      [
+        -0.5663118,
+        0.8699988
+      ],
+      [
+        -0.4950876,
+        -0.5800017
+      ],
+      [
+        0.5250006,
+        -0.4508816
+      ],
+      [
+        -0.6749997,
+        -0.5098259
+      ],
+      [
+        -0.5663118,
+        0.8699988
+      ],
+      [
+        -0.4950876,
+        -0.5800017
+      ],
+      [
+        0.5250006,
+        -0.4508816
+      ],
+      [
+        -0.6749997,
+        -0.5098259
+      ],
+      [
+        -0.5663118,
+        0.8699988
+      ],
+      [
+        -0.4950876,
+        -0.5800017
+      ],
+      [
+        0.5250006,
+        -0.4508816
+      ],
+      [
+        -0.6749997,
+        -0.5098259
+      ],
+      [
+        -0.5663118,
+        0.8699988
+      ],
+      [
+        -0.4950876,
+        -0.5800017
+      ],
+      [
+        0.5250006,
+        -0.4508816
+      ],
+      [
+        -0.6749997,
+        -0.5098259
+      ],
+      [
+        -0.5663118,
+        0.8699988
+      ],
+      [
+        -0.4950876,
+        -0.5800017
+      ],
+      [
+        0.5250006,
+        -0.4508816
+      ],
+      [
+        -0.6749997,
+        -0.5098259
+      ],
+      [
+        -0.5663118,
+        0.8699988
+      ],
+      [
+        -0.4950876,
+        -0.5800017
+      ],
+      [
+        0.5250006,
+        -0.4508816
+      ],
+      [
+        -0.6749997,
+        -0.5098259
+      ],
+      [
+        -0.5663118,
+        0.8699988
+      ],
+      [
+        -0.4950876,
+        -0.5800017
+      ],
+      [
+        0.5250006,
+        -0.4508816
+      ],
+      [
+        -0.6749997,
+        -0.5098259
+      ],
+      [
+        -0.5663118,
+        0.8699988
+      ],
+      [
+        -0.4950876,
+        -0.5800017
+      ],
+      [
+        0.5250006,
+        -0.4508816
+      ],
+      [
+        -0.6749997,
+        -0.5098259
+      ],
+      [
+        -0.5663118,
+        0.8699988
+      ],
+      [
+        -0.4950876,
+        -0.5800017
+      ]
+    ]
+  }
+}

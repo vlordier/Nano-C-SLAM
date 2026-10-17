@@ -221,6 +221,27 @@ repository root.
 
 ### Replay Gazebo data through the Nano-C-SLAM mapping core
 
+The collector's ROS callback, timer, freshness rejection, timeout diagnostics,
+and no-success-artifact behavior can also be exercised without starting
+Gazebo. After sourcing ROS and a workspace containing the Nano-C-SLAM
+interfaces and bridge packages, run the controlled publisher fixture:
+
+```sh
+cd ~/Work/Nano-C-SLAM
+source /opt/homebrew/opt/ros2-jazzy/setup.zsh
+source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
+uv run --no-project \
+  --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
+  python scripts/verify_gazebo_collector_ros.py \
+  --ros-python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11
+```
+
+The fixture uses an isolated local ROS domain. It captures 60 fresh pairs, then
+verifies that stale, future-dated, wrong-drone, and out-of-order streams fail
+with named rejection counters and no passing report. The pure pairer tests
+cover inclusive age/skew boundaries and over-limit skew. This is a ROS collector
+contract test, not a Gazebo freshness measurement.
+
 With the near-field Gazebo instance and sensor bridge running, start the
 collector in one terminal before launching the mission in another. It samples
 fresh odometry and the four-ray range topic at 10 Hz, then builds and runs the

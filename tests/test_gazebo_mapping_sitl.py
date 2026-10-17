@@ -184,6 +184,25 @@ class MappingSampleTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "exceeds its limit"):
             validate_capture_report(invalid)
 
+    def test_retained_gazebo_freshness_report_validates_pair_ages(self) -> None:
+        report_path = (
+            REPOSITORY_ROOT
+            / "artifacts/gazebo_mapping_sitl/cf1_nearfield_stamped_freshness.json"
+        )
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+        validate_capture_report(report)
+
+        pairs = report["input_pair_provenance"]
+        self.assertEqual(len(pairs), 170)
+        self.assertTrue(
+            all("range_age_ns" in pair and "odometry_age_ns" in pair for pair in pairs)
+        )
+        self.assertLessEqual(
+            max(max(pair["range_age_ns"], pair["odometry_age_ns"]) for pair in pairs),
+            report["pairing_limits"]["maximum_age_ns"],
+        )
+        self.assertEqual(max(pair["pair_skew_ns"] for pair in pairs), 0)
+
     def test_retained_nearfield_report_reconciles_four_beams_and_scan_windows(
         self,
     ) -> None:
@@ -275,42 +294,45 @@ class NativeMappingReplayTests(unittest.TestCase):
         assert isinstance(graph_size, int)
         self.assertGreaterEqual(graph_size, 2)
 
-    def test_retained_live_report_replays_through_owned_mapping_binary(self) -> None:
-        artifact_path = (
-            REPOSITORY_ROOT
-            / "artifacts/gazebo_mapping_sitl/cf1_nearfield_stamped_capture.json"
+    def test_retained_live_reports_replay_through_owned_mapping_binary(self) -> None:
+        artifact_paths = (
+            "cf1_nearfield_stamped_capture.json",
+            "cf1_nearfield_stamped_freshness.json",
         )
-        artifact = json.loads(artifact_path.read_text(encoding="utf-8"))
-        samples = []
-        for record in artifact["input_samples"]:
-            fields = record.split()
-            samples.append(
-                MappingSample(
-                    sample_id=int(fields[0]),
-                    timestamp_ms=int(fields[1]),
-                    x_m=float(fields[2]),
-                    y_m=float(fields[3]),
-                    yaw_rad=float(fields[4]),
-                    ranges_mm=cast(
-                        tuple[int, int, int, int],
-                        tuple(int(value) for value in fields[5:]),
-                    ),
-                )
-            )
+        for name in artifact_paths:
+            with self.subTest(artifact=name):
+                artifact_path = REPOSITORY_ROOT / "artifacts/gazebo_mapping_sitl" / name
+                artifact = json.loads(artifact_path.read_text(encoding="utf-8"))
+                samples = []
+                for record in artifact["input_samples"]:
+                    fields = record.split()
+                    samples.append(
+                        MappingSample(
+                            sample_id=int(fields[0]),
+                            timestamp_ms=int(fields[1]),
+                            x_m=float(fields[2]),
+                            y_m=float(fields[3]),
+                            yaw_rad=float(fields[4]),
+                            ranges_mm=cast(
+                                tuple[int, int, int, int],
+                                tuple(int(value) for value in fields[5:]),
+                            ),
+                        )
+                    )
 
-        replayed = _run_mapping(self.binary, samples)
-        retained = artifact["mapping"]
-        for field in (
-            "pose_count",
-            "scan_count",
-            "map_point_count",
-            "stored_constraint_count",
-            "optimized_constraint_count",
-            "optimized_pose_count",
-            "main_graph_size",
-            "has_nan",
-        ):
-            self.assertEqual(replayed[field], retained[field], field)
+                replayed = _run_mapping(self.binary, samples)
+                retained = artifact["mapping"]
+                for field in (
+                    "pose_count",
+                    "scan_count",
+                    "map_point_count",
+                    "stored_constraint_count",
+                    "optimized_constraint_count",
+                    "optimized_pose_count",
+                    "main_graph_size",
+                    "has_nan",
+                ):
+                    self.assertEqual(replayed[field], retained[field], field)
 
     def test_drops_ranges_beyond_firmware_loop_closure_limit(self) -> None:
         samples = [
