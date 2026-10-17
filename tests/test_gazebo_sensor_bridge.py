@@ -8,6 +8,8 @@ import types
 import unittest
 from unittest.mock import patch
 
+from test_support.ros_fixtures import odometry_message
+
 
 class _Publisher:
     def __init__(self) -> None:
@@ -107,13 +109,7 @@ class SensorBridgeOdometryTests(unittest.TestCase):
 
     @staticmethod
     def _message(x: float, *, sec: int = 10, nanosec: int = 0) -> object:
-        position = types.SimpleNamespace(x=x, y=0.0, z=0.0)
-        return types.SimpleNamespace(
-            pose=types.SimpleNamespace(pose=types.SimpleNamespace(position=position)),
-            header=types.SimpleNamespace(
-                stamp=types.SimpleNamespace(sec=sec, nanosec=nanosec)
-            ),
-        )
+        return odometry_message(x=x, sec=sec, nanosec=nanosec)
 
     def test_invalid_sample_does_not_poison_cache_and_later_sample_recovers(
         self,

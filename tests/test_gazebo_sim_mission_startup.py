@@ -9,6 +9,8 @@ import types
 import unittest
 from unittest.mock import patch
 
+from test_support.ros_fixtures import odometry_message
+
 
 class _Publisher:
     def __init__(self) -> None:
@@ -173,15 +175,7 @@ class SimMissionStartupTests(unittest.TestCase):
         node = self.module.SimMission()
         node._odometry_startup_timeout_s = 0.1
         node._startup_started_wall_s = time.monotonic() - 1.0
-        message = self.nav.Odometry()
-        message.pose = types.SimpleNamespace(
-            pose=types.SimpleNamespace(
-                position=types.SimpleNamespace(x=0.0, y=0.0, z=0.0)
-            )
-        )
-        message.header = types.SimpleNamespace(
-            stamp=types.SimpleNamespace(sec=1, nanosec=0)
-        )
+        message = odometry_message(x=0.0)
         self.assertEqual(node._odometry_message_count, 0)
         node.subscriptions[0].callback(message)
         self.assertTrue(node.timers[1].canceled)
@@ -194,15 +188,7 @@ class SimMissionStartupTests(unittest.TestCase):
 
     def test_invalid_first_odometry_fails_without_satisfying_readiness(self) -> None:
         node = self.module.SimMission()
-        message = self.nav.Odometry()
-        message.pose = types.SimpleNamespace(
-            pose=types.SimpleNamespace(
-                position=types.SimpleNamespace(x=0.0, y=0.0, z=float("nan"))
-            )
-        )
-        message.header = types.SimpleNamespace(
-            stamp=types.SimpleNamespace(sec=1, nanosec=0)
-        )
+        message = odometry_message(x=0.0, z=float("nan"))
 
         node.subscriptions[0].callback(message)
         node._step()
@@ -218,15 +204,7 @@ class SimMissionStartupTests(unittest.TestCase):
         node = self.module.SimMission()
         node.get_clock().now().nanoseconds = 1_000_000_000
         node._mapping_path_enabled = True
-        message = self.nav.Odometry()
-        message.pose = types.SimpleNamespace(
-            pose=types.SimpleNamespace(
-                position=types.SimpleNamespace(x=1.0, y=2.0, z=0.75)
-            )
-        )
-        message.header = types.SimpleNamespace(
-            stamp=types.SimpleNamespace(sec=1, nanosec=0)
-        )
+        message = odometry_message(x=1.0, y=2.0, z=0.75)
         node.subscriptions[0].callback(message)
 
         node._step()
@@ -241,15 +219,7 @@ class SimMissionStartupTests(unittest.TestCase):
         node = self.module.SimMission()
         node.get_clock().now().nanoseconds = 1_000_000_000
         node._mapping_path_enabled = True
-        message = self.nav.Odometry()
-        message.pose = types.SimpleNamespace(
-            pose=types.SimpleNamespace(
-                position=types.SimpleNamespace(x=1.0, y=2.0, z=0.1)
-            )
-        )
-        message.header = types.SimpleNamespace(
-            stamp=types.SimpleNamespace(sec=1, nanosec=0)
-        )
+        message = odometry_message(x=1.0, y=2.0, z=0.1)
         node.subscriptions[0].callback(message)
 
         node._step()

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import shlex
 import shutil
 from pathlib import Path
 
@@ -32,3 +33,10 @@ def materialize_mapping_source_checkout(destination: Path) -> tuple[Path, Path]:
     shutil.copyfile(REPOSITORY_ROOT / fixture_relative, fixture)
     shutil.copyfile(REPOSITORY_ROOT / source_relative, source)
     return fixture, source
+
+
+def write_executable_output(path: Path, output: str, *, exit_code: int = 0) -> None:
+    """Create a deterministic shell executable that emits literal test output."""
+    script = f"#!/bin/sh\nprintf '%s' {shlex.quote(output)}\nexit {exit_code}\n"
+    path.write_text(script, encoding="utf-8")
+    path.chmod(0o755)

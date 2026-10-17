@@ -33,7 +33,7 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary_directory = tempfile.TemporaryDirectory()
         self.root = Path(self.temporary_directory.name)
-        self.elf = self.root / "target.elf"
+        self.elf = self.root / "synthetic-target.elf"
         self.log = self.root / "target.log"
         self.commands = self.root / "compile_commands.json"
         self.provenance = self.root / "build-provenance.json"

@@ -19,7 +19,7 @@ class GvsocMappingEvidenceTests(unittest.TestCase):
     def _capture(self, marker: str) -> tuple[int, dict[str, object]]:
         with tempfile.TemporaryDirectory() as temporary_directory:
             directory = Path(temporary_directory)
-            elf = directory / "fixture.elf"
+            elf = directory / "synthetic-target.elf"
             log = directory / "gvsoc.log"
             output = directory / "report.json"
             elf.write_bytes(b"test ELF placeholder")

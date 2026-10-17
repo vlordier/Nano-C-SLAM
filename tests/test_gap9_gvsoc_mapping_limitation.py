@@ -11,7 +11,9 @@ from unittest.mock import patch
 from scripts.capture_gap9_gvsoc_mapping_limitation import main
 from test_support.gap9_mapping_fixtures import (
     GVSOC_MAPPING_LIMITATION_V1,
+    HOST_MAPPING_FAILURE,
     HOST_MAPPING_PASS,
+    write_executable_output,
 )
 
 
@@ -19,14 +21,13 @@ class GvsocMappingLimitationTests(unittest.TestCase):
     def _capture(self, marker: str, host_marker: str) -> tuple[int, dict[str, object]]:
         with tempfile.TemporaryDirectory() as temporary_directory:
             directory = Path(temporary_directory)
-            elf = directory / "fixture.elf"
+            elf = directory / "synthetic-target.elf"
             log = directory / "gvsoc.log"
             host_elf = directory / "host-smoke"
             output = directory / "report.json"
             elf.write_bytes(b"test GVSOC ELF placeholder")
             log.write_text(marker + "\n", encoding="utf-8")
-            host_elf.write_text(f"#!/bin/sh\nprintf '%s\\n' '{host_marker}'\n")
-            host_elf.chmod(0o755)
+            write_executable_output(host_elf, host_marker + "\n")
             with patch(
                 "sys.argv",
                 [
@@ -63,9 +64,7 @@ class GvsocMappingLimitationTests(unittest.TestCase):
     def test_host_failure_cannot_be_reported_as_reproduced_divergence(self) -> None:
         result, report = self._capture(
             GVSOC_MAPPING_LIMITATION_V1,
-            HOST_MAPPING_PASS.replace(
-                "NANO_C_SLAM_HOST:mapping_ok", "NANO_C_SLAM_HOST:mapping_fail"
-            ).replace("finite=60 graph=3", "finite=0 graph=0"),
+            HOST_MAPPING_FAILURE,
         )
 
         self.assertEqual(result, 1)

@@ -12,7 +12,11 @@ from unittest.mock import patch
 
 from scripts.capture_gap9_host_mapping_diagnostic import main
 from scripts.gap9_mapping_diagnostic import validate_mapping_diagnostic
-from test_support.gap9_mapping_fixtures import HOST_MAPPING_FAILURE, HOST_MAPPING_PASS
+from test_support.gap9_mapping_fixtures import (
+    HOST_MAPPING_FAILURE,
+    HOST_MAPPING_PASS,
+    write_executable_output,
+)
 
 
 class HostMappingDiagnosticCaptureTests(unittest.TestCase):
@@ -27,10 +31,7 @@ class HostMappingDiagnosticCaptureTests(unittest.TestCase):
         self.tempdir.cleanup()
 
     def write_binary(self, output: str, exit_code: int = 0) -> None:
-        shell_literal = "'" + output.replace("'", "'\"'\"'") + "'"
-        script = f"#!/bin/sh\nprintf '%s' {shell_literal}\nexit {exit_code}\n"
-        self.binary.write_text(script, encoding="utf-8")
-        self.binary.chmod(0o755)
+        write_executable_output(self.binary, output, exit_code=exit_code)
 
     def capture(self, *extra: str) -> tuple[int, str]:
         args = [
@@ -75,6 +76,7 @@ class HostMappingDiagnosticCaptureTests(unittest.TestCase):
     ) -> None:
         outputs = (
             "ordinary process output\n",
+            "malformed marker with 'quoted' text\n",
             HOST_MAPPING_PASS + "\n" + HOST_MAPPING_PASS + "\n",
             HOST_MAPPING_PASS.replace("icp_has_nan=0", "icp_has_nan=0 extra=1"),
             HOST_MAPPING_PASS.replace("NANO_C_SLAM_HOST", "NANO_C_SLAM_GVSOC"),

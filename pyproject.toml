@@ -75,6 +75,7 @@ include = [
     "sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/mapping_run_processes.py",
     "scripts/gazebo_mapping_run.py",
     "test_support/gap9_mapping_fixtures.py",
+    "test_support/ros_fixtures.py",
 ]
 
 [tool.ty.rules]
