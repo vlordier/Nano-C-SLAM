@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "status": "failed-closed",
+  "evidence_class": "native-gazebo-host-mapping-run",
+  "claim_boundary": "A second mission in an already-used Gazebo world reached 60 telemetry samples but failed per-window scan observability. No success report was published; supervisor interrupted mission and retained logs. This is not a mapping pass.",
+  "source_revision": "b8fca6650284b73458ce9fae9c6b402e7ca32ec1",
+  "run_id": "2666362a-88b7-4757-a2e6-4de4c94f6e6d",
+  "drone": "cf1",
+  "observed": {
+    "mission_log_phases": [
+      "WAITING",
+      "TAKEOFF",
+      "HOVER"
+    ],
+    "mapping_path_reported_complete_before_abort": true,
+    "collector_sample_target": 60,
+    "failure": "projected scan window has insufficient 2D spread",
+    "final_success_report_written": false
+  },
+  "logs": {
+    "mission.log": {
+      "sha256": "6829b247475d1b17f46919ab6b19077708c7a92a4ebbabf5f5d88eb2cf8bb043",
+      "bytes": 1686
+    },
+    "collector.log": {
+      "sha256": "162e65a82613b9a34a4ed2d54014ce7d2884de0ce4d50c13b750f3c9ae21033b",
+      "bytes": 1097
+    }
+  }
+}

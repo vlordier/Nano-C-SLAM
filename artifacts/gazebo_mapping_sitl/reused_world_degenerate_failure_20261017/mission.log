@@ -1,0 +1,8 @@
+[INFO] [1792260653.277649000] [nano_c_slam_sim_mission]: Mission run 2666362a-88b7-4757-a2e6-4de4c94f6e6d; waiting for /cf1/odom before takeoff to 0.50 m
+[INFO] [1792260653.278034000] [nano_c_slam_sim_mission]: mission_status={"altitude_m": null, "drone_name": "cf1", "failure_reason": null, "landing_height_m": 0.1, "mapping_path_complete": false, "mapping_path_requested": true, "phase": "WAITING", "run_id": "2666362a-88b7-4757-a2e6-4de4c94f6e6d", "schema_version": 1, "sequence": 0, "sim_time_s": 0.0}
+[INFO] [1792260653.325748000] [nano_c_slam_sim_mission]: mission_status={"altitude_m": -1.1758473790479673e-07, "drone_name": "cf1", "failure_reason": null, "landing_height_m": 0.1, "mapping_path_complete": false, "mapping_path_requested": true, "phase": "TAKEOFF", "run_id": "2666362a-88b7-4757-a2e6-4de4c94f6e6d", "schema_version": 1, "sequence": 1, "sim_time_s": 782.105}
+[INFO] [1792260653.326052000] [nano_c_slam_sim_mission]: cf1 mission phase: takeoff at altitude -0.000 m
+[INFO] [1792260654.470924000] [nano_c_slam_sim_mission]: Starting bounded square mapping path at measured position
+[INFO] [1792260654.471228000] [nano_c_slam_sim_mission]: mission_status={"altitude_m": 0.5009152261998917, "drone_name": "cf1", "failure_reason": null, "landing_height_m": 0.1, "mapping_path_complete": false, "mapping_path_requested": true, "phase": "HOVER", "run_id": "2666362a-88b7-4757-a2e6-4de4c94f6e6d", "schema_version": 1, "sequence": 2, "sim_time_s": 783.25}
+[INFO] [1792260654.471503000] [nano_c_slam_sim_mission]: cf1 mission phase: hover at altitude 0.501 m
+[INFO] [1792260663.530781000] [nano_c_slam_sim_mission]: Mapping path complete; beginning configured hover interval

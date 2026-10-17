@@ -1,0 +1,2871 @@
+{
+  "schema_version": 1,
+  "run_id": "f2aa2fc0-eff5-4718-946c-9149028ff6d0",
+  "drone": "cf1",
+  "scene": "nearfield-mapping",
+  "child_commands": {
+    "collector": [
+      "/Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11",
+      "/Users/vincent/Work/Nano-C-SLAM/scripts/gazebo_mapping_sitl.py",
+      "--drone",
+      "cf1",
+      "--run-id",
+      "f2aa2fc0-eff5-4718-946c-9149028ff6d0",
+      "--mission-gated",
+      "--ready-file",
+      "/Users/vincent/Work/Nano-C-SLAM/artifacts/gazebo_mapping_sitl/.cf1_nearfield_bound_mission_20261017.f2aa2fc0-eff5-4718-946c-9149028ff6d0.capture.ready",
+      "--samples",
+      "60",
+      "--timeout",
+      "120.0",
+      "--scene",
+      "nearfield-mapping",
+      "--output",
+      "/Users/vincent/Work/Nano-C-SLAM/artifacts/gazebo_mapping_sitl/.cf1_nearfield_bound_mission_20261017.f2aa2fc0-eff5-4718-946c-9149028ff6d0.capture.json",
+      "--binary",
+      "/Users/vincent/Work/Nano-C-SLAM/cslam-gap9-app/BUILD-host/mapping_replay",
+      "--reuse-binary"
+    ],
+    "mission": [
+      "/opt/homebrew/opt/ros2-jazzy/bin/ros2",
+      "run",
+      "nano_c_slam_gazebo",
+      "sim_mission",
+      "--ros-args",
+      "-p",
+      "use_sim_time:=True",
+      "-p",
+      "drone_name:=cf1",
+      "-p",
+      "run_id:=f2aa2fc0-eff5-4718-946c-9149028ff6d0",
+      "-p",
+      "mapping_path:=True"
+    ]
+  },
+  "process_exit_codes": {
+    "collector": 0,
+    "mission": 0
+  },
+  "mission_events": [
+    {
+      "altitude_m": null,
+      "drone_name": "cf1",
+      "failure_reason": null,
+      "landing_height_m": 0.1,
+      "mapping_path_complete": false,
+      "mapping_path_requested": true,
+      "phase": "WAITING",
+      "run_id": "f2aa2fc0-eff5-4718-946c-9149028ff6d0",
+      "schema_version": 1,
+      "sequence": 0,
+      "sim_time_s": 0.0
+    },
+    {
+      "altitude_m": -8.466971613205199e-07,
+      "drone_name": "cf1",
+      "failure_reason": null,
+      "landing_height_m": 0.1,
+      "mapping_path_complete": false,
+      "mapping_path_requested": true,
+      "phase": "TAKEOFF",
+      "run_id": "f2aa2fc0-eff5-4718-946c-9149028ff6d0",
+      "schema_version": 1,
+      "sequence": 1,
+      "sim_time_s": 13.055
+    },
+    {
+      "altitude_m": 0.5043328224729781,
+      "drone_name": "cf1",
+      "failure_reason": null,
+      "landing_height_m": 0.1,
+      "mapping_path_complete": false,
+      "mapping_path_requested": true,
+      "phase": "HOVER",
+      "run_id": "f2aa2fc0-eff5-4718-946c-9149028ff6d0",
+      "schema_version": 1,
+      "sequence": 2,
+      "sim_time_s": 14.203
+    },
+    {
+      "altitude_m": 0.7920680447036351,
+      "drone_name": "cf1",
+      "failure_reason": null,
+      "landing_height_m": 0.1,
+      "mapping_path_complete": true,
+      "mapping_path_requested": true,
+      "phase": "LAND",
+      "run_id": "f2aa2fc0-eff5-4718-946c-9149028ff6d0",
+      "schema_version": 1,
+      "sequence": 3,
+      "sim_time_s": 26.4
+    },
+    {
+      "altitude_m": 0.08472352756527507,
+      "drone_name": "cf1",
+      "failure_reason": null,
+      "landing_height_m": 0.1,
+      "mapping_path_complete": true,
+      "mapping_path_requested": true,
+      "phase": "COMPLETE",
+      "run_id": "f2aa2fc0-eff5-4718-946c-9149028ff6d0",
+      "schema_version": 1,
+      "sequence": 4,
+      "sim_time_s": 27.954
+    }
+  ],
+  "mission_terminal": {
+    "altitude_m": 0.08472352756527507,
+    "drone_name": "cf1",
+    "failure_reason": null,
+    "landing_height_m": 0.1,
+    "mapping_path_complete": true,
+    "mapping_path_requested": true,
+    "phase": "COMPLETE",
+    "run_id": "f2aa2fc0-eff5-4718-946c-9149028ff6d0",
+    "schema_version": 1,
+    "sequence": 4,
+    "sim_time_s": 27.954
+  },
+  "capture_report": {
+    "schema_version": 1,
+    "captured_at_utc": "2026-10-17T18:11:44.712726+00:00",
+    "source_provenance": {
+      "revision": "b8fca6650284b73458ce9fae9c6b402e7ca32ec1",
+      "worktree_dirty": true
+    },
+    "mapping_replay_provenance": {
+      "source_revision": "b8fca6650284b73458ce9fae9c6b402e7ca32ec1",
+      "source_paths_dirty": false,
+      "binary_sha256": "3f150229d72b03da2f88242193bf28a9b5dc41432946f0df37d18b98238482c5",
+      "execution": "native-host"
+    },
+    "evidence_class": "host-execution-of-owned-gap9-mapping-core",
+    "mapping_claim": "host mapping pipeline execution only; map accuracy and completeness are not measured",
+    "claim_boundary": "Gazebo four-ray lidar and simulated odometry replayed through the Nano-C-SLAM C mapping/ICP/pose-graph modules with CPU PMSIS stubs; the replay applies the firmware loop-closure helper's 1.4 m scan cutoff; not GAP9 GVSOC, real 8x8 ToF, UWB, or hardware validation.",
+    "drone": "cf1",
+    "run_id": "f2aa2fc0-eff5-4718-946c-9149028ff6d0",
+    "mission_binding": "matching-status-run",
+    "simulator": "Gazebo Harmonic Crazyswarm2 swarm world",
+    "scene": "nearfield-mapping",
+    "host": {
+      "system": "Darwin",
+      "machine": "arm64"
+    },
+    "input_topics": [
+      "/cf1/odom",
+      "/nano_c_slam/sim/cf1/ranges_mm"
+    ],
+    "input_sample_count": 60,
+    "median_input_frequency_hz": 10.0,
+    "source_clock": "ROS simulation clock",
+    "pairing_limits": {
+      "maximum_age_ns": 500000000,
+      "maximum_skew_ns": 100000000
+    },
+    "input_horizontal_path": {
+      "x_bounds_m": [
+        -0.5016221611021938,
+        -0.27008717869430915
+      ],
+      "y_bounds_m": [
+        -0.5005048485857077,
+        -0.28964536979572414
+      ],
+      "horizontal_path_length_m": 0.47783578678339533
+    },
+    "input_sim_time_ms": {
+      "start": 14300,
+      "end": 20200
+    },
+    "input_valid_range_bounds_mm": {
+      "minimum": 873,
+      "maximum": 1743
+    },
+    "mapping_range_limit_mm": 1400,
+    "range_accounting": {
+      "readings_total": 240,
+      "invalid": 12,
+      "valid": 228,
+      "accepted_at_or_below_limit": 201,
+      "rejected_above_limit": 27,
+      "by_direction": {
+        "front": {
+          "valid": 48,
+          "accepted_at_or_below_limit": 21,
+          "distinct_accepted_values": 20
+        },
+        "back": {
+          "valid": 60,
+          "accepted_at_or_below_limit": 60,
+          "distinct_accepted_values": 54
+        },
+        "left": {
+          "valid": 60,
+          "accepted_at_or_below_limit": 60,
+          "distinct_accepted_values": 38
+        },
+        "right": {
+          "valid": 60,
+          "accepted_at_or_below_limit": 60,
+          "distinct_accepted_values": 39
+        }
+      }
+    },
+    "scan_window_in_range_sample_counts": [
+      20,
+      20,
+      20
+    ],
+    "scan_window_three_direction_sample_counts": [
+      20,
+      20,
+      20
+    ],
+    "input_samples": [
+      "0 14300 -0.501622161 -0.499955258 -0.00124470318 1005 903 1350 900",
+      "1 14400 -0.498478546 -0.500164316 -0.00110585723 1033 938 1351 899",
+      "2 14500 -0.485569426 -0.50028395 -0.000507999711 1022 954 1351 899",
+      "3 14600 -0.472506463 -0.50019985 0.000354942183 1005 964 1351 900",
+      "4 14700 -0.460619703 -0.500102384 0.0010750332 991 974 1351 900",
+      "5 14800 -0.449353552 -0.50001236 0.00178548411 977 983 1350 900",
+      "6 14900 -0.438642152 -0.499922896 0.0024370377 964 992 1350 900",
+      "7 15000 -0.428508612 -0.49983557 0.003066688 951 1000 1350 900",
+      "8 15100 -0.418908545 -0.499751039 0.00363291555 939 1007 1350 900",
+      "9 15200 -0.409741603 -0.499664756 0.00417226979 928 1014 1350 900",
+      "10 15300 -0.401130953 -0.499584661 0.00470878058 917 1021 1350 900",
+      "11 15400 -0.392981742 -0.49951003 0.00517117704 907 1027 1350 900",
+      "12 15500 -0.385287754 -0.499438582 0.00561285806 898 1033 1350 900",
+      "13 15600 -0.378018441 -0.499372633 0.00602985868 889 1039 1350 900",
+      "14 15700 -0.371140928 -0.499311575 0.00642620883 881 1044 1350 901",
+      "15 15800 -0.364650726 -0.499257771 0.00681123264 873 1049 1350 901",
+      "16 15900 -0.358493088 -0.49920885 0.00715032879 894 1054 1350 901",
+      "17 16000 -0.352651234 -0.499163056 0.00746973672 949 1059 1350 901",
+      "18 16100 -0.347119118 -0.499121193 0.00776855146 1011 1063 1350 901",
+      "19 16200 -0.341917975 -0.499085339 0.00806515978 1070 1068 1350 901",
+      "20 16300 -0.336993339 -0.499054937 0.00832156628 1134 1072 1350 901",
+      "21 16400 -0.332340643 -0.499027892 0.00857008567 1743 1076 1350 901",
+      "22 16500 -0.327943905 -0.499005709 0.00880850131 1738 1079 1350 901",
+      "23 16600 -0.323544492 -0.500504849 0.00489323667 1727 1079 1355 903",
+      "24 16700 -0.321519716 -0.49982769 -0.00284976184 1727 1083 1395 934",
+      "25 16800 -0.318099164 -0.489222906 -0.00289920299 1724 1086 1398 955",
+      "26 16900 -0.31447618 -0.47589564 -0.000822217386 1719 1089 1377 963",
+      "27 17000 -0.311193843 -0.463533912 0.000498902324 1716 1093 1359 972",
+      "28 17100 -0.308106326 -0.451958298 0.0016676797 1712 1095 1343 981",
+      "29 17200 -0.305173367 -0.441010364 0.00273269386 1709 1098 1328 990",
+      "30 17300 -0.302378515 -0.430595092 0.00380503052 1706 1101 1314 998",
+      "31 17400 -0.299737469 -0.420775867 0.00476043288 1703 1103 1301 1005",
+      "32 17500 -0.29722481 -0.411458222 0.00570912832 1700 1105 1288 1012",
+      "33 17600 -0.294849359 -0.402671054 0.00655397889 1698 1108 1277 1019",
+      "34 17700 -0.292608691 -0.39440949 0.0073151474 1695 1110 1266 1026",
+      "35 17800 -0.290487273 -0.386616063 0.00797716438 1693 1112 1256 1032",
+      "36 17900 -0.288463221 -0.379201538 0.0086194705 1691 1114 1247 1038",
+      "37 18000 -0.286537599 -0.37217048 0.00925027276 1689 1115 1238 1043",
+      "38 18100 -0.284718026 -0.365552877 0.00980743595 1687 1117 1230 1048",
+      "39 18200 -0.282996904 -0.359317361 0.0102847212 1685 1119 1222 1054",
+      "40 18300 -0.281356282 -0.353395545 0.0107539374 1683 1120 1215 1058",
+      "41 18400 -0.279799771 -0.347800142 0.0111984519 1681 1122 1208 1063",
+      "42 18500 -0.278326767 -0.34252831 0.0115873535 1680 1123 1202 1067",
+      "43 18600 -0.276925882 -0.337536165 0.0119503431 1678 1124 1196 1071",
+      "44 18700 -0.275598594 -0.332827106 0.0122825089 1677 1126 1190 1075",
+      "45 18800 -0.274339606 -0.328379976 0.0125829303 1676 1127 1185 1079",
+      "46 18900 -0.273142165 -0.324169919 0.0128589811 1674 1128 1180 1082",
+      "47 19000 -0.270087179 -0.319862427 0.0203036491 1678 1134 1172 1082",
+      "48 19100 -0.270748011 -0.318149564 0.0350562308 -1 1162 1172 1086",
+      "49 19200 -0.280449568 -0.315237702 0.0379935193 -1 1162 1169 1089",
+      "50 19300 -0.292710659 -0.312000111 0.0363455357 -1 1144 1165 1092",
+      "51 19400 -0.30418113 -0.30899032 0.0349957813 -1 1128 1162 1095",
+      "52 19500 -0.314868583 -0.306149406 0.0339373534 -1 1115 1159 1097",
+      "53 19600 -0.325004055 -0.303428503 0.0328234146 -1 1101 1156 1100",
+      "54 19700 -0.334543532 -0.300845454 0.0318406335 -1 1089 1154 1102",
+      "55 19800 -0.343579827 -0.298379236 0.0308743945 -1 1077 1151 1104",
+      "56 19900 -0.352090771 -0.296036235 0.0300027128 -1 1067 1148 1107",
+      "57 20000 -0.360152153 -0.293800433 0.0291833653 -1 1057 1146 1109",
+      "58 20100 -0.367761713 -0.291671775 0.0284199455 -1 1047 1144 1111",
+      "59 20200 -0.374948973 -0.28964537 0.0276638272 -1 1038 1142 1112"
+    ],
+    "input_pair_provenance": [
+      {
+        "drone_id": "cf1",
+        "range_sequence": 143,
+        "range_stamp_ns": 14300000000,
+        "odometry_stamp_ns": 14300000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 103000000,
+        "odometry_age_ns": 103000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 144,
+        "range_stamp_ns": 14400000000,
+        "odometry_stamp_ns": 14400000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 104000000,
+        "odometry_age_ns": 104000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 145,
+        "range_stamp_ns": 14500000000,
+        "odometry_stamp_ns": 14500000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 100000000,
+        "odometry_age_ns": 100000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 146,
+        "range_stamp_ns": 14600000000,
+        "odometry_stamp_ns": 14600000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 102000000,
+        "odometry_age_ns": 102000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 147,
+        "range_stamp_ns": 14700000000,
+        "odometry_stamp_ns": 14700000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 103000000,
+        "odometry_age_ns": 103000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 148,
+        "range_stamp_ns": 14800000000,
+        "odometry_stamp_ns": 14800000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 102000000,
+        "odometry_age_ns": 102000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 149,
+        "range_stamp_ns": 14900000000,
+        "odometry_stamp_ns": 14900000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 100000000,
+        "odometry_age_ns": 100000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 150,
+        "range_stamp_ns": 15000000000,
+        "odometry_stamp_ns": 15000000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 104000000,
+        "odometry_age_ns": 104000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 151,
+        "range_stamp_ns": 15100000000,
+        "odometry_stamp_ns": 15100000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 105000000,
+        "odometry_age_ns": 105000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 152,
+        "range_stamp_ns": 15200000000,
+        "odometry_stamp_ns": 15200000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 102000000,
+        "odometry_age_ns": 102000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 153,
+        "range_stamp_ns": 15300000000,
+        "odometry_stamp_ns": 15300000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 102000000,
+        "odometry_age_ns": 102000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 154,
+        "range_stamp_ns": 15400000000,
+        "odometry_stamp_ns": 15400000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 103000000,
+        "odometry_age_ns": 103000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 155,
+        "range_stamp_ns": 15500000000,
+        "odometry_stamp_ns": 15500000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 105000000,
+        "odometry_age_ns": 105000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 156,
+        "range_stamp_ns": 15600000000,
+        "odometry_stamp_ns": 15600000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 102000000,
+        "odometry_age_ns": 102000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 157,
+        "range_stamp_ns": 15700000000,
+        "odometry_stamp_ns": 15700000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 104000000,
+        "odometry_age_ns": 104000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 158,
+        "range_stamp_ns": 15800000000,
+        "odometry_stamp_ns": 15800000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 100000000,
+        "odometry_age_ns": 100000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 159,
+        "range_stamp_ns": 15900000000,
+        "odometry_stamp_ns": 15900000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 100000000,
+        "odometry_age_ns": 100000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 160,
+        "range_stamp_ns": 16000000000,
+        "odometry_stamp_ns": 16000000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 101000000,
+        "odometry_age_ns": 101000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 161,
+        "range_stamp_ns": 16100000000,
+        "odometry_stamp_ns": 16100000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 103000000,
+        "odometry_age_ns": 103000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 162,
+        "range_stamp_ns": 16200000000,
+        "odometry_stamp_ns": 16200000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 104000000,
+        "odometry_age_ns": 104000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 163,
+        "range_stamp_ns": 16300000000,
+        "odometry_stamp_ns": 16300000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 104000000,
+        "odometry_age_ns": 104000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 164,
+        "range_stamp_ns": 16400000000,
+        "odometry_stamp_ns": 16400000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 102000000,
+        "odometry_age_ns": 102000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 165,
+        "range_stamp_ns": 16500000000,
+        "odometry_stamp_ns": 16500000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 103000000,
+        "odometry_age_ns": 103000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 166,
+        "range_stamp_ns": 16600000000,
+        "odometry_stamp_ns": 16600000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 104000000,
+        "odometry_age_ns": 104000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 167,
+        "range_stamp_ns": 16700000000,
+        "odometry_stamp_ns": 16700000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 103000000,
+        "odometry_age_ns": 103000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 168,
+        "range_stamp_ns": 16800000000,
+        "odometry_stamp_ns": 16800000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 103000000,
+        "odometry_age_ns": 103000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 169,
+        "range_stamp_ns": 16900000000,
+        "odometry_stamp_ns": 16900000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 103000000,
+        "odometry_age_ns": 103000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 170,
+        "range_stamp_ns": 17000000000,
+        "odometry_stamp_ns": 17000000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 103000000,
+        "odometry_age_ns": 103000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 171,
+        "range_stamp_ns": 17100000000,
+        "odometry_stamp_ns": 17100000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 105000000,
+        "odometry_age_ns": 105000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 172,
+        "range_stamp_ns": 17200000000,
+        "odometry_stamp_ns": 17200000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 100000000,
+        "odometry_age_ns": 100000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 173,
+        "range_stamp_ns": 17300000000,
+        "odometry_stamp_ns": 17300000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 100000000,
+        "odometry_age_ns": 100000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 174,
+        "range_stamp_ns": 17400000000,
+        "odometry_stamp_ns": 17400000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 103000000,
+        "odometry_age_ns": 103000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 175,
+        "range_stamp_ns": 17500000000,
+        "odometry_stamp_ns": 17500000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 103000000,
+        "odometry_age_ns": 103000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 176,
+        "range_stamp_ns": 17600000000,
+        "odometry_stamp_ns": 17600000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 100000000,
+        "odometry_age_ns": 100000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 177,
+        "range_stamp_ns": 17700000000,
+        "odometry_stamp_ns": 17700000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 101000000,
+        "odometry_age_ns": 101000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 178,
+        "range_stamp_ns": 17800000000,
+        "odometry_stamp_ns": 17800000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 103000000,
+        "odometry_age_ns": 103000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 179,
+        "range_stamp_ns": 17900000000,
+        "odometry_stamp_ns": 17900000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 103000000,
+        "odometry_age_ns": 103000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 180,
+        "range_stamp_ns": 18000000000,
+        "odometry_stamp_ns": 18000000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 104000000,
+        "odometry_age_ns": 104000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 181,
+        "range_stamp_ns": 18100000000,
+        "odometry_stamp_ns": 18100000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 101000000,
+        "odometry_age_ns": 101000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 182,
+        "range_stamp_ns": 18200000000,
+        "odometry_stamp_ns": 18200000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 102000000,
+        "odometry_age_ns": 102000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 183,
+        "range_stamp_ns": 18300000000,
+        "odometry_stamp_ns": 18300000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 103000000,
+        "odometry_age_ns": 103000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 184,
+        "range_stamp_ns": 18400000000,
+        "odometry_stamp_ns": 18400000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 103000000,
+        "odometry_age_ns": 103000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 185,
+        "range_stamp_ns": 18500000000,
+        "odometry_stamp_ns": 18500000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 105000000,
+        "odometry_age_ns": 105000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 186,
+        "range_stamp_ns": 18600000000,
+        "odometry_stamp_ns": 18600000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 100000000,
+        "odometry_age_ns": 100000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 187,
+        "range_stamp_ns": 18700000000,
+        "odometry_stamp_ns": 18700000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 100000000,
+        "odometry_age_ns": 100000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 188,
+        "range_stamp_ns": 18800000000,
+        "odometry_stamp_ns": 18800000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 103000000,
+        "odometry_age_ns": 103000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 189,
+        "range_stamp_ns": 18900000000,
+        "odometry_stamp_ns": 18900000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 102000000,
+        "odometry_age_ns": 102000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 190,
+        "range_stamp_ns": 19000000000,
+        "odometry_stamp_ns": 19000000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 104000000,
+        "odometry_age_ns": 104000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 191,
+        "range_stamp_ns": 19100000000,
+        "odometry_stamp_ns": 19100000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 102000000,
+        "odometry_age_ns": 102000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 192,
+        "range_stamp_ns": 19200000000,
+        "odometry_stamp_ns": 19200000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 103000000,
+        "odometry_age_ns": 103000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 193,
+        "range_stamp_ns": 19300000000,
+        "odometry_stamp_ns": 19300000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 100000000,
+        "odometry_age_ns": 100000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 194,
+        "range_stamp_ns": 19400000000,
+        "odometry_stamp_ns": 19400000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 101000000,
+        "odometry_age_ns": 101000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 195,
+        "range_stamp_ns": 19500000000,
+        "odometry_stamp_ns": 19500000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 102000000,
+        "odometry_age_ns": 102000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 196,
+        "range_stamp_ns": 19600000000,
+        "odometry_stamp_ns": 19600000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 103000000,
+        "odometry_age_ns": 103000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 197,
+        "range_stamp_ns": 19700000000,
+        "odometry_stamp_ns": 19700000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 102000000,
+        "odometry_age_ns": 102000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 198,
+        "range_stamp_ns": 19800000000,
+        "odometry_stamp_ns": 19800000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 100000000,
+        "odometry_age_ns": 100000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 199,
+        "range_stamp_ns": 19900000000,
+        "odometry_stamp_ns": 19900000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 101000000,
+        "odometry_age_ns": 101000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 200,
+        "range_stamp_ns": 20000000000,
+        "odometry_stamp_ns": 20000000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 102000000,
+        "odometry_age_ns": 102000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 201,
+        "range_stamp_ns": 20100000000,
+        "odometry_stamp_ns": 20100000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 102000000,
+        "odometry_age_ns": 102000000
+      },
+      {
+        "drone_id": "cf1",
+        "range_sequence": 202,
+        "range_stamp_ns": 20200000000,
+        "odometry_stamp_ns": 20200000000,
+        "pair_skew_ns": 0,
+        "range_age_ns": 103000000,
+        "odometry_age_ns": 103000000
+      }
+    ],
+    "capture_rejections": {
+      "odometry_buffer_overflow": 85,
+      "stale_range": 19,
+      "stale_odometry": 7,
+      "superseded_range": 3,
+      "superseded_odometry": 259,
+      "pre_mission_pair": 1
+    },
+    "tof_projection": "one four-ray reading per direction in central ToF column",
+    "mapping": {
+      "pose_count": 60,
+      "scan_count": 3,
+      "map_point_count": 201,
+      "icp_pair_attempt_count": 2,
+      "icp_pair_attempt_pairs": [
+        [
+          0,
+          20
+        ],
+        [
+          20,
+          40
+        ]
+      ],
+      "icp_constraint_add_attempt_count": 2,
+      "icp_constraint_accepted_insertion_count": 2,
+      "stored_constraint_count": 3,
+      "optimizer_input_constraint_count": 3,
+      "optimizer_input_unique_edge_count": 3,
+      "finite_pose_count": 60,
+      "main_graph_size": 3,
+      "main_solver_returned": 1,
+      "successful_solver_call_count": 3,
+      "completed_solver_iteration_count": 9,
+      "optimization_completed": 1,
+      "has_nan": 0,
+      "icp_constraint_accepted_endpoint_pairs": [
+        [
+          0,
+          20
+        ],
+        [
+          20,
+          40
+        ]
+      ],
+      "stored_unique_endpoint_pairs": [
+        [
+          0,
+          20
+        ],
+        [
+          20,
+          40
+        ],
+        [
+          0,
+          40
+        ]
+      ],
+      "optimizer_input_unique_edge_pairs": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "projection_source": "pcl_extract_scan",
+      "projection_range_limit_mm": 1400,
+      "projection_window_pose_limit": 20,
+      "projected_scan_windows": [
+        {
+          "start_pose": 0,
+          "pose_count": 20,
+          "points": [
+            [
+              0.5285998,
+              -0.4519082
+            ],
+            [
+              -1.379524,
+              -0.5430893
+            ],
+            [
+              -0.5659535,
+              0.8701851
+            ],
+            [
+              -0.4584287,
+              -1.379961
+            ],
+            [
+              0.5558606,
+              -0.44946
+            ],
+            [
+              -1.415054,
+              -0.5480061
+            ],
+            [
+              -0.5696594,
+              0.869812
+            ],
+            [
+              -0.4571641,
+              -1.380091
+            ],
+            [
+              0.5538571,
+              -0.4483158
+            ],
+            [
+              -1.421785,
+              -0.5524094
+            ],
+            [
+              -0.564198,
+              0.8685131
+            ],
+            [
+              -0.4456706,
+              -1.38108
+            ],
+            [
+              0.5459893,
+              -0.4470482
+            ],
+            [
+              -1.422339,
+              -0.5565974
+            ],
+            [
+              -0.5589631,
+              0.8674127
+            ],
+            [
+              -0.4337245,
+              -1.382819
+            ],
+            [
+              0.539948,
+              -0.445808
+            ],
+            [
+              -1.424065,
+              -0.5606874
+            ],
+            [
+              -0.5547231,
+              0.8663424
+            ],
+            [
+              -0.4231235,
+              -1.383527
+            ],
+            [
+              0.5332825,
+              -0.4446363
+            ],
+            [
+              -1.425401,
+              -0.5647628
+            ],
+            [
+              -0.551043,
+              0.8642718
+            ],
+            [
+              -0.4131426,
+              -1.384217
+            ],
+            [
+              0.5270616,
+              -0.4435131
+            ],
+            [
+              -1.427284,
+              -0.5688259
+            ],
+            [
+              -0.5479078,
+              0.8632098
+            ],
+            [
+              -0.40376,
+              -1.384887
+            ],
+            [
+              0.5202607,
+              -0.4424635
+            ],
+            [
+              -1.428736,
+              -0.5728477
+            ],
+            [
+              -0.5453327,
+              0.8621496
+            ],
+            [
+              -0.3949666,
+              -1.38554
+            ],
+            [
+              0.513926,
+              -0.4414603
+            ],
+            [
+              -1.429716,
+              -0.576781
+            ],
+            [
+              -0.5432153,
+              0.8610931
+            ],
+            [
+              -0.3867553,
+              -1.38618
+            ],
+            [
+              0.5081556,
+              -0.4404551
+            ],
+            [
+              -1.431121,
+              -0.5807201
+            ],
+            [
+              -0.5415049,
+              0.8600415
+            ],
+            [
+              -0.378994,
+              -1.386803
+            ],
+            [
+              0.5018262,
+              -0.4395042
+            ],
+            [
+              -1.433071,
+              -0.5847002
+            ],
+            [
+              -0.5403564,
+              0.8589802
+            ],
+            [
+              -0.371785,
+              -1.387417
+            ],
+            [
+              0.4960359,
+              -0.4385964
+            ],
+            [
+              -1.43448,
+              -0.5885717
+            ],
+            [
+              -0.5395768,
+              0.8579175
+            ],
+            [
+              -0.3650967,
+              -1.388029
+            ],
+            [
+              0.4907871,
+              -0.4376725
+            ],
+            [
+              -1.436336,
+              -0.5924581
+            ],
+            [
+              -0.5392325,
+              0.8568486
+            ],
+            [
+              -0.3588763,
+              -1.388633
+            ],
+            [
+              0.4851127,
+              -0.4368145
+            ],
+            [
+              -1.438608,
+              -0.5963584
+            ],
+            [
+              -0.5392867,
+              0.8557708
+            ],
+            [
+              -0.3530971,
+              -1.389235
+            ],
+            [
+              0.4800431,
+              -0.4359338
+            ],
+            [
+              -1.440266,
+              -0.6001908
+            ],
+            [
+              -0.5397116,
+              0.8546835
+            ],
+            [
+              -0.3476376,
+              -1.390832
+            ],
+            [
+              0.4745846,
+              -0.4351059
+            ],
+            [
+              -1.442303,
+              -0.6040483
+            ],
+            [
+              -0.5405147,
+              0.8535818
+            ],
+            [
+              -0.3426534,
+              -1.391431
+            ],
+            [
+              0.497711,
+              -0.4317367
+            ],
+            [
+              -1.444667,
+              -0.6078923
+            ],
+            [
+              -0.5415934,
+              0.8524728
+            ],
+            [
+              -0.3380379,
+              -1.392031
+            ],
+            [
+              0.5544015,
+              -0.4251183
+            ],
+            [
+              -1.447339,
+              -0.6117485
+            ],
+            [
+              -0.5429669,
+              0.8513542
+            ],
+            [
+              -0.3337515,
+              -1.392629
+            ],
+            [
+              0.6177286,
+              -0.4175766
+            ],
+            [
+              -1.449316,
+              -0.6155217
+            ],
+            [
+              -0.5446271,
+              0.8502247
+            ],
+            [
+              -0.3297892,
+              -1.393227
+            ],
+            [
+              0.6776996,
+              -0.410026
+            ],
+            [
+              -1.452612,
+              -0.6194227
+            ],
+            [
+              -0.5466198,
+              0.8490776
+            ],
+            [
+              -0.3261561,
+              -1.393828
+            ]
+          ],
+          "observability": {
+            "point_count": 80,
+            "unique_point_count": 80,
+            "x_span_m": 2.1303115999999997,
+            "y_span_m": 2.2640131,
+            "covariance_major_eigenvalue_m2": 0.6498255814744215,
+            "covariance_minor_eigenvalue_m2": 0.4845563825189735,
+            "observable_2d": true
+          }
+        },
+        {
+          "start_pose": 20,
+          "pose_count": 20,
+          "points": [
+            [
+              0.7421446,
+              -0.4016509
+            ],
+            [
+              -1.455359,
+              -0.6233668
+            ],
+            [
+              -0.5491665,
+              0.8478636
+            ],
+            [
+              -0.322928,
+              -1.394467
+            ],
+            [
+              -1.455798,
+              -0.6259066
+            ],
+            [
+              -0.5473621,
+              0.8468013
+            ],
+            [
+              -0.3184718,
+              -1.39526
+            ],
+            [
+              -1.455495,
+              -0.6283471
+            ],
+            [
+              -0.5458052,
+              0.8457372
+            ],
+            [
+              -0.3142768,
+              -1.396053
+            ],
+            [
+              -1.452649,
+              -0.6276457
+            ],
+            [
+              -0.5390823,
+              0.8487103
+            ],
+            [
+              -0.3135161,
+              -1.400732
+            ],
+            [
+              -1.456547,
+              -0.6211222
+            ],
+            [
+              -0.5327036,
+              0.8892365
+            ],
+            [
+              -0.3158221,
+              -1.432464
+            ],
+            [
+              -1.457303,
+              -0.6126477
+            ],
+            [
+              -0.5320886,
+              0.9018013
+            ],
+            [
+              -0.3108946,
+              -1.443629
+            ],
+            [
+              -1.457659,
+              -0.6036924
+            ],
+            [
+              -0.5319642,
+              0.8928891
+            ],
+            [
+              -0.3049981,
+              -1.438913
+            ],
+            [
+              -1.459429,
+              -0.595001
+            ],
+            [
+              -0.5313051,
+              0.8861059
+            ],
+            [
+              -0.3000305,
+              -1.436218
+            ],
+            [
+              -1.45942,
+              -0.5867335
+            ],
+            [
+              -0.5307468,
+              0.8805538
+            ],
+            [
+              -0.2953812,
+              -1.434314
+            ],
+            [
+              -1.460574,
+              -0.579081
+            ],
+            [
+              -0.5302315,
+              0.8753883
+            ],
+            [
+              -0.2909664,
+              -1.43304
+            ],
+            [
+              -1.461867,
+              -0.5719677
+            ],
+            [
+              -0.529902,
+              0.8706886
+            ],
+            [
+              -0.2867684,
+              -1.431296
+            ],
+            [
+              -1.462331,
+              -0.5652177
+            ],
+            [
+              -0.5296156,
+              0.8664076
+            ],
+            [
+              -0.2829287,
+              -1.429157
+            ],
+            [
+              -1.462925,
+              -0.5589577
+            ],
+            [
+              -0.5293927,
+              0.8616291
+            ],
+            [
+              -0.2792116,
+              -1.427514
+            ],
+            [
+              -1.464663,
+              -0.5532238
+            ],
+            [
+              -0.5293376,
+              0.8583276
+            ],
+            [
+              -0.275721,
+              -1.426408
+            ],
+            [
+              -1.465549,
+              -0.5478136
+            ],
+            [
+              -0.5292637,
+              0.8545147
+            ],
+            [
+              -0.2724351,
+              -1.425832
+            ],
+            [
+              -1.466564,
+              -0.5427616
+            ],
+            [
+              -0.5292525,
+              0.8512447
+            ],
+            [
+              -0.2694689,
+              -1.424736
+            ],
+            [
+              -1.46768,
+              -0.5380642
+            ],
+            [
+              -0.5293907,
+              0.8485951
+            ],
+            [
+              -0.2666115,
+              -1.424019
+            ],
+            [
+              -1.467899,
+              -0.5336194
+            ],
+            [
+              -0.5295783,
+              0.8455655
+            ],
+            [
+              -0.2639711,
+              -1.422687
+            ],
+            [
+              -1.469225,
+              -0.5296213
+            ],
+            [
+              -0.5298636,
+              0.8431286
+            ],
+            [
+              -0.261504,
+              -1.421776
+            ],
+            [
+              -1.470658,
+              -0.525917
+            ],
+            [
+              -0.530118,
+              0.8403226
+            ],
+            [
+              -0.2590908,
+              -1.422247
+            ]
+          ],
+          "observability": {
+            "point_count": 61,
+            "unique_point_count": 61,
+            "x_span_m": 2.2128026,
+            "y_span_m": 2.3454303000000003,
+            "covariance_major_eigenvalue_m2": 0.8775286915819959,
+            "covariance_minor_eigenvalue_m2": 0.2862455848400468,
+            "observable_2d": true
+          }
+        },
+        {
+          "start_pose": 40,
+          "pose_count": 20,
+          "points": [
+            [
+              -1.426658,
+              -0.4841847
+            ],
+            [
+              -0.450864,
+              0.8514248
+            ],
+            [
+              -0.2363186,
+              -1.414181
+            ],
+            [
+              -1.427048,
+              -0.479264
+            ],
+            [
+              -0.4491909,
+              0.8499917
+            ],
+            [
+              -0.233828,
+              -1.413525
+            ],
+            [
+              -1.426531,
+              -0.4745126
+            ],
+            [
+              -0.4476227,
+              0.8492386
+            ],
+            [
+              -0.2315698,
+              -1.412201
+            ],
+            [
+              -1.426088,
+              -0.4700133
+            ],
+            [
+              -0.4460904,
+              0.848209
+            ],
+            [
+              -0.2294079,
+              -1.411158
+            ],
+            [
+              -1.426718,
+              -0.4658598
+            ],
+            [
+              -0.4445902,
+              0.8469001
+            ],
+            [
+              -0.227349,
+              -1.410402
+            ],
+            [
+              -1.426424,
+              -0.4618385
+            ],
+            [
+              -0.4432124,
+              0.8463296
+            ],
+            [
+              -0.2253894,
+              -1.40991
+            ],
+            [
+              -1.426193,
+              -0.4580281
+            ],
+            [
+              -0.441864,
+              0.8455251
+            ],
+            [
+              -0.2236111,
+              -1.408662
+            ],
+            [
+              -1.428281,
+              -0.4625236
+            ],
+            [
+              -0.4468776,
+              0.8409786
+            ],
+            [
+              -0.2126805,
+              -1.403555
+            ],
+            [
+              -1.45494,
+              -0.4804087
+            ],
+            [
+              -0.4650365,
+              0.8407496
+            ],
+            [
+              -0.197279,
+              -1.404061
+            ],
+            [
+              -1.464237,
+              -0.4808163
+            ],
+            [
+              -0.477854,
+              0.8402627
+            ],
+            [
+              -0.203504,
+              -1.403752
+            ],
+            [
+              -1.458835,
+              -0.473559
+            ],
+            [
+              -0.4876879,
+              0.8397591
+            ],
+            [
+              -0.2171564,
+              -1.403711
+            ],
+            [
+              -1.45458,
+              -0.4671513
+            ],
+            [
+              -0.4972128,
+              0.8399756
+            ],
+            [
+              -0.2297095,
+              -1.403857
+            ],
+            [
+              -1.452481,
+              -0.4616228
+            ],
+            [
+              -0.5063038,
+              0.8399804
+            ],
+            [
+              -0.2412932,
+              -1.40314
+            ],
+            [
+              -1.448838,
+              -0.4560656
+            ],
+            [
+              -0.5147843,
+              0.8398705
+            ],
+            [
+              -0.2522724,
+              -1.403544
+            ],
+            [
+              -1.446566,
+              -0.4510464
+            ],
+            [
+              -0.5229435,
+              0.8405974
+            ],
+            [
+              -0.2626367,
+              -1.403074
+            ],
+            [
+              -1.443786,
+              -0.4461846
+            ],
+            [
+              -0.5305083,
+              0.8402091
+            ],
+            [
+              -0.2724839,
+              -1.402718
+            ],
+            [
+              -1.442455,
+              -0.441794
+            ],
+            [
+              -0.5376632,
+              0.8396832
+            ],
+            [
+              -0.281594,
+              -1.403468
+            ],
+            [
+              -1.440666,
+              -0.4375814
+            ],
+            [
+              -0.5445471,
+              0.8400369
+            ],
+            [
+              -0.2903158,
+              -1.403323
+            ],
+            [
+              -1.438416,
+              -0.4335492
+            ],
+            [
+              -0.551047,
+              0.840275
+            ],
+            [
+              -0.2985284,
+              -1.403278
+            ],
+            [
+              -1.436735,
+              -0.429753
+            ],
+            [
+              -0.5571361,
+              0.8404089
+            ],
+            [
+              -0.3064252,
+              -1.40234
+            ]
+          ],
+          "observability": {
+            "point_count": 60,
+            "unique_point_count": 60,
+            "x_span_m": 1.266958,
+            "y_span_m": 2.2656058,
+            "covariance_major_eigenvalue_m2": 0.8544569237625264,
+            "covariance_minor_eigenvalue_m2": 0.2631054898635532,
+            "observable_2d": true
+          }
+        }
+      ],
+      "poses": [
+        [
+          -0.5014653,
+          -0.4999024,
+          -0.001338028
+        ],
+        [
+          -0.5020947,
+          -0.5011296,
+          0.0008710964
+        ],
+        [
+          -0.4929578,
+          -0.5022424,
+          0.003552355
+        ],
+        [
+          -0.4836674,
+          -0.503126,
+          0.006511134
+        ],
+        [
+          -0.4755532,
+          -0.5039781,
+          0.009338193
+        ],
+        [
+          -0.4680593,
+          -0.5048199,
+          0.01216609
+        ],
+        [
+          -0.4611202,
+          -0.5056461,
+          0.01494495
+        ],
+        [
+          -0.4547588,
+          -0.506461,
+          0.01771116
+        ],
+        [
+          -0.4489308,
+          -0.5072668,
+          0.02042261
+        ],
+        [
+          -0.443536,
+          -0.5080596,
+          0.02311538
+        ],
+        [
+          -0.4386973,
+          -0.5088516,
+          0.02581294
+        ],
+        [
+          -0.4343199,
+          -0.5096422,
+          0.02844353
+        ],
+        [
+          -0.4303977,
+          -0.510431,
+          0.0310601
+        ],
+        [
+          -0.4268999,
+          -0.5112214,
+          0.03365824
+        ],
+        [
+          -0.4237937,
+          -0.5120139,
+          0.0362416
+        ],
+        [
+          -0.4210744,
+          -0.5128122,
+          0.03881913
+        ],
+        [
+          -0.4186874,
+          -0.5136138,
+          0.0413559
+        ],
+        [
+          -0.4166161,
+          -0.5144181,
+          0.04387785
+        ],
+        [
+          -0.4148542,
+          -0.5152267,
+          0.04638375
+        ],
+        [
+          -0.4134229,
+          -0.516044,
+          0.04889168
+        ],
+        [
+          -0.4124548,
+          -0.5169106,
+          0.0514667
+        ],
+        [
+          -0.4090364,
+          -0.5178102,
+          0.05264943
+        ],
+        [
+          -0.4058738,
+          -0.5187106,
+          0.0538261
+        ],
+        [
+          -0.4027059,
+          -0.5211282,
+          0.05085502
+        ],
+        [
+          -0.4019173,
+          -0.521372,
+          0.04405724
+        ],
+        [
+          -0.3997709,
+          -0.5116812,
+          0.04494303
+        ],
+        [
+          -0.3974449,
+          -0.4992638,
+          0.04794209
+        ],
+        [
+          -0.3954663,
+          -0.4878105,
+          0.05017298
+        ],
+        [
+          -0.3936886,
+          -0.4771416,
+          0.05224
+        ],
+        [
+          -0.3920713,
+          -0.4670989,
+          0.05419235
+        ],
+        [
+          -0.3905974,
+          -0.4575875,
+          0.05614167
+        ],
+        [
+          -0.389281,
+          -0.4486711,
+          0.05796426
+        ],
+        [
+          -0.3880965,
+          -0.4402553,
+          0.05977086
+        ],
+        [
+          -0.3870514,
+          -0.4323695,
+          0.06146484
+        ],
+        [
+          -0.3861423,
+          -0.4250088,
+          0.06306691
+        ],
+        [
+          -0.3853536,
+          -0.418116,
+          0.06456203
+        ],
+        [
+          -0.3846637,
+          -0.4116016,
+          0.06603006
+        ],
+        [
+          -0.3840729,
+          -0.4054706,
+          0.06747955
+        ],
+        [
+          -0.3835876,
+          -0.399753,
+          0.0688488
+        ],
+        [
+          -0.3832,
+          -0.3944176,
+          0.07013194
+        ],
+        [
+          -0.3352755,
+          -0.379602,
+          0.04532783
+        ],
+        [
+          -0.333719,
+          -0.3740066,
+          0.04577234
+        ],
+        [
+          -0.332246,
+          -0.3687348,
+          0.04616125
+        ],
+        [
+          -0.3308451,
+          -0.3637426,
+          0.04652424
+        ],
+        [
+          -0.3295178,
+          -0.3590336,
+          0.0468564
+        ],
+        [
+          -0.3282588,
+          -0.3545865,
+          0.04715683
+        ],
+        [
+          -0.3270614,
+          -0.3503764,
+          0.04743288
+        ],
+        [
+          -0.3240064,
+          -0.3460689,
+          0.05487754
+        ],
+        [
+          -0.3246672,
+          -0.3443561,
+          0.06963012
+        ],
+        [
+          -0.3343688,
+          -0.3414442,
+          0.07256742
+        ],
+        [
+          -0.3466299,
+          -0.3382066,
+          0.07091942
+        ],
+        [
+          -0.3581004,
+          -0.3351968,
+          0.06956968
+        ],
+        [
+          -0.3687878,
+          -0.3323559,
+          0.06851125
+        ],
+        [
+          -0.3789233,
+          -0.329635,
+          0.06739731
+        ],
+        [
+          -0.3884628,
+          -0.3270519,
+          0.06641453
+        ],
+        [
+          -0.3974991,
+          -0.3245857,
+          0.06544828
+        ],
+        [
+          -0.40601,
+          -0.3222427,
+          0.06457661
+        ],
+        [
+          -0.4140714,
+          -0.3200069,
+          0.06375726
+        ],
+        [
+          -0.4216809,
+          -0.3178783,
+          0.06299384
+        ],
+        [
+          -0.4288682,
+          -0.3158519,
+          0.06223772
+        ]
+      ],
+      "points": [
+        [
+          0.5285998,
+          -0.4519082
+        ],
+        [
+          -1.379524,
+          -0.5430893
+        ],
+        [
+          -0.5659535,
+          0.8701851
+        ],
+        [
+          -0.4584287,
+          -1.379961
+        ],
+        [
+          0.5558606,
+          -0.44946
+        ],
+        [
+          -1.415054,
+          -0.5480061
+        ],
+        [
+          -0.5696594,
+          0.869812
+        ],
+        [
+          -0.4571641,
+          -1.380091
+        ],
+        [
+          0.5538571,
+          -0.4483158
+        ],
+        [
+          -1.421785,
+          -0.5524094
+        ],
+        [
+          -0.564198,
+          0.8685131
+        ],
+        [
+          -0.4456706,
+          -1.38108
+        ],
+        [
+          0.5459893,
+          -0.4470482
+        ],
+        [
+          -1.422339,
+          -0.5565974
+        ],
+        [
+          -0.5589631,
+          0.8674127
+        ],
+        [
+          -0.4337245,
+          -1.382819
+        ],
+        [
+          0.539948,
+          -0.445808
+        ],
+        [
+          -1.424065,
+          -0.5606874
+        ],
+        [
+          -0.5547231,
+          0.8663424
+        ],
+        [
+          -0.4231235,
+          -1.383527
+        ],
+        [
+          0.5332825,
+          -0.4446363
+        ],
+        [
+          -1.425401,
+          -0.5647628
+        ],
+        [
+          -0.551043,
+          0.8642718
+        ],
+        [
+          -0.4131426,
+          -1.384217
+        ],
+        [
+          0.5270616,
+          -0.4435131
+        ],
+        [
+          -1.427284,
+          -0.5688259
+        ],
+        [
+          -0.5479078,
+          0.8632098
+        ],
+        [
+          -0.40376,
+          -1.384887
+        ],
+        [
+          0.5202607,
+          -0.4424635
+        ],
+        [
+          -1.428736,
+          -0.5728477
+        ],
+        [
+          -0.5453327,
+          0.8621496
+        ],
+        [
+          -0.3949666,
+          -1.38554
+        ],
+        [
+          0.513926,
+          -0.4414603
+        ],
+        [
+          -1.429716,
+          -0.576781
+        ],
+        [
+          -0.5432153,
+          0.8610931
+        ],
+        [
+          -0.3867553,
+          -1.38618
+        ],
+        [
+          0.5081556,
+          -0.4404551
+        ],
+        [
+          -1.431121,
+          -0.5807201
+        ],
+        [
+          -0.5415049,
+          0.8600415
+        ],
+        [
+          -0.378994,
+          -1.386803
+        ],
+        [
+          0.5018262,
+          -0.4395042
+        ],
+        [
+          -1.433071,
+          -0.5847002
+        ],
+        [
+          -0.5403564,
+          0.8589802
+        ],
+        [
+          -0.371785,
+          -1.387417
+        ],
+        [
+          0.4960359,
+          -0.4385964
+        ],
+        [
+          -1.43448,
+          -0.5885717
+        ],
+        [
+          -0.5395768,
+          0.8579175
+        ],
+        [
+          -0.3650967,
+          -1.388029
+        ],
+        [
+          0.4907871,
+          -0.4376725
+        ],
+        [
+          -1.436336,
+          -0.5924581
+        ],
+        [
+          -0.5392325,
+          0.8568486
+        ],
+        [
+          -0.3588763,
+          -1.388633
+        ],
+        [
+          0.4851127,
+          -0.4368145
+        ],
+        [
+          -1.438608,
+          -0.5963584
+        ],
+        [
+          -0.5392867,
+          0.8557708
+        ],
+        [
+          -0.3530971,
+          -1.389235
+        ],
+        [
+          0.4800431,
+          -0.4359338
+        ],
+        [
+          -1.440266,
+          -0.6001908
+        ],
+        [
+          -0.5397116,
+          0.8546835
+        ],
+        [
+          -0.3476376,
+          -1.390832
+        ],
+        [
+          0.4745846,
+          -0.4351059
+        ],
+        [
+          -1.442303,
+          -0.6040483
+        ],
+        [
+          -0.5405147,
+          0.8535818
+        ],
+        [
+          -0.3426534,
+          -1.391431
+        ],
+        [
+          0.497711,
+          -0.4317367
+        ],
+        [
+          -1.444667,
+          -0.6078923
+        ],
+        [
+          -0.5415934,
+          0.8524728
+        ],
+        [
+          -0.3380379,
+          -1.392031
+        ],
+        [
+          0.5544015,
+          -0.4251183
+        ],
+        [
+          -1.447339,
+          -0.6117485
+        ],
+        [
+          -0.5429669,
+          0.8513542
+        ],
+        [
+          -0.3337515,
+          -1.392629
+        ],
+        [
+          0.6177286,
+          -0.4175766
+        ],
+        [
+          -1.449316,
+          -0.6155217
+        ],
+        [
+          -0.5446271,
+          0.8502247
+        ],
+        [
+          -0.3297892,
+          -1.393227
+        ],
+        [
+          0.6776996,
+          -0.410026
+        ],
+        [
+          -1.452612,
+          -0.6194227
+        ],
+        [
+          -0.5466198,
+          0.8490776
+        ],
+        [
+          -0.3261561,
+          -1.393828
+        ],
+        [
+          0.7421446,
+          -0.4016509
+        ],
+        [
+          -1.455359,
+          -0.6233668
+        ],
+        [
+          -0.5491665,
+          0.8478636
+        ],
+        [
+          -0.322928,
+          -1.394467
+        ],
+        [
+          -1.455798,
+          -0.6259066
+        ],
+        [
+          -0.5473621,
+          0.8468013
+        ],
+        [
+          -0.3184718,
+          -1.39526
+        ],
+        [
+          -1.455495,
+          -0.6283471
+        ],
+        [
+          -0.5458052,
+          0.8457372
+        ],
+        [
+          -0.3142768,
+          -1.396053
+        ],
+        [
+          -1.452649,
+          -0.6276457
+        ],
+        [
+          -0.5390823,
+          0.8487103
+        ],
+        [
+          -0.3135161,
+          -1.400732
+        ],
+        [
+          -1.456547,
+          -0.6211222
+        ],
+        [
+          -0.5327036,
+          0.8892365
+        ],
+        [
+          -0.3158221,
+          -1.432464
+        ],
+        [
+          -1.457303,
+          -0.6126477
+        ],
+        [
+          -0.5320886,
+          0.9018013
+        ],
+        [
+          -0.3108946,
+          -1.443629
+        ],
+        [
+          -1.457659,
+          -0.6036924
+        ],
+        [
+          -0.5319642,
+          0.8928891
+        ],
+        [
+          -0.3049981,
+          -1.438913
+        ],
+        [
+          -1.459429,
+          -0.595001
+        ],
+        [
+          -0.5313051,
+          0.8861059
+        ],
+        [
+          -0.3000305,
+          -1.436218
+        ],
+        [
+          -1.45942,
+          -0.5867335
+        ],
+        [
+          -0.5307468,
+          0.8805538
+        ],
+        [
+          -0.2953812,
+          -1.434314
+        ],
+        [
+          -1.460574,
+          -0.579081
+        ],
+        [
+          -0.5302315,
+          0.8753883
+        ],
+        [
+          -0.2909664,
+          -1.43304
+        ],
+        [
+          -1.461867,
+          -0.5719677
+        ],
+        [
+          -0.529902,
+          0.8706886
+        ],
+        [
+          -0.2867684,
+          -1.431296
+        ],
+        [
+          -1.462331,
+          -0.5652177
+        ],
+        [
+          -0.5296156,
+          0.8664076
+        ],
+        [
+          -0.2829287,
+          -1.429157
+        ],
+        [
+          -1.462925,
+          -0.5589577
+        ],
+        [
+          -0.5293927,
+          0.8616291
+        ],
+        [
+          -0.2792116,
+          -1.427514
+        ],
+        [
+          -1.464663,
+          -0.5532238
+        ],
+        [
+          -0.5293376,
+          0.8583276
+        ],
+        [
+          -0.275721,
+          -1.426408
+        ],
+        [
+          -1.465549,
+          -0.5478136
+        ],
+        [
+          -0.5292637,
+          0.8545147
+        ],
+        [
+          -0.2724351,
+          -1.425832
+        ],
+        [
+          -1.466564,
+          -0.5427616
+        ],
+        [
+          -0.5292525,
+          0.8512447
+        ],
+        [
+          -0.2694689,
+          -1.424736
+        ],
+        [
+          -1.46768,
+          -0.5380642
+        ],
+        [
+          -0.5293907,
+          0.8485951
+        ],
+        [
+          -0.2666115,
+          -1.424019
+        ],
+        [
+          -1.467899,
+          -0.5336194
+        ],
+        [
+          -0.5295783,
+          0.8455655
+        ],
+        [
+          -0.2639711,
+          -1.422687
+        ],
+        [
+          -1.469225,
+          -0.5296213
+        ],
+        [
+          -0.5298636,
+          0.8431286
+        ],
+        [
+          -0.261504,
+          -1.421776
+        ],
+        [
+          -1.470658,
+          -0.525917
+        ],
+        [
+          -0.530118,
+          0.8403226
+        ],
+        [
+          -0.2590908,
+          -1.422247
+        ],
+        [
+          -1.426658,
+          -0.4841847
+        ],
+        [
+          -0.450864,
+          0.8514248
+        ],
+        [
+          -0.2363186,
+          -1.414181
+        ],
+        [
+          -1.427048,
+          -0.479264
+        ],
+        [
+          -0.4491909,
+          0.8499917
+        ],
+        [
+          -0.233828,
+          -1.413525
+        ],
+        [
+          -1.426531,
+          -0.4745126
+        ],
+        [
+          -0.4476227,
+          0.8492386
+        ],
+        [
+          -0.2315698,
+          -1.412201
+        ],
+        [
+          -1.426088,
+          -0.4700133
+        ],
+        [
+          -0.4460904,
+          0.848209
+        ],
+        [
+          -0.2294079,
+          -1.411158
+        ],
+        [
+          -1.426718,
+          -0.4658598
+        ],
+        [
+          -0.4445902,
+          0.8469001
+        ],
+        [
+          -0.227349,
+          -1.410402
+        ],
+        [
+          -1.426424,
+          -0.4618385
+        ],
+        [
+          -0.4432124,
+          0.8463296
+        ],
+        [
+          -0.2253894,
+          -1.40991
+        ],
+        [
+          -1.426193,
+          -0.4580281
+        ],
+        [
+          -0.441864,
+          0.8455251
+        ],
+        [
+          -0.2236111,
+          -1.408662
+        ],
+        [
+          -1.428281,
+          -0.4625236
+        ],
+        [
+          -0.4468776,
+          0.8409786
+        ],
+        [
+          -0.2126805,
+          -1.403555
+        ],
+        [
+          -1.45494,
+          -0.4804087
+        ],
+        [
+          -0.4650365,
+          0.8407496
+        ],
+        [
+          -0.197279,
+          -1.404061
+        ],
+        [
+          -1.464237,
+          -0.4808163
+        ],
+        [
+          -0.477854,
+          0.8402627
+        ],
+        [
+          -0.203504,
+          -1.403752
+        ],
+        [
+          -1.458835,
+          -0.473559
+        ],
+        [
+          -0.4876879,
+          0.8397591
+        ],
+        [
+          -0.2171564,
+          -1.403711
+        ],
+        [
+          -1.45458,
+          -0.4671513
+        ],
+        [
+          -0.4972128,
+          0.8399756
+        ],
+        [
+          -0.2297095,
+          -1.403857
+        ],
+        [
+          -1.452481,
+          -0.4616228
+        ],
+        [
+          -0.5063038,
+          0.8399804
+        ],
+        [
+          -0.2412932,
+          -1.40314
+        ],
+        [
+          -1.448838,
+          -0.4560656
+        ],
+        [
+          -0.5147843,
+          0.8398705
+        ],
+        [
+          -0.2522724,
+          -1.403544
+        ],
+        [
+          -1.446566,
+          -0.4510464
+        ],
+        [
+          -0.5229435,
+          0.8405974
+        ],
+        [
+          -0.2626367,
+          -1.403074
+        ],
+        [
+          -1.443786,
+          -0.4461846
+        ],
+        [
+          -0.5305083,
+          0.8402091
+        ],
+        [
+          -0.2724839,
+          -1.402718
+        ],
+        [
+          -1.442455,
+          -0.441794
+        ],
+        [
+          -0.5376632,
+          0.8396832
+        ],
+        [
+          -0.281594,
+          -1.403468
+        ],
+        [
+          -1.440666,
+          -0.4375814
+        ],
+        [
+          -0.5445471,
+          0.8400369
+        ],
+        [
+          -0.2903158,
+          -1.403323
+        ],
+        [
+          -1.438416,
+          -0.4335492
+        ],
+        [
+          -0.551047,
+          0.840275
+        ],
+        [
+          -0.2985284,
+          -1.403278
+        ],
+        [
+          -1.436735,
+          -0.429753
+        ],
+        [
+          -0.5571361,
+          0.8404089
+        ],
+        [
+          -0.3064252,
+          -1.40234
+        ]
+      ]
+    }
+  },
+  "raw_logs": {
+    "collector": "[INFO] [1792260699.624253000] [nano_c_slam_mapping_capture]: Captured 10/60 samples\n[INFO] [1792260700.615850000] [nano_c_slam_mapping_capture]: Captured 20/60 samples\n[INFO] [1792260701.612068000] [nano_c_slam_mapping_capture]: Captured 30/60 samples\n[INFO] [1792260702.614682000] [nano_c_slam_mapping_capture]: Captured 40/60 samples\n[INFO] [1792260703.615814000] [nano_c_slam_mapping_capture]: Captured 50/60 samples\n[INFO] [1792260704.615583000] [nano_c_slam_mapping_capture]: Captured 60/60 samples\nNano-C-SLAM host mapping OK: 60 poses, 3 scans, 201 points, graph=3; report: /Users/vincent/Work/Nano-C-SLAM/artifacts/gazebo_mapping_sitl/.cf1_nearfield_bound_mission_20261017.f2aa2fc0-eff5-4718-946c-9149028ff6d0.capture.json\n",
+    "mission": "[INFO] [1792260697.324490000] [nano_c_slam_sim_mission]: Mission run f2aa2fc0-eff5-4718-946c-9149028ff6d0; waiting for /cf1/odom before takeoff to 0.50 m\n[INFO] [1792260697.324903000] [nano_c_slam_sim_mission]: mission_status={\"altitude_m\": null, \"drone_name\": \"cf1\", \"failure_reason\": null, \"landing_height_m\": 0.1, \"mapping_path_complete\": false, \"mapping_path_requested\": true, \"phase\": \"WAITING\", \"run_id\": \"f2aa2fc0-eff5-4718-946c-9149028ff6d0\", \"schema_version\": 1, \"sequence\": 0, \"sim_time_s\": 0.0}\n[INFO] [1792260697.365970000] [nano_c_slam_sim_mission]: mission_status={\"altitude_m\": -8.466971613205199e-07, \"drone_name\": \"cf1\", \"failure_reason\": null, \"landing_height_m\": 0.1, \"mapping_path_complete\": false, \"mapping_path_requested\": true, \"phase\": \"TAKEOFF\", \"run_id\": \"f2aa2fc0-eff5-4718-946c-9149028ff6d0\", \"schema_version\": 1, \"sequence\": 1, \"sim_time_s\": 13.055}\n[INFO] [1792260697.366280000] [nano_c_slam_sim_mission]: cf1 mission phase: takeoff at altitude -0.000 m\n[INFO] [1792260698.515575000] [nano_c_slam_sim_mission]: Starting bounded square mapping path at measured position\n[INFO] [1792260698.515912000] [nano_c_slam_sim_mission]: mission_status={\"altitude_m\": 0.5043328224729781, \"drone_name\": \"cf1\", \"failure_reason\": null, \"landing_height_m\": 0.1, \"mapping_path_complete\": false, \"mapping_path_requested\": true, \"phase\": \"HOVER\", \"run_id\": \"f2aa2fc0-eff5-4718-946c-9149028ff6d0\", \"schema_version\": 1, \"sequence\": 2, \"sim_time_s\": 14.203}\n[INFO] [1792260698.516211000] [nano_c_slam_sim_mission]: cf1 mission phase: hover at altitude 0.504 m\n[INFO] [1792260707.674161000] [nano_c_slam_sim_mission]: Mapping path complete; beginning configured hover interval\n[INFO] [1792260710.722124000] [nano_c_slam_sim_mission]: mission_status={\"altitude_m\": 0.7920680447036351, \"drone_name\": \"cf1\", \"failure_reason\": null, \"landing_height_m\": 0.1, \"mapping_path_complete\": true, \"mapping_path_requested\": true, \"phase\": \"LAND\", \"run_id\": \"f2aa2fc0-eff5-4718-946c-9149028ff6d0\", \"schema_version\": 1, \"sequence\": 3, \"sim_time_s\": 26.4}\n[INFO] [1792260710.724029000] [nano_c_slam_sim_mission]: cf1 mission phase: land at altitude 0.792 m\n[INFO] [1792260712.275137000] [nano_c_slam_sim_mission]: mission_status={\"altitude_m\": 0.08472352756527507, \"drone_name\": \"cf1\", \"failure_reason\": null, \"landing_height_m\": 0.1, \"mapping_path_complete\": true, \"mapping_path_requested\": true, \"phase\": \"COMPLETE\", \"run_id\": \"f2aa2fc0-eff5-4718-946c-9149028ff6d0\", \"schema_version\": 1, \"sequence\": 4, \"sim_time_s\": 27.954}\n[INFO] [1792260712.275412000] [nano_c_slam_sim_mission]: cf1 completed takeoff, hover, and landing at altitude 0.085 m\n",
+    "retained_at": "/Users/vincent/Work/Nano-C-SLAM/artifacts/gazebo_mapping_sitl/.cf1_nearfield_bound_mission_20261017.f2aa2fc0-eff5-4718-946c-9149028ff6d0.logs"
+  }
+}

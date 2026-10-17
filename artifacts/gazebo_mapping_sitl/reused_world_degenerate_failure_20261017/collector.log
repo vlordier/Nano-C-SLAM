@@ -1,0 +1,15 @@
+[INFO] [1792260655.535525000] [nano_c_slam_mapping_capture]: Captured 10/60 samples
+[INFO] [1792260656.621830000] [nano_c_slam_mapping_capture]: Captured 20/60 samples
+[INFO] [1792260657.622422000] [nano_c_slam_mapping_capture]: Captured 30/60 samples
+[INFO] [1792260658.624632000] [nano_c_slam_mapping_capture]: Captured 40/60 samples
+[INFO] [1792260659.623829000] [nano_c_slam_mapping_capture]: Captured 50/60 samples
+[INFO] [1792260660.626839000] [nano_c_slam_mapping_capture]: Captured 60/60 samples
+Traceback (most recent call last):
+  File "/Users/vincent/Work/Nano-C-SLAM/scripts/gazebo_mapping_sitl.py", line 611, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/Users/vincent/Work/Nano-C-SLAM/scripts/gazebo_mapping_sitl.py", line 598, in main
+    validate_capture_report(report)
+  File "/Users/vincent/Work/Nano-C-SLAM/sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/mapping_model.py", line 666, in validate_capture_report
+    raise ValueError("projected scan window has insufficient 2D spread")
+ValueError: projected scan window has insufficient 2D spread

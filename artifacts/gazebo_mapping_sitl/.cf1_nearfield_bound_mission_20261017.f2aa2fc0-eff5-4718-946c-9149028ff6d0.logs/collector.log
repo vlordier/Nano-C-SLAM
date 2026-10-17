@@ -1,0 +1,7 @@
+[INFO] [1792260699.624253000] [nano_c_slam_mapping_capture]: Captured 10/60 samples
+[INFO] [1792260700.615850000] [nano_c_slam_mapping_capture]: Captured 20/60 samples
+[INFO] [1792260701.612068000] [nano_c_slam_mapping_capture]: Captured 30/60 samples
+[INFO] [1792260702.614682000] [nano_c_slam_mapping_capture]: Captured 40/60 samples
+[INFO] [1792260703.615814000] [nano_c_slam_mapping_capture]: Captured 50/60 samples
+[INFO] [1792260704.615583000] [nano_c_slam_mapping_capture]: Captured 60/60 samples
+Nano-C-SLAM host mapping OK: 60 poses, 3 scans, 201 points, graph=3; report: /Users/vincent/Work/Nano-C-SLAM/artifacts/gazebo_mapping_sitl/.cf1_nearfield_bound_mission_20261017.f2aa2fc0-eff5-4718-946c-9149028ff6d0.capture.json

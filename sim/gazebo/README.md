@@ -292,6 +292,14 @@ sample records, per-direction range accounting, finite pose estimates, exact
 constraint endpoint accounting, and projected map points. On Linux, use the ROS and workspace setup paths from the Linux
 section and replace the Python path with `/usr/bin/python3`.
 
+Treat this as one mapping run per freshly launched world for now. The square
+starts at the measured current drone position; the coordinator does not reset
+Gazebo or return the drone to its spawn pose. A same-world second run has
+failed the per-window observability gate after collecting 60 samples, so the
+coordinator correctly wrote no passing report. Restart the near-field Gazebo
+launch before another mapping run. Safe same-world reuse is tracked in bead
+`ncs-ju6.5.19`.
+
 For a bounded spatial mapping pass, enable the optional square path. It moves
 0.25 m along each side at no more than 0.25 m/s, holds at the target altitude,
 then performs the configured hover and landing. The square is relative to the
