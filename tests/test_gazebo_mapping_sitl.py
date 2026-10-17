@@ -356,6 +356,53 @@ class MappingSampleTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "exceeds its limit"):
             validate_capture_report(invalid)
 
+    def test_capture_report_rejects_duplicate_or_regressing_source_timestamps(
+        self,
+    ) -> None:
+        report_path = (
+            REPOSITORY_ROOT
+            / "artifacts/gazebo_mapping_sitl/cf1_nearfield_stamped_freshness.json"
+        )
+        baseline = json.loads(report_path.read_text(encoding="utf-8"))
+        validate_capture_report(baseline)
+
+        mutations = (
+            ("duplicate range timestamp", 8_600_000_000, 8_700_000_000),
+            ("regressing range timestamp", 8_550_000_000, 8_650_000_000),
+            ("duplicate odometry timestamp", 8_700_000_000, 8_600_000_000),
+            ("regressing odometry timestamp", 8_650_000_000, 8_599_000_000),
+        )
+        for label, range_stamp, odometry_stamp in mutations:
+            with self.subTest(label=label):
+                invalid = copy.deepcopy(baseline)
+                pair = invalid["input_pair_provenance"][1]
+                pair["range_stamp_ns"] = range_stamp
+                pair["odometry_stamp_ns"] = odometry_stamp
+                pair["pair_skew_ns"] = abs(range_stamp - odometry_stamp)
+                pair["range_age_ns"] = 201_000_000
+                pair["odometry_age_ns"] = (
+                    pair["range_age_ns"] + range_stamp - odometry_stamp
+                )
+                fields = invalid["input_samples"][1].split()
+                fields[1] = str(odometry_stamp // 1_000_000)
+                invalid["input_samples"][1] = " ".join(fields)
+
+                with self.assertRaisesRegex(ValueError, "out of order"):
+                    validate_capture_report(invalid)
+
+    def test_capture_report_requires_positive_pairing_limits(self) -> None:
+        report_path = (
+            REPOSITORY_ROOT
+            / "artifacts/gazebo_mapping_sitl/cf1_nearfield_stamped_freshness.json"
+        )
+        baseline = json.loads(report_path.read_text(encoding="utf-8"))
+        for limit in ("maximum_age_ns", "maximum_skew_ns"):
+            with self.subTest(limit=limit):
+                invalid = copy.deepcopy(baseline)
+                invalid["pairing_limits"][limit] = 0
+                with self.assertRaisesRegex(ValueError, "positive integers"):
+                    validate_capture_report(invalid)
+
     def test_retained_gazebo_freshness_report_validates_pair_ages(self) -> None:
         report_path = (
             REPOSITORY_ROOT

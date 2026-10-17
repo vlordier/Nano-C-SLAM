@@ -466,12 +466,13 @@ def validate_capture_report(report: object) -> dict[str, object]:
     max_age = limits.get("maximum_age_ns")
     max_skew = limits.get("maximum_skew_ns")
     if any(
-        isinstance(v, bool) or not isinstance(v, int) or v < 0
+        isinstance(v, bool) or not isinstance(v, int) or v <= 0
         for v in (max_age, max_skew)
     ):
-        raise ValueError("capture pairing limits must be nonnegative integers")
+        raise ValueError("capture pairing limits must be positive integers")
 
-    previous_stamp = -1
+    previous_range_stamp = -1
+    previous_odometry_stamp = -1
     previous_sequence = -1
     valid_ranges: list[int] = []
     direction_valid = [0, 0, 0, 0]
@@ -508,11 +509,17 @@ def validate_capture_report(report: object) -> dict[str, object]:
         ints = (range_stamp, odom_stamp, skew, pair_sequence)
         if any(isinstance(v, bool) or not isinstance(v, int) for v in ints):
             raise ValueError("capture pair timestamps and sequence must be integers")
-        if range_stamp < previous_stamp or range_stamp < 0 or odom_stamp < 0:
+        if (
+            range_stamp <= previous_range_stamp
+            or range_stamp < 0
+            or odom_stamp <= previous_odometry_stamp
+            or odom_stamp < 0
+        ):
             raise ValueError("capture source timestamps are missing or out of order")
         if pair_sequence <= previous_sequence:
             raise ValueError("capture range sequences are not strictly increasing")
-        previous_stamp = range_stamp
+        previous_range_stamp = range_stamp
+        previous_odometry_stamp = odom_stamp
         previous_sequence = pair_sequence
         if abs(range_stamp - odom_stamp) != skew or skew > max_skew:
             raise ValueError("capture pair skew is inconsistent or exceeds its limit")
