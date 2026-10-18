@@ -78,8 +78,11 @@ UUID through the `run_id` ROS parameter) and publishes versioned JSON phase
 events on `/<drone_name>/mission_status` (`std_msgs/String`). Events include the
 run and drone identity, simulation-clock time, measured altitude, requested and
 completed mapping-path state, and landing-height limit. A `COMPLETE` event is
-emitted when one fresh odometry sample is within the configured landing-height
-bound and, when requested, the bounded path is complete. `FAILED` exits with status 1;
+emitted after odometry altitude remains at or below the configured threshold
+for at least 0.50 s of simulation time, with no accepted sample gap above
+0.20 s, and, when requested, the bounded path is complete. This establishes
+stable altitude below the threshold only; it does not establish contact or
+touchdown. `FAILED` exits with status 1;
 interrupt exits with status 130. The transient-local topic retains the phase
 history for a collector that joins after mission startup. This status stream is evidence for later
 single-run orchestration; launching the mission separately still does not bind
@@ -312,7 +315,7 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
 ```
 
 The command generates one UUID for both processes, requires a completed bounded
-square path and a measured landing at or below 0.1 m, and writes the combined
+square path and stable odometry altitude at or below 0.1 m, and writes the combined
 report only after both processes and host replay pass. Child logs remain beside
 the report in a hidden run-scoped directory. The collector requires at least
 60 fresh samples (three 20-pose scan windows) and reports success only when it
