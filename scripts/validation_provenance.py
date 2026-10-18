@@ -439,7 +439,11 @@ def validate_manifest(value: object) -> ValidationManifest:
             "hardware_attestation",
         },
     )
-    if raw["schema_version"] != SCHEMA_VERSION:
+    if (
+        isinstance(raw["schema_version"], bool)
+        or not isinstance(raw["schema_version"], int)
+        or raw["schema_version"] != SCHEMA_VERSION
+    ):
         raise ValueError("unsupported manifest schema_version")
     try:
         status = RunStatus(_text(raw["status"], "status"))
@@ -463,9 +467,13 @@ def validate_manifest(value: object) -> ValidationManifest:
         EvidenceClass.PHYSICAL_GAP9,
         EvidenceClass.PHYSICAL_FLIGHT,
     }
-    if physical_class != (manifest.hardware_attestation is not None):
-        raise ValueError("physical evidence class and hardware attestation disagree")
+    if not physical_class and manifest.hardware_attestation is not None:
+        raise ValueError("software evidence class cannot include hardware attestation")
     if status is RunStatus.SUCCESS:
+        if physical_class:
+            raise ValueError(
+                "physical SUCCESS requires an authenticated device evidence collector"
+            )
         execution = manifest.execution
         if (
             execution.exit_code != 0
@@ -478,10 +486,14 @@ def validate_manifest(value: object) -> ValidationManifest:
             raise ValueError(
                 "PASS requires a successful, hashed execution and executable"
             )
-        if execution.started_at_utc > execution.finished_at_utc:
+        started = datetime.fromisoformat(
+            execution.started_at_utc.replace("Z", "+00:00")
+        )
+        finished = datetime.fromisoformat(
+            execution.finished_at_utc.replace("Z", "+00:00")
+        )
+        if started > finished:
             raise ValueError("execution finish timestamp precedes its start")
-        if physical_class and manifest.hardware_attestation is None:
-            raise ValueError("physical PASS requires hardware attestation")
         if evidence_class is EvidenceClass.GVSOC and not manifest.runtime_dependencies:
             raise ValueError(
                 "GVSOC PASS requires explicit runtime dependency identities"
@@ -490,4 +502,10 @@ def validate_manifest(value: object) -> ValidationManifest:
             raise ValueError(
                 "Gazebo PASS requires explicit runtime dependency identities"
             )
+    if (
+        physical_class
+        and status is RunStatus.FAIL
+        and manifest.hardware_attestation is None
+    ):
+        raise ValueError("physical FAIL requires hardware measurement attestation")
     return manifest

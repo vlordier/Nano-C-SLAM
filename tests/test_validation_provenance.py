@@ -76,7 +76,14 @@ class ValidationProvenanceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "exactly"):
             validate_manifest(manifest)
 
-    def test_accepts_hardware_attested_physical_flight_claim(self) -> None:
+    def test_rejects_boolean_schema_version(self) -> None:
+        manifest = _manifest()
+        manifest["schema_version"] = True
+
+        with self.assertRaisesRegex(ValueError, "schema_version"):
+            validate_manifest(manifest)
+
+    def test_rejects_software_manifest_claiming_physical_flight_success(self) -> None:
         manifest = _manifest()
         manifest["evidence_class"] = "physical-flight"
         manifest["hardware_attestation"] = {
@@ -87,9 +94,43 @@ class ValidationProvenanceTests(unittest.TestCase):
             "observed_at_utc": "2026-10-18T12:00:00Z",
         }
 
-        parsed = validate_manifest(manifest)
+        with self.assertRaisesRegex(
+            ValueError, "authenticated device evidence collector"
+        ):
+            validate_manifest(manifest)
 
-        self.assertEqual(parsed.evidence_class.value, "physical-flight")
+    def test_physical_run_without_device_collector_can_only_be_blocked_or_not_run(
+        self,
+    ) -> None:
+        for status in ("blocked", "not-run"):
+            with self.subTest(status=status):
+                manifest = _manifest()
+                manifest["status"] = status
+                manifest["evidence_class"] = "physical-flight"
+                manifest["hardware_attestation"] = None
+
+                parsed = validate_manifest(manifest)
+
+                self.assertEqual(parsed.status.value, status)
+
+    def test_accepts_nonphysical_evidence_classes_with_runtime_identities(self) -> None:
+        for evidence_class in ("gvsoc-target-execution", "gazebo-simulation"):
+            with self.subTest(evidence_class=evidence_class):
+                manifest = _manifest()
+                manifest["evidence_class"] = evidence_class
+                manifest["runtime_dependencies"] = [
+                    {
+                        "name": "simulator-runtime",
+                        "disposition": "system-unpinned",
+                        "version": None,
+                        "sha256": "d" * 64,
+                        "path": None,
+                    }
+                ]
+
+                parsed = validate_manifest(manifest)
+
+                self.assertEqual(parsed.evidence_class.value, evidence_class)
 
     def test_rejects_host_pass_with_failed_execution(self) -> None:
         manifest = _manifest()
@@ -122,6 +163,42 @@ class ValidationProvenanceTests(unittest.TestCase):
         manifest["evidence_class"] = "gvsoc-target-execution"
 
         with self.assertRaisesRegex(ValueError, "runtime dependency"):
+            validate_manifest(manifest)
+
+    def test_rejects_host_evidence_promoted_to_gvsoc_by_class_string_only(self) -> None:
+        manifest = _manifest()
+        manifest["evidence_class"] = "gvsoc-target-execution"
+
+        with self.assertRaisesRegex(ValueError, "runtime dependency"):
+            validate_manifest(manifest)
+
+    def test_rejects_dirty_source_without_patch_identity(self) -> None:
+        manifest = _manifest()
+        _mapping(manifest["source"])["dirty"] = True
+
+        with self.assertRaisesRegex(ValueError, "dirty flag must agree"):
+            validate_manifest(manifest)
+
+    def test_rejects_runtime_hash_mutation_and_unknown_dependency_hash(self) -> None:
+        manifest = _manifest()
+        manifest["runtime_dependencies"] = [
+            {
+                "name": "simulator-runtime",
+                "disposition": "system-unpinned",
+                "version": None,
+                "sha256": "not-a-hash",
+                "path": None,
+            }
+        ]
+
+        with self.assertRaisesRegex(ValueError, "SHA-256"):
+            validate_manifest(manifest)
+
+        runtime = cast(list[object], manifest["runtime_dependencies"])
+        dependency = _mapping(runtime[0])
+        dependency["sha256"] = "d" * 64
+        dependency["disposition"] = "unknown"
+        with self.assertRaisesRegex(ValueError, "unknown dependency cannot claim"):
             validate_manifest(manifest)
 
     def test_rejects_execution_time_reversal_for_pass(self) -> None:
