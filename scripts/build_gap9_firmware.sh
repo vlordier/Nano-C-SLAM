@@ -23,6 +23,7 @@ docker run --rm --platform linux/amd64 --dns "$BUILD_DNS" \
     -v "$ROOT:/project" \
     -v "$SDK_ROOT:/gap_sdk:ro" \
     -v "$TOOLCHAIN_ROOT:/toolchain:ro" \
+    -e GAP9_BUILD_GVSOC_DMA_SMOKE="${GAP9_BUILD_GVSOC_DMA_SMOKE:-0}" \
     --mount type=volume,source=nano-c-slam-gap9-uv-cache,target=/root/.cache/uv \
     "$BUILD_IMAGE" bash -euo pipefail -c '
 export PATH=/toolchain/bin:$PATH
@@ -59,6 +60,22 @@ SDK_PYTHON_ARGS=(
     --with psutil
     --with xxhash
 )
+if [[ "${GAP9_BUILD_GVSOC_DMA_SMOKE:-0}" == "1" ]]; then
+    DMA_BUILD_ROOT="$BUILD_ROOT/BUILD-gvsoc-dma"
+    uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
+        cmake -S /project/cslam-gap9-app -B "$DMA_BUILD_ROOT" \
+        -DCMAKE_BUILD_TYPE=Release -DNANO_C_SLAM_GVSOC_DMA_SMOKE=ON \
+        -DKCONFIG_CONFIG=/project/tests/gap9_gvsoc_sdk.config
+    uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
+        cmake --build "$DMA_BUILD_ROOT" --target nano_c_slam_gvsoc_dma_smoke \
+        "-j$BUILD_JOBS"
+    test -s "$DMA_BUILD_ROOT/nano_c_slam_gvsoc_dma_smoke"
+    riscv32-unknown-elf-size "$DMA_BUILD_ROOT/nano_c_slam_gvsoc_dma_smoke"
+    mkdir -p /project/cslam-gap9-app/BUILD-gvsoc-dma
+    cp "$DMA_BUILD_ROOT/nano_c_slam_gvsoc_dma_smoke" \
+        /project/cslam-gap9-app/BUILD-gvsoc-dma/nano_c_slam_gvsoc_dma_smoke
+    exit 0
+fi
 uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
     cmake -S /project/cslam-gap9-app -B "$BUILD_ROOT/BUILD" \
     -DCMAKE_BUILD_TYPE=Release
@@ -104,4 +121,8 @@ uv run --no-project --python /usr/bin/python3 \
     --output "$MAPPING_ARTIFACTS/build-provenance.json"
 '
 
-echo "GAP9 firmware ELF: $ROOT/.build-gap9-container/BUILD/nano_c_slam_gap9"
+if [[ "${GAP9_BUILD_GVSOC_DMA_SMOKE:-0}" == "1" ]]; then
+    echo "GAP9 GVSOC DMA smoke ELF: $ROOT/cslam-gap9-app/BUILD-gvsoc-dma/nano_c_slam_gvsoc_dma_smoke"
+else
+    echo "GAP9 firmware ELF: $ROOT/.build-gap9-container/BUILD/nano_c_slam_gap9"
+fi

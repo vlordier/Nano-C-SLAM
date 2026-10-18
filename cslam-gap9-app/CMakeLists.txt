@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.19)
 
-if(NANO_C_SLAM_GVSOC_MAPPING_SMOKE)
+if(NANO_C_SLAM_GVSOC_DMA_SMOKE)
+    set(TARGET_NAME nano_c_slam_gvsoc_dma_smoke)
+elseif(NANO_C_SLAM_GVSOC_MAPPING_SMOKE)
     set(TARGET_NAME nano_c_slam_gvsoc_mapping_smoke)
 elseif(NANO_C_SLAM_GVSOC_SMOKE)
     set(TARGET_NAME nano_c_slam_gvsoc_smoke)
@@ -14,10 +16,19 @@ option(NANO_C_SLAM_ICP_DIAGNOSTICS "Enable test-only ICP stage diagnostics" OFF)
 
 set_source_files_properties(
     ../tests/gap9_sdk_gvsoc_mapping_smoke.c
+    ../tests/gap9_sdk_gvsoc_dma_smoke.c
     PROPERTIES COMPILE_OPTIONS "-std=gnu11"
 )
 
-if(NANO_C_SLAM_GVSOC_MAPPING_SMOKE)
+if(NANO_C_SLAM_GVSOC_DMA_SMOKE)
+    add_executable(
+        ${TARGET_NAME}
+        ../tests/gap9_sdk_gvsoc_dma_smoke.c
+        dma/dma_transfers.c
+    )
+    target_include_directories(${TARGET_NAME} PRIVATE dma)
+    set(APP_OPT_LEVEL -O2)
+elseif(NANO_C_SLAM_GVSOC_MAPPING_SMOKE)
     file(GLOB GAP9_SLAM_SOURCES CONFIGURE_DEPENDS "slam/*.c" "slam/rcm/*.c")
     file(GLOB GAP9_POINT_CLOUD_SOURCES CONFIGURE_DEPENDS "point-cloud/*.c")
     add_executable(
