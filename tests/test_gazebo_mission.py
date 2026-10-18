@@ -70,6 +70,21 @@ class MissionSequenceTests(unittest.TestCase):
                     previous_stamp_s=previous_stamp_s,
                 )
 
+    def test_waiting_and_paused_clock_do_not_invent_odometry_progress(self) -> None:
+        mission = MissionSequence()
+
+        self.assertEqual(mission.step(5.0, None, None), 0.0)
+        self.assertIs(mission.phase, MissionPhase.WAITING)
+        self.assertEqual(mission.step(5.0, 0.0, 5.0), 0.5)
+        self.assertEqual(mission.step(5.0, 0.0, 5.0), 0.5)
+        self.assertIs(mission.phase, MissionPhase.TAKEOFF)
+
+    def test_equal_odometry_timestamps_are_valid_within_future_tolerance(self) -> None:
+        mission = MissionSequence()
+        self.assertEqual(mission.step(10.0, 0.0, 10.1), 0.5)
+        self.assertEqual(mission.step(10.0, 0.0, 10.1), 0.5)
+        self.assertIs(mission.phase, MissionPhase.TAKEOFF)
+
     def test_builds_config_from_numeric_ros_parameters(self) -> None:
         self.assertEqual(
             create_mission_config(0.7, 2),

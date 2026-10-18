@@ -98,6 +98,14 @@ nonzero. This watchdog continues to run if simulation time is paused; it does
 not by itself diagnose why the ROS odometry path failed. Override the bound
 with `-p odometry_startup_timeout_s:=<seconds>` when starting `sim_mission`.
 
+Mission odometry stamps and `now` are compared in the ROS clock domain (the
+simulation clock when `use_sim_time:=True`). A sample may be at most 100 ms
+ahead of that clock; equal stamps are allowed, while regression or data older
+than `odometry_timeout_s` fails the mission before it emits a flight command.
+While simulation time is paused, equal-time samples remain valid and age does
+not advance. This is a software contract covered by model tests; it does not
+substitute for live ROS failure-injection evidence.
+
 ```sh
 uv run --no-project --python /usr/bin/python3 \
   /opt/ros/jazzy/bin/ros2 launch nano_c_slam_gazebo swarm_mission.launch.py
