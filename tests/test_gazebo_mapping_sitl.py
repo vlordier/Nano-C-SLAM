@@ -591,10 +591,34 @@ class NativeMappingReplayTests(unittest.TestCase):
                     "optimizer_input_constraint_count",
                     "optimizer_input_unique_edge_count",
                     "optimizer_input_unique_edge_pairs",
-                    "projected_scan_windows",
                     "has_nan",
                 ):
                     self.assertEqual(replayed[field], retained[field], field)
+
+                replayed_windows = cast(
+                    list[dict[str, object]], replayed["projected_scan_windows"]
+                )
+                retained_windows = retained["projected_scan_windows"]
+                self.assertEqual(len(replayed_windows), len(retained_windows))
+                for replayed_window, retained_window in zip(
+                    replayed_windows, retained_windows, strict=True
+                ):
+                    self.assertEqual(
+                        (replayed_window["start_pose"], replayed_window["pose_count"]),
+                        (retained_window["start_pose"], retained_window["pose_count"]),
+                    )
+                    replayed_points = cast(list[list[float]], replayed_window["points"])
+                    retained_points = cast(list[list[float]], retained_window["points"])
+                    self.assertEqual(len(replayed_points), len(retained_points))
+                    for replayed_point, retained_point in zip(
+                        replayed_points, retained_points, strict=True
+                    ):
+                        for replayed_axis, retained_axis in zip(
+                            replayed_point, retained_point, strict=True
+                        ):
+                            self.assertAlmostEqual(
+                                replayed_axis, retained_axis, delta=5e-6
+                            )
 
     def test_drops_ranges_beyond_firmware_loop_closure_limit(self) -> None:
         samples = [

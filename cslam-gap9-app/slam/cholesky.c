@@ -183,6 +183,11 @@ void master_core_delegate_cholesky(void *args) {
 }
 
 void cholesky_sparse_parallel(csr *H, int16_t N, int16_t *perm) {
+    /* The parallel factorization corrupts compact SLAM graphs on GVSOC. */
+    if (N <= 64) {
+        cholesky_sparse_fc_only(H, N, perm);
+        return;
+    }
     fabric_job job_fc = {
         .mat = H,
         .perm = perm,

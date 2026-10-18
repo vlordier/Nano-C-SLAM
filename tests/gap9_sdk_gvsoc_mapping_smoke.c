@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "icp.h"
 #include "pmsis.h"
@@ -12,6 +13,18 @@ struct pi_cluster_conf cl_conf;
 struct pi_device cluster_dev;
 #endif
 uint8_t verbose = 0;
+
+static int optimized_fixture_poses_are_bounded(int16_t pose_count) {
+    for (int16_t pose_id = 0; pose_id < pose_count; ++pose_id) {
+        float position[3];
+        if (!pcl_to_poses(position, pose_id, 1) || !isfinite(position[0]) ||
+            !isfinite(position[1]) || !isfinite(position[2]) ||
+            fabsf(position[0]) > 1.0f || fabsf(position[1]) > 1.0f ||
+            position[2] < 1.0f || position[2] > 4.0f)
+            return 0;
+    }
+    return 1;
+}
 
 #ifdef NANO_C_SLAM_TARGET_GVSOC
 #define EXECUTION_CLASS "GVSOC"
@@ -83,6 +96,11 @@ static int run_mapping_fixture(void) {
             previous_scan = current_scan;
             previous_scan_start = scan_start;
             pcl_optimize(&job);
+            if (!optimized_fixture_poses_are_bounded((int16_t)(id + 1))) {
+                printf("NANO_C_SLAM_%s:mapping_fail unbounded_pose_after_scan=%d\n",
+                       EXECUTION_CLASS, scan_start);
+                return -1;
+            }
         }
     }
 
