@@ -88,8 +88,23 @@ static int run_mapping_fixture(void) {
 
         if ((id + 1) % 20 == 0) {
             const int scan_start = id - 19;
-            pcl_extract_scan((int16_t)scan_start, (int16_t)(scan_start + 20),
+            const int scan_end = scan_start + 20;
+            pcl_extract_scan((int16_t)scan_start, (int16_t)scan_end,
                              &current_scan, 1400);
+            const int eligible_pose_count = scan_end - scan_start;
+            /* One extracted point corresponds to each range passing the gate. */
+            const int accepted_range_count = (int)current_scan.num;
+            printf("NANO_C_SLAM_%s:scan_window start=%d end=%d "
+                   "eligible_poses=%d accepted_ranges=%d extracted_points=%zu "
+                   "range_gate_mm=1400\n",
+                   EXECUTION_CLASS, scan_start, scan_end, eligible_pose_count,
+                   accepted_range_count, current_scan.num);
+            if (scan_start != ((id + 1) / 20 - 1) * 20 ||
+                eligible_pose_count != 20 || accepted_range_count != 80) {
+                printf("NANO_C_SLAM_%s:scan_window_fail start=%d end=%d\n",
+                       EXECUTION_CLASS, scan_start, scan_end);
+                return -1;
+            }
             if (previous_scan_start >= 0 && previous_scan.num > 0 &&
                 current_scan.num > 0) {
                 float correction[3] = {0};
