@@ -282,14 +282,27 @@ source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
 export GZ_PARTITION="nano_c_slam_$(id -u)"
 export ROS_DOMAIN_ID=42
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
-  python scripts/check_gazebo_macos.py --timeout 20 --mission
+  -m scripts.verify_gazebo_swarm_ros --timeout 20
 ```
 
-The check validates `/cf1/odom`, the four lidar values, and pairwise ranges
-before and after a complete takeoff-hover-land cycle. It verifies phase order,
-near-ground completion, and advancing odometry timestamps. It exits nonzero
-with a diagnostic if flight or telemetry fails. Run it from the Nano-C-SLAM
-repository root.
+This passive check validates advancing odometry and correctly namespaced,
+fresh four-ray ranges from cf1, cf3 and cf4, then checks timestamped pairwise
+ranges against the exact source odometry samples. It reports `/<drone>/cmd_vel`
+publishers and subscribers without requiring a mission. Add
+`--require-mission-commands` only when mission nodes are already running. It
+never launches a mission or publishes flight commands. Run it from the
+Nano-C-SLAM repository root.
+
+To exercise the same ROS subscriptions and validators without Gazebo, run:
+
+```sh
+uv run --no-project \\
+  --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \\
+  -m scripts.verify_gazebo_swarm_ros --self-test
+```
+
+The fixture publishes all three namespaced streams and pairwise snapshots on
+an isolated local ROS domain; it does not publish velocity commands.
 
 ### Replay Gazebo data through the Nano-C-SLAM mapping core
 
@@ -326,7 +339,7 @@ source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
 export GZ_PARTITION="nano_c_slam_$(id -u)"
 export ROS_DOMAIN_ID=42
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
-  python scripts/gazebo_mapping_run.py --drone cf1 --samples 60 \
+  -m scripts.gazebo_mapping_run --drone cf1 --samples 60 \
   --scene nearfield-mapping --timeout 120 \
   --output /tmp/nano-c-slam-gazebo-run.json
 ```
@@ -419,7 +432,7 @@ Build the host replay before flight and pass
 ```sh
 scripts/build_host_mapping_sitl.sh
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
-  python scripts/gazebo_mapping_sitl.py --drone cf1 --samples 60 \
+  -m scripts.gazebo_mapping_sitl --drone cf1 --samples 60 \
   --scene nearfield-mapping --reuse-binary \
   --output /tmp/nano-c-slam-gazebo-map.json
 ```

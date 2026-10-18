@@ -76,10 +76,8 @@ def _valid_report() -> dict[str, object]:
         "child_commands": {
             "collector": [
                 "/python",
-                str(
-                    Path(__file__).resolve().parents[1]
-                    / "scripts/gazebo_mapping_sitl.py"
-                ),
+                "-m",
+                "scripts.gazebo_mapping_sitl",
                 "--binary",
                 "/mapping_replay",
             ],

@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """Capture Gazebo telemetry and replay it through the Nano-C-SLAM C core."""
 
-# The script is also launched by file path; it adds the checkout root below.
-# ruff: noqa: E402
-
 from __future__ import annotations
 
 import argparse
@@ -25,10 +22,6 @@ from itertools import pairwise
 from pathlib import Path
 from statistics import median
 from typing import Any, Protocol, cast
-
-REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-if str(REPOSITORY_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPOSITORY_ROOT))
 
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
     MappingSample,
@@ -54,6 +47,7 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.telemetry_model import (
     TelemetryPairer,
 )
 
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 MINIMUM_SAMPLES = 60
 MAXIMUM_SAMPLES = 170
 

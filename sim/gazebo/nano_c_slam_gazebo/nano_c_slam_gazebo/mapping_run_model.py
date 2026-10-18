@@ -150,14 +150,14 @@ class MappingRunConfig:
         *,
         python_executable: str,
         ros2_executable: str,
-        collector_script: Path,
     ) -> MappingRunCommands:
         """Build argv without a shell and bind child settings to this run."""
         python_path = shutil.which(python_executable) or python_executable
         ros2_path = shutil.which(ros2_executable) or ros2_executable
         collector = (
             python_path,
-            str(collector_script.resolve()),
+            "-m",
+            "scripts.gazebo_mapping_sitl",
             "--drone",
             self.drone_name,
             "--run-id",

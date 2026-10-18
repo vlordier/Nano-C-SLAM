@@ -15,7 +15,11 @@ import time
 from collections.abc import Sequence
 from contextlib import suppress
 from itertools import combinations
-from pathlib import Path
+
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
+    SUPPORTED_DRONE_NAMES,
+    validate_drone_name,
+)
 
 
 def _read_topic(topic: str, timeout_s: float) -> str:
@@ -38,11 +42,16 @@ def _read_topic(topic: str, timeout_s: float) -> str:
 
 
 def _array_values(message: str) -> list[float]:
-    """Parse the simple `data: [...]` representation emitted by ros2 topic echo."""
+    """Parse a numeric ROS YAML sequence from `ranges_mm` or `ranges_m`."""
+    return _numeric_sequence(message, ("ranges_mm", "ranges_m", "data"))
+
+
+def _numeric_sequence(message: str, keys: Sequence[str]) -> list[float]:
+    """Parse one inline or block YAML sequence emitted by `ros2 topic echo`."""
     lines = message.splitlines()
     for index, line in enumerate(lines):
         key, separator, value = line.strip().partition(":")
-        if key == "data" and separator:
+        if key in keys and separator:
             values = value.strip().strip("[]")
             if not values:
                 values = ",".join(
@@ -62,19 +71,17 @@ def _array_values(message: str) -> list[float]:
 def _validate_pairwise_ranges(message: str) -> list[float]:
     """Require one finite range for each configured drone pair, in stable order."""
     drone_names = _supported_drone_names()
-    label = re.search(r"(?m)^\s*- label: (.+)$", message)
-    if label is None:
-        raise RuntimeError("pairwise range message did not contain a dimension label")
     expected_pairs = ",".join(
         f"{first}:{second}" for first, second in combinations(drone_names, 2)
     )
-    if label.group(1).strip() != expected_pairs:
-        actual_pairs = label.group(1).strip()
+    labels = _string_sequence(message, "pair_labels")
+    if labels != expected_pairs.split(","):
+        actual_pairs = ",".join(labels)
         raise RuntimeError(
             f"pairwise range labels must be {expected_pairs}, got {actual_pairs}"
         )
 
-    values = _array_values(message)
+    values = _numeric_sequence(message, ("ranges_m", "data"))
     expected_count = len(drone_names) * (len(drone_names) - 1) // 2
     if len(values) != expected_count:
         raise RuntimeError(
@@ -85,15 +92,30 @@ def _validate_pairwise_ranges(message: str) -> list[float]:
     return values
 
 
-def _supported_drone_names() -> tuple[str, ...]:
-    """Load the launch model when this file is run directly from ``scripts``."""
-    repository_root = str(Path(__file__).resolve().parents[1])
-    if repository_root not in sys.path:
-        sys.path.insert(0, repository_root)
-    from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
-        SUPPORTED_DRONE_NAMES,
-    )
+def _string_sequence(message: str, key_name: str) -> list[str]:
+    """Parse an inline or block string sequence from ROS CLI YAML."""
+    lines = message.splitlines()
+    for index, line in enumerate(lines):
+        key, separator, value = line.strip().partition(":")
+        if key != key_name or not separator:
+            continue
+        inline = value.strip().strip("[]")
+        if inline:
+            return [item.strip().strip("'\"") for item in inline.split(",")]
+        values: list[str] = []
+        for item in lines[index + 1 :]:
+            stripped = item.strip()
+            if not stripped.startswith("- "):
+                if values:
+                    break
+                continue
+            values.append(stripped[2:].strip().strip("'\""))
+        return values
+    raise RuntimeError(f"ROS message did not contain {key_name}")
 
+
+def _supported_drone_names() -> tuple[str, ...]:
+    """Return the same stable drone order used by the launch model."""
     return SUPPORTED_DRONE_NAMES
 
 
@@ -159,13 +181,6 @@ def _mission_command(ros2: str, drone: str) -> list[str]:
 
 def _valid_drone_name(drone: str) -> bool:
     """Accept only a drone configured in the Gazebo launch model."""
-    repository_root = str(Path(__file__).resolve().parents[1])
-    if repository_root not in sys.path:
-        sys.path.insert(0, repository_root)
-    from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
-        validate_drone_name,
-    )
-
     try:
         validate_drone_name(drone)
     except ValueError:

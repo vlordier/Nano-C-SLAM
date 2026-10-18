@@ -320,8 +320,7 @@ def validate_combined_run_report(value: object) -> dict[str, object]:
         raise ValueError("collector command does not use the recorded Python")
     if Path(mission[0]).resolve() != Path(str(ros_identity["path"])).resolve():
         raise ValueError("mission command does not use the recorded ROS 2 CLI")
-    expected_collector = (_REPOSITORY_ROOT / "scripts/gazebo_mapping_sitl.py").resolve()
-    if Path(collector[1]).resolve() != expected_collector:
+    if collector[1:3] != ["-m", "scripts.gazebo_mapping_sitl"]:
         raise ValueError("collector command does not use the hashed owned script")
     try:
         binary_argument_index = collector.index("--binary") + 1

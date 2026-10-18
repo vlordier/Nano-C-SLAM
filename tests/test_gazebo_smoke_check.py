@@ -34,11 +34,11 @@ class GazeboSmokeCheckTests(unittest.TestCase):
             _array_values("data:\n- not-a-number\n")
 
     def test_validates_all_pairwise_labels_and_ranges(self) -> None:
-        message = """layout:
-  dim:
-  - label: cf1:cf3,cf1:cf4,cf3:cf4
-    size: 3
-data:
+        message = """pair_labels:
+- cf1:cf3
+- cf1:cf4
+- cf3:cf4
+ranges_m:
 - 1.0
 - 2.0
 - 3.0
@@ -46,12 +46,11 @@ data:
         self.assertEqual(_validate_pairwise_ranges(message), [1.0, 2.0, 3.0])
 
     def test_rejects_incomplete_or_mislabelled_pairwise_ranges(self) -> None:
-        with self.assertRaisesRegex(RuntimeError, "dimension label"):
-            _validate_pairwise_ranges("data:\n- 1.0\n")
-        message = """layout:
-  dim:
-  - label: cf1:cf3
-data:
+        with self.assertRaisesRegex(RuntimeError, "pair_labels"):
+            _validate_pairwise_ranges("ranges_m:\n- 1.0\n")
+        message = """pair_labels:
+- cf1:cf3
+ranges_m:
 - 1.0
 """
         with self.assertRaisesRegex(RuntimeError, "labels must be"):

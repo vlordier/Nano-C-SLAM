@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Run one UUID-bound Gazebo mission, telemetry capture, and host replay."""
-# ruff: noqa: E402
 
 from __future__ import annotations
 
@@ -14,10 +13,6 @@ import time
 from pathlib import Path
 from subprocess import SubprocessError
 from typing import Protocol, cast
-
-REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-if str(REPOSITORY_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPOSITORY_ROOT))
 
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
     validate_capture_report,
@@ -42,6 +37,8 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model import
     claim_world_session,
     session_file_for_partition,
 )
+
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 
 
 class _StringMessage(Protocol):
@@ -182,7 +179,6 @@ def _run(config: MappingRunConfig, ros2_executable: str) -> Path:
     commands = config.build_commands(
         python_executable=python_executable,
         ros2_executable=ros2_executable,
-        collector_script=REPOSITORY_ROOT / "scripts/gazebo_mapping_sitl.py",
     )
     provenance_before = collect_run_provenance(
         REPOSITORY_ROOT,

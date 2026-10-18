@@ -33,7 +33,6 @@ class MappingRunConfigTests(unittest.TestCase):
             commands = config.build_commands(
                 python_executable=sys.executable,
                 ros2_executable="ros2",
-                collector_script=Path("scripts/gazebo_mapping_sitl.py"),
             )
 
         self.assertEqual(str(uuid.UUID(config.run_id)), config.run_id)
@@ -41,6 +40,7 @@ class MappingRunConfigTests(unittest.TestCase):
         self.assertIn(f"run_id:={config.run_id}", commands.mission)
         self.assertIn("drone_name:=cf3", commands.mission)
         self.assertIn("--drone", commands.collector)
+        self.assertEqual(commands.collector[1:3], ("-m", "scripts.gazebo_mapping_sitl"))
         self.assertIn("cf3", commands.collector)
         self.assertIn("mapping_path:=True", commands.mission)
         self.assertIn("--reuse-binary", commands.collector)
