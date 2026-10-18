@@ -133,6 +133,7 @@ class WorldSessionTests(unittest.TestCase):
                     {
                         "role": "gazebo-server",
                         "pid": 1234,
+                        "launch_pid": manifest["launch_pid"],
                         "argv": server.cmd,
                         "executable_path": None,
                         "observed_at_utc": manifest["processes"][0]["observed_at_utc"],

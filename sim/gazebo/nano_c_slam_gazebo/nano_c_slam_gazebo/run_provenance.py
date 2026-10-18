@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import importlib.metadata
+import math
 import os
 import platform
 import shutil
@@ -12,6 +13,7 @@ import sys
 from pathlib import Path
 from typing import cast
 
+from scripts.runtime_loaded_libraries import capture_session_gazebo_libraries
 from scripts.runtime_provenance import (
     GAZEBO_ROS_ENVIRONMENT,
     sha256_file_stable,
@@ -284,6 +286,10 @@ def collect_run_provenance(
         },
         "ros_overlay_packages": overlay,
         "interface_identity": interface_identity,
+        "loaded_gazebo_server_libraries": capture_session_gazebo_libraries(
+            partition=os.environ.get("GZ_PARTITION", "default"),
+            expected_executable_path=gazebo_path,
+        ),
         "runtime_environment": {
             "ros_domain_id": os.environ.get("ROS_DOMAIN_ID", ""),
             "gazebo_partition": os.environ.get("GZ_PARTITION", "default"),
@@ -401,6 +407,8 @@ def validate_run_provenance(
                 and not Path(str(library_value["path"])).is_absolute()
             ):
                 raise ValueError(f"run provenance has non-absolute {name} library path")
+    if "loaded_gazebo_server_libraries" in value:
+        _validate_loaded_library_evidence(value["loaded_gazebo_server_libraries"])
     if not isinstance(executables["python"].get("version"), str):
         raise ValueError("run provenance is missing Python version")
     if not isinstance(executables["ros2"].get("ros_distro"), str) or not (
@@ -578,9 +586,156 @@ def require_provenance_unchanged(before: object, after: object) -> dict[str, obj
     """Require a complete provenance snapshot to remain stable during a run."""
     first = validate_run_provenance(before)
     second = validate_run_provenance(after)
-    if first != second:
+    first_loaded = first.get("loaded_gazebo_server_libraries")
+    second_loaded = second.get("loaded_gazebo_server_libraries")
+    first_without_loaded = {
+        key: value
+        for key, value in first.items()
+        if key != "loaded_gazebo_server_libraries"
+    }
+    second_without_loaded = {
+        key: value
+        for key, value in second.items()
+        if key != "loaded_gazebo_server_libraries"
+    }
+    if first_without_loaded != second_without_loaded or _loaded_library_identity(
+        first_loaded
+    ) != _loaded_library_identity(second_loaded):
         raise ValueError("source, tool, or overlay changed during Gazebo run")
+    if isinstance(second_loaded, dict):
+        second_loaded["observation_window"] = {
+            "before_utc": first_loaded.get("observed_at_utc")
+            if isinstance(first_loaded, dict)
+            else None,
+            "after_utc": second_loaded.get("observed_at_utc"),
+            "before_commands": first_loaded.get("commands", [])
+            if isinstance(first_loaded, dict)
+            else [],
+            "after_commands": second_loaded.get("commands", []),
+        }
     return second
+
+
+def _loaded_library_identity(value: object) -> object:
+    if not isinstance(value, dict):
+        return value
+    return {
+        key: value.get(key)
+        for key in (
+            "status",
+            "reason",
+            "session_id",
+            "pid",
+            "launch_pid",
+            "executable_path",
+            "libraries",
+        )
+    }
+
+
+def _validate_loaded_library_evidence(value: object) -> None:
+    if not isinstance(value, dict):
+        raise ValueError("loaded Gazebo library evidence must be an object")
+    if value.get("status") not in {"observed", "unknown"}:
+        raise ValueError("loaded Gazebo library evidence has invalid status")
+    if not isinstance(value.get("observer"), str) or not value["observer"]:
+        raise ValueError("loaded Gazebo library evidence is missing its observer")
+    if value.get("reason") is not None and not isinstance(value.get("reason"), str):
+        raise ValueError("loaded Gazebo library evidence has an invalid reason")
+    if value.get("session_id") is not None and not isinstance(
+        value.get("session_id"), str
+    ):
+        raise ValueError("loaded Gazebo library evidence has an invalid session ID")
+    for name in ("pid", "launch_pid"):
+        pid = value.get(name)
+        if pid is not None and (
+            isinstance(pid, bool) or not isinstance(pid, int) or pid <= 0
+        ):
+            raise ValueError(f"loaded Gazebo library evidence has an invalid {name}")
+    executable = value.get("executable_path")
+    if executable is not None and (
+        not isinstance(executable, str) or not Path(executable).is_absolute()
+    ):
+        raise ValueError("loaded Gazebo library evidence has an invalid executable")
+    if not isinstance(value.get("observed_at_utc"), str):
+        raise ValueError("loaded Gazebo library evidence is missing its timestamp")
+    commands = value.get("commands")
+    if not isinstance(commands, list):
+        raise ValueError("loaded Gazebo library evidence has invalid commands")
+    for command in commands:
+        if not isinstance(command, dict) or set(command) != {
+            "argv",
+            "returncode",
+            "elapsed_s",
+            "stdout_sha256",
+            "stdout_bytes",
+        }:
+            raise ValueError("loaded Gazebo library evidence has malformed command")
+        argv = command.get("argv")
+        if (
+            not isinstance(argv, list)
+            or not argv
+            or any(not isinstance(argument, str) for argument in argv)
+        ):
+            raise ValueError("loaded Gazebo library evidence has invalid command argv")
+        returncode = command.get("returncode")
+        if returncode is not None and (
+            isinstance(returncode, bool) or not isinstance(returncode, int)
+        ):
+            raise ValueError("loaded Gazebo library evidence has invalid return code")
+        elapsed = command.get("elapsed_s")
+        if (
+            isinstance(elapsed, bool)
+            or not isinstance(elapsed, (int, float))
+            or not math.isfinite(elapsed)
+            or elapsed < 0
+        ):
+            raise ValueError("loaded Gazebo library evidence has invalid timing")
+        if not _is_sha256(command.get("stdout_sha256")):
+            raise ValueError("loaded Gazebo library evidence has invalid command hash")
+        output_bytes = command.get("stdout_bytes")
+        if (
+            isinstance(output_bytes, bool)
+            or not isinstance(output_bytes, int)
+            or output_bytes < 0
+        ):
+            raise ValueError("loaded Gazebo library evidence has invalid output size")
+    libraries = value.get("libraries")
+    if not isinstance(libraries, list):
+        raise ValueError("loaded Gazebo library evidence has invalid libraries")
+    for library in libraries:
+        if not isinstance(library, dict) or set(library) != {
+            "path",
+            "sha256",
+            "reason",
+        }:
+            raise ValueError("loaded Gazebo library evidence has malformed entry")
+        if (
+            not isinstance(library.get("path"), str)
+            or not Path(library["path"]).is_absolute()
+        ):
+            raise ValueError("loaded Gazebo library evidence has a non-absolute path")
+        digest = library.get("sha256")
+        if digest is not None and not _is_sha256(digest):
+            raise ValueError("loaded Gazebo library evidence has an invalid hash")
+        if library.get("reason") is not None and not isinstance(
+            library.get("reason"), str
+        ):
+            raise ValueError(
+                "loaded Gazebo library evidence has an invalid file reason"
+            )
+        if digest is None and not isinstance(library.get("reason"), str):
+            raise ValueError("unhashed mapped library must preserve an unknown reason")
+    if value.get("status") == "observed" and (
+        not libraries
+        or value.get("pid") is None
+        or value.get("launch_pid") is None
+        or value.get("session_id") is None
+        or value.get("executable_path") is None
+    ):
+        raise ValueError("observed mapped libraries require exact process identity")
+    if value.get("status") == "unknown" and not value.get("reason"):
+        raise ValueError("unknown mapped-library evidence requires a reason")
 
 
 def _is_sha256(value: object) -> bool:

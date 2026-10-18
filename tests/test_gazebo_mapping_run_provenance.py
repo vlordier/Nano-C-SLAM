@@ -90,6 +90,18 @@ def _valid_provenance(binary_hash: str) -> dict[str, object]:
                 "file_count": 1,
             },
         },
+        "loaded_gazebo_server_libraries": {
+            "status": "unknown",
+            "reason": "fixture has no launch-owned process",
+            "observer": "lsof -F0 -a -nP -p PID -d txt,mem",
+            "session_id": None,
+            "pid": None,
+            "launch_pid": None,
+            "executable_path": None,
+            "observed_at_utc": "2026-10-19T00:00:00Z",
+            "commands": [],
+            "libraries": [],
+        },
         "runtime_environment": {
             "ros_domain_id": "42",
             "gazebo_partition": "nano_c_slam_501",
@@ -259,6 +271,73 @@ class GazeboRunProvenanceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "changed during Gazebo run"):
             require_provenance_unchanged(before, dirty_overlay)
 
+    def test_loaded_library_hashes_must_stay_stable_across_observation_window(
+        self,
+    ) -> None:
+        before = _valid_provenance("1" * 64)
+        loaded = before["loaded_gazebo_server_libraries"]
+        assert isinstance(loaded, dict)
+        loaded.update(
+            status="observed",
+            reason=None,
+            session_id="aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+            pid=3456,
+            launch_pid=1234,
+            executable_path="/opt/gz/bin/gz",
+            libraries=[
+                {
+                    "path": "/opt/gz/lib/libgazebo-plugin.dylib",
+                    "sha256": "a" * 64,
+                    "reason": None,
+                }
+            ],
+            commands=[
+                {
+                    "argv": ["/usr/sbin/lsof", "-a", "-p", "3456"],
+                    "returncode": 0,
+                    "elapsed_s": 0.1,
+                    "stdout_sha256": "c" * 64,
+                    "stdout_bytes": 10,
+                }
+            ],
+        )
+        loaded_after = copy.deepcopy(before)
+        after_evidence = loaded_after["loaded_gazebo_server_libraries"]
+        assert isinstance(after_evidence, dict)
+        after_evidence["observed_at_utc"] = "2026-10-19T00:00:10Z"
+        after_evidence["commands"] = [
+            {
+                "argv": ["/usr/sbin/lsof", "-a", "-p", "3456"],
+                "returncode": 0,
+                "elapsed_s": 0.3,
+                "stdout_sha256": "c" * 64,
+                "stdout_bytes": 10,
+            }
+        ]
+
+        stable = require_provenance_unchanged(before, loaded_after)
+        stable_evidence = stable["loaded_gazebo_server_libraries"]
+        assert isinstance(stable_evidence, dict)
+        self.assertEqual(
+            stable_evidence["observation_window"]["before_utc"],
+            "2026-10-19T00:00:00Z",
+        )
+        self.assertEqual(
+            stable_evidence["observation_window"]["after_utc"],
+            "2026-10-19T00:00:10Z",
+        )
+
+        mutated = copy.deepcopy(loaded_after)
+        mutated_evidence = mutated["loaded_gazebo_server_libraries"]
+        assert isinstance(mutated_evidence, dict)
+        libraries = mutated_evidence["libraries"]
+        assert isinstance(libraries, list)
+        plugin = libraries[0]
+        assert isinstance(plugin, dict)
+        plugin["sha256"] = "b" * 64
+        with self.assertRaisesRegex(ValueError, "changed during Gazebo run"):
+            require_provenance_unchanged(loaded_after, mutated)
+
     def test_collection_hashes_owned_inputs_and_records_dirty_source(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             root = Path(temporary_directory)
@@ -332,6 +411,11 @@ class GazeboRunProvenanceTests(unittest.TestCase):
                 provenance = collect_run_provenance(
                     root, ros2_executable=str(ros2), mapping_binary=binary
                 )
+
+            loaded = provenance["loaded_gazebo_server_libraries"]
+            assert isinstance(loaded, dict)
+            self.assertEqual(loaded["status"], "unknown")
+            self.assertIn("manifest is unavailable", loaded["reason"])
 
             source = provenance["source"]
             assert isinstance(source, dict)

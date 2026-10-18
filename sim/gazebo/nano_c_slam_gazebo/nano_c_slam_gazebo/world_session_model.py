@@ -49,6 +49,7 @@ def publish_world_session(path: Path, *, scene: str) -> str:
         "schema_version": WORLD_SESSION_SCHEMA_VERSION,
         "session_id": session_id,
         "scene": scene,
+        "launch_pid": os.getpid(),
     }
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary_path = path.with_name(f".{path.name}.{session_id}.tmp")
@@ -128,6 +129,7 @@ def record_world_process(
         {
             "role": role,
             "pid": pid,
+            "launch_pid": os.getpid(),
             "argv": command,
             "executable_path": executable_path,
             "observed_at_utc": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
