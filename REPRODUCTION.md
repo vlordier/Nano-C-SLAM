@@ -31,7 +31,7 @@ uv run --locked python -m scripts.compare_gap9_mapping_diagnostics \
   --gvsoc-artifact artifacts/gap9_gvsoc_evidence/mapping_diagnostic.json \
   --host-log artifacts/gap9_gvsoc_evidence/host_mapping_diagnostic.log \
   --gvsoc-log artifacts/gap9_gvsoc_evidence/mapping_diagnostic.log \
-  --output artifacts/gap9_gvsoc_evidence/host_gvsoc_comparison_20261018.json
+  --output /tmp/nano-c-slam-host-gvsoc-comparison-rerun.json
 ```
 
 The comparator rejects mismatched fixtures, shared source hashes, invalid
