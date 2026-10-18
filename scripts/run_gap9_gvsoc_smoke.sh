@@ -121,6 +121,8 @@ if [[ "$MAPPING_CAPTURE" == "1" ]]; then
     SOURCE_PROVENANCE_ARGS=(
         --source-root "$ROOT"
         --source-receipt "$WORK_ROOT/gvsoc-source-receipt.json"
+        --stdout-log "$WORK_ROOT/gvsoc.stdout.log"
+        --stderr-log "$WORK_ROOT/gvsoc.stderr.log"
     )
 fi
 set +e
@@ -167,6 +169,9 @@ if [[ "$MAPPING_CAPTURE" == "1" ]]; then
         --build-provenance "$ROOT/cslam-gap9-app/BUILD-gvsoc-mapping/build-provenance.json" \
         --sdk-root "$SDK_ROOT" --output "$MAPPING_OUTPUT" \
         --source-receipt "$WORK_ROOT/gvsoc-source-receipt.json" \
+        --stdout-log "$WORK_ROOT/gvsoc.stdout.log" \
+        --stderr-log "$WORK_ROOT/gvsoc.stderr.log" \
+        --model-root "$MODEL_ROOT" \
         --gvsoc-exit-code "$GVSOC_EXIT_CODE"
     exit $?
 fi

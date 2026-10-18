@@ -9,7 +9,8 @@ import os
 import re
 import subprocess
 import tempfile
-from pathlib import Path
+from datetime import UTC, datetime
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 from scripts.gap9_mapping_diagnostic import (
@@ -19,6 +20,18 @@ from scripts.gap9_mapping_diagnostic import (
 from scripts.source_provenance import (
     collect_source_identity,
     source_identity_from_mapping,
+)
+from scripts.validation_provenance import (
+    BuildIdentity,
+    DependencyDisposition,
+    EvidenceClass,
+    ExecutableIdentity,
+    RunStatus,
+    RuntimeDependency,
+    ValidationManifest,
+    _execution,
+    parse_manifest_json,
+    serialize_manifest,
 )
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
@@ -66,6 +79,87 @@ def _strict_json_object(pairs: list[tuple[str, object]]) -> dict[str, object]:
 
 def _reject_json_constant(value: str) -> None:
     raise ValueError(f"non-finite JSON number is forbidden: {value}")
+
+
+def _validate_gvsoc_manifest_join(
+    artifact: dict[str, Any],
+    manifest_bytes: bytes,
+    stdout: bytes,
+    stderr: bytes,
+) -> None:
+    reference = artifact.get("provenance_manifest")
+    if not isinstance(reference, dict):
+        raise ValueError("GVSOC report does not reference its provenance manifest")
+    if reference.get("sha256") != sha256_bytes(manifest_bytes):
+        raise ValueError("GVSOC report manifest hash does not match its sidecar")
+    manifest = parse_manifest_json(manifest_bytes.decode("utf-8"))
+    expected_status = "success" if artifact["status"] == "passed" else "fail"
+    if manifest.status.value != expected_status:
+        raise ValueError("GVSOC report and manifest statuses disagree")
+    if manifest.evidence_class.value != artifact["evidence_class"]:
+        raise ValueError("GVSOC report and manifest evidence classes disagree")
+    if manifest.build.executable is None:
+        raise ValueError("GVSOC manifest executable identity is missing")
+    if manifest.build.executable.sha256 != artifact["build"]["binary_sha256"]:
+        raise ValueError("GVSOC report and manifest ELF hashes disagree")
+    execution = manifest.execution
+    if execution.exit_code != artifact["execution"]["exit_code"]:
+        raise ValueError("GVSOC report and manifest exit codes disagree")
+    if (
+        execution.stdout_sha256 != sha256_bytes(stdout)
+        or execution.stdout_bytes != len(stdout)
+        or execution.stderr_sha256 != sha256_bytes(stderr)
+        or execution.stderr_bytes != len(stderr)
+    ):
+        raise ValueError("GVSOC manifest stream identities do not match captured logs")
+
+
+def validate_gvsoc_mapping_bundle(report_path: Path) -> ValidationManifest:
+    """Load a retained GVSOC report and verify its log and manifest sidecars."""
+    report_file = report_path.resolve(strict=True)
+    report = json.loads(
+        report_file.read_text(encoding="utf-8"),
+        object_pairs_hook=_strict_json_object,
+        parse_constant=_reject_json_constant,
+    )
+    validate_mapping_diagnostic(report)
+    if report["evidence_class"] != "gvsoc-target-execution":
+        raise ValueError("mapping bundle is not GVSOC evidence")
+    reference = report.get("provenance_manifest")
+    if not isinstance(reference, dict):
+        raise ValueError("legacy GVSOC report has no canonical provenance manifest")
+    relative = PurePosixPath(reference["path"])
+    if (
+        relative.is_absolute()
+        or relative.as_posix() != reference["path"]
+        or ".." in relative.parts
+    ):
+        raise ValueError("manifest path must be normalized and report-relative")
+    manifest_path = (report_file.parent / Path(*relative.parts)).resolve(strict=True)
+    if not manifest_path.is_relative_to(report_file.parent.resolve(strict=True)):
+        raise ValueError("manifest resolves outside the report directory")
+    manifest_bytes = manifest_path.read_bytes()
+    if reference["sha256"] != sha256_bytes(manifest_bytes):
+        raise ValueError("report manifest hash disagrees with sidecar bytes")
+    manifest = parse_manifest_json(manifest_bytes.decode("utf-8"))
+    log_bytes = report_file.with_suffix(".log").read_bytes()
+    stdout_length = manifest.execution.stdout_bytes
+    stderr_length = manifest.execution.stderr_bytes
+    if stdout_length is None or stderr_length is None:
+        raise ValueError("GVSOC manifest omits retained process stream lengths")
+    if len(log_bytes) != stdout_length + stderr_length:
+        raise ValueError("combined GVSOC log length disagrees with stream lengths")
+    if report["execution"]["log_bytes"] != len(log_bytes) or report["execution"][
+        "log_sha256"
+    ] != sha256_bytes(log_bytes):
+        raise ValueError("GVSOC report log identity disagrees with retained bytes")
+    _validate_gvsoc_manifest_join(
+        report,
+        manifest_bytes,
+        log_bytes[:stdout_length],
+        log_bytes[stdout_length:],
+    )
+    return manifest
 
 
 def parse_target_marker(log_text: str) -> tuple[str, dict[str, int | bool]]:
@@ -204,10 +298,56 @@ def _compiler_commands(path: Path) -> str:
     return "\n".join(sorted(set(normalized)))
 
 
-def _publish_atomically(output: Path, artifact: dict[str, Any]) -> None:
+def _publish_atomically(
+    output: Path,
+    artifact: dict[str, Any],
+    log: bytes | None = None,
+    provenance: bytes | None = None,
+) -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
-    temporary: Path | None = None
+    if log is None and provenance is None:
+        temporary: Path | None = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="w",
+                encoding="utf-8",
+                dir=output.parent,
+                prefix=f".{output.name}.",
+                suffix=".tmp",
+                delete=False,
+            ) as stream:
+                temporary = Path(stream.name)
+                json.dump(artifact, stream, indent=2, sort_keys=True, allow_nan=False)
+                stream.write("\n")
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.link(temporary, output)
+        finally:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
+        return
+    if log is None or provenance is None:
+        raise ValueError("canonical GVSOC bundle requires both log and manifest")
+    log_output = output.with_suffix(".log")
+    provenance_output = output.with_suffix(".provenance.json")
+    outputs = (log_output, output, provenance_output)
+    if any(path.exists() for path in outputs):
+        raise FileExistsError("diagnostic bundle already contains an artifact")
+    temporary_paths: list[Path] = []
+    published_paths: list[Path] = []
     try:
+        with tempfile.NamedTemporaryFile(
+            mode="wb",
+            dir=output.parent,
+            prefix=f".{log_output.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as stream:
+            log_temporary = Path(stream.name)
+            temporary_paths.append(log_temporary)
+            stream.write(log)
+            stream.flush()
+            os.fsync(stream.fileno())
         with tempfile.NamedTemporaryFile(
             mode="w",
             encoding="utf-8",
@@ -216,15 +356,38 @@ def _publish_atomically(output: Path, artifact: dict[str, Any]) -> None:
             suffix=".tmp",
             delete=False,
         ) as stream:
-            temporary = Path(stream.name)
+            json_temporary = Path(stream.name)
+            temporary_paths.append(json_temporary)
             json.dump(artifact, stream, indent=2, sort_keys=True, allow_nan=False)
             stream.write("\n")
             stream.flush()
             os.fsync(stream.fileno())
-        os.link(temporary, output)
+        with tempfile.NamedTemporaryFile(
+            mode="wb",
+            dir=output.parent,
+            prefix=f".{provenance_output.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as stream:
+            provenance_temporary = Path(stream.name)
+            temporary_paths.append(provenance_temporary)
+            stream.write(provenance)
+            stream.flush()
+            os.fsync(stream.fileno())
+        for temporary, destination in zip(
+            (log_temporary, json_temporary, provenance_temporary),
+            outputs,
+            strict=True,
+        ):
+            os.link(temporary, destination)
+            published_paths.append(destination)
+    except OSError:
+        for path in published_paths:
+            path.unlink(missing_ok=True)
+        raise
     finally:
-        if temporary is not None:
-            temporary.unlink(missing_ok=True)
+        for path in temporary_paths:
+            path.unlink(missing_ok=True)
 
 
 def _publish_bytes_atomically(output: Path, value: bytes) -> None:
@@ -258,6 +421,9 @@ def main() -> int:
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--retained-log", type=Path)
     parser.add_argument("--source-receipt", type=Path)
+    parser.add_argument("--stdout-log", type=Path)
+    parser.add_argument("--stderr-log", type=Path)
+    parser.add_argument("--model-root", type=Path)
     parser.add_argument("--gvsoc-exit-code", required=True, type=int)
     args = parser.parse_args()
 
@@ -267,6 +433,9 @@ def main() -> int:
         compile_commands = args.compile_commands.resolve(strict=True)
         build_provenance_file = args.build_provenance.resolve(strict=True)
         sdk_root = args.sdk_root.resolve(strict=True)
+        stdout_log = args.stdout_log.resolve(strict=True) if args.stdout_log else None
+        stderr_log = args.stderr_log.resolve(strict=True) if args.stderr_log else None
+        model_root = args.model_root.resolve(strict=True) if args.model_root else None
         if (
             not elf.is_file()
             or not compile_commands.is_file()
@@ -277,6 +446,7 @@ def main() -> int:
                 "ELF, compile commands, build provenance, and GVSOC log must be files"
             )
         source_identity = None
+        process_execution = None
         receipt_path: Path | None = None
         if args.source_receipt is not None:
             receipt_path = args.source_receipt.resolve(strict=True)
@@ -288,16 +458,26 @@ def main() -> int:
             )
             if (
                 not isinstance(receipt, dict)
-                or set(receipt) != {"schema_version", "source"}
+                or set(receipt) != {"schema_version", "source", "execution"}
                 or isinstance(receipt["schema_version"], bool)
                 or not isinstance(receipt["schema_version"], int)
-                or receipt["schema_version"] != 1
+                or receipt["schema_version"] != 2
             ):
                 raise ValueError("GVSOC source receipt does not match its schema")
             identity = source_identity_from_mapping(receipt["source"])
+            execution = _execution(receipt["execution"])
             if collect_source_identity(REPOSITORY_ROOT) != identity:
                 raise ValueError("repository source differs from the in-run snapshot")
+            if stdout_log is None or stderr_log is None or model_root is None:
+                raise ValueError(
+                    "canonical GVSOC capture requires stdout, stderr, and model root"
+                )
+            if execution.exit_code != args.gvsoc_exit_code:
+                raise ValueError("GVSOC exit code differs from the in-run receipt")
+            if model_root.is_dir() is False:
+                raise ValueError("GVSOC model root is not a directory")
             source_identity = identity
+            process_execution = execution
         output = args.output.resolve()
         retained_log = (
             args.retained_log.resolve()
@@ -312,6 +492,18 @@ def main() -> int:
             "compile_commands": sha256_file(compile_commands),
             "build_provenance": sha256_file(build_provenance_file),
             "source_receipt": sha256_file(receipt_path) if receipt_path else None,
+            "stdout": sha256_file(stdout_log) if stdout_log else None,
+            "stderr": sha256_file(stderr_log) if stderr_log else None,
+            "gvsoc_model": (
+                sha256_file(model_root / "gap9/soc.dylib")
+                if model_root is not None
+                else None
+            ),
+            "gvsoc_launcher": sha256_file(
+                sdk_root / "install/workstation/bin/gvsoc_launcher"
+            )
+            if receipt_path
+            else None,
         }
         build_provenance = json.loads(build_provenance_file.read_text(encoding="utf-8"))
         if not isinstance(build_provenance, dict) or set(build_provenance) != {
@@ -337,6 +529,22 @@ def main() -> int:
         if source_hashes["tests/gap9_sdk_gvsoc_mapping_smoke.c"] != fixture_hash:
             raise ValueError("fixture hash disagrees with source provenance")
         log_bytes = log.read_bytes()
+        stdout_bytes = stdout_log.read_bytes() if stdout_log else b""
+        stderr_bytes = stderr_log.read_bytes() if stderr_log else b""
+        if receipt_path is not None:
+            if log_bytes != stdout_bytes + stderr_bytes:
+                raise ValueError(
+                    "combined log does not equal stdout followed by stderr"
+                )
+            if process_execution is None:
+                raise ValueError("GVSOC process execution receipt is missing")
+            if (
+                process_execution.stdout_sha256 != sha256_bytes(stdout_bytes)
+                or process_execution.stdout_bytes != len(stdout_bytes)
+                or process_execution.stderr_sha256 != sha256_bytes(stderr_bytes)
+                or process_execution.stderr_bytes != len(stderr_bytes)
+            ):
+                raise ValueError("GVSOC streams disagree with the in-run receipt")
         log_text = log_bytes.decode("utf-8", errors="replace")
         marker_status, mapping = parse_target_marker(log_text)
         toolchain = build_provenance["toolchain_id"]
@@ -360,6 +568,18 @@ def main() -> int:
             "compile_commands": sha256_file(compile_commands),
             "build_provenance": sha256_file(build_provenance_file),
             "source_receipt": sha256_file(receipt_path) if receipt_path else None,
+            "stdout": sha256_file(stdout_log) if stdout_log else None,
+            "stderr": sha256_file(stderr_log) if stderr_log else None,
+            "gvsoc_model": (
+                sha256_file(model_root / "gap9/soc.dylib")
+                if model_root is not None
+                else None
+            ),
+            "gvsoc_launcher": sha256_file(
+                sdk_root / "install/workstation/bin/gvsoc_launcher"
+            )
+            if receipt_path
+            else None,
         }
         if before != after:
             raise ValueError("ELF, log, or compile commands changed during capture")
@@ -413,9 +633,76 @@ def main() -> int:
             },
             "mapping": mapping,
         }
+        provenance_bytes = b""
+        if source_identity is not None and process_execution is not None:
+            if model_root is None:
+                raise ValueError("GVSOC model root is required for provenance")
+            model_plugin = model_root / "gap9/soc.dylib"
+            launcher = sdk_root / "install/workstation/bin/gvsoc_launcher"
+            if not model_plugin.is_file() or not launcher.is_file():
+                raise ValueError("GVSOC model plugin or launcher is missing")
+            try:
+                executable_path = elf.relative_to(REPOSITORY_ROOT).as_posix()
+            except ValueError:
+                executable_path = None
+            manifest = ValidationManifest(
+                schema_version=1,
+                status=(RunStatus.SUCCESS if status == "passed" else RunStatus.FAIL),
+                evidence_class=EvidenceClass.GVSOC,
+                claim_boundary=(
+                    artifact["claim_boundary"]
+                    + " The manifest records selected runtime environment keys; "
+                    "other inherited environment values are not captured. The "
+                    "source identity describes the target execution tree; this "
+                    "build receipt does not attest that the ELF was compiled "
+                    "from that exact root-tree snapshot."
+                ),
+                captured_at_utc=datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+                source=source_identity,
+                build=BuildIdentity(
+                    command=None,
+                    configuration_sha256=before["build_provenance"],
+                    toolchain=None,
+                    executable=ExecutableIdentity(executable_path, before["elf"]),
+                ),
+                runtime_dependencies=(
+                    RuntimeDependency(
+                        name="gap9-gvsoc-model-plugin",
+                        disposition=DependencyDisposition.SYSTEM_UNPINNED,
+                        version=None,
+                        sha256=before["gvsoc_model"],
+                        path=None,
+                    ),
+                    RuntimeDependency(
+                        name="gvsoc-launcher",
+                        disposition=DependencyDisposition.SYSTEM_UNPINNED,
+                        version=None,
+                        sha256=before["gvsoc_launcher"],
+                        path=None,
+                    ),
+                ),
+                execution=process_execution,
+                hardware_attestation=None,
+            )
+            provenance_bytes = serialize_manifest(manifest).encode("utf-8")
+            artifact["provenance_manifest"] = {
+                "path": output.with_suffix(".provenance.json").name,
+                "sha256": sha256_bytes(provenance_bytes),
+            }
+            _validate_gvsoc_manifest_join(
+                artifact,
+                provenance_bytes,
+                stdout_bytes,
+                stderr_bytes,
+            )
         validate_mapping_diagnostic(artifact)
-        _publish_bytes_atomically(retained_log, log_bytes)
-        _publish_atomically(output, artifact)
+        if provenance_bytes:
+            if retained_log != output.with_suffix(".log"):
+                raise ValueError("canonical GVSOC bundle uses the adjacent .log path")
+            _publish_atomically(output, artifact, log_bytes, provenance_bytes)
+        else:
+            _publish_bytes_atomically(retained_log, log_bytes)
+            _publish_atomically(output, artifact)
     except (OSError, ValueError, json.JSONDecodeError) as error:
         print(f"GVSOC mapping diagnostic capture failed: {error}")
         return 1

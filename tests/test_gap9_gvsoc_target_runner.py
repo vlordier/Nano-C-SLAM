@@ -112,6 +112,8 @@ class GvsocTargetRunnerTests(unittest.TestCase):
             revision = _initialize_git_fixture(root, "stable\n")
             log = Path(temporary_directory) / "target.log"
             receipt = Path(temporary_directory) / "source.json"
+            stdout_log = Path(temporary_directory) / "stdout.log"
+            stderr_log = Path(temporary_directory) / "stderr.log"
             args = [
                 "run",
                 "--log",
@@ -120,6 +122,10 @@ class GvsocTargetRunnerTests(unittest.TestCase):
                 str(root),
                 "--source-receipt",
                 str(receipt),
+                "--stdout-log",
+                str(stdout_log),
+                "--stderr-log",
+                str(stderr_log),
                 "--",
                 sys.executable,
                 "-c",
@@ -129,8 +135,12 @@ class GvsocTargetRunnerTests(unittest.TestCase):
                 stdout.buffer = io.BytesIO()
                 self.assertEqual(main(), 0)
             payload = json.loads(receipt.read_text(encoding="utf-8"))
-            self.assertEqual(payload["schema_version"], 1)
+            self.assertEqual(payload["schema_version"], 2)
             self.assertEqual(payload["source"]["revision"], revision)
+            self.assertEqual(
+                payload["execution"]["stdout_bytes"], len(b"target-output\n")
+            )
+            self.assertEqual(payload["execution"]["stderr_bytes"], 0)
 
     def test_source_mutation_during_target_prevents_receipt(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -138,6 +148,8 @@ class GvsocTargetRunnerTests(unittest.TestCase):
             _initialize_git_fixture(root, "before\n")
             log = Path(temporary_directory) / "target.log"
             receipt = Path(temporary_directory) / "source.json"
+            stdout_log = Path(temporary_directory) / "stdout.log"
+            stderr_log = Path(temporary_directory) / "stderr.log"
             code = (
                 "from pathlib import Path; Path('tracked.c').write_text('changed\\n')"
             )
@@ -149,6 +161,10 @@ class GvsocTargetRunnerTests(unittest.TestCase):
                 str(root),
                 "--source-receipt",
                 str(receipt),
+                "--stdout-log",
+                str(stdout_log),
+                "--stderr-log",
+                str(stderr_log),
                 "--cwd",
                 str(root),
                 "--",

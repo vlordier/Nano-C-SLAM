@@ -5,12 +5,23 @@ consumers should additionally call `scripts.gap9_mapping_diagnostic`
 validation because the JSON Schema documents field types while the validator
 enforces cross-field invariants.
 
+New host and GVSOC captures may include a `provenance_manifest` reference to a
+canonical `.provenance.json` sidecar. The report, retained combined log, and
+sidecar are published as one bundle. GVSOC captures also retain the source and
+process receipt until collection; the sidecar records the recursive source
+snapshot and separate stdout/stderr identities. Use
+`validate_gvsoc_mapping_bundle()` to verify an offline GVSOC bundle. Older
+reports without a sidecar remain valid legacy artifacts and are not upgraded.
+
 The artifact binds a run to the SHA-256 of
 `tests/gap9_sdk_gvsoc_mapping_smoke.c`, the repository-owned C/header and build
 inputs in `build.source_sha256`, its built binary hash, compiler/toolchain
 identity and flags. GVSOC evidence also binds the SDK commit, release and dirty
 state, plus the exact compile database hash. Both host PMSIS and GVSOC artifacts
 retain the exact combined process output and bind its SHA-256 and byte count.
+For canonical GVSOC reports, the manifest records hashes of the selected model
+plugin and launcher files; this does not prove dynamic-loader residency. The
+manifest records selected GVSOC environment keys, not every inherited value.
 Host PMSIS evidence leaves SDK and target-build fields null; its retained log
 does not imply target execution. Fixture counts describe poses, extracted scans
 and final map points. `evidence_class` must be `host-pmsis-stubs` or

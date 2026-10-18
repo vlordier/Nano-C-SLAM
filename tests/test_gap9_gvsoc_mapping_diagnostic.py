@@ -14,6 +14,11 @@ from unittest.mock import patch
 
 from scripts import capture_gap9_gvsoc_mapping_diagnostic as capture
 from scripts.gap9_mapping_diagnostic import validate_mapping_diagnostic
+from scripts.source_provenance import (
+    collect_source_identity,
+    source_identity_to_mapping,
+)
+from scripts.validation_provenance import parse_manifest_json
 from scripts.write_gap9_build_provenance import create_provenance, git_worktree_dirty
 from test_support.gap9_mapping_fixtures import (
     GVSOC_MAPPING_LIMITATION as LIMITATION_MARKER,
@@ -81,6 +86,9 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
         mutate_log_during_capture: bool = False,
         mutate_source_during_capture: Path | None = None,
         sdk_metadata_override: dict[str, str | bool] | None = None,
+        canonical: bool = False,
+        mutate_stdout: bool = False,
+        mutate_source_receipt: bool = False,
     ) -> tuple[int, str]:
         args = [
             "capture",
@@ -99,6 +107,60 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
             "--gvsoc-exit-code",
             str(exit_code),
         ]
+        if canonical:
+            stdout_log = self.root / "stdout.log"
+            stderr_log = self.root / "stderr.log"
+            stdout_log.write_bytes(self.log.read_bytes())
+            stderr_log.write_bytes(b"")
+            receipt = self.root / "run-receipt.json"
+            receipt.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 2,
+                        "source": source_identity_to_mapping(
+                            collect_source_identity(capture.REPOSITORY_ROOT)
+                        ),
+                        "execution": {
+                            "command": ["gapy", "--platform", "gvsoc"],
+                            "environment": {},
+                            "started_at_utc": "2026-10-19T10:00:00Z",
+                            "finished_at_utc": "2026-10-19T10:00:01Z",
+                            "exit_code": exit_code,
+                            "stdout_sha256": hashlib.sha256(
+                                stdout_log.read_bytes()
+                            ).hexdigest(),
+                            "stdout_bytes": stdout_log.stat().st_size,
+                            "stderr_sha256": hashlib.sha256(b"").hexdigest(),
+                            "stderr_bytes": 0,
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            if mutate_source_receipt:
+                receipt_data = json.loads(receipt.read_text(encoding="utf-8"))
+                receipt_data["source"]["revision"] = "b" * 40
+                receipt.write_text(json.dumps(receipt_data), encoding="utf-8")
+            model_root = self.root / "models"
+            (model_root / "gap9").mkdir(parents=True)
+            (model_root / "gap9/soc.dylib").write_bytes(b"model plugin")
+            launcher = self.sdk / "install/workstation/bin"
+            launcher.mkdir(parents=True)
+            (launcher / "gvsoc_launcher").write_bytes(b"launcher")
+            args.extend(
+                [
+                    "--source-receipt",
+                    str(receipt),
+                    "--stdout-log",
+                    str(stdout_log),
+                    "--stderr-log",
+                    str(stderr_log),
+                    "--model-root",
+                    str(model_root),
+                ]
+            )
+            if mutate_stdout:
+                stdout_log.write_bytes(b"mutated after execution\n")
         stdout = io.StringIO()
         stderr = io.StringIO()
         sdk_calls = 0
@@ -145,6 +207,55 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
         retained_log = self.output.with_suffix(".log")
         self.assertEqual(retained_log.read_bytes(), self.log.read_bytes())
         self.assertIn("-O2 -c icp.c", artifact["build"]["compiler_flags"])
+
+    def test_canonical_gvsoc_report_joins_source_and_independent_streams(self) -> None:
+        result, _ = self.run_capture(canonical=True)
+        self.assertEqual(result, 0)
+        report = json.loads(self.output.read_text(encoding="utf-8"))
+        reference = report["provenance_manifest"]
+        sidecar = self.output.parent / reference["path"]
+        manifest = parse_manifest_json(sidecar.read_text(encoding="utf-8"))
+        verified = capture.validate_gvsoc_mapping_bundle(self.output)
+        self.assertEqual(
+            manifest.source, collect_source_identity(capture.REPOSITORY_ROOT)
+        )
+        self.assertEqual(verified, manifest)
+        self.assertEqual(manifest.execution.stderr_bytes, 0)
+        executable = manifest.build.executable
+        if executable is None:
+            raise AssertionError("canonical GVSOC manifest omitted executable")
+        self.assertEqual(executable.sha256, _sha256(self.elf))
+
+    def test_offline_bundle_verifier_rejects_mutated_manifest_sidecar(self) -> None:
+        result, _ = self.run_capture(canonical=True)
+        self.assertEqual(result, 0)
+        report = json.loads(self.output.read_text(encoding="utf-8"))
+        sidecar = self.output.parent / report["provenance_manifest"]["path"]
+        sidecar.write_bytes(sidecar.read_bytes() + b" ")
+        with self.assertRaisesRegex(ValueError, "manifest hash disagrees"):
+            capture.validate_gvsoc_mapping_bundle(self.output)
+
+    def test_offline_bundle_verifier_rejects_mutated_combined_log(self) -> None:
+        result, _ = self.run_capture(canonical=True)
+        self.assertEqual(result, 0)
+        retained_log = self.output.with_suffix(".log")
+        retained_log.write_bytes(retained_log.read_bytes() + b"tampered")
+        with self.assertRaisesRegex(ValueError, "combined GVSOC log length"):
+            capture.validate_gvsoc_mapping_bundle(self.output)
+
+    def test_canonical_capture_rejects_stream_mutation_after_run(self) -> None:
+        result, output = self.run_capture(canonical=True, mutate_stdout=True)
+        self.assertEqual(result, 1)
+        self.assertIn("combined log does not equal stdout", output)
+        self.assertFalse(self.output.exists())
+
+    def test_canonical_capture_rejects_source_receipt_not_matching_live_tree(
+        self,
+    ) -> None:
+        result, output = self.run_capture(canonical=True, mutate_source_receipt=True)
+        self.assertEqual(result, 1)
+        self.assertIn("source differs from the in-run snapshot", output)
+        self.assertFalse(self.output.exists())
 
     def test_accepts_only_a_complete_passing_target_marker_and_zero_exit(self) -> None:
         marker_status, mapping = capture.parse_target_marker(PASS_MARKER)

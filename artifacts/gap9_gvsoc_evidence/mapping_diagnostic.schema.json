@@ -7,6 +7,14 @@
   "additionalProperties": false,
   "required": ["schema_version", "status", "evidence_class", "claim_boundary", "hardware_measurement", "fixture", "build", "execution", "mapping"],
   "properties": {
+    "provenance_manifest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
     "schema_version": {"const": 2},
     "status": {"enum": ["passed", "failed", "reproduced-limitation"]},
     "evidence_class": {"enum": ["host-pmsis-stubs", "gvsoc-target-execution"]},

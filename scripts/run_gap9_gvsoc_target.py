@@ -4,13 +4,17 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import hashlib
 import json
 import math
 import os
+import shutil
 import signal
 import subprocess
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 from scripts.source_provenance import (
     collect_source_identity,
@@ -27,6 +31,8 @@ def main() -> int:
     parser.add_argument("--timeout-s", type=float, default=600.0)
     parser.add_argument("--source-root", type=Path)
     parser.add_argument("--source-receipt", type=Path)
+    parser.add_argument("--stdout-log", type=Path)
+    parser.add_argument("--stderr-log", type=Path)
     parser.add_argument("command", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     if not math.isfinite(args.timeout_s) or args.timeout_s <= 0:
@@ -36,6 +42,10 @@ def main() -> int:
         parser.error("a target command is required after --")
     if (args.source_root is None) != (args.source_receipt is None):
         parser.error("--source-root and --source-receipt must be supplied together")
+    if (args.stdout_log is None) != (args.stderr_log is None):
+        parser.error("--stdout-log and --stderr-log must be supplied together")
+    if args.source_receipt is not None and args.stdout_log is None:
+        parser.error("source receipts require separate stdout and stderr logs")
 
     args.log.parent.mkdir(parents=True, exist_ok=True)
     if not args.cwd.is_dir():
@@ -50,24 +60,56 @@ def main() -> int:
         print(f"GVSOC source snapshot failed: {error}", file=sys.stderr)
         return 2
     try:
-        with args.log.open("wb") as stream:
-            process = subprocess.Popen(  # noqa: S603 -- explicit local SDK command
-                command,
-                stdout=stream,
-                stderr=subprocess.STDOUT,
-                start_new_session=True,
-                cwd=args.cwd,
-            )
-            try:
-                result_code = process.wait(timeout=args.timeout_s)
-            except subprocess.TimeoutExpired:
-                _terminate_process_group(process)
-                result_code = 124
+        started_at = _utc_now()
+        if args.stdout_log is not None and args.stderr_log is not None:
+            args.stdout_log.parent.mkdir(parents=True, exist_ok=True)
+            args.stderr_log.parent.mkdir(parents=True, exist_ok=True)
+            with (
+                args.stdout_log.open("wb") as stdout_stream,
+                args.stderr_log.open("wb") as stderr_stream,
+            ):
+                process = subprocess.Popen(  # noqa: S603 -- explicit local SDK command
+                    command,
+                    stdout=stdout_stream,
+                    stderr=stderr_stream,
+                    start_new_session=True,
+                    cwd=args.cwd,
+                )
+                try:
+                    result_code = process.wait(timeout=args.timeout_s)
+                except subprocess.TimeoutExpired:
+                    _terminate_process_group(process)
+                    result_code = 124
+            _concatenate_logs(args.log, args.stdout_log, args.stderr_log)
+        else:
+            with args.log.open("wb") as stream:
+                process = subprocess.Popen(  # noqa: S603 -- explicit local SDK command
+                    command,
+                    stdout=stream,
+                    stderr=subprocess.STDOUT,
+                    start_new_session=True,
+                    cwd=args.cwd,
+                )
+                try:
+                    result_code = process.wait(timeout=args.timeout_s)
+                except subprocess.TimeoutExpired:
+                    _terminate_process_group(process)
+                    result_code = 124
+        finished_at = _utc_now()
         if args.source_root is not None and source_before is not None:
             verify_source_identity(args.source_root, source_before)
             if args.source_receipt is None:
                 raise ValueError("source receipt path is required with source root")
-            _publish_source_receipt(args.source_receipt, source_before)
+            _publish_source_receipt(
+                args.source_receipt,
+                source_before,
+                command=command,
+                started_at=started_at,
+                finished_at=finished_at,
+                exit_code=result_code,
+                stdout_log=args.stdout_log,
+                stderr_log=args.stderr_log,
+            )
     except OSError as error:
         print(f"GVSOC command could not start: {error}", file=sys.stderr)
         return 127
@@ -85,11 +127,71 @@ def main() -> int:
     return result_code
 
 
-def _publish_source_receipt(path: Path, identity: SourceIdentity) -> None:
+def _utc_now() -> str:
+    return datetime.now(UTC).isoformat().replace("+00:00", "Z")
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _concatenate_logs(output: Path, stdout_log: Path, stderr_log: Path) -> None:
+    with output.open("wb") as destination:
+        for path in (stdout_log, stderr_log):
+            with path.open("rb") as source:
+                shutil.copyfileobj(source, destination, length=1024 * 1024)
+        destination.flush()
+        os.fsync(destination.fileno())
+
+
+def _publish_source_receipt(
+    path: Path,
+    identity: SourceIdentity,
+    *,
+    command: list[str],
+    started_at: str,
+    finished_at: str,
+    exit_code: int,
+    stdout_log: Path | None,
+    stderr_log: Path | None,
+) -> None:
+    environment_keys = (
+        "PATH",
+        "PYTHONPATH",
+        "GVSOC_MODULES",
+        "DYLD_LIBRARY_PATH",
+        "DYLD_FALLBACK_LIBRARY_PATH",
+        "GAP9_REAL_GVSOC_LAUNCHER",
+        "GAP_SDK_HOME",
+        "GAPY_TARGET",
+        "GVSOC_TARGETS",
+    )
+    environment = {key: os.environ.get(key) for key in environment_keys}
+    if stdout_log is None or stderr_log is None:
+        raise ValueError("source receipt requires independent stdout and stderr logs")
+    execution: dict[str, Any] = {
+        "command": command,
+        "environment": environment,
+        "started_at_utc": started_at,
+        "finished_at_utc": finished_at,
+        "exit_code": exit_code,
+        "stdout_sha256": _sha256_file(stdout_log),
+        "stdout_bytes": stdout_log.stat().st_size,
+        "stderr_sha256": _sha256_file(stderr_log),
+        "stderr_bytes": stderr_log.stat().st_size,
+    }
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = (
         json.dumps(
-            {"schema_version": 1, "source": source_identity_to_mapping(identity)},
+            {
+                "schema_version": 2,
+                "source": source_identity_to_mapping(identity),
+                "execution": execution,
+            },
             sort_keys=True,
             separators=(",", ":"),
             allow_nan=False,
