@@ -300,8 +300,16 @@ def _source(value: object) -> SourceIdentity:
                 dirty_patch_sha256=submodule_patch_hash,
             )
         )
+    source_revision = _revision(raw["revision"], "source.revision")
+    if not dirty and any(
+        submodule.gitlink_revision != submodule.checkout_revision
+        for submodule in submodules
+    ):
+        raise ValueError(
+            "clean source cannot contain a submodule checkout/gitlink mismatch"
+        )
     return SourceIdentity(
-        revision=_revision(raw["revision"], "source.revision"),
+        revision=source_revision,
         dirty=dirty,
         dirty_patch_sha256=patch_hash,
         submodules=tuple(submodules),
@@ -494,6 +502,33 @@ def validate_manifest(value: object) -> ValidationManifest:
         execution=_execution(raw["execution"]),
         hardware_attestation=_hardware_attestation(raw["hardware_attestation"]),
     )
+    runtime_names = {dependency.name for dependency in manifest.runtime_dependencies}
+    if evidence_class is EvidenceClass.GVSOC:
+        required_runtime = {"gap9-gvsoc-model-plugin", "gvsoc-launcher"}
+        if not required_runtime <= runtime_names:
+            raise ValueError(
+                "GVSOC evidence requires the GAP9 model plugin and GVSOC launcher "
+                "identities"
+            )
+        if (
+            manifest.build.executable is None
+            or manifest.build.configuration_sha256 is None
+        ):
+            raise ValueError("GVSOC evidence requires a configured target executable")
+    elif evidence_class is EvidenceClass.GAZEBO:
+        required_runtime = {
+            "executable:python",
+            "executable:ros2",
+            "executable:gazebo",
+            "ros-overlay:nano_c_slam_interfaces",
+        }
+        if not required_runtime <= runtime_names:
+            raise ValueError(
+                "Gazebo evidence requires Python, ROS, Gazebo, and interface-overlay "
+                "identities"
+            )
+        if manifest.build.executable is None:
+            raise ValueError("Gazebo evidence requires the captured mapping executable")
     physical_class = evidence_class in {
         EvidenceClass.PHYSICAL_GAP9,
         EvidenceClass.PHYSICAL_FLIGHT,

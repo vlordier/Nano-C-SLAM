@@ -157,14 +157,25 @@ class ValidationProvenanceTests(unittest.TestCase):
             with self.subTest(evidence_class=evidence_class):
                 manifest = _manifest()
                 manifest["evidence_class"] = evidence_class
+                runtime_names = (
+                    ("gap9-gvsoc-model-plugin", "gvsoc-launcher")
+                    if evidence_class == "gvsoc-target-execution"
+                    else (
+                        "executable:python",
+                        "executable:ros2",
+                        "executable:gazebo",
+                        "ros-overlay:nano_c_slam_interfaces",
+                    )
+                )
                 manifest["runtime_dependencies"] = [
                     {
-                        "name": "simulator-runtime",
+                        "name": name,
                         "disposition": "system-unpinned",
                         "version": None,
-                        "sha256": "d" * 64,
+                        "sha256": f"{index + 1:x}" * 64,
                         "path": None,
                     }
+                    for index, name in enumerate(runtime_names)
                 ]
 
                 parsed = validate_manifest(manifest)
@@ -201,14 +212,49 @@ class ValidationProvenanceTests(unittest.TestCase):
         manifest = _manifest()
         manifest["evidence_class"] = "gvsoc-target-execution"
 
-        with self.assertRaisesRegex(ValueError, "runtime dependency"):
+        with self.assertRaisesRegex(ValueError, "model plugin and GVSOC launcher"):
             validate_manifest(manifest)
 
     def test_rejects_host_evidence_promoted_to_gvsoc_by_class_string_only(self) -> None:
         manifest = _manifest()
         manifest["evidence_class"] = "gvsoc-target-execution"
 
-        with self.assertRaisesRegex(ValueError, "runtime dependency"):
+        with self.assertRaisesRegex(ValueError, "model plugin and GVSOC launcher"):
+            validate_manifest(manifest)
+
+    def test_rejects_host_pass_with_arbitrary_runtime_hash_promoted_to_gvsoc(
+        self,
+    ) -> None:
+        manifest = _manifest()
+        manifest["evidence_class"] = "gvsoc-target-execution"
+        manifest["runtime_dependencies"] = [
+            {
+                "name": "simulator-runtime",
+                "disposition": "system-unpinned",
+                "version": None,
+                "sha256": "d" * 64,
+                "path": None,
+            }
+        ]
+
+        with self.assertRaisesRegex(ValueError, "model plugin and GVSOC launcher"):
+            validate_manifest(manifest)
+
+    def test_rejects_gazebo_pass_without_class_critical_interface_overlay(self) -> None:
+        manifest = _manifest()
+        manifest["evidence_class"] = "gazebo-simulation"
+        manifest["runtime_dependencies"] = [
+            {
+                "name": name,
+                "disposition": "system-unpinned",
+                "version": None,
+                "sha256": "d" * 64,
+                "path": None,
+            }
+            for name in ("executable:python", "executable:ros2", "executable:gazebo")
+        ]
+
+        with self.assertRaisesRegex(ValueError, "interface-overlay identities"):
             validate_manifest(manifest)
 
     def test_rejects_dirty_source_without_patch_identity(self) -> None:
@@ -217,6 +263,24 @@ class ValidationProvenanceTests(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "dirty flag must agree"):
             validate_manifest(manifest)
+
+    def test_submodule_checkout_mismatch_requires_root_dirty_patch_identity(
+        self,
+    ) -> None:
+        manifest = _manifest()
+        submodules = cast(list[object], _mapping(manifest["source"])["submodules"])
+        submodule = _mapping(submodules[0])
+        submodule["checkout_revision"] = "d" * 40
+        with self.assertRaisesRegex(ValueError, "checkout/gitlink mismatch"):
+            validate_manifest(manifest)
+
+        _mapping(manifest["source"])["dirty"] = True
+        _mapping(manifest["source"])["dirty_patch_sha256"] = "e" * 64
+        parsed = validate_manifest(manifest)
+        self.assertNotEqual(
+            parsed.source.submodules[0].gitlink_revision,
+            parsed.source.submodules[0].checkout_revision,
+        )
 
     def test_rejects_runtime_hash_mutation_and_unknown_dependency_hash(self) -> None:
         manifest = _manifest()
