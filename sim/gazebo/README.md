@@ -184,20 +184,34 @@ To try a local colcon build without replacing packages in the Crazyswarm2
 workspace, set `NANO_C_SLAM_OVERLAY_SETUP` to that build's `local_setup.bash`.
 The helper sources the overlay after ROS, Crazyswarm2, and Gazebo.
 
-For repeatable development builds of the two owned ROS packages, first source
-ROS Jazzy and the built Crazyswarm2 workspace, then run:
+For repeatable development builds, first source ROS Jazzy, Gazebo, and the
+Crazyswarm2 workspace, then run:
 
 ```sh
 cd ~/Work/Nano-C-SLAM
 source /opt/homebrew/opt/ros2-jazzy/setup.zsh
+source "$HOME/Work/gz-macOS/ws/install/setup.zsh"
 source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
 ./scripts/build_gazebo_ros_overlay.sh
 ```
 
 The script creates a unique build/install/log tree under ignored `build/`, so
-colcon never tries to clean editable-install metadata left by an older build.
-It prints the `local_setup.bash` path; set `NANO_C_SLAM_OVERLAY_SETUP` to that
-path before starting `run_gazebo_macos.sh` to test the rebuilt launch code.
+colcon never cleans the external Crazyswarm install. When the two
+`ros_gz_crazyflie` package sources are present, it builds them into the same
+overlay as the Nano-C-SLAM packages. This repairs missing package setup files
+without rewriting `~/Work/crazyswarm2_gazebo/install`. A before/after source
+snapshot records the Crazyswarm workspace revision, submodule revisions,
+dirty/untracked paths, and source file hashes; the build fails if those inputs
+change while colcon runs. The script prints the resulting `local_setup.bash`
+path; use it for `NANO_C_SLAM_OVERLAY_SETUP` when launching:
+
+```sh
+NANO_C_SLAM_OVERLAY_SETUP="$HOME/Work/Nano-C-SLAM/build/gazebo-ros-overlay.<id>/install/local_setup.bash" \
+  ./scripts/run_gazebo_macos.sh
+```
+
+Keep an existing Gazebo launch separate from a fresh acceptance run. The
+launcher and build script do not stop or reuse existing simulators.
 
 For the firmware-range host mapping run, generate a temporary near-field variant
 of the upstream world so the arena walls and mapping obstacles return points

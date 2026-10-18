@@ -59,6 +59,8 @@ OWNED_INPUT_PATHS = tuple(
 OVERLAY_PACKAGES = (
     "nano_c_slam_gazebo",
     "nano_c_slam_interfaces",
+    "ros_gz_crazyflie_bringup",
+    "ros_gz_crazyflie_control",
     "ros_gz_crazyflie_gazebo",
 )
 
