@@ -53,7 +53,9 @@ def _manifest() -> dict[str, object]:
             "finished_at_utc": "2026-10-18T12:00:02Z",
             "exit_code": 0,
             "stdout_sha256": digest,
+            "stdout_bytes": 4,
             "stderr_sha256": digest,
+            "stderr_bytes": 5,
         },
         "hardware_attestation": None,
     }
@@ -107,6 +109,18 @@ class ValidationProvenanceTests(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "schema_version"):
             validate_manifest(manifest)
+
+    def test_build_command_preserves_unknown_and_rejects_empty_observed_command(
+        self,
+    ) -> None:
+        unknown_command = _manifest()
+        _mapping(unknown_command["build"])["command"] = None
+        self.assertIsNone(validate_manifest(unknown_command).build.command)
+
+        empty_command = _manifest()
+        _mapping(empty_command["build"])["command"] = []
+        with self.assertRaisesRegex(ValueError, "nonempty list"):
+            validate_manifest(empty_command)
 
     def test_rejects_software_manifest_claiming_physical_flight_success(self) -> None:
         manifest = _manifest()

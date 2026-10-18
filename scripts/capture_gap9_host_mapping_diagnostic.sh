@@ -18,4 +18,5 @@ uv run --locked --project "$repo_root" python -m scripts.capture_gap9_host_mappi
     --binary "$binary" \
     --output "$output" \
     --toolchain-id "$compiler_id" \
+    --compiler-path "$(command -v cc)" \
     --compiler-flags "$compiler_flags"

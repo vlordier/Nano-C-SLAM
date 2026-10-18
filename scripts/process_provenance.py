@@ -50,7 +50,9 @@ def capture_process(
     if any("\0" in value for value in overrides.values()):
         raise ValueError("environment override contains a NUL byte")
 
-    environment = os.environ.copy()
+    environment = {
+        key: os.environ[key] for key in environment_allowlist if key in os.environ
+    }
     environment.update(overrides)
     recorded_environment = tuple(
         (key, environment.get(key)) for key in sorted(set(environment_allowlist))
@@ -82,7 +84,9 @@ def capture_process(
         finished_at_utc=finished_at,
         exit_code=exit_code,
         stdout_sha256=_sha256(stdout),
+        stdout_bytes=len(stdout) if stdout is not None else None,
         stderr_sha256=_sha256(stderr),
+        stderr_bytes=len(stderr) if stderr is not None else None,
     )
     return ProcessCapture(
         execution=execution,

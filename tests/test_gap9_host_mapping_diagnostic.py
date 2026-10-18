@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import contextlib
+import copy
 import hashlib
 import io
 import json
@@ -11,8 +12,13 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from scripts.capture_gap9_host_mapping_diagnostic import main
+from scripts import capture_gap9_host_mapping_diagnostic as capture
+from scripts.capture_gap9_host_mapping_diagnostic import (
+    main,
+    validate_host_mapping_bundle,
+)
 from scripts.gap9_mapping_diagnostic import validate_mapping_diagnostic
+from scripts.validation_provenance import SourceIdentity, parse_manifest_json
 from test_support.gap9_mapping_fixtures import (
     HOST_MAPPING_FAILURE,
     HOST_MAPPING_PASS,
@@ -51,6 +57,13 @@ class HostMappingDiagnosticCaptureTests(unittest.TestCase):
         stderr = io.StringIO()
         with (
             patch("sys.argv", args),
+            patch(
+                "scripts.capture_gap9_host_mapping_diagnostic.collect_source_identity",
+                return_value=SourceIdentity("b" * 40, False, None, ()),
+            ),
+            patch(
+                "scripts.capture_gap9_host_mapping_diagnostic.verify_source_identity"
+            ),
             contextlib.redirect_stdout(stdout),
             contextlib.redirect_stderr(stderr),
         ):
@@ -77,6 +90,48 @@ class HostMappingDiagnosticCaptureTests(unittest.TestCase):
         self.assertEqual(
             artifact["execution"]["log_sha256"], hashlib.sha256(raw_log).hexdigest()
         )
+        provenance_path = self.output.with_suffix(".provenance.json")
+        provenance_bytes = provenance_path.read_bytes()
+        self.assertEqual(artifact["provenance_manifest"]["path"], provenance_path.name)
+        self.assertEqual(
+            artifact["provenance_manifest"]["sha256"],
+            hashlib.sha256(provenance_bytes).hexdigest(),
+        )
+        provenance = parse_manifest_json(provenance_bytes.decode("utf-8"))
+        self.assertEqual(validate_host_mapping_bundle(self.output), provenance)
+        self.assertEqual(provenance.status.value, "success")
+        executable = provenance.build.executable
+        if executable is None:
+            self.fail("successful provenance must contain executable identity")
+        self.assertEqual(executable.sha256, artifact["build"]["binary_sha256"])
+        self.assertEqual(
+            provenance.execution.stdout_sha256, hashlib.sha256(raw_log).hexdigest()
+        )
+        capture._validate_manifest_join(
+            artifact,
+            provenance_bytes,
+            provenance_path.name,
+            raw_log,
+            b"",
+        )
+        mutated_reference = copy.deepcopy(artifact)
+        mutated_reference["provenance_manifest"]["sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "manifest hash"):
+            capture._validate_manifest_join(
+                mutated_reference,
+                provenance_bytes,
+                provenance_path.name,
+                raw_log,
+                b"",
+            )
+        log_path = self.output.with_suffix(".log")
+        log_path.write_bytes(raw_log + b"tampered")
+        with self.assertRaisesRegex(ValueError, "length disagrees"):
+            validate_host_mapping_bundle(self.output)
+        log_path.write_bytes(raw_log)
+        provenance_path.write_bytes(provenance_bytes + b" ")
+        with self.assertRaisesRegex(ValueError, "sidecar hash"):
+            validate_host_mapping_bundle(self.output)
 
     def test_rejects_absent_duplicate_malformed_target_and_inconsistent_markers(
         self,
@@ -140,6 +195,13 @@ class HostMappingDiagnosticCaptureTests(unittest.TestCase):
         code, _ = self.capture()
         self.assertNotEqual(code, 0)
         self.assertEqual(log_output.read_text(encoding="utf-8"), "preserve")
+
+        log_output.unlink()
+        provenance_output = self.output.with_suffix(".provenance.json")
+        provenance_output.write_text("preserve", encoding="utf-8")
+        code, _ = self.capture()
+        self.assertNotEqual(code, 0)
+        self.assertEqual(provenance_output.read_text(encoding="utf-8"), "preserve")
 
     def test_rejects_non_executable_binary(self) -> None:
         self.binary.chmod(0o644)

@@ -57,7 +57,7 @@ class SourceIdentity:
 
 @dataclass(frozen=True)
 class ExecutableIdentity:
-    path: str
+    path: str | None
     sha256: str
 
 
@@ -70,7 +70,7 @@ class ToolchainIdentity:
 
 @dataclass(frozen=True)
 class BuildIdentity:
-    command: tuple[str, ...]
+    command: tuple[str, ...] | None
     configuration_sha256: str | None
     toolchain: ToolchainIdentity | None
     executable: ExecutableIdentity | None
@@ -93,7 +93,9 @@ class ExecutionIdentity:
     finished_at_utc: str | None
     exit_code: int | None
     stdout_sha256: str | None
+    stdout_bytes: int | None
     stderr_sha256: str | None
+    stderr_bytes: int | None
 
 
 @dataclass(frozen=True)
@@ -158,6 +160,14 @@ def _optional_sha256(value: object, name: str) -> str | None:
     return None if value is None else _sha256(value, name)
 
 
+def _optional_byte_count(value: object, name: str) -> int | None:
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise ValueError(f"{name} must be a nonnegative integer or null")
+    return value
+
+
 def _revision(value: object, name: str) -> str:
     revision = _text(value, name)
     if _GIT_REVISION.fullmatch(revision) is None:
@@ -210,7 +220,11 @@ def _build(value: object) -> BuildIdentity:
     raw = _object(
         value, "build", {"command", "configuration_sha256", "toolchain", "executable"}
     )
-    command = _string_list(raw["command"], "build.command", allow_empty=True)
+    command = (
+        None
+        if raw["command"] is None
+        else _string_list(raw["command"], "build.command", allow_empty=False)
+    )
     config_hash = _optional_sha256(
         raw["configuration_sha256"], "build.configuration_sha256"
     )
@@ -231,7 +245,11 @@ def _build(value: object) -> BuildIdentity:
     if executable_raw is not None:
         data = _object(executable_raw, "build.executable", {"path", "sha256"})
         executable = ExecutableIdentity(
-            path=_repo_path(data["path"], "build.executable.path"),
+            path=(
+                None
+                if data["path"] is None
+                else _repo_path(data["path"], "build.executable.path")
+            ),
             sha256=_sha256(data["sha256"], "build.executable.sha256"),
         )
     return BuildIdentity(command, config_hash, toolchain, executable)
@@ -344,7 +362,9 @@ def _execution(value: object) -> ExecutionIdentity:
             "finished_at_utc",
             "exit_code",
             "stdout_sha256",
+            "stdout_bytes",
             "stderr_sha256",
+            "stderr_bytes",
         },
     )
     command = _string_list(raw["command"], "execution.command", allow_empty=True)
@@ -377,14 +397,24 @@ def _execution(value: object) -> ExecutionIdentity:
         isinstance(exit_code, bool) or not isinstance(exit_code, int)
     ):
         raise ValueError("execution.exit_code must be an integer or null")
+    stdout_sha256 = _optional_sha256(raw["stdout_sha256"], "execution.stdout_sha256")
+    stdout_bytes = _optional_byte_count(raw["stdout_bytes"], "execution.stdout_bytes")
+    stderr_sha256 = _optional_sha256(raw["stderr_sha256"], "execution.stderr_sha256")
+    stderr_bytes = _optional_byte_count(raw["stderr_bytes"], "execution.stderr_bytes")
+    if (stdout_sha256 is None) != (stdout_bytes is None):
+        raise ValueError("stdout hash and byte count must both be known or null")
+    if (stderr_sha256 is None) != (stderr_bytes is None):
+        raise ValueError("stderr hash and byte count must both be known or null")
     return ExecutionIdentity(
         command=command,
         environment=environment_items,
         started_at_utc=started,
         finished_at_utc=finished,
         exit_code=exit_code,
-        stdout_sha256=_optional_sha256(raw["stdout_sha256"], "execution.stdout_sha256"),
-        stderr_sha256=_optional_sha256(raw["stderr_sha256"], "execution.stderr_sha256"),
+        stdout_sha256=stdout_sha256,
+        stdout_bytes=stdout_bytes,
+        stderr_sha256=stderr_sha256,
+        stderr_bytes=stderr_bytes,
     )
 
 
@@ -479,7 +509,9 @@ def validate_manifest(value: object) -> ValidationManifest:
         if (
             execution.exit_code != 0
             or execution.stdout_sha256 is None
+            or execution.stdout_bytes is None
             or execution.stderr_sha256 is None
+            or execution.stderr_bytes is None
             or execution.started_at_utc is None
             or execution.finished_at_utc is None
             or manifest.build.executable is None
@@ -530,7 +562,9 @@ def manifest_to_mapping(manifest: ValidationManifest) -> dict[str, object]:
     source["submodules"] = [
         asdict(submodule) for submodule in manifest.source.submodules
     ]
-    build["command"] = list(manifest.build.command)
+    build["command"] = (
+        None if manifest.build.command is None else list(manifest.build.command)
+    )
     execution["command"] = list(manifest.execution.command)
     execution["environment"] = dict(manifest.execution.environment)
     return value

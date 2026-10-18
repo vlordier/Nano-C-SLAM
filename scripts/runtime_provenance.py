@@ -131,6 +131,7 @@ def verify_mchan_build_receipt(
     observed_plugin_sha256: str,
 ) -> tuple[RuntimeDependency, ...]:
     """Verify receipt hashes against runtime files and pinned Git source bytes."""
+    receipt_digest = sha256_file_stable(receipt_path)
     receipt = _key_value_receipt(receipt_path)
     if (
         re.fullmatch(r"[0-9a-f]{40}", expected_source_revision) is None
@@ -186,6 +187,18 @@ def verify_mchan_build_receipt(
     source_hash = hashlib.sha256(source.stdout).hexdigest()
     if source_hash != receipt["mchan_source_sha256"]:
         raise ValueError("MCHAN receipt source hash does not match pinned Git content")
+    if sha256_file_stable(receipt_path) != receipt_digest:
+        raise ValueError("MCHAN build receipt changed during verification")
+    if any(
+        sha256_file_stable(path) != digest
+        for path, digest in (
+            (plugin, actual["plugin_sha256"]),
+            (engine, actual["engine_sha256"]),
+            (soc_model, actual["soc_model_sha256"]),
+            (compiler, actual["compiler_sha256"]),
+        )
+    ):
+        raise ValueError("GVSOC runtime files changed during receipt verification")
     return (
         RuntimeDependency(
             name="gvsoc-mchan-plugin",

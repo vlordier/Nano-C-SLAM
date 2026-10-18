@@ -8,8 +8,8 @@ another run does not establish that a dependency was loaded by this run.
 
 | Evidence class | Current collector and fields | What the evidence does not establish yet |
 | --- | --- | --- |
-| Host GAP9 mapping fixture | `scripts/capture_gap9_host_mapping_diagnostic.py` hashes the host binary, owned mapping sources, fixture, compile flags, and raw log. The schema validator rejects incomplete host evidence and target-only SDK metadata. | It does not record the superproject commit, recursive submodule gitlinks/checkouts, or a dirty patch. The compiler identity is supplied by the invoking command rather than resolved from the running compiler. |
-| GAP9 GVSOC mapping fixture | `scripts/capture_gap9_gvsoc_mapping_diagnostic.py` binds ELF, compile-command file, build-provenance file, SDK revision/release/dirty flag, required owned source hashes, target exit/termination, and raw log hash. It rejects host evidence labeled as target execution. A separate `capture_gap9_gvsoc_mapping_evidence.py` report can record `gvsoc_model.mchan_plugin_sha256`; it must be joined to the target diagnostic by identical ELF and raw-log hashes. | Build provenance currently omits the root repository revision and submodule state. The SDK dirty check uses `git diff-index` and does not include untracked files. The per-run target artifact `gvsoc_icp_accounting_20261018.json` has `model_metadata: null`; the paired `mapping_report_rebuilt_mchan_accounting_20261018.json` supplies the runtime plugin identity and shares its ELF/log hashes. Captures without that paired, hash-matched model report do not establish which MCHAN plugin was loaded. |
+| Host GAP9 mapping fixture | New captures include a `.provenance.json` sidecar joined by relative path and SHA-256. The manifest records root/recursive-submodule revisions and dirty patch identity, exact binary hash, allowlisted process environment, separate stdout/stderr hashes, and status. The wrapper supplies the compiler path and the collector hashes that executable. Publication checks report/manifest/binary/stream joins and is atomic across report, log, and sidecar. | Host dynamic runtime libraries remain explicitly `unknown`; the build command itself was not observed by the capture process, so `build.command` is null. Historical reports without a sidecar remain readable but are not upgraded. |
+| GAP9 GVSOC mapping fixture | `scripts/capture_gap9_gvsoc_mapping_diagnostic.py` still emits the legacy target diagnostic; the strict MCHAN receipt verifier now checks pinned source bytes, receipt paths, compiler/engine/SoC/plugin hashes, report-declared plugin hash, and mutation during verification. | The GVSOC diagnostic does not yet emit the canonical sidecar. Build provenance omits the root repository revision and submodule state; SDK dirty metadata still excludes untracked files. The report-declared MCHAN hash is not an independent observation of dynamic loader residency. |
 | Gazebo-to-host mapping replay | `scripts/gazebo_mapping_sitl.py` records the root revision/dirty status, mapper executable SHA, selected source dirty state, input samples/pair timestamps, replay metrics, and simulator/run identity. The coordinator's `nano_c_slam_gazebo/run_provenance.py` additionally hashes an explicit owned-source set, Python/`ros2`/Gazebo/mapper executables, installed overlay package trees, ROS domain and Gazebo partition. | Coordinator dirty status is scoped to its owned input set, not recursive submodule state. The environment record omits `RMW_IMPLEMENTATION`, sourced prefix order, and a general allowlisted environment snapshot. The combined report does not retain a hash for the complete launcher stdout/stderr stream. It establishes simulated pipeline execution, not map accuracy. |
 | Gazebo mission without mapping replay | Mission reports and passive telemetry diagnostics bind run IDs and sampled topics/statuses, but coverage differs by report schema. | An observed graph endpoint is not command receipt. A model-only test is not simulator execution. Do not infer mission completion, mapping execution, or physical safety from a telemetry-only artifact. |
 | Physical GAP9 / Crazyflie flight | No checked-in collector currently emits an accepted hardware evidence bundle. | GVSOC, host tests, ideal odometry, and Gazebo cannot be relabeled as hardware/flight evidence. Until a hardware collector and retained raw evidence exist, this row is `NOT RUN` or `BLOCKED`, with the missing device/prerequisite stated. |
@@ -20,6 +20,9 @@ another run does not establish that a dependency was loaded by this run.
   `scripts/write_gap9_build_provenance.py`, and both
   `scripts/capture_gap9_*_mapping_diagnostic.py` entrypoints.
 - Host/GVSOC evidence-class and source matching: `scripts/compare_gap9_mapping_diagnostics.py`.
+- Canonical manifest model/parser and process/source/runtime collectors:
+  `scripts/validation_provenance.py`, `scripts/process_provenance.py`,
+  `scripts/source_provenance.py`, and `scripts/runtime_provenance.py`.
 - Gazebo source/executable/overlay collection and validation:
   `sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/run_provenance.py`.
 - Gazebo mapping report and host mapper identity:
@@ -39,9 +42,11 @@ another run does not establish that a dependency was loaded by this run.
 
 ## Implementation order
 
-1. Resolve repository, recursive submodule, dirty-tree, compiler, and loaded
-   model/plugin identities from the same process/run that produces each
-   artifact. Keep unknown values explicitly unknown.
+1. Resolve repository, recursive submodule, dirty-tree, compiler, and runtime
+   dependency identities from the same process/run that produces each
+   artifact. Host source/process/binary capture is now joined; finish exact
+   build command and runtime-library collection, then integrate GVSOC/Gazebo.
+   Keep unknown values explicitly unknown.
 2. Make the MCHAN runtime dependency available from pinned SDK source or retain
    it as a content-addressed artifact; verify output bytes rather than trusting
    a developer-local absolute path.

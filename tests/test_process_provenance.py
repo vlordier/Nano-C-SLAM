@@ -28,6 +28,7 @@ class ProcessProvenanceTests(unittest.TestCase):
                     "-c",
                     "import os; print('out:' + os.getenv("
                     "'NCS_PROVENANCE_ALLOWED', 'missing')); "
+                    "print('secret:' + os.getenv('NCS_PROVENANCE_SECRET', 'missing')); "
                     "print('err', file=__import__('sys').stderr)",
                 ),
                 environment_allowlist=(
@@ -37,7 +38,7 @@ class ProcessProvenanceTests(unittest.TestCase):
             )
 
         self.assertEqual(captured.execution.exit_code, 0)
-        self.assertEqual(captured.stdout, b"out:\n")
+        self.assertEqual(captured.stdout, b"out:\nsecret:missing\n")
         self.assertEqual(captured.stderr, b"err\n")
         self.assertEqual(
             captured.execution.stdout_sha256,
@@ -47,6 +48,8 @@ class ProcessProvenanceTests(unittest.TestCase):
             captured.execution.stderr_sha256,
             hashlib.sha256(captured.stderr).hexdigest(),
         )
+        self.assertEqual(captured.execution.stdout_bytes, len(captured.stdout))
+        self.assertEqual(captured.execution.stderr_bytes, len(captured.stderr))
         self.assertEqual(
             captured.execution.environment,
             (("NCS_PROVENANCE_ABSENT", None), ("NCS_PROVENANCE_ALLOWED", "")),

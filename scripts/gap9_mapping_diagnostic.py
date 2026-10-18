@@ -28,6 +28,10 @@ _MAPPING_SOURCE_FILES = {
     "uv.lock",
     "scripts/capture_gap9_gvsoc_mapping_diagnostic.py",
     "scripts/capture_gap9_host_mapping_diagnostic.py",
+    "scripts/process_provenance.py",
+    "scripts/runtime_provenance.py",
+    "scripts/source_provenance.py",
+    "scripts/validation_provenance.py",
     "scripts/write_gap9_build_provenance.py",
     "scripts/gap9_mapping_diagnostic.py",
     "scripts/gapy_private_wrapper.py",
@@ -57,11 +61,34 @@ _TOP_LEVEL_KEYS = {
     "execution",
     "mapping",
 }
+_MANIFEST_REFERENCE_KEYS = {"path", "sha256"}
 
 
 def validate_mapping_diagnostic(value: object) -> dict[str, Any]:
     """Validate and return one exact version-1 host or GVSOC artifact."""
-    data = _object(value, "artifact", _TOP_LEVEL_KEYS)
+    if not isinstance(value, Mapping):
+        raise ValueError("artifact must be an object")
+    fields = set(value)
+    if fields != _TOP_LEVEL_KEYS and fields != (
+        _TOP_LEVEL_KEYS | {"provenance_manifest"}
+    ):
+        raise ValueError("artifact fields do not match diagnostic schema")
+    data = dict(value)
+    if "provenance_manifest" in data:
+        reference = _object(
+            data["provenance_manifest"],
+            "provenance_manifest",
+            _MANIFEST_REFERENCE_KEYS,
+        )
+        path = _text(reference["path"], "provenance_manifest.path")
+        portable_path = PurePosixPath(path)
+        if (
+            portable_path.is_absolute()
+            or portable_path.as_posix() != path
+            or ".." in portable_path.parts
+        ):
+            raise ValueError("provenance manifest path must be relative and normalized")
+        _hash(reference["sha256"], "provenance_manifest.sha256")
     if _integer(data["schema_version"], "schema_version") != SCHEMA_VERSION:
         raise ValueError("unsupported mapping diagnostic schema_version")
     evidence_class = data["evidence_class"]
