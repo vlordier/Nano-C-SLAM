@@ -98,6 +98,17 @@ frame guards, decodes the command, and dispatches it. The driver uses PMSIS SPI
 interface 2, chip select 0, 8-bit words, mode 0, and pads 56/57/58/59. The
 decoder implementation is `cslam-gap9-app/spi/spi_cmds_decode.c`.
 
+`pi_spi_open` has an integer status contract (`0` success, nonzero failure) in
+the installed PMSIS `spi.h`. `spi_slave_driver_init` propagates that status and
+`slam_loop` exits with failure before entering normal packet processing when
+the peripheral cannot open. The synchronous `pi_spi_receive` and
+`pi_spi_send` APIs are `void`; the installed GAP9 SPI driver has no public
+timeout or abort operation. A missing clock source can therefore still block
+the transport indefinitely. Do not treat `pi_evt_timeout_set` as a SPI timeout:
+the installed SPI driver does not consume that event field. Bounded transfer
+failure behavior is tracked separately in bead `ncs-1hd.12.1` until DMA
+ownership and cancellation can be handled safely.
+
 ## GVSOC capability and validated software route
 
 The locally installed GAP9 GVSOC model exposes a testbench master path in its

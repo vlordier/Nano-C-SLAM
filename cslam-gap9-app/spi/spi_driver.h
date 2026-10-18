@@ -15,7 +15,7 @@
  * @brief Initializes the SPI slave communication.
  *
  */
-void spi_slave_driver_init();
+int spi_slave_driver_init(void);
 
 /**
  * @brief Blocks until "len" bytes are received .

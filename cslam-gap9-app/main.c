@@ -47,7 +47,10 @@ void slam_loop() {
     gpio_init();
     spi_buf = pi_l2_malloc(SPIBUF_SIZE);
     spi_buf_t = pi_l2_malloc(3 * SPIBUF_SIZE + 1);
-    spi_slave_driver_init();
+    if (spi_slave_driver_init() != 0) {
+        pmsis_exit(-1);
+        return;
+    }
 
     pcl_pose_t pose0 = {0};
     ext_aug_pose_t ext_pose0 = {0};

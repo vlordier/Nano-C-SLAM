@@ -89,7 +89,10 @@ static void build_trace(void) {
     next_packet = 0;
 }
 
-void spi_slave_driver_init(void) { build_trace(); }
+int spi_slave_driver_init(void) {
+    build_trace();
+    return 0;
+}
 
 void spi_rcv_blocking(void *data, size_t length) {
     if (data == NULL || length != SPI_PKT_SIZE ||

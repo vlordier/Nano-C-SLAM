@@ -8,6 +8,8 @@
  * Authors: Vlad Niculescu
  */
 
+#include <stdio.h>
+
 #include "pmsis.h"
 #include "spi_config.h"
 
@@ -38,12 +40,14 @@ static void spi_slave_init(pi_device_t *spi_slave,
     pi_open_from_conf(spi_slave, spi_slave_conf);
 }
 
-void spi_slave_driver_init() {
+int spi_slave_driver_init(void) {
     spi_slave_pad_init();
     spi_slave_init(&spi_slave, &spi_slave_conf);
     if (pi_spi_open(&spi_slave)) {
-        printf("ERROR: Failed to open SPI peripheral\n");
+        printf("NANO_C_SLAM_SPI:error stage=open status=-1\n");
+        return -1;
     }
+    return 0;
 }
 
 void spi_send_blocking(void *data, size_t len) {
