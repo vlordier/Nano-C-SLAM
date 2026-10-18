@@ -2,6 +2,7 @@
 
 import unittest
 import uuid
+from pathlib import Path
 
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_path import (
     MappingPath,
@@ -20,6 +21,13 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     validate_drone_names,
     validate_mission_odometry,
     validate_mission_status_events,
+)
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.swarm_geometry import (
+    MINIMUM_HORIZONTAL_SEPARATION_M,
+    minimum_segment_distance,
+    minimum_swarm_route_separations_m,
+    read_spawn_positions,
+    validate_default_swarm_routes,
 )
 
 
@@ -657,6 +665,63 @@ class MappingPathTests(unittest.TestCase):
         for invalid_path in invalid_paths:
             with self.subTest(invalid_path=invalid_path), self.assertRaises(ValueError):
                 invalid_path()
+
+
+class SwarmGeometryTests(unittest.TestCase):
+    def test_reads_spawn_coordinates_from_world_sdf_fixture(self) -> None:
+        fixture = Path(__file__).parent / "fixtures/swarm_world_spawn_fixture.sdf"
+
+        positions = read_spawn_positions(fixture)
+
+        self.assertEqual(
+            positions,
+            {"cf1": (-0.5, -0.5), "cf3": (-0.5, 0.5), "cf4": (0.5, 0.5)},
+        )
+        self.assertEqual(validate_default_swarm_routes(positions)["cf1/cf3"], 0.75)
+
+    def test_segment_distance_handles_crossing_parallel_and_degenerate_cases(
+        self,
+    ) -> None:
+        crossing = ((0.0, 0.0), (1.0, 1.0)), ((0.0, 1.0), (1.0, 0.0))
+        parallel = ((0.0, 0.0), (1.0, 0.0)), ((0.0, 0.5), (1.0, 0.5))
+        degenerate = ((0.0, 0.0), (0.0, 0.0)), ((1.0, 0.0), (2.0, 0.0))
+        self.assertEqual(
+            minimum_segment_distance(*crossing),
+            0.0,
+        )
+        self.assertAlmostEqual(
+            minimum_segment_distance(*parallel),
+            0.5,
+        )
+        self.assertAlmostEqual(
+            minimum_segment_distance(*degenerate),
+            1.0,
+        )
+
+    def test_default_swarm_routes_clear_target_at_arbitrary_progress(self) -> None:
+        minima = minimum_swarm_route_separations_m()
+
+        self.assertEqual(set(minima), {"cf1/cf3", "cf1/cf4", "cf3/cf4"})
+        self.assertAlmostEqual(minima["cf1/cf3"], 0.75)
+        self.assertAlmostEqual(minima["cf3/cf4"], 0.75)
+        self.assertAlmostEqual(minima["cf1/cf4"], 2**0.5 * 0.75)
+        self.assertTrue(
+            all(
+                distance >= MINIMUM_HORIZONTAL_SEPARATION_M
+                for distance in minima.values()
+            )
+        )
+        self.assertEqual(validate_default_swarm_routes(), minima)
+
+    def test_route_preflight_fails_closed_when_spawn_positions_overlap(self) -> None:
+        overlapping_spawns = {
+            "cf1": (0.0, 0.0),
+            "cf3": (0.0, 0.0),
+            "cf4": (1.0, 1.0),
+        }
+
+        with self.assertRaisesRegex(ValueError, "cf1/cf3=0.000 m"):
+            validate_default_swarm_routes(overlapping_spawns)
 
 
 if __name__ == "__main__":

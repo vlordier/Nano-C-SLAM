@@ -1,11 +1,23 @@
 """Run the bounded flight mission on every Crazyflie in the Gazebo world."""
 
+from pathlib import Path
+
+from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch_ros.actions import Node
 from nano_c_slam_gazebo.mission_model import SUPPORTED_DRONE_NAMES
+from nano_c_slam_gazebo.swarm_geometry import (
+    read_spawn_positions,
+    validate_default_swarm_routes,
+)
 
 
 def generate_launch_description() -> LaunchDescription:
+    world_path = (
+        Path(get_package_share_directory("ros_gz_crazyflie_gazebo"))
+        / "worlds/crazyflie_swarm_world.sdf"
+    )
+    validate_default_swarm_routes(read_spawn_positions(world_path))
     return LaunchDescription(
         [
             Node(

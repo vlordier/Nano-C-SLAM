@@ -233,6 +233,23 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
   ros2 launch nano_c_slam_gazebo swarm_mission.launch.py
 ```
 
+Before creating any mission node, the swarm launch reads `cf1`, `cf3`, and
+`cf4` spawn XY positions from the installed
+`ros_gz_crazyflie_gazebo/share/ros_gz_crazyflie_gazebo/worlds/crazyflie_swarm_world.sdf`
+and checks the continuous projected paths defined by the owned
+`MappingPath`. It allows each vehicle to be at any point on its path
+independently, so the check does not assume synchronized takeoff, waypoint
+progress, or landing. Current pairwise minimum horizontal center distances are
+0.75 m (`cf1/cf3`), 1.061 m (`cf1/cf4`), and 0.75 m (`cf3/cf4`). All exceed
+the nominal 0.50 m planned-separation target. The SDF body collision is a
+0.10 m square, so that target is five body widths. Horizontal distance is a
+lower bound on 3D center distance during takeoff, hover, path, and landing.
+
+This is a deterministic planned-route check, not a physical safety margin. It
+does not model rotor extent, attitude, controller tracking error, localization
+error, command/time skew, or collision dynamics. It must not be used to claim
+collision-free physical flight.
+
 On successful completion the mission process publishes one final zero-velocity
 command and exits. On phase failure it publishes a zero-velocity command,
 publishes `FAILED`, and exits nonzero. The node does not currently prove that a
