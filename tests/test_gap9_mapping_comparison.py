@@ -103,6 +103,21 @@ class Gap9MappingComparisonTests(unittest.TestCase):
         self.assertEqual(divergence["stage"], "correspondence")
         self.assertEqual(divergence["field"], "p")
 
+    def test_solver_counts_are_work_counters_not_convergence_claims(self) -> None:
+        host, target = _load_pair()
+        target["mapping"]["successful_solver_calls"] += 1
+        target["mapping"]["completed_solver_iterations"] += 3
+        result = compare_diagnostics(host, target, _stage_log(), _stage_log())
+
+        semantics = result["solver_semantics"]
+        self.assertEqual(semantics["residual_metrics"], "not measured")
+        self.assertEqual(semantics["pose_delta_norms"], "not measured")
+        self.assertEqual(semantics["convergence"], "unmeasured")
+        self.assertEqual(semantics["host"]["successful_solver_calls"], 3)
+        self.assertEqual(semantics["gvsoc"]["successful_solver_calls"], 4)
+        self.assertEqual(result["first_divergence"]["stage"], "mapping-summary")
+        self.assertEqual(result["first_divergence"]["field"], "successful_solver_calls")
+
     def test_missing_or_sentinel_stage_data_is_not_zero(self) -> None:
         host, target = _load_pair()
         host_log = _stage_log()

@@ -349,6 +349,16 @@ def _summary_divergence(
     return None
 
 
+def _solver_summary(mapping: dict[str, Any]) -> dict[str, Any]:
+    fields = (
+        "main_solver_returned",
+        "successful_solver_calls",
+        "completed_solver_iterations",
+        "optimization_completed",
+    )
+    return {field: mapping[field] for field in fields}
+
+
 def compare_diagnostics(
     host: dict[str, Any],
     target: dict[str, Any],
@@ -399,6 +409,18 @@ def compare_diagnostics(
             ),
         },
         "shared_source_sha256": host["build"]["source_sha256"],
+        "solver_semantics": {
+            "host": _solver_summary(host["mapping"]),
+            "gvsoc": _solver_summary(target["mapping"]),
+            "residual_metrics": "not measured",
+            "pose_delta_norms": "not measured",
+            "convergence": "unmeasured",
+            "counter_interpretation": (
+                "Successful solver calls and completed fixed iterations measure "
+                "work performed; they do not establish convergence or objective "
+                "improvement."
+            ),
+        },
         "comparator_inputs_sha256": comparator_hashes,
         "compared_stage_record_count": compared_record_count,
         "tolerated_float_component_difference_count": tolerated_differences,
