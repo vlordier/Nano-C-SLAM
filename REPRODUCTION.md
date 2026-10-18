@@ -11,14 +11,14 @@ Tested on macOS (Apple Silicon), with the evidence dates recorded below. The rep
 | Owned host C mapper processing Gazebo telemetry | Passed for retained captures | A separate near-field replay has 170 timestamped pose/range pairs, 9 scans, 588 projected points and 11 stored constraints submitted to the final optimizer call. The shared deterministic host diagnostic is `artifacts/gap9_gvsoc_evidence/host_mapping_diagnostic.json` with its raw `.log`. These results prove pipeline execution, not map accuracy or convergence. |
 | GAP9 firmware build | Passed 2026-10-18 | Fresh SDK 5.20.4 build with corrected ICP correspondence output: 63,382 text, 526,920 data, 56,700 BSS; L1 117,612/131,068 B (89.73%), L2 shared 643,536/1,572,864 B (40.91%). |
 | GAP9 GVSOC ICP kernel smoke | Build passed; execution evidence is older | Retained `report.json` is kernel-only evidence. It does not exercise mapping. |
-| GAP9 GVSOC mapping-core smoke | Passed on 2026-10-18 | Fresh schema-v2 evidence is retained in `artifacts/gap9_gvsoc_evidence/mapping_diagnostic.json` and `.log`, bound to the target ELF, compile commands, SDK and source hashes. The fixture completed 60/60 finite poses, 3 scans, 240 points, 2 accepted ICP constraints, 2 unique optimizer edges, and 6 solver calls/18 fixed iterations with no NaN. The host fixture also passes but reports 3 graph nodes/3 calls/9 iterations; GVSOC reports 12 nodes/6 calls/18 iterations because `pcl_reduce` can add distance-selected poses. This topology difference remains under host/target comparison. This fixture is distinct from the production-main SPI test below; neither run measures map accuracy. |
+| GAP9 GVSOC mapping-core smoke | Passed on 2026-10-18 | The older `mapping_diagnostic.json` used pre-fallback Cholesky source and reports 12 graph nodes/6 calls/18 iterations. Fresh current-source evidence is retained as `host_mapping_diagnostic_current_20261018.json` plus clean-model and installed-model target reports/logs. Both fresh GVSOC runs match the host across all instrumented fields: 60 poses, 3 scans, 240 points, 2 accepted optimizer-visible unique edges, 3 graph nodes, and 3 calls/9 iterations. `runtime_model_comparison_20261018.json` records ELF/report/log hashes and the two MCHAN plugin hashes. This validates the deterministic host/GVSOC software fixture, not map accuracy or physical GAP9. |
 | Forced cluster Cholesky on synthetic fixture | Passed with isolated model rebuild | The 60-pose fixture passes with the FC fallback disabled only when GVSOC uses MCHAN rebuilt from committed GAP SDK source. The installed model fails the same ELF. See `artifacts/gap9_gvsoc_evidence/cluster_cholesky_clean_model_report.json` and the raw `.log`; the production fallback remains enabled pending physical-target confirmation. |
 | Production GAP9 main loop consuming deterministic SPI packets | Passed with test-only transport seam on 2026-10-18 | `NANO_C_SLAM_GVSOC_SPI_TRACE` builds production `main.c`, decoder, and mapping sources; the fixture replaces only blocking SPI receive/send. GVSOC consumed 60 valid poses, rejected one bad checksum, registered 3 of 4 scan packets, stored exact constraint edges 20→0 and 40→0, optimized once, and returned an 18-byte `slam_job_t`. This validates production software dispatch/mapping on the virtual GAP9 target, not the GVSOC SPI testbench bus, physical SPI, map accuracy, or hardware. See [cslam-gap9-app/spi/GVSOC_INTEGRATION.md](cslam-gap9-app/spi/GVSOC_INTEGRATION.md) for command, resource usage and ELF/log hashes. |
 | Production GAP9 main loop over GVSOC testbench SPI2 | Passed twice on 2026-10-18 | `NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE` drives 66 SPI2/CS0 testbench frames through production `main.c`, decoder, and mapping sources. It inserted 60 poses, rejected one bad pose checksum, registered 3 of 4 scans, accepted 2 ICP constraints, optimized once, and captured the expected 18-byte `slam_job_t`. The received response matches the expected bytes in `artifacts/gap9_gvsoc_evidence/spi_mapping_main_response_20261018.json`, which binds the ELF, GVSOC config, host transfer, log, and target sources by SHA-256. This validates the virtual SPI2 path, not physical SPI, map accuracy, or hardware. See [cslam-gap9-app/spi/GVSOC_INTEGRATION.md](cslam-gap9-app/spi/GVSOC_INTEGRATION.md) for reproduction and resource details. |
-| Host/GVSOC first recorded divergence | Compared retained artifacts 2026-10-18 | The reports share fixture SHA `56bd95c6…43a0fa` and 51 shared input hashes. The comparator finds 41 versus 80 reverse correspondences at the second scan-pair registration; the next correspondence stage consumes 41 versus 80 matches, followed by different graph topology (3 versus 12 nodes) and solver work (3/9 versus 6/18 calls/iterations). Both summaries still report two accepted optimizer-visible unique edges. The GVSOC report marks the SDK worktree dirty and omits the loaded MCHAN plugin hash, so this is evidence of a behavior difference, not a reproducible supported-model result. Root cause remains open in `ncs-ju6.3.2.3`. |
+| Historical host/GVSOC divergence | Explained by source change; retained for audit | The older pair (fixture SHA `56bd95c6…43a0fa`) differs at second-scan correspondences (41 host, 80 GVSOC), graph topology (3 versus 12 nodes), and solver work (3/9 versus 6/18). Its Cholesky source predates commit `205c299`, which added the FC fallback for compact graphs; commit `3e91233` made the threshold configurable (`NANO_C_SLAM_POSE_GRAPH_FC_THRESHOLD`, default 64). Fresh current-source captures using both the default installed MCHAN plugin and the rebuilt plugin match host in all instrumented fields. The forced cluster Cholesky path still has a separate model/DMA limitation; the production fallback remains enabled. |
 | Three-drone mission, map fusion, physical flight, quantitative map accuracy | Not demonstrated | Separate open work remains; per-drone mapping is not map fusion, and simulated four-ray lidar/ideal odometry are not hardware ToF/UWB. |
 
-The provenance-bound cluster diagnosis identified lost correspondence-array values at the cluster-to-FC boundary; bounded cluster-master stores fixed that target smoke. Production `main.c` has since passed both the deterministic transport-seam trace and a testbench SPI2 transfer sequence, including capture of a byte-matched optimizer response. The host/GVSOC graph topology and solver-work difference remains open (`ncs-ju6.3.2`). Neither synthetic fixtures nor host/GVSOC execution establishes mapping accuracy or physical hardware behavior. Repeated captures preserve earlier logs/reports; the implicit default output becomes timestamped when occupied, while an explicit path collision fails before the build.
+The provenance-bound cluster diagnosis identified lost correspondence-array values at the cluster-to-FC boundary; bounded cluster-master stores fixed that target smoke. A separate compact-graph Cholesky issue caused the historical host/GVSOC topology split; commit `3e91233` routes graphs up to the configured threshold through FC Cholesky, and fresh current-source captures match host under both tested MCHAN plugins. Production `main.c` has also passed the deterministic transport-seam trace and a testbench SPI2 transfer sequence, including a byte-matched optimizer response. The forced cluster path and physical GAP9 behavior remain separate limits. Neither synthetic fixtures nor GVSOC execution establishes mapping accuracy or physical hardware behavior. Repeated captures preserve earlier logs/reports; the implicit default output becomes timestamped when occupied, while an explicit path collision fails before the build.
 
 ## Host versus GVSOC first-divergence comparison
 
@@ -27,28 +27,26 @@ bound by those artifacts:
 
 ```sh
 uv run --locked python -m scripts.compare_gap9_mapping_diagnostics \
-  --host-artifact artifacts/gap9_gvsoc_evidence/host_mapping_diagnostic.json \
-  --gvsoc-artifact artifacts/gap9_gvsoc_evidence/mapping_diagnostic.json \
-  --host-log artifacts/gap9_gvsoc_evidence/host_mapping_diagnostic.log \
-  --gvsoc-log artifacts/gap9_gvsoc_evidence/mapping_diagnostic.log \
-  --output /tmp/nano-c-slam-host-gvsoc-comparison-rerun-v2.json
+  --host-artifact artifacts/gap9_gvsoc_evidence/host_mapping_diagnostic_current_20261018.json \
+  --gvsoc-artifact artifacts/gap9_gvsoc_evidence/mapping_diagnostic_installed_mchan_20261018.json \
+  --host-log artifacts/gap9_gvsoc_evidence/host_mapping_diagnostic_current_20261018.log \
+  --gvsoc-log artifacts/gap9_gvsoc_evidence/mapping_diagnostic_installed_mchan_20261018.log \
+  --output /tmp/nano-c-slam-current-host-gvsoc-comparison.json
 ```
 
 The comparator rejects mismatched fixtures, shared source hashes, invalid
-artifacts, or log hashes before writing output. On the retained pair, the first
-observed out-of-tolerance trace difference is `reverse-cluster.total`: host
-reports 41 and GVSOC reports 80 (host log line 834; target line 919), after 24
-iterations of the previous scan-pair ICP. In the following registration, the
-correspondence stage consumes 41 host matches versus 80 GVSOC matches, so the
-difference changes the ICP path rather than only its diagnostics. The reports
-also differ at graph topology (3 versus 12 nodes) and optimizer work (3/9 versus
-6/18 solver calls/iterations), while both retain two accepted unique edges. The
-comparison records 1,557 earlier float-component differences within declared
-tolerances. This localizes the earliest recorded discrepancy and confirms
-downstream effect, but does not explain root cause. The GVSOC artifact marks its
-SDK worktree dirty and omits the loaded MCHAN plugin hash; it is not a fresh
-reproducible run against a pinned model. Individual pose/range values, scan
-extraction internals, and every
+artifacts, or log hashes before writing output. The current-source comparison
+is expected to report `equivalent-within-tolerance`; the retained clean-model
+and installed-model comparison reports are in `host_gvsoc_comparison_clean_mchan_20261018.json`
+and `host_gvsoc_comparison_installed_mchan_20261018.json`. The historical
+comparison `host_gvsoc_comparison_20261018_v2.json` identifies the first
+out-of-tolerance trace difference at the second registration: host consumed 41
+matches and GVSOC 80, followed by 3 versus 12 graph nodes and 3/9 versus 6/18
+solver calls/iterations. The old target artifact predates the compact-graph FC
+fallback and is marked with a dirty SDK; do not treat it as current supported
+configuration evidence. The runtime manifest records exact MCHAN binary hashes
+for the two fresh runs. Individual pose/range values, scan extraction internals,
+and every
 intermediate optimized pose are not present in these logs, and are listed as
 unobserved by the comparator. Solver call and fixed-iteration counts describe
 work performed; residuals, pose-delta norms, objective improvement, and

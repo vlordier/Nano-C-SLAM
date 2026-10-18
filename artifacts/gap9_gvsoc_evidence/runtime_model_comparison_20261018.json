@@ -1,0 +1,174 @@
+{
+  "artifacts": {
+    "clean_model_artifact": {
+      "path": "artifacts/gap9_gvsoc_evidence/mapping_diagnostic_clean_mchan_20261018.json",
+      "sha256": "95198b6322994b7aefff30557c69f89e17a2b00e17cb1864c4377c1d0bf899a2"
+    },
+    "clean_model_comparison": {
+      "path": "artifacts/gap9_gvsoc_evidence/host_gvsoc_comparison_clean_mchan_20261018.json",
+      "sha256": "00649f9f91abbd2d3d8d8abd127903315337cf789806c662d66bfc69949a72ee"
+    },
+    "clean_model_log": {
+      "path": "artifacts/gap9_gvsoc_evidence/mapping_diagnostic_clean_mchan_20261018.log",
+      "sha256": "d8934346dac2876bca69071ad54da206b862508c991a16cc09276d2baf8eca4d"
+    },
+    "historical_artifact": {
+      "path": "artifacts/gap9_gvsoc_evidence/mapping_diagnostic.json",
+      "sha256": "d117584cf27b7709cccc92909b845b40f2d93f4dbb4aacb979c82d6062d56ff8"
+    },
+    "historical_comparison": {
+      "path": "artifacts/gap9_gvsoc_evidence/host_gvsoc_comparison_20261018_v2.json",
+      "sha256": "c7d245f9adc6c5b982377b62921c42abfa3cb25d479ac6ec606f3c67518211fe"
+    },
+    "historical_log": {
+      "path": "artifacts/gap9_gvsoc_evidence/mapping_diagnostic.log",
+      "sha256": "faaf18b15f0e11e62837f4b1fdb1c8a9a2f6ec7538d7d267eee56814707a2074"
+    },
+    "host_artifact": {
+      "path": "artifacts/gap9_gvsoc_evidence/host_mapping_diagnostic_current_20261018.json",
+      "sha256": "6c665881883dca8a4708159414be1729c468635f92c313025681ac0d798dd7ee"
+    },
+    "host_log": {
+      "path": "artifacts/gap9_gvsoc_evidence/host_mapping_diagnostic_current_20261018.log",
+      "sha256": "49d3150418618f05830327f4e0fa8bbf3683f2083d45b5c75c711251ad054f49"
+    },
+    "installed_model_artifact": {
+      "path": "artifacts/gap9_gvsoc_evidence/mapping_diagnostic_installed_mchan_20261018.json",
+      "sha256": "9b0ee2d382626887473316fb6a9e13cf45a5496d5fffbe8d702bbbf355eb6c0b"
+    },
+    "installed_model_comparison": {
+      "path": "artifacts/gap9_gvsoc_evidence/host_gvsoc_comparison_installed_mchan_20261018.json",
+      "sha256": "f143ddaa9f0af2719db9ed8bbdcc9d0f8ae9e20d13619b245a8e010282a6f936"
+    },
+    "installed_model_log": {
+      "path": "artifacts/gap9_gvsoc_evidence/mapping_diagnostic_installed_mchan_20261018.log",
+      "sha256": "d09f6645d511d3f47934f201c4c0dfa98ac4d1b89541095e67d7313894b7e161"
+    }
+  },
+  "captured_at_utc": "2026-10-18T20:44:11.139105+00:00",
+  "claim_boundary": "Fresh synthetic mapping fixture comparison only; no mapping-accuracy, physical GAP9, flight, or sensor-fidelity claim.",
+  "commands": [
+    "bash scripts/capture_gap9_host_mapping_diagnostic.sh /tmp/ncs-host-mapping-clean-mchan-20261018.json",
+    "GAP9_GVSOC_MODEL_ROOT=$PWD/../ncs-cluster-path-probe/model-rebuild/models GAP9_GVSOC_MAPPING_CAPTURE=1 GAP9_GVSOC_MAPPING_OUTPUT=/tmp/ncs-mapping-clean-mchan-20261018.json GAP9_GVSOC_TIMEOUT_S=600 bash scripts/run_gap9_gvsoc_smoke.sh",
+    "GAP9_GVSOC_MAPPING_CAPTURE=1 GAP9_GVSOC_MAPPING_OUTPUT=/tmp/ncs-mapping-installed-mchan-20261018.json GAP9_GVSOC_TIMEOUT_S=600 bash scripts/run_gap9_gvsoc_smoke.sh"
+  ],
+  "evidence_class": "host-gvsoc-runtime-comparison",
+  "fixture": {
+    "name": "gap9_sdk_gvsoc_mapping_smoke",
+    "point_count": 240,
+    "pose_count": 60,
+    "scan_count": 3,
+    "source_sha256": "6b7790ffbf2d1344393639685a3e9eee318bb9561aea952f22047a6b1c12715f"
+  },
+  "result": {
+    "clean_rebuilt_mapping": {
+      "accepted_constraints": 2,
+      "completed_solver_iterations": 9,
+      "correspondences_last_pair": 80,
+      "finite_poses": 60,
+      "graph_nodes": 3,
+      "has_nan": false,
+      "icp_attempts": 2,
+      "icp_error_milli": 0,
+      "icp_has_nan": false,
+      "main_solver_returned": true,
+      "optimization_completed": true,
+      "optimizer_input_constraints": 2,
+      "optimizer_unique_edges": 2,
+      "points": 240,
+      "poses": 60,
+      "scans": 3,
+      "successful_solver_calls": 3
+    },
+    "clean_rebuilt_vs_host": "equivalent-within-tolerance",
+    "historical_mapping": {
+      "accepted_constraints": 2,
+      "completed_solver_iterations": 18,
+      "correspondences_last_pair": 80,
+      "finite_poses": 60,
+      "graph_nodes": 12,
+      "has_nan": false,
+      "icp_attempts": 2,
+      "icp_error_milli": 0,
+      "icp_has_nan": false,
+      "main_solver_returned": true,
+      "optimization_completed": true,
+      "optimizer_input_constraints": 2,
+      "optimizer_unique_edges": 2,
+      "points": 240,
+      "poses": 60,
+      "scans": 3,
+      "successful_solver_calls": 6
+    },
+    "host_mapping": {
+      "accepted_constraints": 2,
+      "completed_solver_iterations": 9,
+      "correspondences_last_pair": 80,
+      "finite_poses": 60,
+      "graph_nodes": 3,
+      "has_nan": false,
+      "icp_attempts": 2,
+      "icp_error_milli": 0,
+      "icp_has_nan": false,
+      "main_solver_returned": true,
+      "optimization_completed": true,
+      "optimizer_input_constraints": 2,
+      "optimizer_unique_edges": 2,
+      "points": 240,
+      "poses": 60,
+      "scans": 3,
+      "successful_solver_calls": 3
+    },
+    "installed_default_mapping": {
+      "accepted_constraints": 2,
+      "completed_solver_iterations": 9,
+      "correspondences_last_pair": 80,
+      "finite_poses": 60,
+      "graph_nodes": 3,
+      "has_nan": false,
+      "icp_attempts": 2,
+      "icp_error_milli": 0,
+      "icp_has_nan": false,
+      "main_solver_returned": true,
+      "optimization_completed": true,
+      "optimizer_input_constraints": 2,
+      "optimizer_unique_edges": 2,
+      "points": 240,
+      "poses": 60,
+      "scans": 3,
+      "successful_solver_calls": 3
+    },
+    "installed_default_vs_host": "equivalent-within-tolerance",
+    "interpretation": "The historical 41-vs-80 correspondence and 3-vs-12 graph divergence came from source predating the compact-graph FC fallback. Fresh current-source runs using both local MCHAN plugins match the host in all instrumented fields; current cholesky source hashes and fixture hash are recorded for comparison."
+  },
+  "runs": {},
+  "runtime_models": {
+    "clean_rebuilt": {
+      "availability": "currently in the preserved detached worktree; absolute path is environmental, not portable",
+      "plugin_path_at_capture": "/Users/vincent/Work/ncs-cluster-path-probe/model-rebuild/models/gap/mchan/mchan_v7_impl.dylib",
+      "plugin_sha256": "63c7a156d641118f907cdf8f2a214696209d95da642bdc28e16d74f39d719bd1",
+      "sdk_source_revision": "45247566dbfd1ec7bb021f158fefe133c2aa8e10",
+      "source_path_at_capture": "/Users/vincent/Work/ncs-cluster-path-probe/model-rebuild/mchan_v7_impl.cpp",
+      "source_sha256": "e5e72f1d98d3df57e34c5e78186ec6848be3e7c4624c0b2a7a8cb96ff9ca9f4d"
+    },
+    "installed_default": {
+      "availability": "installed under the local GAP SDK; absolute path is environmental, not portable",
+      "plugin_path_at_capture": "/Users/vincent/Work/da3_gap9/third_party/gap_sdk_private/install/workstation/models/gap/mchan/mchan_v7_impl.dylib",
+      "plugin_sha256": "e4677a2ebb6f3a863df7cedb4485b653cd008e017baad235d93e3b2ebf1735aa"
+    }
+  },
+  "schema_version": 1,
+  "sdk": {
+    "release": "release-v5.20.4",
+    "revision": "45247566dbfd1ec7bb021f158fefe133c2aa8e10",
+    "worktree_dirty": true
+  },
+  "source_revision": {
+    "cholesky_source_sha256": "b326350ca0b2cb9d2665a2f15b16b678e716d678e3ee110a90c2f76332226f53",
+    "fallback_introduced_in_commit": "205c299d623dc02af7951cbce453bd688f84fadf",
+    "fallback_policy": "NANO_C_SLAM_POSE_GRAPH_FC_THRESHOLD defaults to 64; compact graphs use FC Cholesky.",
+    "historical_cholesky_source_sha256": "f9d4522055172ade764076da30f7dd8e6ed9e9fd3b80317be004eed3a75af33c",
+    "superproject_head": "f2cd66f342027c10e0599bb26aace67d389a64ef",
+    "threshold_made_configurable_in_commit": "3e9123339c3f97255807cad1859dac8673d7cdb6"
+  }
+}
