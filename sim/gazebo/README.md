@@ -287,11 +287,10 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
 
 This passive check validates advancing odometry and correctly namespaced,
 fresh four-ray ranges from cf1, cf3 and cf4, then checks timestamped pairwise
-ranges against the exact source odometry samples. It reports `/<drone>/cmd_vel`
-publishers and subscribers without requiring a mission. Add
-`--require-mission-commands` only when mission nodes are already running. It
-never launches a mission or publishes flight commands. Run it from the
-Nano-C-SLAM repository root.
+ranges against the exact source odometry samples. Add
+`--require-mission-commands` when mission nodes are already running to verify
+`/<drone>/cmd_vel` graph endpoints. It never launches a mission or publishes
+flight commands. Run it from the Nano-C-SLAM repository root.
 
 To exercise the same ROS subscriptions and validators without Gazebo, run:
 

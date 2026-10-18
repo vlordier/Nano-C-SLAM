@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import importlib
+import json
 import math
 import os
 import subprocess
@@ -159,7 +160,7 @@ def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, obj
                 and len(node.pairwise_sequences) >= 3
             ):
                 break
-        commands = node.inspect_command_graph()
+        commands = node.inspect_command_graph() if require_mission_commands else {}
         missing = [
             drone
             for drone, endpoints in commands.items()
@@ -350,6 +351,44 @@ def verify_controlled_fixture(timeout_s: float, *, mode: str) -> dict[str, objec
             os.environ["ROS_AUTOMATIC_DISCOVERY_RANGE"] = old_discovery
 
 
+def verify_with_process_timeout(
+    timeout_s: float, *, require_mission_commands: bool
+) -> dict[str, object]:
+    """Bound even an RMW or graph call that blocks inside the ROS client."""
+    command = [
+        sys.executable,
+        "-m",
+        "scripts.verify_gazebo_swarm_ros",
+        "--probe-worker",
+        "--timeout",
+        str(timeout_s),
+    ]
+    if require_mission_commands:
+        command.append("--require-mission-commands")
+    try:
+        result = subprocess.run(  # noqa: S603 -- fixed owned module and arguments
+            command,
+            cwd=Path.cwd(),
+            capture_output=True,
+            check=False,
+            text=True,
+            timeout=timeout_s + 5.0,
+        )
+    except subprocess.TimeoutExpired as error:
+        raise RuntimeError(
+            "ROS client exceeded the bounded probe deadline; an RMW call did not return"
+        ) from error
+    if result.returncode:
+        raise RuntimeError(result.stderr.strip() or "ROS telemetry probe failed")
+    try:
+        value = json.loads(result.stdout)
+    except json.JSONDecodeError as error:
+        raise RuntimeError("ROS telemetry probe returned invalid JSON") from error
+    if not isinstance(value, dict):
+        raise RuntimeError("ROS telemetry probe returned a non-object result")
+    return value
+
+
 def main(args: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--timeout", type=float, default=15.0)
@@ -372,16 +411,24 @@ def main(args: Sequence[str] | None = None) -> int:
         default="valid",
         help="controlled publisher case used with --self-test",
     )
+    parser.add_argument("--probe-worker", action="store_true", help=argparse.SUPPRESS)
     options = parser.parse_args(args)
     if options.fixture_publisher:
         return _publish_controlled_fixture(options.fixture_mode)
     if not math.isfinite(options.timeout) or options.timeout <= 0:
         parser.error("--timeout must be finite and positive")
     try:
+        if options.probe_worker:
+            result = verify(
+                options.timeout,
+                require_mission_commands=options.require_mission_commands,
+            )
+            print(json.dumps(result))
+            return 0
         result = (
             verify_controlled_fixture(options.timeout, mode=options.fixture_mode)
             if options.self_test
-            else verify(
+            else verify_with_process_timeout(
                 options.timeout,
                 require_mission_commands=options.require_mission_commands,
             )
