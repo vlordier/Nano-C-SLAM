@@ -28,7 +28,11 @@ def generate_launch_description() -> LaunchDescription:
             name=f"{drone_name}_sim_mission",
             output="screen",
             parameters=[
-                {"drone_name": drone_name, "use_sim_time": True},
+                {
+                    "drone_name": drone_name,
+                    "run_id": LaunchConfiguration("run_id"),
+                    "use_sim_time": True,
+                },
                 {
                     "mapping_path": ParameterValue(
                         LaunchConfiguration("mapping_path"), value_type=bool
@@ -40,6 +44,13 @@ def generate_launch_description() -> LaunchDescription:
     ]
     return LaunchDescription(
         [
+            DeclareLaunchArgument(
+                "run_id",
+                default_value="",
+                description=(
+                    "Optional shared UUID for binding all swarm mission evidence"
+                ),
+            ),
             DeclareLaunchArgument(
                 "mapping_path",
                 default_value="false",

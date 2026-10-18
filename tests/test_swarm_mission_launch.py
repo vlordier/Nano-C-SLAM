@@ -116,12 +116,16 @@ class SwarmMissionLaunchTests(unittest.TestCase):
 
         self.assertIsInstance(description, FakeLaunchDescription)
         launch_description = cast(FakeLaunchDescription, description)
-        argument = launch_description.entities[0]
-        self.assertIsInstance(argument, FakeDeclareLaunchArgument)
-        launch_argument = cast(FakeDeclareLaunchArgument, argument)
+        run_argument, mapping_argument = launch_description.entities[:2]
+        self.assertIsInstance(run_argument, FakeDeclareLaunchArgument)
+        run_launch_argument = cast(FakeDeclareLaunchArgument, run_argument)
+        self.assertEqual(run_launch_argument.name, "run_id")
+        self.assertEqual(run_launch_argument.default_value, "")
+        self.assertIsInstance(mapping_argument, FakeDeclareLaunchArgument)
+        launch_argument = cast(FakeDeclareLaunchArgument, mapping_argument)
         self.assertEqual(launch_argument.name, "mapping_path")
         self.assertEqual(launch_argument.default_value, "false")
-        nodes = launch_description.entities[1:]
+        nodes = launch_description.entities[2:]
         self.assertEqual(len(nodes), 3)
         node_actions = cast(list[FakeNode], nodes)
         self.assertEqual(
@@ -135,6 +139,10 @@ class SwarmMissionLaunchTests(unittest.TestCase):
         )
         for node in node_actions:
             parameters = cast(list[dict[str, object]], node.kwargs["parameters"])
+            self.assertEqual(
+                cast(FakeLaunchConfiguration, parameters[0]["run_id"]).name,
+                "run_id",
+            )
             mapping_parameter = parameters[1]["mapping_path"]
             self.assertIsInstance(mapping_parameter, FakeParameterValue)
             typed_parameter = cast(FakeParameterValue, mapping_parameter)
