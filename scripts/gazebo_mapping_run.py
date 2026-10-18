@@ -32,6 +32,7 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.run_provenance import (
     collect_run_provenance,
     require_provenance_unchanged,
     validate_combined_run_report,
+    validate_discovered_topic_types,
 )
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model import (
     claim_world_session,
@@ -52,6 +53,8 @@ class _StatusListener(Protocol):
     def count_subscribers(self, topic_name: str) -> int: ...
 
     def count_publishers(self, topic_name: str) -> int: ...
+
+    def get_topic_names_and_types(self) -> list[tuple[str, list[str]]]: ...
 
     def destroy_node(self) -> None: ...
 
@@ -202,6 +205,9 @@ def _run(config: MappingRunConfig, ros2_executable: str) -> Path:
                 raise RuntimeError(node.error)
 
         def subscriptions_ready() -> bool:
+            validate_discovered_topic_types(
+                node.get_topic_names_and_types(), config.drone_name
+            )
             topic_counts = (
                 node.count_subscribers(f"/{config.drone_name}/odom"),
                 node.count_subscribers(

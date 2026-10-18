@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.metadata
 import os
 import platform
 import shutil
@@ -161,6 +162,22 @@ def collect_run_provenance(
     ).stdout.strip()
     if not gazebo_version:
         raise ValueError("Gazebo did not report its simulator version")
+    ros2_version = _ros2_cli_version()
+    prefix_environment = {
+        name: os.environ.get(name, "")
+        for name in ("AMENT_PREFIX_PATH", "COLCON_PREFIX_PATH")
+    }
+    interface_identity = {
+        "source_sha256": {
+            "nano_c_slam_interfaces/msg/StampedRanges.msg": source_hashes[
+                "sim/gazebo/nano_c_slam_interfaces/msg/StampedRanges.msg"
+            ],
+            "nano_c_slam_interfaces/msg/StampedPairwiseRanges.msg": source_hashes[
+                "sim/gazebo/nano_c_slam_interfaces/msg/StampedPairwiseRanges.msg"
+            ],
+        },
+        "overlay": overlay["nano_c_slam_interfaces"],
+    }
 
     provenance: dict[str, object] = {
         "schema_version": PROVENANCE_SCHEMA_VERSION,
@@ -179,6 +196,7 @@ def collect_run_provenance(
             "ros2": {
                 "path": str(ros2_path),
                 "ros_distro": os.environ.get("ROS_DISTRO", ""),
+                "cli_version": ros2_version,
                 "sha256": _sha256_file(ros2_path),
             },
             "gazebo": {
@@ -192,9 +210,12 @@ def collect_run_provenance(
             },
         },
         "ros_overlay_packages": overlay,
+        "interface_identity": interface_identity,
         "runtime_environment": {
             "ros_domain_id": os.environ.get("ROS_DOMAIN_ID", ""),
             "gazebo_partition": os.environ.get("GZ_PARTITION", "default"),
+            "rmw_implementation": os.environ.get("RMW_IMPLEMENTATION", "<rmw-default>"),
+            "prefix_paths": prefix_environment,
         },
     }
     return validate_run_provenance(provenance)
@@ -242,6 +263,10 @@ def validate_run_provenance(
         executables["ros2"].get("ros_distro")
     ):
         raise ValueError("run provenance is missing ROS distribution")
+    if not isinstance(executables["ros2"].get("cli_version"), str) or not (
+        executables["ros2"].get("cli_version")
+    ):
+        raise ValueError("run provenance is missing ROS 2 CLI version")
     if not isinstance(executables["gazebo"].get("sim_version"), str) or not (
         executables["gazebo"].get("sim_version")
     ):
@@ -268,14 +293,67 @@ def validate_run_provenance(
                 f"run provenance has invalid overlay file count: {package}"
             )
 
+    interfaces = value.get("interface_identity")
+    if not isinstance(interfaces, dict):
+        raise ValueError("run provenance is missing ROS interface identity")
+    interface_sources = interfaces.get("source_sha256")
+    expected_interface_names = {
+        "nano_c_slam_interfaces/msg/StampedRanges.msg",
+        "nano_c_slam_interfaces/msg/StampedPairwiseRanges.msg",
+    }
+    if (
+        not isinstance(interface_sources, dict)
+        or set(interface_sources) != expected_interface_names
+        or any(not _is_sha256(digest) for digest in interface_sources.values())
+        or interfaces.get("overlay") != overlay.get("nano_c_slam_interfaces")
+    ):
+        raise ValueError("run provenance has inconsistent ROS interface identity")
+
     environment = value.get("runtime_environment")
     if (
         not isinstance(environment, dict)
         or not isinstance(environment.get("ros_domain_id"), str)
         or not isinstance(environment.get("gazebo_partition"), str)
+        or not isinstance(environment.get("rmw_implementation"), str)
+        or not environment.get("rmw_implementation")
+        or not isinstance(environment.get("prefix_paths"), dict)
+        or set(environment["prefix_paths"])
+        != {"AMENT_PREFIX_PATH", "COLCON_PREFIX_PATH"}
+        or any(
+            not isinstance(path, str) for path in environment["prefix_paths"].values()
+        )
     ):
         raise ValueError("run provenance is missing ROS/Gazebo runtime identity")
     return cast(dict[str, object], value)
+
+
+def validate_discovered_topic_types(
+    discovered: list[tuple[str, list[str]]], drone_name: str
+) -> None:
+    """Require the active graph to expose each mission topic with one exact type."""
+    expected = {
+        f"/{drone_name}/odom": "nav_msgs/msg/Odometry",
+        f"/nano_c_slam/sim/{drone_name}/ranges_mm": (
+            "nano_c_slam_interfaces/msg/StampedPairwiseRanges"
+        ),
+        f"/{drone_name}/mission_status": "std_msgs/msg/String",
+    }
+    actual = dict(discovered)
+    for topic, expected_type in expected.items():
+        types = actual.get(topic, [])
+        if types != [expected_type]:
+            raise RuntimeError(
+                f"ROS topic {topic} has discovered types {types!r}; "
+                f"expected exactly [{expected_type!r}]"
+            )
+
+
+def _ros2_cli_version() -> str:
+    """Return the installed ros2cli distribution version from active Python paths."""
+    try:
+        return importlib.metadata.version("ros2cli")
+    except importlib.metadata.PackageNotFoundError as error:
+        raise ValueError("active Python environment has no ros2cli metadata") from error
 
 
 def validate_combined_run_report(value: object) -> dict[str, object]:

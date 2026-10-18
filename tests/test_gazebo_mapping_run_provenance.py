@@ -16,6 +16,7 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.run_provenance import (
     collect_run_provenance,
     require_provenance_unchanged,
     validate_combined_run_report,
+    validate_discovered_topic_types,
 )
 
 
@@ -41,6 +42,7 @@ def _valid_provenance(binary_hash: str) -> dict[str, object]:
             "ros2": {
                 "path": "/ros2",
                 "ros_distro": "jazzy",
+                "cli_version": "ros2cli 0.32.0",
                 "sha256": "d" * 64,
             },
             "gazebo": {
@@ -61,9 +63,25 @@ def _valid_provenance(binary_hash: str) -> dict[str, object]:
             }
             for package in OVERLAY_PACKAGES
         },
+        "interface_identity": {
+            "source_sha256": {
+                "nano_c_slam_interfaces/msg/StampedRanges.msg": "1" * 64,
+                "nano_c_slam_interfaces/msg/StampedPairwiseRanges.msg": "2" * 64,
+            },
+            "overlay": {
+                "prefix": "/overlay/nano_c_slam_interfaces",
+                "sha256": "f" * 64,
+                "file_count": 1,
+            },
+        },
         "runtime_environment": {
             "ros_domain_id": "42",
             "gazebo_partition": "nano_c_slam_501",
+            "rmw_implementation": "rmw_cyclonedds_cpp",
+            "prefix_paths": {
+                "AMENT_PREFIX_PATH": "/overlay:/ros",
+                "COLCON_PREFIX_PATH": "/overlay:/ros",
+            },
         },
     }
 
@@ -208,6 +226,10 @@ class GazeboRunProvenanceTests(unittest.TestCase):
                     return_value="3.11.0",
                 ),
                 patch(
+                    "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.run_provenance._ros2_cli_version",
+                    return_value="0.32.0",
+                ),
+                patch(
                     "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.run_provenance._git_value",
                     side_effect=[status, "a" * 40],
                 ),
@@ -219,7 +241,14 @@ class GazeboRunProvenanceTests(unittest.TestCase):
                     "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.run_provenance.subprocess.run",
                     side_effect=run,
                 ),
-                patch.dict("os.environ", {"ROS_DISTRO": "jazzy"}),
+                patch.dict(
+                    "os.environ",
+                    {
+                        "ROS_DISTRO": "jazzy",
+                        "AMENT_PREFIX_PATH": "/overlay:/ros",
+                        "COLCON_PREFIX_PATH": "/overlay:/ros",
+                    },
+                ),
             ):
                 provenance = collect_run_provenance(
                     root, ros2_executable=str(ros2), mapping_binary=binary
@@ -228,6 +257,15 @@ class GazeboRunProvenanceTests(unittest.TestCase):
             source = provenance["source"]
             assert isinstance(source, dict)
             self.assertTrue(source["git_dirty"])
+            executable_identities = provenance["executables"]
+            assert isinstance(executable_identities, dict)
+            self.assertEqual(executable_identities["ros2"]["cli_version"], "0.32.0")
+            environment = provenance["runtime_environment"]
+            assert isinstance(environment, dict)
+            self.assertEqual(environment["rmw_implementation"], "<rmw-default>")
+            self.assertEqual(
+                environment["prefix_paths"]["AMENT_PREFIX_PATH"], "/overlay:/ros"
+            )
             source_hashes = source["owned_input_sha256"]
             assert isinstance(source_hashes, dict)
             self.assertEqual(
@@ -239,6 +277,74 @@ class GazeboRunProvenanceTests(unittest.TestCase):
                 source_hashes[OWNED_INPUT_PATHS[0]],
                 _sha256((root / OWNED_INPUT_PATHS[0]).read_bytes()),
             )
+
+    def test_provenance_rejects_missing_cli_or_stale_interfaces(self) -> None:
+        report = _valid_report()
+        provenance = report["run_provenance"]
+        assert isinstance(provenance, dict)
+        executables = provenance["executables"]
+        assert isinstance(executables, dict)
+        ros2 = executables["ros2"]
+        assert isinstance(ros2, dict)
+        del ros2["cli_version"]
+        with self.assertRaisesRegex(ValueError, "CLI version"):
+            validate_combined_run_report(report)
+
+        report = _valid_report()
+        provenance = report["run_provenance"]
+        assert isinstance(provenance, dict)
+        interfaces = provenance["interface_identity"]
+        assert isinstance(interfaces, dict)
+        interfaces["overlay"] = {"sha256": "9" * 64}
+        with self.assertRaisesRegex(ValueError, "interface identity"):
+            validate_combined_run_report(report)
+
+
+class DiscoveredTopicTypeTests(unittest.TestCase):
+    def test_accepts_only_exact_expected_mission_topic_types(self) -> None:
+        validate_discovered_topic_types(
+            [
+                ("/cf1/odom", ["nav_msgs/msg/Odometry"]),
+                (
+                    "/nano_c_slam/sim/cf1/ranges_mm",
+                    ["nano_c_slam_interfaces/msg/StampedPairwiseRanges"],
+                ),
+                ("/cf1/mission_status", ["std_msgs/msg/String"]),
+            ],
+            "cf1",
+        )
+
+    def test_rejects_missing_wrong_or_ambiguous_topic_types(self) -> None:
+        valid = [
+            ("/cf1/odom", ["nav_msgs/msg/Odometry"]),
+            (
+                "/nano_c_slam/sim/cf1/ranges_mm",
+                ["nano_c_slam_interfaces/msg/StampedPairwiseRanges"],
+            ),
+            ("/cf1/mission_status", ["std_msgs/msg/String"]),
+        ]
+        invalid_graphs = (
+            [item for item in valid if item[0] != "/cf1/odom"],
+            [
+                (topic, ["geometry_msgs/msg/Pose"] if topic == "/cf1/odom" else types)
+                for topic, types in valid
+            ],
+            [
+                (
+                    topic,
+                    [*types, "std_msgs/msg/String"]
+                    if topic == "/nano_c_slam/sim/cf1/ranges_mm"
+                    else types,
+                )
+                for topic, types in valid
+            ],
+        )
+        for graph in invalid_graphs:
+            with (
+                self.subTest(graph=graph),
+                self.assertRaisesRegex(RuntimeError, "expected exactly"),
+            ):
+                validate_discovered_topic_types(graph, "cf1")
 
 
 if __name__ == "__main__":
