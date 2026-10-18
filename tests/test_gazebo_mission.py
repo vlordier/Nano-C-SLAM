@@ -18,6 +18,7 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     create_mission_config,
     create_run_id,
     mission_exit_code,
+    summarize_swarm_process_outcomes,
     validate_drone_name,
     validate_drone_names,
     validate_mission_odometry,
@@ -708,6 +709,93 @@ class MissionStatusEventTests(unittest.TestCase):
                 self.assertRaisesRegex(ValueError, expected_error),
             ):
                 validate_swarm_mission_status_events(streams, self.run_id)
+
+    def test_swarm_process_outcomes_require_all_successes_for_success(self) -> None:
+        streams = self._successful_swarm_streams()
+        exits = dict.fromkeys(SUPPORTED_DRONE_NAMES, 0)
+
+        outcomes = summarize_swarm_process_outcomes(streams, exits, self.run_id)
+
+        self.assertTrue(outcomes.succeeded)
+        self.assertEqual(tuple(outcomes.per_drone), SUPPORTED_DRONE_NAMES)
+        self.assertTrue(
+            all(outcome.succeeded for outcome in outcomes.per_drone.values())
+        )
+
+    def test_swarm_process_outcomes_preserve_injected_timeout_and_exit_mismatches(
+        self,
+    ) -> None:
+        streams = self._successful_swarm_streams()
+        failed_timeout = replace(
+            streams["cf3"][1],
+            sequence=2,
+            sim_time_s=2.0,
+            phase=MissionPhase.FAILED,
+            altitude_m=0.4,
+            mapping_path_complete=False,
+            failure_reason="mapping path timed out",
+        )
+        streams["cf3"] = [*streams["cf3"][:2], failed_timeout]
+        exits = dict.fromkeys(SUPPORTED_DRONE_NAMES, 0)
+        exits["cf3"] = 1
+
+        outcomes = summarize_swarm_process_outcomes(streams, exits, self.run_id)
+
+        self.assertFalse(outcomes.succeeded)
+        self.assertEqual(outcomes.per_drone["cf3"].classification, "mission_failed")
+        self.assertEqual(
+            outcomes.per_drone["cf3"].terminal.failure_reason,
+            "mapping path timed out",
+        )
+        self.assertEqual(outcomes.per_drone["cf3"].process_exit_code, 1)
+
+        complete_with_nonzero_exit = self._successful_swarm_streams()
+        mismatched_exits = dict.fromkeys(SUPPORTED_DRONE_NAMES, 0)
+        mismatched_exits["cf1"] = 1
+        mismatch = summarize_swarm_process_outcomes(
+            complete_with_nonzero_exit, mismatched_exits, self.run_id
+        )
+        self.assertEqual(
+            mismatch.per_drone["cf1"].classification, "exit_status_mismatch"
+        )
+        self.assertFalse(mismatch.succeeded)
+
+        failed_with_zero_exit = self._successful_swarm_streams()
+        failed_with_zero_exit["cf4"] = [
+            *failed_with_zero_exit["cf4"][:2],
+            replace(
+                failed_with_zero_exit["cf4"][1],
+                sequence=2,
+                sim_time_s=2.0,
+                phase=MissionPhase.FAILED,
+                altitude_m=0.4,
+                mapping_path_complete=False,
+                failure_reason="injected failure",
+            ),
+        ]
+        zero_exit = summarize_swarm_process_outcomes(
+            failed_with_zero_exit,
+            dict.fromkeys(SUPPORTED_DRONE_NAMES, 0),
+            self.run_id,
+        )
+        self.assertEqual(
+            zero_exit.per_drone["cf4"].classification, "exit_status_mismatch"
+        )
+
+    def test_swarm_process_outcomes_reject_missing_streams_and_terminal_evidence(
+        self,
+    ) -> None:
+        valid = self._successful_swarm_streams()
+        exits = dict.fromkeys(SUPPORTED_DRONE_NAMES, 0)
+        missing = dict(valid)
+        del missing["cf1"]
+        with self.assertRaisesRegex(ValueError, "must name cf1, cf3, cf4"):
+            summarize_swarm_process_outcomes(missing, exits, self.run_id)
+
+        incomplete = {name: list(events) for name, events in valid.items()}
+        incomplete["cf3"] = incomplete["cf3"][:-1]
+        with self.assertRaisesRegex(ValueError, "COMPLETE"):
+            summarize_swarm_process_outcomes(incomplete, exits, self.run_id)
 
 
 class MappingPathTests(unittest.TestCase):
