@@ -339,6 +339,27 @@ uv run --no-project \\
 The fixture publishes all three namespaced streams and pairwise snapshots on
 an isolated local ROS domain; it does not publish velocity commands.
 
+To test the mission's native ROS callback contract without Gazebo, source only
+ROS Jazzy and run the isolated probe. It starts the owned mission node plus
+controlled `/clock` and `/cf1/odom` publishers/subscribers in a fresh ROS
+domain. The first odometry sample is exactly 100 ms ahead of simulation time
+and must reach TAKEOFF; a later sample 101 ms ahead must publish FAILED with
+`odometry timestamp is ahead of simulation time`, publish zero vertical
+velocity, and exit with status 1:
+
+```sh
+source /opt/homebrew/opt/ros2-jazzy/setup.zsh
+ROS_PYTHON="$(head -n 1 "$(command -v ros2)" | sed 's/^#!//')"
+uv run --no-project --python "$ROS_PYTHON" \
+  scripts/verify_ros_mission_future_odom.py
+```
+
+The ROS formula's Python ABI differs from this repository's locked Python
+environment, so this integration probe uses the interpreter named by the
+installed `ros2` executable through `uv`; it does not install Python packages.
+The result is native ROS node contract evidence only. It does not start
+Gazebo, validate simulated flight, or establish mapping behavior.
+
 ### Replay Gazebo data through the Nano-C-SLAM mapping core
 
 The collector's ROS callback, timer, freshness rejection, timeout diagnostics,
