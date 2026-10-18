@@ -24,6 +24,7 @@ docker run --rm --platform linux/amd64 --dns "$BUILD_DNS" \
     -v "$SDK_ROOT:/gap_sdk:ro" \
     -v "$TOOLCHAIN_ROOT:/toolchain:ro" \
     -e GAP9_BUILD_GVSOC_DMA_SMOKE="${GAP9_BUILD_GVSOC_DMA_SMOKE:-0}" \
+    -e GAP9_BUILD_GVSOC_SPI_TRACE="${GAP9_BUILD_GVSOC_SPI_TRACE:-0}" \
     -e GAP9_BUILD_GVSOC_CLUSTER_DIAGNOSTIC="${GAP9_BUILD_GVSOC_CLUSTER_DIAGNOSTIC:-0}" \
     -e GAP9_BUILD_JOBS="${GAP9_BUILD_JOBS:-4}" \
     --mount type=volume,source=nano-c-slam-gap9-uv-cache,target=/root/.cache/uv \
@@ -76,6 +77,25 @@ if [[ "${GAP9_BUILD_GVSOC_DMA_SMOKE:-0}" == "1" ]]; then
     mkdir -p /project/cslam-gap9-app/BUILD-gvsoc-dma
     cp "$DMA_BUILD_ROOT/nano_c_slam_gvsoc_dma_smoke" \
         /project/cslam-gap9-app/BUILD-gvsoc-dma/nano_c_slam_gvsoc_dma_smoke
+    exit 0
+fi
+if [[ "${GAP9_BUILD_GVSOC_SPI_TRACE:-0}" == "1" ]]; then
+    SPI_TRACE_BUILD_ROOT="$BUILD_ROOT/BUILD-gvsoc-spi-trace"
+    uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
+        cmake -S /project/cslam-gap9-app -B "$SPI_TRACE_BUILD_ROOT" \
+        -DCMAKE_BUILD_TYPE=Release -DNANO_C_SLAM_GVSOC_SPI_TRACE=ON \
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+        -DKCONFIG_CONFIG=/project/tests/gap9_gvsoc_sdk.config
+    uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
+        cmake --build "$SPI_TRACE_BUILD_ROOT" \
+        --target nano_c_slam_gvsoc_spi_trace "-j$BUILD_JOBS"
+    SPI_TRACE_ARTIFACTS=/project/cslam-gap9-app/BUILD-gvsoc-spi-trace
+    mkdir -p "$SPI_TRACE_ARTIFACTS"
+    cp "$SPI_TRACE_BUILD_ROOT/nano_c_slam_gvsoc_spi_trace" \
+        "$SPI_TRACE_ARTIFACTS/"
+    cp "$SPI_TRACE_BUILD_ROOT/compile_commands.json" "$SPI_TRACE_ARTIFACTS/"
+    riscv32-unknown-elf-size \
+        "$SPI_TRACE_ARTIFACTS/nano_c_slam_gvsoc_spi_trace"
     exit 0
 fi
 if [[ "${GAP9_BUILD_GVSOC_CLUSTER_DIAGNOSTIC:-0}" == "1" ]]; then
@@ -146,6 +166,8 @@ uv run --no-project --python /usr/bin/python3 \
 
 if [[ "${GAP9_BUILD_GVSOC_DMA_SMOKE:-0}" == "1" ]]; then
     echo "GAP9 GVSOC DMA smoke ELF: $ROOT/cslam-gap9-app/BUILD-gvsoc-dma/nano_c_slam_gvsoc_dma_smoke"
+elif [[ "${GAP9_BUILD_GVSOC_SPI_TRACE:-0}" == "1" ]]; then
+    echo "GAP9 GVSOC SPI trace ELF: $ROOT/cslam-gap9-app/BUILD-gvsoc-spi-trace/nano_c_slam_gvsoc_spi_trace"
 elif [[ "${GAP9_BUILD_GVSOC_CLUSTER_DIAGNOSTIC:-0}" == "1" ]]; then
     echo "GAP9 GVSOC cluster diagnostic ELF: $ROOT/cslam-gap9-app/BUILD-gvsoc-cluster-diag/nano_c_slam_gvsoc_mapping_smoke"
 else

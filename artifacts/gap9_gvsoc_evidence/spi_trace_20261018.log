@@ -1,0 +1,166 @@
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_pdm_out_0, slave: udma / sfu_pdm_out_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_pdm_out_1, slave: udma / sfu_pdm_out_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_pdm_out_0, slave: udma / sfu_pdm_out_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_pdm_out_1, slave: udma / sfu_pdm_out_3) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_pdm_out_0, slave: udma / sfu_pdm_out_4) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_pdm_out_1, slave: udma / sfu_pdm_out_5) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_pdm_in_0, slave: udma / sfu_pdm_in_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_pdm_in_1, slave: udma / sfu_pdm_in_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_pdm_in_2, slave: udma / sfu_pdm_in_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_pdm_in_3, slave: udma / sfu_pdm_in_3) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_pdm_in_0, slave: udma / sfu_pdm_in_4) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_pdm_in_1, slave: udma / sfu_pdm_in_5) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_pdm_in_2, slave: udma / sfu_pdm_in_6) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_pdm_in_3, slave: udma / sfu_pdm_in_7) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_pdm_in_0, slave: udma / sfu_pdm_in_8) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_pdm_in_1, slave: udma / sfu_pdm_in_9) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_pdm_in_2, slave: udma / sfu_pdm_in_10) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_pdm_in_3, slave: udma / sfu_pdm_in_11) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_ws_out, slave: udma / sfu_ws_in_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_ws_out, slave: udma / sfu_ws_in_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_ws_out, slave: udma / sfu_ws_in_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_0, slave: udma / stream_in_ready_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_1, slave: udma / stream_in_ready_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_2, slave: udma / stream_in_ready_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_3, slave: udma / stream_in_ready_3) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_4, slave: udma / stream_in_ready_4) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_5, slave: udma / stream_in_ready_5) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_6, slave: udma / stream_in_ready_6) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_7, slave: udma / stream_in_ready_7) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_8, slave: udma / stream_in_ready_8) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_9, slave: udma / stream_in_ready_9) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_10, slave: udma / stream_in_ready_10) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_11, slave: udma / stream_in_ready_11) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_12, slave: udma / stream_in_ready_12) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_13, slave: udma / stream_in_ready_13) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_14, slave: udma / stream_in_ready_14) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_15, slave: udma / stream_in_ready_15) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_0, slave: udma / sfu_stream_in_data_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_1, slave: udma / sfu_stream_in_data_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_2, slave: udma / sfu_stream_in_data_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_3, slave: udma / sfu_stream_in_data_3) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_4, slave: udma / sfu_stream_in_data_4) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_5, slave: udma / sfu_stream_in_data_5) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_6, slave: udma / sfu_stream_in_data_6) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_7, slave: udma / sfu_stream_in_data_7) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_8, slave: udma / sfu_stream_in_data_8) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_9, slave: udma / sfu_stream_in_data_9) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_10, slave: udma / sfu_stream_in_data_10) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_11, slave: udma / sfu_stream_in_data_11) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_12, slave: udma / sfu_stream_in_data_12) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_13, slave: udma / sfu_stream_in_data_13) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_14, slave: udma / sfu_stream_in_data_14) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_15, slave: udma / sfu_stream_in_data_15) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_0, slave: udma / sfu_stream_out_ready_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_1, slave: udma / sfu_stream_out_ready_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_2, slave: udma / sfu_stream_out_ready_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_3, slave: udma / sfu_stream_out_ready_3) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_4, slave: udma / sfu_stream_out_ready_4) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_5, slave: udma / sfu_stream_out_ready_5) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_6, slave: udma / sfu_stream_out_ready_6) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_7, slave: udma / sfu_stream_out_ready_7) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_8, slave: udma / sfu_stream_out_ready_8) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_9, slave: udma / sfu_stream_out_ready_9) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_10, slave: udma / sfu_stream_out_ready_10) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_11, slave: udma / sfu_stream_out_ready_11) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_12, slave: udma / sfu_stream_out_ready_12) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_13, slave: udma / sfu_stream_out_ready_13) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_14, slave: udma / sfu_stream_out_ready_14) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_15, slave: udma / sfu_stream_out_ready_15) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_0, slave: udma / stream_out_data_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_1, slave: udma / stream_out_data_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_2, slave: udma / stream_out_data_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_3, slave: udma / stream_out_data_3) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_4, slave: udma / stream_out_data_4) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_5, slave: udma / stream_out_data_5) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_6, slave: udma / stream_out_data_6) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_7, slave: udma / stream_out_data_7) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_8, slave: udma / stream_out_data_8) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_9, slave: udma / stream_out_data_9) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_10, slave: udma / stream_out_data_10) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_11, slave: udma / stream_out_data_11) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_12, slave: udma / stream_out_data_12) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_13, slave: udma / stream_out_data_13) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_14, slave: udma / stream_out_data_14) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_15, slave: udma / stream_out_data_15) — skipping
+FC frequency : 50000000
+CL frequency : 50000000
+NANO_C_SLAM_GVSOC_SPI:packet index=0 command=0 id=0 length=97 checksum=0 decoder=-3 poses=0 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=1 command=0 id=0 length=97 checksum=1 decoder=0 poses=1 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=2 command=0 id=1 length=97 checksum=1 decoder=0 poses=2 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=3 command=0 id=2 length=97 checksum=1 decoder=0 poses=3 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=4 command=0 id=3 length=97 checksum=1 decoder=0 poses=4 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=5 command=0 id=4 length=97 checksum=1 decoder=0 poses=5 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=6 command=0 id=5 length=97 checksum=1 decoder=0 poses=6 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=7 command=0 id=6 length=97 checksum=1 decoder=0 poses=7 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=8 command=0 id=7 length=97 checksum=1 decoder=0 poses=8 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=9 command=0 id=8 length=97 checksum=1 decoder=0 poses=9 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=10 command=0 id=9 length=97 checksum=1 decoder=0 poses=10 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=11 command=0 id=10 length=97 checksum=1 decoder=0 poses=11 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=12 command=0 id=11 length=97 checksum=1 decoder=0 poses=12 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=13 command=0 id=12 length=97 checksum=1 decoder=0 poses=13 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=14 command=0 id=13 length=97 checksum=1 decoder=0 poses=14 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=15 command=0 id=14 length=97 checksum=1 decoder=0 poses=15 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=16 command=0 id=15 length=97 checksum=1 decoder=0 poses=16 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=17 command=0 id=16 length=97 checksum=1 decoder=0 poses=17 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=18 command=0 id=17 length=97 checksum=1 decoder=0 poses=18 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=19 command=0 id=18 length=97 checksum=1 decoder=0 poses=19 scans=0 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=20 command=0 id=19 length=97 checksum=1 decoder=0 poses=20 scans=0 constraints=0 response_bytes=0
+Int scan 0 rcv! 20 poses
+
+NANO_C_SLAM_GVSOC_SPI:packet index=21 command=1 id=0 length=97 checksum=1 decoder=0 poses=20 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=22 command=0 id=20 length=97 checksum=1 decoder=0 poses=21 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=23 command=0 id=21 length=97 checksum=1 decoder=0 poses=22 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=24 command=0 id=22 length=97 checksum=1 decoder=0 poses=23 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=25 command=0 id=23 length=97 checksum=1 decoder=0 poses=24 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=26 command=0 id=24 length=97 checksum=1 decoder=0 poses=25 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=27 command=0 id=25 length=97 checksum=1 decoder=0 poses=26 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=28 command=0 id=26 length=97 checksum=1 decoder=0 poses=27 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=29 command=0 id=27 length=97 checksum=1 decoder=0 poses=28 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=30 command=0 id=28 length=97 checksum=1 decoder=0 poses=29 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=31 command=0 id=29 length=97 checksum=1 decoder=0 poses=30 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=32 command=0 id=30 length=97 checksum=1 decoder=0 poses=31 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=33 command=0 id=31 length=97 checksum=1 decoder=0 poses=32 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=34 command=0 id=32 length=97 checksum=1 decoder=0 poses=33 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=35 command=0 id=33 length=97 checksum=1 decoder=0 poses=34 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=36 command=0 id=34 length=97 checksum=1 decoder=0 poses=35 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=37 command=0 id=35 length=97 checksum=1 decoder=0 poses=36 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=38 command=0 id=36 length=97 checksum=1 decoder=0 poses=37 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=39 command=0 id=37 length=97 checksum=1 decoder=0 poses=38 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=40 command=0 id=38 length=97 checksum=1 decoder=0 poses=39 scans=1 constraints=0 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=41 command=0 id=39 length=97 checksum=1 decoder=0 poses=40 scans=1 constraints=0 response_bytes=0
+Loop closure 20 -> 0
+Int scan 20 rcv! 40 poses
+
+NANO_C_SLAM_GVSOC_SPI:packet index=42 command=1 id=20 length=97 checksum=1 decoder=0 poses=40 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=43 command=0 id=40 length=97 checksum=1 decoder=0 poses=41 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=44 command=0 id=41 length=97 checksum=1 decoder=0 poses=42 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=45 command=0 id=42 length=97 checksum=1 decoder=0 poses=43 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=46 command=0 id=43 length=97 checksum=1 decoder=0 poses=44 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=47 command=0 id=44 length=97 checksum=1 decoder=0 poses=45 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=48 command=0 id=45 length=97 checksum=1 decoder=0 poses=46 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=49 command=0 id=46 length=97 checksum=1 decoder=0 poses=47 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=50 command=0 id=47 length=97 checksum=1 decoder=0 poses=48 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=51 command=0 id=48 length=97 checksum=1 decoder=0 poses=49 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=52 command=0 id=49 length=97 checksum=1 decoder=0 poses=50 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=53 command=0 id=50 length=97 checksum=1 decoder=0 poses=51 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=54 command=0 id=51 length=97 checksum=1 decoder=0 poses=52 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=55 command=0 id=52 length=97 checksum=1 decoder=0 poses=53 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=56 command=0 id=53 length=97 checksum=1 decoder=0 poses=54 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=57 command=0 id=54 length=97 checksum=1 decoder=0 poses=55 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=58 command=0 id=55 length=97 checksum=1 decoder=0 poses=56 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=59 command=0 id=56 length=97 checksum=1 decoder=0 poses=57 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=60 command=0 id=57 length=97 checksum=1 decoder=0 poses=58 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=61 command=0 id=58 length=97 checksum=1 decoder=0 poses=59 scans=2 constraints=1 response_bytes=0
+NANO_C_SLAM_GVSOC_SPI:packet index=62 command=0 id=59 length=97 checksum=1 decoder=0 poses=60 scans=2 constraints=1 response_bytes=0
+Loop closure 40 -> 0
+Int scan 40 rcv! 60 poses
+
+NANO_C_SLAM_GVSOC_SPI:packet index=63 command=1 id=40 length=97 checksum=1 decoder=0 poses=60 scans=3 constraints=2 response_bytes=0
+Int scan 40 rcv! 60 poses
+
+NANO_C_SLAM_GVSOC_SPI:packet index=64 command=1 id=40 length=97 checksum=1 decoder=0 poses=60 scans=3 constraints=2 response_bytes=0
+Opt..
+
+NANO_C_SLAM_GVSOC_SPI:packet index=65 command=2 id=-1 length=97 checksum=-1 decoder=-2 poses=60 scans=3 constraints=2 response_bytes=18
+NANO_C_SLAM_GVSOC_SPI:mapping_ok packets=66 pose_decoded=60 pose_inserted=60 bad_pose_checksum=1 scans_decoded=4 scans_registered=3 constraints=2 optimizer_edges=2 constraint_endpoints=20-0,40-0 optimize=1 graph=3 solver_calls=3 response_bytes=18

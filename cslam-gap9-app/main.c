@@ -39,6 +39,10 @@ int get_spi_command(uint8_t *spi_cmd, uint8_t len) {
 
 uint8_t verbose = 1;
 
+#ifdef NANO_C_SLAM_GVSOC_SPI_TRACE
+#include "gap9_gvsoc_spi_trace_transport.h"
+#endif
+
 void slam_loop() {
     gpio_init();
     spi_buf = pi_l2_malloc(SPIBUF_SIZE);
@@ -55,19 +59,51 @@ void slam_loop() {
     slam_job_t slam_job = {0};
     icp_job_t icp_job = {0};
 
+#ifdef NANO_C_SLAM_GVSOC_SPI_TRACE
+    int16_t pose_packets_decoded = 0;
+    int16_t poses_inserted = 0;
+    int16_t bad_pose_checksums = 0;
+    int16_t scan_packets_decoded = 0;
+    int16_t scans_registered = 0;
+    int16_t optimize_packets = 0;
+#endif
+
     while (1) {
+#ifdef NANO_C_SLAM_GVSOC_SPI_TRACE
+        if (!gap9_gvsoc_spi_trace_has_packet()) break;
+#endif
         // Wait new SPI packet
         spi_rcv_blocking(spi_buf, SPI_PKT_SIZE);
         pi_time_wait_us(100);
         int cmd = get_spi_command(spi_buf, SPI_PKT_SIZE);
+#ifdef NANO_C_SLAM_GVSOC_SPI_TRACE
+        int trace_decode_result = SPI_ERR;
+        int trace_checksum_valid = -1;
+        int16_t trace_packet_id = -1;
+        if (cmd == POSE_CMD || cmd == SCAN_CMD)
+            memcpy(&trace_packet_id, &spi_buf[2], sizeof(trace_packet_id));
+#endif
 
         switch (cmd) {
         case POSE_CMD: // Received augmented pose: timestamp + id + pose value +
                        // 4 x ToF
-            if (spi_decode_pose(spi_buf, SPI_PKT_SIZE, &pose0) == SPI_OK) {
-                pcl_add_augmented_pose(pose0);
+        {
+            spi_transfer_t result = spi_decode_pose(spi_buf, SPI_PKT_SIZE, &pose0);
+#ifdef NANO_C_SLAM_GVSOC_SPI_TRACE
+            trace_decode_result = result;
+            trace_checksum_valid = result == SPI_OK;
+            if (result == SPI_OK) pose_packets_decoded++;
+            if (result == SPI_CHECKSUM_ERR) bad_pose_checksums++;
+#endif
+            if (result == SPI_OK) {
+                if (pcl_add_augmented_pose(pose0)) {
+#ifdef NANO_C_SLAM_GVSOC_SPI_TRACE
+                    poses_inserted++;
+#endif
+                }
             }
             break;
+        }
 
         case EXT_POSE_CMD: // Received external augmented pose
             if (spi_decode_ext_pose(spi_buf, SPI_PKT_SIZE, &ext_pose0) ==
@@ -88,11 +124,25 @@ void slam_loop() {
             break;
 
         case SCAN_CMD: // New internal scan
-            if (spi_decode_scan_info(spi_buf, SPI_PKT_SIZE, scan_info) ==
-                SPI_OK) {
+        {
+            spi_transfer_t result =
+                spi_decode_scan_info(spi_buf, SPI_PKT_SIZE, scan_info);
+#ifdef NANO_C_SLAM_GVSOC_SPI_TRACE
+            trace_decode_result = result;
+            trace_checksum_valid = result == SPI_OK;
+#endif
+            if (result == SPI_OK) {
+#ifdef NANO_C_SLAM_GVSOC_SPI_TRACE
+                scan_packets_decoded++;
+                uint16_t scans_before = pcl_get_scan_pose_count();
+#endif
                 set_cf_gpio(1); // GAP9 busy
                 int16_t scan_pose_id = scan_info[0];
                 add_scan_pose_id(scan_pose_id);
+#ifdef NANO_C_SLAM_GVSOC_SPI_TRACE
+                if (pcl_get_scan_pose_count() > scans_before)
+                    scans_registered++;
+#endif
                 if (verbose)
                     printf("Int scan %d rcv! %d poses\n\n", scan_pose_id,
                            pcl_get_pose_count());
@@ -100,8 +150,12 @@ void slam_loop() {
                 set_cf_gpio(0); // GAP9 free
             }
             break;
+        }
 
         case OPTIMIZE_CMD:  // Optimize pose graph
+#ifdef NANO_C_SLAM_GVSOC_SPI_TRACE
+            optimize_packets++;
+#endif
             set_cf_gpio(1); // GAP9 busy
             if (verbose) printf("Opt..\n");
 
@@ -135,7 +189,45 @@ void slam_loop() {
             }
             break;
         }
+#ifdef NANO_C_SLAM_GVSOC_SPI_TRACE
+        printf("NANO_C_SLAM_GVSOC_SPI:packet index=%u command=%d id=%d "
+               "length=%d checksum=%d decoder=%d poses=%d scans=%d "
+               "constraints=%ld response_bytes=%u\n",
+               gap9_gvsoc_spi_trace_packet_count() - 1, cmd, trace_packet_id,
+               SPI_PKT_SIZE, trace_checksum_valid, trace_decode_result,
+               pcl_get_pose_count(), pcl_get_scan_pose_count(),
+               (long)pcl_get_constraint_count(),
+               (unsigned)gap9_gvsoc_spi_trace_response_size());
+#endif
     }
+
+#ifdef NANO_C_SLAM_GVSOC_SPI_TRACE
+    int32_t accepted_constraints = pcl_get_constraint_count();
+    int32_t optimizer_edges = pcl_get_optimizer_input_unique_edge_count();
+    int16_t edge0_from = -1;
+    int16_t edge0_to = -1;
+    int16_t edge1_from = -1;
+    int16_t edge1_to = -1;
+    pcl_get_constraint_endpoints(0, &edge0_from, &edge0_to);
+    pcl_get_constraint_endpoints(1, &edge1_from, &edge1_to);
+    int passed = gap9_gvsoc_spi_trace_validate(
+        pose_packets_decoded, poses_inserted, bad_pose_checksums,
+        scan_packets_decoded, scans_registered, optimize_packets,
+        accepted_constraints, optimizer_edges, &slam_job);
+    printf("NANO_C_SLAM_GVSOC_SPI:mapping_%s packets=%u pose_decoded=%d "
+           "pose_inserted=%d bad_pose_checksum=%d scans_decoded=%d "
+           "scans_registered=%d constraints=%ld optimizer_edges=%ld "
+           "constraint_endpoints=%d-%d,%d-%d optimize=%d graph=%d "
+           "solver_calls=%d response_bytes=%u\n",
+           passed ? "ok" : "fail", gap9_gvsoc_spi_trace_packet_count(),
+           pose_packets_decoded, poses_inserted, bad_pose_checksums,
+           scan_packets_decoded, scans_registered, (long)accepted_constraints,
+           (long)optimizer_edges, edge0_from, edge0_to, edge1_from, edge1_to,
+           optimize_packets, slam_job.main_graph_size,
+           slam_job.successful_solver_call_count,
+           (unsigned)gap9_gvsoc_spi_trace_response_size());
+    pmsis_exit(passed ? 0 : -1);
+#endif
 }
 
 int main_func(void) {

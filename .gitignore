@@ -12,6 +12,7 @@ log/
 cslam-stm32-app/build/
 cslam-gap9-app/BUILD-host/
 cslam-gap9-app/BUILD-gvsoc-mapping/
+cslam-gap9-app/BUILD-gvsoc-spi-trace/
 cslam-gap9-app/BUILD-gvsoc-dma/
 cslam-gap9-app/BUILD-gvsoc-cluster-diag/
 .build-gap9-container/
