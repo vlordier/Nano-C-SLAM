@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.19)
 
 if(NANO_C_SLAM_GVSOC_SPI_TRACE)
     set(TARGET_NAME nano_c_slam_gvsoc_spi_trace)
+elseif(NANO_C_SLAM_GVSOC_SPI_SLAVE_PROBE)
+    set(TARGET_NAME nano_c_slam_gvsoc_spi_slave_probe)
 elseif(NANO_C_SLAM_GVSOC_DMA_SMOKE)
     set(TARGET_NAME nano_c_slam_gvsoc_dma_smoke)
 elseif(NANO_C_SLAM_GVSOC_MAPPING_SMOKE)
@@ -27,7 +29,16 @@ set_source_files_properties(
     PROPERTIES COMPILE_OPTIONS "-std=gnu11"
 )
 
-if(NANO_C_SLAM_GVSOC_SPI_TRACE)
+if(NANO_C_SLAM_GVSOC_SPI_SLAVE_PROBE)
+    add_executable(
+        ${TARGET_NAME}
+        ../tests/gap9_gvsoc_spi_slave_probe.c
+        spi/spi_driver.c
+    )
+    target_include_directories(${TARGET_NAME} PRIVATE spi)
+    target_compile_definitions(${TARGET_NAME} PRIVATE NANO_C_SLAM_TARGET_GVSOC=1)
+    set(APP_OPT_LEVEL -O2)
+elseif(NANO_C_SLAM_GVSOC_SPI_TRACE)
     file(GLOB GAP9_SLAM_SOURCES CONFIGURE_DEPENDS "slam/*.c" "slam/rcm/*.c")
     file(GLOB GAP9_POINT_CLOUD_SOURCES CONFIGURE_DEPENDS "point-cloud/*.c")
     add_executable(

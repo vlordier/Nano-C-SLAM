@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "evidence_class": "gvsoc-target-spi2-slave-receive",
+  "sdk_release": "5.20.4",
+  "interface": "SPI2/CS0, mode 0, 8-bit words",
+  "pre_cs_dummy_clock_cycles": 8,
+  "frame_bytes": 97,
+  "frame_hex": "53010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000045",
+  "target_markers": [
+    "NANO_C_SLAM_SPI_SLAVE_PROBE:armed frame=97",
+    "NANO_C_SLAM_SPI_SLAVE_PROBE:frame=received bytes=97 first=53 cmd=01 id=0000 checksum=00000000 last=45",
+    "NANO_C_SLAM_SPI_SLAVE_PROBE:payload_ok"
+  ],
+  "sha256": {
+    "elf": "34398367b7aa97bb93953e9506892a40bd3d0a29af94916d61d5df5f8b1c4696",
+    "gvsoc_config": "a41034b01b763889c7c465e169741151b9b259043e0049a694322e7e86298cf0",
+    "host_transfer": "10c37f554b505dcf881ab89dd26c6e7fa37e935925b634b785fbfc74d9e18013",
+    "gvsoc_log": "908891db59803549503ccb6f25637ba7f96d082e582bae8b3d04463eb41890ac",
+    "sources": {
+      "cslam-gap9-app/spi/spi_driver.c": "20862abbebafb3ff570a2ab44da0eb550dea2f105910c9c899c17beff3772e3d",
+      "cslam-gap9-app/spi/spi_config.h": "3dc9013c964bf167889b3b269fc98d028a546276bfad41b0748267b85cb90379",
+      "tests/gap9_gvsoc_spi_slave_probe.c": "7284d6d33473823ca7d610fa5b94d9e9fc81413a6d8846725791b4f9bf438dcc"
+    }
+  },
+  "limitations": [
+    "Proves an exact SCAN frame reaches the GAP9 PMSIS SPI receive in GVSOC.",
+    "Does not run the production SLAM loop or validate mapping accuracy.",
+    "Does not validate a physical STM32/GAP9 connection or flight behavior."
+  ]
+}

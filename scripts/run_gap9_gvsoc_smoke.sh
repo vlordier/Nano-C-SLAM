@@ -23,6 +23,9 @@ MAPPING_OUTPUT="${GAP9_GVSOC_MAPPING_OUTPUT:-$ROOT/artifacts/gap9_gvsoc_evidence
 MAPPING_REPORT="${GAP9_GVSOC_MAPPING_REPORT:-$ROOT/artifacts/gap9_gvsoc_evidence/mapping_report.json}"
 RUN_TIMEOUT_S="${GAP9_GVSOC_TIMEOUT_S:-600}"
 ENABLE_TESTBENCH="${GAP9_GVSOC_ENABLE_TESTBENCH:-0}"
+CONTROL_SCRIPT="${GAP9_GVSOC_CONTROL_SCRIPT:-}"
+TRACE_PATTERN="${GAP9_GVSOC_TRACE_PATTERN:-}"
+TRACE_LEVEL="${GAP9_GVSOC_TRACE_LEVEL:-debug}"
 GVSOC_TESTBENCH_CONFIG_ARGS=()
 if [[ "$ENABLE_TESTBENCH" == "1" ]]; then
     GVSOC_TESTBENCH_CONFIG_ARGS+=(
@@ -31,6 +34,18 @@ if [[ "$ENABLE_TESTBENCH" == "1" ]]; then
 elif [[ "$ENABLE_TESTBENCH" != "0" ]]; then
     echo "GAP9_GVSOC_ENABLE_TESTBENCH must be 0 or 1" >&2
     exit 2
+fi
+GVSOC_CONTROL_ARGS=()
+if [[ -n "$CONTROL_SCRIPT" ]]; then
+    [[ -f "$CONTROL_SCRIPT" ]] || {
+        echo "GAP9_GVSOC_CONTROL_SCRIPT does not name a file: $CONTROL_SCRIPT" >&2
+        exit 2
+    }
+    GVSOC_CONTROL_ARGS+=(--control-script "$CONTROL_SCRIPT")
+fi
+GVSOC_TRACE_ARGS=()
+if [[ -n "$TRACE_PATTERN" ]]; then
+    GVSOC_TRACE_ARGS+=(--trace "$TRACE_PATTERN" --trace-level "$TRACE_LEVEL")
 fi
 
 if [[ "$MAPPING_CAPTURE" == "1" ]]; then
@@ -82,7 +97,7 @@ set +u
 # shellcheck source=/dev/null
 source "$SDK_ROOT/configs/gap9_v2.sh"
 set -u
-export PYTHONPATH="$SDK_ROOT/gvsoc/gvsoc/models:$SDK_ROOT/gvsoc/gvsoc_gap:$SDK_ROOT/install/workstation/python:$SDK_ROOT/utils:${PYTHONPATH:-}"
+export PYTHONPATH="$ROOT:$SDK_ROOT/gvsoc/gvsoc/models:$SDK_ROOT/gvsoc/gvsoc_gap:$SDK_ROOT/install/workstation/python:$SDK_ROOT/utils:${PYTHONPATH:-}"
 export GVSOC_MODULES="$SDK_ROOT/gvsoc/gvsoc/models;$SDK_ROOT/gvsoc/gvsoc_gap"
 export PATH="$SDK_ROOT/install/workstation/bin:$SDK_ROOT/utils/gapy_v2/bin:$PATH"
 export DYLD_LIBRARY_PATH="$SDK_ROOT/install/workstation/lib:${DYLD_LIBRARY_PATH:-}"
@@ -118,6 +133,8 @@ uv run --project "$ROOT" --python 3.12 \
     --target-property boot.mode=flash \
     --target-property boot.mode_on_pads=mram \
     "${GVSOC_TESTBENCH_CONFIG_ARGS[@]}" \
+    "${GVSOC_CONTROL_ARGS[@]}" \
+    "${GVSOC_TRACE_ARGS[@]}" \
     --flash-content "$LAYOUT@mram" \
     --work-dir "$WORK_ROOT" image flash run
 GVSOC_EXIT_CODE=$?

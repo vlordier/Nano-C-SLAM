@@ -128,12 +128,58 @@ firmware. Evidence in SDK 5.20.4 source:
   the QSPIM slave interface. `--control-script` is supported by the GVSOC
   runner, so a deterministic host script can drive this API.
 
-The testbench API probe could enqueue a transfer but did not produce the
-firmware's `Int scan 0 rcv!` marker. The exposed Python method returns after
-enqueuing `master_cmd`; that is not evidence that the simulated transfer
-completed or reached the slave. Therefore the installed testbench is a
-candidate for future physical-bus simulation, but its end-to-end SPI path is
-not validated.
+Earlier testbench probes used `dummy_cycles=0` and did not produce the
+firmware's SCAN marker. The exposed Python method returns after enqueuing
+`master_cmd`; that alone is not evidence that the simulated transfer completed
+or reached the slave. The isolated receive probe below now closes this virtual
+target boundary with a target-side marker and the exact received frame.
+
+## Isolated SPI2 receive probe
+
+The GAP SDK 5.20.4 testbench can drive the production PMSIS slave driver when
+its pre-CS wait clocks are configured. `Testbench_spi.open(dummy_cycles=8)`
+generates the STM32 dummy byte's eight SCK edges before asserting CS;
+`full_duplex` then sends the separate 97-byte SCAN frame with CS active. A
+standalone one-byte `full_duplex` is not equivalent: it asserts CS and is
+consumed as data by `pi_spi_receive`.
+
+The isolated target at `tests/gap9_gvsoc_spi_slave_probe.c` links the owned
+`spi/spi_driver.c`, arms a single 97-byte `pi_spi_receive`, prints all protocol
+fields it observed, and validates the SCAN frame. The SDK control script checks
+the generated `gvsoc_config.json` for the enabled testbench and both SPI2
+bindings before it sends anything. The target marker is the acceptance
+criterion; the testbench master's returned RX length is not used as proof.
+
+Reproduce with the documented local Colima Docker context:
+
+```sh
+DOCKER_HOST=ssh://colima-act-ci GAP9_BUILD_GVSOC_SPI_SLAVE_PROBE=1 \
+  bash scripts/build_gap9_firmware.sh
+GAP9_GVSOC_ENABLE_TESTBENCH=1 \
+GAP9_GVSOC_CONTROL_SCRIPT="$PWD/scripts/gvsoc_spi_slave_probe_control.py" \
+GAP9_GVSOC_ELF="$PWD/cslam-gap9-app/BUILD-gvsoc-spi-slave-probe/nano_c_slam_gvsoc_spi_slave_probe" \
+GAP9_GVSOC_EXPECTED_MARKER='NANO_C_SLAM_SPI_SLAVE_PROBE:payload_ok' \
+GAP9_GVSOC_WORK_ROOT="${TMPDIR:-/tmp}/nano-c-slam-gvsoc-spi-slave" \
+  bash scripts/run_gap9_gvsoc_smoke.sh
+uv run --locked python -m scripts.capture_gap9_gvsoc_spi_probe_evidence \
+  --config "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-spi-slave/gvsoc_config.json" \
+  --elf cslam-gap9-app/BUILD-gvsoc-spi-slave-probe/nano_c_slam_gvsoc_spi_slave_probe \
+  --host-transfer "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-spi-slave/spi_slave_probe_host.json" \
+  --log "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-spi-slave/gvsoc.log" \
+  --source cslam-gap9-app/spi/spi_driver.c \
+  --source cslam-gap9-app/spi/spi_config.h \
+  --source tests/gap9_gvsoc_spi_slave_probe.c \
+  --output artifacts/gap9_gvsoc_evidence/spi_slave_probe.json
+```
+
+Evidence for the current probe is retained in
+`artifacts/gap9_gvsoc_evidence/spi_slave_probe_20261018.json`. It binds the
+ELF, generated GVSOC config, host-transmitted frame, and raw GVSOC log by
+SHA-256; it also records SHA-256 for each supplied target source file. The
+target received 97 bytes with `S`, `SCAN`, ID 0, checksum 0, and
+`E`, then printed `payload_ok`. This validates one SPI2/CS0 receive on the
+virtual target. It does not run production `main.c`/SLAM or establish mapping
+accuracy, and it is not physical board or flight evidence.
 
 For deterministic firmware-path coverage, the separate
 `NANO_C_SLAM_GVSOC_SPI_TRACE` target substitutes only `spi_rcv_blocking` and
