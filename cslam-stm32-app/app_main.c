@@ -117,7 +117,10 @@ void mission_task(void *parameters) {
 
     // Start mission
     DEBUG_PRINT("Init: %.2f %.2f\n", x_init, y_init);
-    estimatorKalmanInitToPose(x_init, y_init, 0.0f, yaw_init);
+    if (!estimatorKalmanInitToPose(x_init, y_init, 0.0f, yaw_init)) {
+        DEBUG_PRINT("Failed to queue initial estimator pose; mission aborted\n");
+        return;
+    }
     vTaskDelay(M2T(50));
     enable_commander();
 

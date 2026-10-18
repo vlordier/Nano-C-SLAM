@@ -1,3 +1,6 @@
 CONFIG_APP_ENABLE=y
 CONFIG_APP_PRIORITY=1
 CONFIG_APP_STACKSIZE=1000
+# The application provides its own DW1000 driver on IO4/EXTI11.
+# Do not also enable the stock Loco deck driver on the same pins/interrupt.
+# CONFIG_DECK_LOCO is not set

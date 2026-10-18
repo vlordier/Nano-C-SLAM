@@ -391,7 +391,9 @@ void ekf_correct_position(float *pose_unopt) {
     float dyaw = pose_opt[2] - pose_unopt[2];
 
     vTaskDelay(M2T(2));
-    estimatorKalmanInitToPose(x_cur + dx, y_cur + dy, z_cur, yaw_cur + dyaw);
+    if (!estimatorKalmanInitToPose(x_cur + dx, y_cur + dy, z_cur, yaw_cur + dyaw)) {
+        DEBUG_PRINT("Failed to queue optimized estimator pose\n");
+    }
 }
 
 void uwb_ranging_task(void *parameters) {
