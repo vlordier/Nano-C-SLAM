@@ -13,6 +13,7 @@
 
 extern int16_t tof_data_buf[4][8][8];
 void tof_task(void *parameters);
+/** True after all four sensors initialize and provide the first data cycle. */
 uint8_t tof_is_init();
 
 #endif

@@ -90,37 +90,43 @@ void appMain() {
                 NULL, 4, &uwbTaskHandle);
     DEBUG_PRINT("DRONE ID: %d\n", NODE_ID);
 
-    while (1) vTaskDelay(M2T(1000));
+    while (1)
+        vTaskDelay(M2T(1000));
 }
 
 void show_optimized_poses() {
     int16_t pose_count = get_last_pose_id();
-    for (int16_t i=0; i<pose_count; i++) {
+    for (int16_t i = 0; i < pose_count; i++) {
         float poses[3];
         spi_rcv_poses(poses, i, 1);
-        DEBUG_PRINT("Pose %d is: %.3f, %.3f, %.3f\n", i,
-                    (double)poses[0], (double)poses[1],
-                    (double)poses[2]);
+        DEBUG_PRINT("Pose %d is: %.3f, %.3f, %.3f\n", i, (double)poses[0],
+                    (double)poses[1], (double)poses[2]);
         vTaskDelay(M2T(2));
     }
 }
 
 void mission_task(void *parameters) {
-    // Wait for ready command from client
-    DEBUG_PRINT("Waiting for ready command...\n");
+    // Do not accept an arm request until every required range sensor is ready.
+    DEBUG_PRINT("Waiting for ToF sensor matrix...\n");
+    while (!tof_is_init())
+        vTaskDelay(M2T(1000));
+
+    // Wait for ready command from client only after sensor initialization.
+    DEBUG_PRINT("ToF ready; waiting for ready command...\n");
     while (!ready)
         vTaskDelay(M2T(100));
-    while (!tof_is_init())
-        vTaskDelay(M2T(10));
+
     DEBUG_PRINT("Start\n");
-    STATIC_MEM_TASK_CREATE(flight_task, flight_task, "fly", NULL, 2);
 
     // Start mission
-    DEBUG_PRINT("Init: %.2f %.2f\n", x_init, y_init);
+    DEBUG_PRINT("Init: %.2f %.2f\n", (double)x_init, (double)y_init);
     if (!estimatorKalmanInitToPose(x_init, y_init, 0.0f, yaw_init)) {
-        DEBUG_PRINT("Failed to queue initial estimator pose; mission aborted\n");
+        DEBUG_PRINT(
+            "Failed to queue initial estimator pose; mission aborted\n");
         return;
     }
+
+    STATIC_MEM_TASK_CREATE(flight_task, flight_task, "fly", NULL, 2);
     vTaskDelay(M2T(50));
     enable_commander();
 
@@ -137,7 +143,8 @@ void mission_task(void *parameters) {
     while (1) {
         if (xTaskGetTickCount() - mission_start_time > 4 * 60 * 1000) {
             show_optimized_poses();
-            while (1) vTaskDelay(M2T(1));
+            while (1)
+                vTaskDelay(M2T(1));
         }
 
         // Get ToF data and send it to PC
@@ -153,7 +160,7 @@ void mission_task(void *parameters) {
 
         TickType_t loop_time = xTaskGetTickCount() - prev_time;
         if (loop_time > 150)
-            DEBUG_PRINT("Loop time is %d\n", loop_time);
+            DEBUG_PRINT("Loop time is %lu\n", (unsigned long)loop_time);
         prev_time = xTaskGetTickCount();
 
         get_aug_pose(tof_data_buf, &aug_pose);
@@ -179,4 +186,3 @@ void mission_task(void *parameters) {
     while (1)
         vTaskDelay(M2T(1000));
 }
-

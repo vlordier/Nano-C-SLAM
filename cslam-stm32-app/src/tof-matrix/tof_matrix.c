@@ -32,8 +32,12 @@ static uint8_t tof_i2c_addresses[NR_OF_SENSORS];
 
 tof_err_code_e tof_matrix_init() {
     DEBUG_PRINT("Configured for %d ToF sensor(s) \n", NR_OF_SENSORS);
-    // Configure GPIO expander pins modes
-    I2C_expander_initialize();
+    // Power-cycle all sensors so a retry can recover after partial setup.
+    if (!I2C_expander_initialize()) {
+        DEBUG_PRINT("Failed to reset ToF sensor power enables\n");
+        (void)I2C_expander_initialize();
+        return TOF_CONFIG_ERROR;
+    }
 
     // Define the address of each ToF matrix sensor
     for (uint8_t i = 0; i < NR_OF_SENSORS; i++)
@@ -41,18 +45,28 @@ tof_err_code_e tof_matrix_init() {
 
     // Configure the ToF sensor(s)
     for (uint8_t i = 0; i < NR_OF_SENSORS; i++) {
-        I2C_expander_set_pin(i, 1);
+        if (!I2C_expander_set_pin(i, 1)) {
+            DEBUG_PRINT("Failed to enable ToF sensor %u\n", i);
+            (void)I2C_expander_initialize();
+            return TOF_CONFIG_ERROR;
+        }
 
         // Configure the current sensor
         tof_err_code_e e = config_sensors(&tof_dev, tof_i2c_addresses[i]);
         if (e == TOF_SUCCESS) {
             uint8_t status = vl53l5cx_start_ranging(&tof_dev); // Start ranging
-            if (status == 0)
+            if (status == 0) {
                 DEBUG_PRINT("Sensor %d started ranging! \n", i);
-            else
+            } else {
+                DEBUG_PRINT("Failed to start ToF sensor %u: %u\n", i, status);
+                (void)I2C_expander_initialize();
                 return TOF_CONFIG_ERROR;
-        } else
+            }
+        } else {
+            DEBUG_PRINT("Failed to configure ToF sensor %u: %u\n", i, e);
+            (void)I2C_expander_initialize();
             return TOF_CONFIG_ERROR;
+        }
     }
 
     return TOF_SUCCESS;
@@ -63,25 +77,28 @@ tof_err_code_e config_sensors(VL53L5CX_Configuration *p_dev,
     p_dev->platform =
         VL53L5CX_DEFAULT_I2C_ADDRESS; // use default adress for first use
 
-    uint8_t status = 0;
     // Initialize the sensor
-    status += vl53l5cx_init(p_dev);
+    if (vl53l5cx_init(p_dev) != VL53L5CX_STATUS_OK)
+        return TOF_CONFIG_ERROR;
 
     // Change I2C address
-    status += vl53l5cx_set_i2c_address(p_dev, new_i2c_address);
-    status += vl53l5cx_set_resolution(p_dev, VL53L5CX_RESOLUTION_8X8);
+    if (vl53l5cx_set_i2c_address(p_dev, new_i2c_address) != VL53L5CX_STATUS_OK)
+        return TOF_CONFIG_ERROR;
+    if (vl53l5cx_set_resolution(p_dev, VL53L5CX_RESOLUTION_8X8) !=
+        VL53L5CX_STATUS_OK)
+        return TOF_CONFIG_ERROR;
 
     // 15Hz frame rate
-    status += vl53l5cx_set_ranging_frequency_hz(p_dev, 15);
-    status += vl53l5cx_set_target_order(p_dev, VL53L5CX_TARGET_ORDER_CLOSEST);
-    status +=
-        vl53l5cx_set_ranging_mode(p_dev, VL53L5CX_RANGING_MODE_CONTINUOUS);
+    if (vl53l5cx_set_ranging_frequency_hz(p_dev, 15) != VL53L5CX_STATUS_OK)
+        return TOF_CONFIG_ERROR;
+    if (vl53l5cx_set_target_order(p_dev, VL53L5CX_TARGET_ORDER_CLOSEST) !=
+        VL53L5CX_STATUS_OK)
+        return TOF_CONFIG_ERROR;
+    if (vl53l5cx_set_ranging_mode(p_dev, VL53L5CX_RANGING_MODE_CONTINUOUS) !=
+        VL53L5CX_STATUS_OK)
+        return TOF_CONFIG_ERROR;
 
-    tof_err_code_e ret_value = TOF_SUCCESS;
-    if (status != 0)
-        ret_value = TOF_CONFIG_ERROR;
-
-    return ret_value;
+    return TOF_SUCCESS;
 }
 
 tof_err_code_e get_tof_matrix(uint8_t sensor_id, int16_t matrix[][8]) {
