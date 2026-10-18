@@ -29,6 +29,8 @@ def main() -> int:
     parser.add_argument("--elf", required=True, type=Path)
     parser.add_argument("--log", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--model-root", type=Path)
+    parser.add_argument("--pose-graph-fc-threshold", type=int)
     args = parser.parse_args()
 
     elf = args.elf.resolve(strict=True)
@@ -78,6 +80,24 @@ def main() -> int:
         "elf_sha256": sha256(elf),
         "log_sha256": sha256(log),
     }
+    if args.model_root is not None:
+        model_root = args.model_root.resolve(strict=True)
+        plugin = model_root / "gap/mchan/mchan_v7_impl.dylib"
+        model = {
+            "model_root": str(model_root),
+            "mchan_plugin_sha256": sha256(plugin),
+        }
+        provenance = model_root.parent / "model-provenance.txt"
+        if provenance.is_file():
+            model["build_provenance"] = {
+                key: value
+                for line in provenance.read_text(encoding="utf-8").splitlines()
+                if "=" in line
+                for key, value in [line.split("=", maxsplit=1)]
+            }
+        report["gvsoc_model"] = model
+    if args.pose_graph_fc_threshold is not None:
+        report["pose_graph_fc_threshold"] = args.pose_graph_fc_threshold
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     return 0 if passed else 1

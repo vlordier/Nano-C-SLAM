@@ -13,6 +13,11 @@ include($ENV{GAP_SDK_HOME}/utils/cmake/setup.cmake)
 project(${TARGET_NAME} C ASM)
 
 option(NANO_C_SLAM_ICP_DIAGNOSTICS "Enable test-only ICP stage diagnostics" OFF)
+set(NANO_C_SLAM_POSE_GRAPH_FC_THRESHOLD "64" CACHE STRING
+    "Largest pose-graph dimension solved serially on the FC")
+if(NOT NANO_C_SLAM_POSE_GRAPH_FC_THRESHOLD MATCHES "^[0-9]+$")
+    message(FATAL_ERROR "NANO_C_SLAM_POSE_GRAPH_FC_THRESHOLD must be a nonnegative integer")
+endif()
 
 set_source_files_properties(
     ../tests/gap9_sdk_gvsoc_mapping_smoke.c
@@ -88,6 +93,10 @@ target_compile_options(
     $ENV{GAP_SDK_HOME}/rtos/pmsis/tools/assert/include/assert.h
 )
 target_compile_definitions(${TARGET_NAME} PRIVATE CONFIG_DISABLE_WERROR=1)
+target_compile_definitions(
+    ${TARGET_NAME}
+    PRIVATE NANO_C_SLAM_POSE_GRAPH_FC_THRESHOLD=${NANO_C_SLAM_POSE_GRAPH_FC_THRESHOLD}
+)
 if(NANO_C_SLAM_ICP_DIAGNOSTICS)
     target_compile_definitions(${TARGET_NAME} PRIVATE NANO_C_SLAM_ICP_DIAGNOSTICS=1)
 endif()

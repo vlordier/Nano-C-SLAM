@@ -20,6 +20,7 @@ EXPECTED_MARKER="${GAP9_GVSOC_EXPECTED_MARKER:-$DEFAULT_MARKER}"
 LAYOUT="$WORK_ROOT/nano_c_slam_gvsoc_layout.json"
 GVSOC_LOG="$WORK_ROOT/gvsoc.log"
 MAPPING_OUTPUT="${GAP9_GVSOC_MAPPING_OUTPUT:-$ROOT/artifacts/gap9_gvsoc_evidence/mapping_diagnostic.json}"
+MAPPING_REPORT="${GAP9_GVSOC_MAPPING_REPORT:-$ROOT/artifacts/gap9_gvsoc_evidence/mapping_report.json}"
 RUN_TIMEOUT_S="${GAP9_GVSOC_TIMEOUT_S:-600}"
 
 if [[ "$MAPPING_CAPTURE" == "1" ]]; then
@@ -139,10 +140,16 @@ if [[ "$ELF" == "$DEFAULT_ELF" ]]; then
         --output "$ROOT/artifacts/gap9_gvsoc_evidence/report.json"
     echo "GAP9 GVSOC ICP SVD smoke passed; log: $GVSOC_LOG"
 elif [[ "$EXPECTED_MARKER" == NANO_C_SLAM_GVSOC:mapping_ok* ]]; then
+    MAPPING_EVIDENCE_ARGS=(--model-root "$MODEL_ROOT")
+    if [[ -n "${GAP9_GVSOC_POSE_GRAPH_FC_THRESHOLD+x}" ]]; then
+        MAPPING_EVIDENCE_ARGS+=(
+            --pose-graph-fc-threshold "$GAP9_GVSOC_POSE_GRAPH_FC_THRESHOLD"
+        )
+    fi
     uv run --project "$ROOT" --python 3.12 \
         python "$ROOT/scripts/capture_gap9_gvsoc_mapping_evidence.py" \
         --elf "$ELF" --log "$GVSOC_LOG" \
-        --output "$ROOT/artifacts/gap9_gvsoc_evidence/mapping_report.json"
+        --output "$MAPPING_REPORT" "${MAPPING_EVIDENCE_ARGS[@]}"
     echo "GAP9 GVSOC mapping-core smoke passed; log: $GVSOC_LOG"
 else
     echo "GAP9 GVSOC observed expected marker '$EXPECTED_MARKER'; log: $GVSOC_LOG"

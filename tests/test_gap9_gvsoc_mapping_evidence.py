@@ -82,6 +82,50 @@ class GvsocMappingEvidenceTests(unittest.TestCase):
         self.assertEqual(result, 1)
         self.assertEqual(report["status"], "failed")
 
+    def test_records_model_plugin_and_build_provenance(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            directory = Path(temporary_directory)
+            model_root = directory / "models"
+            plugin = model_root / "gap/mchan/mchan_v7_impl.dylib"
+            plugin.parent.mkdir(parents=True)
+            plugin.write_bytes(b"synthetic MCHAN plugin")
+            (directory / "model-provenance.txt").write_text(
+                "sdk_commit=abc123\nmchan_source_sha256=def456\n",
+                encoding="utf-8",
+            )
+            elf = directory / "synthetic-target.elf"
+            log = directory / "gvsoc.log"
+            output = directory / "report.json"
+            elf.write_bytes(b"test ELF placeholder")
+            log.write_text(GVSOC_MAPPING_PASS_V1 + "\n", encoding="utf-8")
+            with patch(
+                "sys.argv",
+                [
+                    "capture_gap9_gvsoc_mapping_evidence.py",
+                    "--elf",
+                    str(elf),
+                    "--log",
+                    str(log),
+                    "--output",
+                    str(output),
+                    "--model-root",
+                    str(model_root),
+                    "--pose-graph-fc-threshold",
+                    "0",
+                ],
+            ):
+                result = main()
+            report = json.loads(output.read_text(encoding="utf-8"))
+
+        self.assertEqual(result, 0)
+        self.assertEqual(report["pose_graph_fc_threshold"], 0)
+        model = report["gvsoc_model"]
+        self.assertIsInstance(model, dict)
+        assert isinstance(model, dict)
+        self.assertEqual(model["build_provenance"]["sdk_commit"], "abc123")
+        self.assertEqual(model["build_provenance"]["mchan_source_sha256"], "def456")
+        self.assertEqual(len(model["mchan_plugin_sha256"]), 64)
+
 
 if __name__ == "__main__":
     unittest.main()

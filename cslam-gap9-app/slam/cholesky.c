@@ -15,6 +15,10 @@
 #include <math.h>
 #include <string.h>
 
+#ifndef NANO_C_SLAM_POSE_GRAPH_FC_THRESHOLD
+#define NANO_C_SLAM_POSE_GRAPH_FC_THRESHOLD 64
+#endif
+
 extern struct pi_device cluster_dev;
 static struct pi_cluster_task cl_task;
 static pi_evt_t task_block_illegal;
@@ -183,8 +187,8 @@ void master_core_delegate_cholesky(void *args) {
 }
 
 void cholesky_sparse_parallel(csr *H, int16_t N, int16_t *perm) {
-    /* The parallel factorization corrupts compact SLAM graphs on GVSOC. */
-    if (N <= 64) {
+    /* Keep small systems on the FC until cluster L1-to-L2 DMA is verified. */
+    if (N <= NANO_C_SLAM_POSE_GRAPH_FC_THRESHOLD) {
         cholesky_sparse_fc_only(H, N, perm);
         return;
     }

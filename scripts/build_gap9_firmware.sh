@@ -24,6 +24,8 @@ docker run --rm --platform linux/amd64 --dns "$BUILD_DNS" \
     -v "$SDK_ROOT:/gap_sdk:ro" \
     -v "$TOOLCHAIN_ROOT:/toolchain:ro" \
     -e GAP9_BUILD_GVSOC_DMA_SMOKE="${GAP9_BUILD_GVSOC_DMA_SMOKE:-0}" \
+    -e GAP9_BUILD_GVSOC_CLUSTER_DIAGNOSTIC="${GAP9_BUILD_GVSOC_CLUSTER_DIAGNOSTIC:-0}" \
+    -e GAP9_BUILD_JOBS="${GAP9_BUILD_JOBS:-4}" \
     --mount type=volume,source=nano-c-slam-gap9-uv-cache,target=/root/.cache/uv \
     "$BUILD_IMAGE" bash -euo pipefail -c '
 export PATH=/toolchain/bin:$PATH
@@ -76,6 +78,27 @@ if [[ "${GAP9_BUILD_GVSOC_DMA_SMOKE:-0}" == "1" ]]; then
         /project/cslam-gap9-app/BUILD-gvsoc-dma/nano_c_slam_gvsoc_dma_smoke
     exit 0
 fi
+if [[ "${GAP9_BUILD_GVSOC_CLUSTER_DIAGNOSTIC:-0}" == "1" ]]; then
+    CLUSTER_BUILD_ROOT="$BUILD_ROOT/BUILD-gvsoc-cluster-diagnostic"
+    uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
+        cmake -S /project/cslam-gap9-app -B "$CLUSTER_BUILD_ROOT" \
+        -DCMAKE_BUILD_TYPE=Release -DNANO_C_SLAM_GVSOC_MAPPING_SMOKE=ON \
+        -DNANO_C_SLAM_ICP_DIAGNOSTICS=ON \
+        -DNANO_C_SLAM_POSE_GRAPH_FC_THRESHOLD=0 \
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+        -DKCONFIG_CONFIG=/project/tests/gap9_gvsoc_sdk.config
+    uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
+        cmake --build "$CLUSTER_BUILD_ROOT" \
+        --target nano_c_slam_gvsoc_mapping_smoke "-j$BUILD_JOBS"
+    CLUSTER_ARTIFACTS=/project/cslam-gap9-app/BUILD-gvsoc-cluster-diag
+    mkdir -p "$CLUSTER_ARTIFACTS"
+    cp "$CLUSTER_BUILD_ROOT/nano_c_slam_gvsoc_mapping_smoke" \
+        "$CLUSTER_ARTIFACTS/nano_c_slam_gvsoc_mapping_smoke"
+    cp "$CLUSTER_BUILD_ROOT/compile_commands.json" "$CLUSTER_ARTIFACTS/"
+    riscv32-unknown-elf-size \
+        "$CLUSTER_ARTIFACTS/nano_c_slam_gvsoc_mapping_smoke"
+    exit 0
+fi
 uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
     cmake -S /project/cslam-gap9-app -B "$BUILD_ROOT/BUILD" \
     -DCMAKE_BUILD_TYPE=Release
@@ -123,6 +146,8 @@ uv run --no-project --python /usr/bin/python3 \
 
 if [[ "${GAP9_BUILD_GVSOC_DMA_SMOKE:-0}" == "1" ]]; then
     echo "GAP9 GVSOC DMA smoke ELF: $ROOT/cslam-gap9-app/BUILD-gvsoc-dma/nano_c_slam_gvsoc_dma_smoke"
+elif [[ "${GAP9_BUILD_GVSOC_CLUSTER_DIAGNOSTIC:-0}" == "1" ]]; then
+    echo "GAP9 GVSOC cluster diagnostic ELF: $ROOT/cslam-gap9-app/BUILD-gvsoc-cluster-diag/nano_c_slam_gvsoc_mapping_smoke"
 else
     echo "GAP9 firmware ELF: $ROOT/.build-gap9-container/BUILD/nano_c_slam_gap9"
 fi

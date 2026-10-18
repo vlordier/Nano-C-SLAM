@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "evidence_class": "gvsoc-target-execution",
+  "claim_boundary": "Synthetic pose-graph mapping core on the GAP9 GVSOC model; not sensor, SPI, flight, or mapping-accuracy validation",
+  "hardware_measurement": false,
+  "test": "ICP loop closures and pose-graph optimization over synthetic poses",
+  "expected": {
+    "poses": 60,
+    "scans": 3,
+    "map_points": 240,
+    "finite_poses": 60,
+    "graph_nodes": 3,
+    "main_solver_returned": true,
+    "successful_solver_calls": 3,
+    "completed_solver_iterations": 9,
+    "optimization_completed": true,
+    "has_nan": false
+  },
+  "observed": {
+    "poses": 60,
+    "scans": 3,
+    "map_points": 240,
+    "finite_poses": 60,
+    "graph_nodes": 3,
+    "main_solver_returned": true,
+    "successful_solver_calls": 3,
+    "completed_solver_iterations": 9,
+    "optimization_completed": true,
+    "has_nan": false
+  },
+  "elf_bytes": 668924,
+  "elf_sha256": "a50a0d1c60c3952541095c9ccf13f399e57e7dd570edb472b76bcd17684d9563",
+  "log_sha256": "f9df940c3539383fd9aa2a7689e47093f5fefcfa7dce463524b1fe372dd4dd4a",
+  "gvsoc_model": {
+    "model_root": "/Users/vincent/Work/ncs-cluster-path-probe/model-rebuild/models",
+    "mchan_plugin_sha256": "63c7a156d641118f907cdf8f2a214696209d95da642bdc28e16d74f39d719bd1",
+    "build_provenance": {
+      "sdk_commit": "45247566dbfd1ec7bb021f158fefe133c2aa8e10",
+      "mchan_source_sha256": "e5e72f1d98d3df57e34c5e78186ec6848be3e7c4624c0b2a7a8cb96ff9ca9f4d",
+      "compiler": "Apple clang version 21.0.0 (clang-2100.3.34.2)",
+      "model_root": "/Users/vincent/Work/ncs-cluster-path-probe/model-rebuild/models"
+    }
+  },
+  "pose_graph_fc_threshold": 0
+}

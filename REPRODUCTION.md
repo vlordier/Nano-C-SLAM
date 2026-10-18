@@ -11,6 +11,7 @@ Tested on macOS (Apple Silicon), with the evidence dates recorded below. The rep
 | GAP9 firmware build | Passed 2026-10-18 | Fresh SDK 5.20.4 build with corrected ICP correspondence output: 63,382 text, 526,920 data, 56,700 BSS; L1 117,612/131,068 B (89.73%), L2 shared 643,536/1,572,864 B (40.91%). |
 | GAP9 GVSOC ICP kernel smoke | Build passed; execution evidence is older | Retained `report.json` is kernel-only evidence. It does not exercise mapping. |
 | GAP9 GVSOC mapping-core smoke | Passed on 2026-10-18 | Fresh schema-v2 evidence is retained in `artifacts/gap9_gvsoc_evidence/mapping_diagnostic.json` and `.log`, bound to the target ELF, compile commands, SDK and source hashes. The fixture completed 60/60 finite poses, 3 scans, 240 points, 2 accepted ICP constraints, 2 unique optimizer edges, and 6 solver calls/18 fixed iterations with no NaN. The host fixture also passes but reports 3 graph nodes/3 calls/9 iterations; GVSOC reports 12 nodes/6 calls/18 iterations because `pcl_reduce` can add distance-selected poses. This topology difference remains under host/target comparison. The smoke validates the mapping core in GVSOC only; it does not run production `main.c`/SPI or measure map accuracy. |
+| Forced cluster Cholesky on synthetic fixture | Passed with isolated model rebuild | The 60-pose fixture passes with the FC fallback disabled only when GVSOC uses MCHAN rebuilt from committed GAP SDK source. The installed model fails the same ELF. See `artifacts/gap9_gvsoc_evidence/cluster_cholesky_clean_model_report.json` and the raw `.log`; the production fallback remains enabled pending physical-target confirmation. |
 | Production GAP9 main loop consuming deterministic STM32 SPI packets | Not demonstrated | Current mapping smoke omits `main.c` and `spi/*.c`; see beads `ncs-ju6.4.1`–`ncs-ju6.4.5`. |
 | Three-drone mission, map fusion, physical flight, quantitative map accuracy | Not demonstrated | Separate open work remains; per-drone mapping is not map fusion, and simulated four-ray lidar/ideal odometry are not hardware ToF/UWB. |
 
@@ -52,6 +53,33 @@ uv run --locked python scripts/capture_gap9_gvsoc_mapping_limitation.py \
 ```
 
 The build command uses four jobs by default (`GAP9_BUILD_JOBS` can override this); set `GAP9_BUILD_DNS` if the Colima VM needs a different resolver. The separate host smoke passes the same owned point-cloud/ICP/pose-graph fixture with PMSIS stubs at the cluster compute boundary. Its result does not turn the GVSOC failure into a firmware mapping pass. Neither run establishes sensor, SPI, flight, hardware timing, or mapping accuracy. The complete firmware ELF was also observed reaching `main()` and opening the cluster in this virtual model, then waiting for the STM32 SPI packet; GVSOC has no STM32/SPI stimulus in this setup.
+
+### Isolated cluster Cholesky / GVSOC MCHAN diagnostic
+
+A separate N=63 diagnostic found that cluster Cholesky computes a factor in L1, but the installed GVSOC MCHAN plugin does not return it to FC-visible L2. A four-word probe reproduces the same symptom for both the repository DMA wrapper and direct PMSIS LOC2EXT. The installed `mchan_v7_impl.dylib` (SHA-256 `e4677a2e…f1735aa`) fails the probe and, with the serial fallback disabled in a temporary worktree, the synthetic mapping fixture fails its pose-bound check after scan 20. Rebuilding the plugin from the SDK's committed `mchan_v7_impl.cpp` in an isolated model directory (SDK commit `45247566dbfd1ec7bb021f158fefe133c2aa8e10`, source SHA-256 `e5e72f1d…ca9f4d`) passes both DMA directions and the same cluster-path fixture. The rebuilt model SHA-256 is `63c7a156…9d719bd1`; the fixture completes 60 poses, 3 scans, 240 points, 3 graph nodes, and 3 solver calls/9 iterations with all poses finite. This narrows the discrepancy to the installed model artifact/build, but does not establish why that artifact differs or validate physical GAP9 DMA. Keep the default FC fallback threshold at 64 until a board confirms the transfer and solve.
+
+The diagnostic model builder reads the committed SDK source with `git show`, so it does not consume or overwrite uncommitted SDK source edits. These commands rebuild it in a temporary model tree, build a diagnostic ELF with the cluster path forced, then run the DMA and mapping probes:
+
+```sh
+GAP9_GVSOC_MODEL_BUILD_ROOT="$TMPDIR/ncs-gvsoc-model" \
+  bash scripts/build_gap9_gvsoc_mchan_model.sh
+DOCKER_HOST=ssh://colima-act-ci GAP9_BUILD_GVSOC_CLUSTER_DIAGNOSTIC=1 \
+  bash scripts/build_gap9_firmware.sh
+DOCKER_HOST=ssh://colima-act-ci GAP9_BUILD_GVSOC_DMA_SMOKE=1 \
+  bash scripts/build_gap9_firmware.sh
+GAP9_GVSOC_MODEL_ROOT="$TMPDIR/ncs-gvsoc-model/models" \
+GAP9_GVSOC_POSE_GRAPH_FC_THRESHOLD=0 \
+GAP9_GVSOC_MAPPING_REPORT="$PWD/artifacts/gap9_gvsoc_evidence/cluster_cholesky_clean_model_report.json" \
+GAP9_GVSOC_ELF="$PWD/cslam-gap9-app/BUILD-gvsoc-cluster-diag/nano_c_slam_gvsoc_mapping_smoke" \
+GAP9_GVSOC_EXPECTED_MARKER='NANO_C_SLAM_GVSOC:mapping_ok' \
+  bash scripts/run_gap9_gvsoc_smoke.sh
+GAP9_GVSOC_MODEL_ROOT="$TMPDIR/ncs-gvsoc-model/models" \
+GAP9_GVSOC_ELF="$PWD/cslam-gap9-app/BUILD-gvsoc-dma/nano_c_slam_gvsoc_dma_smoke" \
+GAP9_GVSOC_EXPECTED_MARKER='NANO_C_SLAM_GVSOC_DMA:ok words=4' \
+  bash scripts/run_gap9_gvsoc_smoke.sh
+```
+
+`NANO_C_SLAM_POSE_GRAPH_FC_THRESHOLD` defaults to 64; setting it to 0 is only for this diagnostic build. The DMA ELF is built separately with `GAP9_BUILD_GVSOC_DMA_SMOKE=1`. These results are GVSOC evidence only; production main/SPI input, real sensors, flight, map accuracy, and physical DMA remain unvalidated.
 
 ## Gazebo SITL
 
