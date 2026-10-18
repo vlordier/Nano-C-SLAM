@@ -5,6 +5,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SDK_ROOT="${GAP9_SDK_ROOT:-$HOME/Work/da3_gap9/third_party/gap_sdk_private}"
 TOOLCHAIN_ROOT="${GAP9_TOOLCHAIN_ROOT:-$HOME/Work/da3_gap9/deploy/gap_riscv_toolchain}"
 STIMULUS_ROOT="${GAP9_STIMULUS_ROOT:-$HOME/Work/da3_gap9}"
+MODEL_ROOT="${GAP9_GVSOC_MODEL_ROOT:-$SDK_ROOT/install/workstation/models}"
 WORK_ROOT="${GAP9_GVSOC_WORK_ROOT:-${TMPDIR:-/tmp}/nano-c-slam-gvsoc}"
 DEFAULT_ELF="$ROOT/cslam-gap9-app/BUILD-gvsoc/nano_c_slam_gvsoc_smoke"
 MAPPING_CAPTURE="${GAP9_GVSOC_MAPPING_CAPTURE:-0}"
@@ -45,7 +46,7 @@ fi
 for required in \
     "$SDK_ROOT/utils/gapy_v2/bin/gapy" \
     "$SDK_ROOT/install/workstation/bin/gvsoc_launcher" \
-    "$SDK_ROOT/install/workstation/models/gap9/soc.dylib" \
+    "$MODEL_ROOT/gap9/soc.dylib" \
     "$TOOLCHAIN_ROOT/bin/riscv32-unknown-elf-gcc"; do
     [[ -e "$required" ]] || { echo "missing GAP9 GVSOC prerequisite: $required" >&2; exit 2; }
 done
@@ -101,7 +102,7 @@ uv run --project "$ROOT" --python 3.12 \
     --platform gvsoc --target gap9.gap9_v2 \
     --target-dir "$SDK_ROOT/gvsoc/gvsoc_gap" \
     --target-dir "$SDK_ROOT/gvsoc/gvsoc/models" \
-    --model-dir "$SDK_ROOT/install/workstation/models" \
+    --model-dir "$MODEL_ROOT" \
     --target-property boot.flash_device=mram \
     --target-property boot.mode=flash \
     --target-property boot.mode_on_pads=mram \
