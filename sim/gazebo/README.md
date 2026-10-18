@@ -255,6 +255,12 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
   ros2 launch nano_c_slam_gazebo swarm_mission.launch.py mapping_path:=true
 ```
 
+For a future combined swarm evidence bundle, pass one canonical UUID as
+`run_id:=<uuid>` so all three mission status streams share the same run
+identity. If omitted, each mission generates its own UUID; that remains valid
+for an uncoordinated demonstration but cannot bind the three status streams as
+one run. The combined collector and process-outcome report are still pending.
+
 Before creating any mission node, the swarm launch reads `cf1`, `cf3`, and
 `cf4` spawn XY positions from the installed
 `ros_gz_crazyflie_gazebo/share/ros_gz_crazyflie_gazebo/worlds/crazyflie_swarm_world.sdf`
