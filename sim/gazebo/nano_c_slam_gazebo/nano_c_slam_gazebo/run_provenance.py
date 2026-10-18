@@ -12,7 +12,10 @@ import sys
 from pathlib import Path
 from typing import cast
 
-from scripts.runtime_provenance import GAZEBO_ROS_ENVIRONMENT
+from scripts.runtime_provenance import (
+    GAZEBO_ROS_ENVIRONMENT,
+    sha256_file_stable,
+)
 
 PROVENANCE_SCHEMA_VERSION = 1
 _OWNED_INPUT_PATHS = (
@@ -66,6 +69,65 @@ def _sha256_file(path: Path) -> str:
         for chunk in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _linked_library_identities(
+    executable: Path, executable_name: str
+) -> list[dict[str, object]]:
+    """Hash direct Mach-O dependencies; retain unresolved install names as unknown."""
+    inspector = shutil.which("otool")
+    unknown_record: dict[str, object] = {
+        "name": f"linked-libraries:{executable_name}:unresolved",
+        "install_name": "<otool unavailable or binary format unsupported>",
+        "path": None,
+        "version": None,
+        "disposition": "unknown",
+        "sha256": None,
+    }
+    if inspector is None:
+        return [unknown_record]
+    result = subprocess.run(  # noqa: S603 - fixed otool query on a resolved executable
+        [inspector, "-L", str(executable)],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    if result.returncode != 0:
+        return [unknown_record]
+    dependencies: list[dict[str, object]] = []
+    for index, line in enumerate(result.stdout.splitlines()[1:]):
+        install_name, separator, version_text = line.strip().partition(
+            " (compatibility version "
+        )
+        install_name = install_name.strip()
+        if not install_name:
+            continue
+        dependency_path = Path(install_name)
+        observed_path = (
+            dependency_path.resolve()
+            if dependency_path.is_absolute() and dependency_path.is_file()
+            else None
+        )
+        dependencies.append(
+            {
+                "name": f"linked-libraries:{executable_name}:{index}",
+                "install_name": install_name,
+                "path": str(observed_path) if observed_path is not None else None,
+                "version": (
+                    version_text.removesuffix(")").strip() if separator else None
+                ),
+                "disposition": "system-unpinned"
+                if observed_path is not None
+                else "unknown",
+                "sha256": (
+                    sha256_file_stable(observed_path)
+                    if observed_path is not None
+                    else None
+                ),
+            }
+        )
+    return dependencies or [unknown_record]
 
 
 def _git_value(repository_root: Path, *arguments: str) -> str:
@@ -195,21 +257,27 @@ def collect_run_provenance(
                 "path": str(python_path),
                 "version": platform.python_version(),
                 "sha256": _sha256_file(python_path),
+                "linked_libraries": _linked_library_identities(python_path, "python"),
             },
             "ros2": {
                 "path": str(ros2_path),
                 "ros_distro": os.environ.get("ROS_DISTRO", ""),
                 "cli_version": ros2_version,
                 "sha256": _sha256_file(ros2_path),
+                "linked_libraries": _linked_library_identities(ros2_path, "ros2"),
             },
             "gazebo": {
                 "path": str(gazebo_path),
                 "sim_version": gazebo_version,
                 "sha256": _sha256_file(gazebo_path),
+                "linked_libraries": _linked_library_identities(gazebo_path, "gazebo"),
             },
             "mapping_binary": {
                 "path": str(binary_path),
                 "sha256": _sha256_file(binary_path),
+                "linked_libraries": _linked_library_identities(
+                    binary_path, "mapping_binary"
+                ),
             },
         },
         "ros_overlay_packages": overlay,
@@ -276,6 +344,61 @@ def validate_run_provenance(
             raise ValueError(f"run provenance is missing {name} path")
         if not _is_sha256(executable.get("sha256")):
             raise ValueError(f"run provenance has invalid {name} hash")
+        linked_libraries = executable.get("linked_libraries")
+        if not isinstance(linked_libraries, list) or not linked_libraries:
+            raise ValueError(
+                f"run provenance is missing {name} linked library identities"
+            )
+        for index, library_value in enumerate(linked_libraries):
+            if not isinstance(library_value, dict) or set(library_value) != {
+                "name",
+                "install_name",
+                "path",
+                "version",
+                "disposition",
+                "sha256",
+            }:
+                raise ValueError(
+                    f"run provenance has invalid {name} linked library {index}"
+                )
+            disposition = library_value["disposition"]
+            if disposition not in {"system-unpinned", "unknown"}:
+                raise ValueError(
+                    f"run provenance has unsupported {name} library disposition"
+                )
+            if not isinstance(library_value["name"], str) or not library_value["name"]:
+                raise ValueError(f"run provenance has invalid {name} library name")
+            if (
+                not isinstance(library_value["install_name"], str)
+                or not library_value["install_name"]
+            ):
+                raise ValueError(
+                    f"run provenance has invalid {name} library install name"
+                )
+            if library_value["version"] is not None and not isinstance(
+                library_value["version"], str
+            ):
+                raise ValueError(f"run provenance has invalid {name} library version")
+            if library_value["path"] is not None and not isinstance(
+                library_value["path"], str
+            ):
+                raise ValueError(f"run provenance has invalid {name} library path")
+            digest = library_value["sha256"]
+            if (disposition == "unknown" and digest is not None) or (
+                disposition == "system-unpinned" and not _is_sha256(digest)
+            ):
+                raise ValueError(f"run provenance has inconsistent {name} library hash")
+            if disposition == "system-unpinned" and not isinstance(
+                library_value["path"], str
+            ):
+                raise ValueError(
+                    f"run provenance has no path for observed {name} library"
+                )
+            if (
+                disposition == "system-unpinned"
+                and not Path(str(library_value["path"])).is_absolute()
+            ):
+                raise ValueError(f"run provenance has non-absolute {name} library path")
     if not isinstance(executables["python"].get("version"), str):
         raise ValueError("run provenance is missing Python version")
     if not isinstance(executables["ros2"].get("ros_distro"), str) or not (

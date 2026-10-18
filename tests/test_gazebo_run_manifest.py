@@ -48,6 +48,17 @@ def _allowlisted_environment(
     return values
 
 
+def _unknown_library(name: str) -> dict[str, object]:
+    return {
+        "name": name,
+        "install_name": "<unresolved fixture>",
+        "path": None,
+        "version": None,
+        "disposition": "unknown",
+        "sha256": None,
+    }
+
+
 def _mutate_runtime_environment(
     report: dict[str, object], field: str, variable: str, value: str
 ) -> None:
@@ -86,15 +97,30 @@ def _report() -> dict[str, object]:
                 "owned_input_sha256": {path: "2" * 64 for path in OWNED_INPUT_PATHS},
             },
             "executables": {
-                "python": {"path": "/python", "version": "3.12", "sha256": "3" * 64},
+                "python": {
+                    "path": "/python",
+                    "version": "3.12",
+                    "sha256": "3" * 64,
+                    "linked_libraries": [_unknown_library("python-unknown")],
+                },
                 "ros2": {
                     "path": "/ros2",
                     "ros_distro": "jazzy",
                     "cli_version": "0.32",
                     "sha256": "4" * 64,
+                    "linked_libraries": [_unknown_library("ros2-unknown")],
                 },
-                "gazebo": {"path": "/gz", "sim_version": "8.0", "sha256": "5" * 64},
-                "mapping_binary": {"path": "/mapping_replay", "sha256": BINARY_HASH},
+                "gazebo": {
+                    "path": "/gz",
+                    "sim_version": "8.0",
+                    "sha256": "5" * 64,
+                    "linked_libraries": [_unknown_library("gazebo-unknown")],
+                },
+                "mapping_binary": {
+                    "path": "/mapping_replay",
+                    "sha256": BINARY_HASH,
+                    "linked_libraries": [_unknown_library("mapping-unknown")],
+                },
             },
             "ros_overlay_packages": {
                 package: {
@@ -295,15 +321,30 @@ class GazeboReplayManifestTests(unittest.TestCase):
                 "owned_input_sha256": owned_sources,
             },
             "executables": {
-                "python": {"path": "/python", "version": "3.12", "sha256": "1" * 64},
+                "python": {
+                    "path": "/python",
+                    "version": "3.12",
+                    "sha256": "1" * 64,
+                    "linked_libraries": [_unknown_library("python-unknown")],
+                },
                 "ros2": {
                     "path": "/ros2",
                     "ros_distro": "jazzy",
                     "cli_version": "0.32",
                     "sha256": "2" * 64,
+                    "linked_libraries": [_unknown_library("ros2-unknown")],
                 },
-                "gazebo": {"path": "/gz", "sim_version": "8.0", "sha256": "3" * 64},
-                "mapping_binary": {"path": "/mapping_replay", "sha256": binary_sha},
+                "gazebo": {
+                    "path": "/gz",
+                    "sim_version": "8.0",
+                    "sha256": "3" * 64,
+                    "linked_libraries": [_unknown_library("gazebo-unknown")],
+                },
+                "mapping_binary": {
+                    "path": "/mapping_replay",
+                    "sha256": binary_sha,
+                    "linked_libraries": [_unknown_library("mapping-unknown")],
+                },
             },
             "ros_overlay_packages": {
                 package: {

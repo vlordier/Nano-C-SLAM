@@ -78,6 +78,77 @@ def _execution_environment(
     return tuple(sorted(values.items()))
 
 
+def _append_linked_libraries(
+    dependencies: list[RuntimeDependency], executables: dict[str, object]
+) -> None:
+    for executable_name, raw_executable in executables.items():
+        executable = _mapping(raw_executable, f"executable {executable_name}")
+        libraries = executable.get("linked_libraries")
+        if not isinstance(libraries, list):
+            raise ValueError(
+                f"executable {executable_name} has no linked library records"
+            )
+        for raw_library in libraries:
+            library = _mapping(raw_library, f"{executable_name} linked library")
+            try:
+                disposition = DependencyDisposition(str(library["disposition"]))
+            except ValueError as error:
+                raise ValueError(
+                    "linked library has unsupported disposition"
+                ) from error
+            if disposition not in {
+                DependencyDisposition.SYSTEM_UNPINNED,
+                DependencyDisposition.UNKNOWN,
+            }:
+                raise ValueError("linked library disposition is not system/unknown")
+            dependencies.append(
+                RuntimeDependency(
+                    name=str(library["name"]),
+                    disposition=disposition,
+                    version=(
+                        library["version"]
+                        if isinstance(library.get("version"), str)
+                        else None
+                    ),
+                    sha256=(
+                        library["sha256"]
+                        if isinstance(library.get("sha256"), str)
+                        else None
+                    ),
+                    path=None,
+                )
+            )
+
+
+def _verify_linked_libraries(
+    executables: dict[str, object], dependencies: dict[str, RuntimeDependency]
+) -> None:
+    for executable_name, raw_executable in executables.items():
+        executable = _mapping(raw_executable, f"executable {executable_name}")
+        libraries = executable.get("linked_libraries")
+        if not isinstance(libraries, list):
+            raise ValueError(
+                f"executable {executable_name} has no linked library records"
+            )
+        for raw_library in libraries:
+            library = _mapping(raw_library, f"{executable_name} linked library")
+            dependency = dependencies.get(str(library.get("name")))
+            if (
+                dependency is None
+                or dependency.sha256 != library.get("sha256")
+                or dependency.disposition.value != library.get("disposition")
+                or dependency.version != library.get("version")
+            ):
+                raise ValueError("manifest linked-library identity differs from report")
+            path = library.get("path")
+            if (
+                isinstance(path, str)
+                and Path(path).is_file()
+                and _digest(Path(path).read_bytes()) != library.get("sha256")
+            ):
+                raise ValueError("linked native library changed after capture")
+
+
 def create_gazebo_run_manifest(
     report: dict[str, object],
     *,
@@ -116,6 +187,7 @@ def create_gazebo_run_manifest(
                 path=None,
             )
         )
+    _append_linked_libraries(runtime_dependencies, executables)
     for package, identity in overlays.items():
         identity = _mapping(identity, f"overlay {package}")
         runtime_dependencies.append(
@@ -216,6 +288,7 @@ def create_gazebo_replay_manifest(
                 path=None,
             )
         )
+    _append_linked_libraries(dependencies, executables)
     for name, raw_identity in overlays.items():
         identity = _mapping(raw_identity, f"overlay {name}")
         dependencies.append(
@@ -365,6 +438,7 @@ def validate_gazebo_replay_bundle(report_path: Path) -> ValidationManifest:
         dependency = dependencies.get(f"ros-overlay:{name}")
         if dependency is None or dependency.sha256 != identity.get("sha256"):
             raise ValueError("manifest runtime ROS overlay differs from report")
+    _verify_linked_libraries(executables, dependencies)
     replay = report.get("mapping_replay_provenance")
     executable = manifest.build.executable
     if (
@@ -537,6 +611,7 @@ def validate_gazebo_mapping_bundle(report_path: Path) -> ValidationManifest:
             or dependency.sha256 != identity.get("sha256")
         ):
             raise ValueError("manifest ROS overlay identity differs from report")
+    _verify_linked_libraries(executables, dependencies)
     owned_hashes = provenance.get("source", {}).get("owned_input_sha256")
     interface_identity = provenance.get("interface_identity")
     if not isinstance(owned_hashes, dict) or not isinstance(interface_identity, dict):

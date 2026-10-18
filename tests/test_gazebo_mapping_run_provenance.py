@@ -14,6 +14,7 @@ from scripts.runtime_provenance import GAZEBO_ROS_ENVIRONMENT
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.run_provenance import (
     OVERLAY_PACKAGES,
     OWNED_INPUT_PATHS,
+    _linked_library_identities,
     collect_run_provenance,
     require_provenance_unchanged,
     validate_combined_run_report,
@@ -49,21 +50,25 @@ def _valid_provenance(binary_hash: str) -> dict[str, object]:
                 "path": "/python",
                 "version": "3.11.0",
                 "sha256": "c" * 64,
+                "linked_libraries": [_unknown_library()],
             },
             "ros2": {
                 "path": "/ros2",
                 "ros_distro": "jazzy",
                 "cli_version": "ros2cli 0.32.0",
                 "sha256": "d" * 64,
+                "linked_libraries": [_unknown_library()],
             },
             "gazebo": {
                 "path": "/gz",
                 "sim_version": "8.0.0",
                 "sha256": "e" * 64,
+                "linked_libraries": [_unknown_library()],
             },
             "mapping_binary": {
                 "path": "/mapping_replay",
                 "sha256": binary_hash,
+                "linked_libraries": [_unknown_library()],
             },
         },
         "ros_overlay_packages": {
@@ -98,6 +103,17 @@ def _valid_provenance(binary_hash: str) -> dict[str, object]:
     }
 
 
+def _unknown_library() -> dict[str, object]:
+    return {
+        "name": "linked-libraries:unknown",
+        "install_name": "<unresolved fixture>",
+        "path": None,
+        "version": None,
+        "disposition": "unknown",
+        "sha256": None,
+    }
+
+
 def _valid_report() -> dict[str, object]:
     binary_hash = "1" * 64
     return {
@@ -122,6 +138,55 @@ def _valid_report() -> dict[str, object]:
 
 
 class GazeboRunProvenanceTests(unittest.TestCase):
+    def test_direct_library_hashes_and_unresolved_names_are_explicit(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            directory = Path(temporary_directory)
+            binary = directory / "mapping_replay"
+            binary.write_bytes(b"mapping executable")
+            library = directory / "libfixture.dylib"
+            library.write_bytes(b"linked library")
+            inspector = directory / "otool"
+            inspector.write_bytes(b"fixture inspector")
+            output = (
+                f"{binary}:\n"
+                f"\t{library} (compatibility version 1.0.0, current version 1.2.3)\n"
+                "\t@rpath/libunresolved.dylib "
+                "(compatibility version 2.0.0, current version 2.1.0)\n"
+            )
+            with (
+                patch(
+                    "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.run_provenance.shutil.which",
+                    return_value=str(inspector),
+                ),
+                patch(
+                    "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.run_provenance.subprocess.run",
+                    return_value=CompletedProcess(
+                        [str(inspector), "-L", str(binary)], 0, stdout=output, stderr=""
+                    ),
+                ),
+            ):
+                identities = _linked_library_identities(binary, "mapping_binary")
+
+            self.assertEqual(identities[0]["disposition"], "system-unpinned")
+            self.assertEqual(identities[0]["sha256"], _sha256(b"linked library"))
+            self.assertEqual(identities[1]["disposition"], "unknown")
+            self.assertIsNone(identities[1]["sha256"])
+            library.write_bytes(b"changed library")
+            with (
+                patch(
+                    "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.run_provenance.shutil.which",
+                    return_value=str(inspector),
+                ),
+                patch(
+                    "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.run_provenance.subprocess.run",
+                    return_value=CompletedProcess(
+                        [str(inspector), "-L", str(binary)], 0, stdout=output, stderr=""
+                    ),
+                ),
+            ):
+                changed = _linked_library_identities(binary, "mapping_binary")
+            self.assertNotEqual(identities[0]["sha256"], changed[0]["sha256"])
+
     def test_report_rejects_legacy_missing_or_inconsistent_provenance(self) -> None:
         report = _valid_report()
         self.assertEqual(validate_combined_run_report(report), report)
