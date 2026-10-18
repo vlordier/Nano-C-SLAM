@@ -2,15 +2,20 @@
 
 from __future__ import annotations
 
+import json
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model import (
     acquire_world_session_lock,
     claim_world_session,
     publish_world_session,
+    record_world_process_event,
     session_file_for_partition,
+    world_process_role,
 )
 
 
@@ -94,6 +99,107 @@ class WorldSessionTests(unittest.TestCase):
                 ),
                 second_session,
             )
+
+    def test_launch_process_events_record_only_known_runtime_roles(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            path = Path(temporary_directory) / "session.json"
+            session_id = publish_world_session(path, scene="nearfield-mapping")
+            server = SimpleNamespace(
+                pid=1234,
+                cmd=["/opt/gz-macos/bin/gz", "sim", "world.sdf", "-s"],
+            )
+            gui = SimpleNamespace(pid=1235, cmd=["/opt/gz/bin/gz", "sim", "-g"])
+            other = SimpleNamespace(pid=1236, cmd=["/usr/bin/python", "unrelated.py"])
+            with patch(
+                "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model.shutil.which",
+                return_value=None,
+            ):
+                self.assertEqual(
+                    record_world_process_event(path, pid=server.pid, argv=server.cmd),
+                    "gazebo-server",
+                )
+                self.assertIsNone(
+                    record_world_process_event(path, pid=gui.pid, argv=gui.cmd)
+                )
+                self.assertIsNone(
+                    record_world_process_event(path, pid=other.pid, argv=other.cmd)
+                )
+
+            manifest = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(manifest["session_id"], session_id)
+            self.assertEqual(
+                manifest["processes"],
+                [
+                    {
+                        "role": "gazebo-server",
+                        "pid": 1234,
+                        "argv": server.cmd,
+                        "executable_path": None,
+                        "observed_at_utc": manifest["processes"][0]["observed_at_utc"],
+                    }
+                ],
+            )
+            self.assertTrue(manifest["processes"][0]["observed_at_utc"].endswith("Z"))
+
+    def test_process_recording_is_idempotent_and_preserves_run_claim(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            path = Path(temporary_directory) / "session.json"
+            session_id = publish_world_session(path, scene="nearfield-mapping")
+            claim_world_session(
+                path,
+                scene="nearfield-mapping",
+                run_id="aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+            )
+            command = ["gz", "sim", "world.sdf", "-s"]
+            with patch(
+                "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model.shutil.which",
+                return_value=None,
+            ):
+                record_world_process_event(path, pid=4321, argv=command)
+                record_world_process_event(path, pid=4321, argv=command)
+
+            manifest = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(manifest["session_id"], session_id)
+            self.assertEqual(len(manifest["processes"]), 1)
+            with self.assertRaisesRegex(
+                RuntimeError, "already has a mapping-run claim"
+            ):
+                claim_world_session(
+                    path,
+                    scene="nearfield-mapping",
+                    run_id="bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+                )
+
+    def test_ros_bridge_process_roles_are_classified(self) -> None:
+        self.assertEqual(
+            world_process_role(["/opt/ros/bin/parameter_bridge", "--ros-args"]),
+            "ros-gazebo-bridge",
+        )
+        self.assertEqual(
+            world_process_role(
+                ["python", "/overlay/lib/nano_c_slam_gazebo/sensor_bridge"]
+            ),
+            "nano-sensor-bridge",
+        )
+
+    def test_conflicting_process_identity_and_invalid_pid_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            path = Path(temporary_directory) / "session.json"
+            publish_world_session(path, scene="default")
+            command = ["gz", "sim", "world.sdf", "-s"]
+            with patch(
+                "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model.shutil.which",
+                return_value=None,
+            ):
+                record_world_process_event(path, pid=99, argv=command)
+                with self.assertRaisesRegex(RuntimeError, "conflicting data"):
+                    record_world_process_event(
+                        path,
+                        pid=99,
+                        argv=["gz", "sim", "other.sdf", "-s"],
+                    )
+                with self.assertRaisesRegex(ValueError, "positive"):
+                    record_world_process_event(path, pid=0, argv=command)
 
 
 if __name__ == "__main__":

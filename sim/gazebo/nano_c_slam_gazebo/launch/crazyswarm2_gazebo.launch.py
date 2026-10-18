@@ -10,8 +10,11 @@ from launch.actions import (
     ExecuteProcess,
     IncludeLaunchDescription,
     OpaqueFunction,
+    RegisterEventHandler,
     TimerAction,
 )
+from launch.event_handlers import OnProcessStart
+from launch.events.process import ProcessStarted
 from launch.launch_context import LaunchContext
 from launch.launch_description_entity import LaunchDescriptionEntity
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -24,6 +27,7 @@ from launch_ros.actions import Node
 from nano_c_slam_gazebo.world_session_model import (
     acquire_world_session_lock,
     publish_world_session,
+    record_world_process_event,
     session_file_for_partition,
 )
 
@@ -43,6 +47,20 @@ def _publish_session(context: LaunchContext) -> list[LaunchDescriptionEntity]:
     global _WORLD_SESSION_LOCK
     _WORLD_SESSION_LOCK = acquire_world_session_lock(session_path)
     publish_world_session(session_path, scene=scene)
+    return []
+
+
+def _record_started_process(
+    event: ProcessStarted, context: LaunchContext
+) -> list[LaunchDescriptionEntity]:
+    """Record only processes started by this launch with known runtime roles."""
+    del context
+    partition = os.environ.get("GZ_PARTITION", "default")
+    record_world_process_event(
+        session_file_for_partition(partition),
+        pid=event.pid,
+        argv=event.cmd,
+    )
     return []
 
 
@@ -96,6 +114,7 @@ def generate_launch_description() -> LaunchDescription:
         [
             DeclareLaunchArgument("world", default_value=default_world),
             OpaqueFunction(function=_publish_session),
+            RegisterEventHandler(OnProcessStart(on_start=_record_started_process)),
             gazebo,
             gazebo_gui_after_server,
             gz_bridge,
