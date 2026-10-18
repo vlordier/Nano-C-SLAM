@@ -306,6 +306,28 @@ ranges against the exact source odometry samples. Add
 `/<drone>/cmd_vel` graph endpoints. It never launches a mission or publishes
 flight commands. Run it from the Nano-C-SLAM repository root.
 
+To isolate ROS 2/DDS discovery from Gazebo, Crazyswarm2, and the Nano overlay,
+open a separate terminal and source only the ROS Jazzy underlay. This bounded
+canary selects an unused domain (or accepts an explicitly unused one), starts
+its own `std_msgs/msg/String` subscriber and publisher, and verifies the nonce,
+topic type, and both nodes with the ROS CLI:
+
+```sh
+cd ~/Work/Nano-C-SLAM
+source /opt/homebrew/opt/ros2-jazzy/setup.zsh
+uv run --no-project \
+  --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
+  -m scripts.probe_ros2_graph --timeout 30
+```
+
+The command writes JSON evidence under `artifacts/ros2_discovery_probe_*.json`.
+Use `--domain-id <0..232>` to select a particular unused domain and
+`--compare-subnet` to repeat a successful `LOCALHOST` trial with only
+`ROS_AUTOMATIC_DISCOVERY_RANGE` changed to `SUBNET`. A successful result proves
+that this ROS installation can exchange a standard message and expose its
+graph on the tested domain; it does not identify the cause of historical
+domain-43 hangs or validate Gazebo, the Nano bridge, mapping, or firmware.
+
 To exercise the same ROS subscriptions and validators without Gazebo, run:
 
 ```sh
