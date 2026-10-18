@@ -62,12 +62,12 @@ def _mapping(value: object) -> dict[str, object]:
 class ValidationProvenanceTests(unittest.TestCase):
     def test_accepts_a_complete_host_pass_and_normalizes_environment(self) -> None:
         manifest = _manifest()
-        _mapping(manifest["execution"])["environment"] = {"Z": "last", "A": "first"}
+        _mapping(manifest["execution"])["environment"] = {"Z": "", "A": None}
 
         parsed = validate_manifest(manifest)
 
         self.assertEqual(parsed.status.value, "success")
-        self.assertEqual(parsed.execution.environment, (("A", "first"), ("Z", "last")))
+        self.assertEqual(parsed.execution.environment, (("A", None), ("Z", "")))
 
     def test_rejects_unknown_fields_instead_of_silently_dropping_them(self) -> None:
         manifest = _manifest()
