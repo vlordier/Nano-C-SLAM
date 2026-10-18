@@ -38,6 +38,10 @@ class MappingRunProcessResult:
     mission_returncode: int
     collector_log: Path
     mission_log: Path
+    collector_stdout: Path
+    collector_stderr: Path
+    mission_stdout: Path
+    mission_stderr: Path
 
 
 def supervise_mapping_processes(
@@ -97,15 +101,22 @@ def supervise_mapping_processes(
     readiness_file.parent.mkdir(parents=True, exist_ok=True)
     collector_log = log_directory / "collector.log"
     mission_log = log_directory / "mission.log"
+    collector_stdout = log_directory / "collector.stdout.log"
+    collector_stderr = log_directory / "collector.stderr.log"
+    mission_stdout = log_directory / "mission.stdout.log"
+    mission_stderr = log_directory / "mission.stderr.log"
     collector: ManagedProcess | None = None
     mission: ManagedProcess | None = None
     deadline = monotonic() + timeout_s
     try:
-        with collector_log.open("xb") as collector_stream:
+        with (
+            collector_stdout.open("xb") as collector_stream,
+            collector_stderr.open("xb") as collector_error_stream,
+        ):
             collector = start_process(
                 commands.collector,
                 stdout=collector_stream,
-                stderr=subprocess.STDOUT,
+                stderr=collector_error_stream,
                 start_new_session=(os.name == "posix"),
             )
             while True:
@@ -126,11 +137,14 @@ def supervise_mapping_processes(
                 _check_deadline(deadline, monotonic)
                 sleep(poll_interval_s)
 
-            with mission_log.open("xb") as mission_stream:
+            with (
+                mission_stdout.open("xb") as mission_stream,
+                mission_stderr.open("xb") as mission_error_stream,
+            ):
                 mission = start_process(
                     commands.mission,
                     stdout=mission_stream,
-                    stderr=subprocess.STDOUT,
+                    stderr=mission_error_stream,
                     start_new_session=(os.name == "posix"),
                 )
                 while True:
@@ -153,11 +167,22 @@ def supervise_mapping_processes(
             raise RuntimeError(
                 "child return codes changed while reaping completed processes"
             )
+        for combined, streams in (
+            (collector_log, (collector_stdout, collector_stderr)),
+            (mission_log, (mission_stdout, mission_stderr)),
+        ):
+            contents = b"".join(stream_path.read_bytes() for stream_path in streams)
+            with combined.open("xb") as destination:
+                destination.write(contents)
         return MappingRunProcessResult(
             collector_returncode=collector_returncode,
             mission_returncode=mission_returncode,
             collector_log=collector_log,
             mission_log=mission_log,
+            collector_stdout=collector_stdout,
+            collector_stderr=collector_stderr,
+            mission_stdout=mission_stdout,
+            mission_stderr=mission_stderr,
         )
     except BaseException:
         _stop_and_reap(

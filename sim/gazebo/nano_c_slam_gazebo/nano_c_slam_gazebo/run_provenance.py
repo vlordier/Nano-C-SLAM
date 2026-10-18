@@ -17,6 +17,7 @@ _OWNED_INPUT_PATHS = (
     "pyproject.toml",
     "scripts/gazebo_mapping_run.py",
     "scripts/gazebo_mapping_sitl.py",
+    "scripts/gazebo_run_manifest.py",
     "scripts/build_host_mapping_sitl.sh",
     "sim/gazebo/nano_c_slam_gazebo/package.xml",
     "sim/gazebo/nano_c_slam_interfaces/package.xml",

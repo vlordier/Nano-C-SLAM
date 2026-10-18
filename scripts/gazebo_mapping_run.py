@@ -4,16 +4,27 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib
 import json
 import os
 import sys
 import tempfile
 import time
+from datetime import UTC, datetime
 from pathlib import Path
 from subprocess import SubprocessError
 from typing import Protocol, cast
 
+from scripts.gazebo_run_manifest import (
+    create_gazebo_run_manifest,
+    validate_gazebo_mapping_bundle,
+)
+from scripts.source_provenance import (
+    collect_source_identity,
+    source_identity_to_mapping,
+    verify_source_identity,
+)
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
     validate_capture_report,
 )
@@ -173,6 +184,48 @@ def _publish_report_atomically(output_path: Path, report: dict[str, object]) -> 
         temporary_path.unlink(missing_ok=True)
 
 
+def _publish_report_bundle_atomically(
+    output_path: Path, report: dict[str, object], manifest: bytes
+) -> None:
+    """Publish a manifest first and report last as the bundle commit marker."""
+    manifest_path = output_path.with_suffix(".provenance.json")
+    if output_path.exists() or manifest_path.exists():
+        raise FileExistsError("Gazebo report or provenance manifest already exists")
+    run_id = report.get("run_id")
+    if not isinstance(run_id, str):
+        raise ValueError("run report is missing its run ID")
+    report["provenance_manifest"] = {
+        "path": manifest_path.name,
+        "sha256": hashlib.sha256(manifest).hexdigest(),
+    }
+    report_temporary = output_path.with_name(f".{output_path.name}.{run_id}.tmp")
+    manifest_temporary = manifest_path.with_name(f".{manifest_path.name}.{run_id}.tmp")
+    report_bytes = (
+        json.dumps(report, indent=2, sort_keys=True, allow_nan=False) + "\n"
+    ).encode()
+    published: list[Path] = []
+    try:
+        for temporary, contents in (
+            (manifest_temporary, manifest),
+            (report_temporary, report_bytes),
+        ):
+            with temporary.open("xb") as stream:
+                stream.write(contents)
+                stream.flush()
+                os.fsync(stream.fileno())
+        os.link(manifest_temporary, manifest_path)
+        published.append(manifest_path)
+        os.link(report_temporary, output_path)
+        published.append(output_path)
+    except OSError:
+        for path in reversed(published):
+            path.unlink(missing_ok=True)
+        raise
+    finally:
+        report_temporary.unlink(missing_ok=True)
+        manifest_temporary.unlink(missing_ok=True)
+
+
 def _run(config: MappingRunConfig, ros2_executable: str) -> Path:
     python_executable = sys.executable
     config.validate_runtime(
@@ -188,6 +241,7 @@ def _run(config: MappingRunConfig, ros2_executable: str) -> Path:
         ros2_executable=ros2_executable,
         mapping_binary=config.binary_path,
     )
+    source_before = collect_source_identity(REPOSITORY_ROOT)
     world_session_id = claim_world_session(
         session_file_for_partition(os.environ.get("GZ_PARTITION", "default")),
         scene=config.scene,
@@ -228,6 +282,7 @@ def _run(config: MappingRunConfig, ros2_executable: str) -> Path:
                 and all(count >= 1 for count in publisher_counts)
             )
 
+        execution_started = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         process_result = supervise_mapping_processes(
             commands,
             readiness_file=config.readiness_path.resolve(),
@@ -300,6 +355,26 @@ def _run(config: MappingRunConfig, ros2_executable: str) -> Path:
         stable_provenance = require_provenance_unchanged(
             provenance_before, provenance_after
         )
+        verify_source_identity(REPOSITORY_ROOT, source_before)
+        stream_paths = {
+            "collector.stdout": process_result.collector_stdout,
+            "collector.stderr": process_result.collector_stderr,
+            "mission.stdout": process_result.mission_stdout,
+            "mission.stderr": process_result.mission_stderr,
+        }
+        stream_contents = {
+            name: path.read_bytes() for name, path in stream_paths.items()
+        }
+        process_streams = {
+            name: {
+                "path": path.relative_to(
+                    config.output_path.resolve().parent
+                ).as_posix(),
+                "sha256": hashlib.sha256(stream_contents[name]).hexdigest(),
+                "bytes": len(stream_contents[name]),
+            }
+            for name, path in stream_paths.items()
+        }
         report: dict[str, object] = {
             "schema_version": 2,
             "run_id": config.run_id,
@@ -307,6 +382,7 @@ def _run(config: MappingRunConfig, ros2_executable: str) -> Path:
             "scene": config.scene,
             "gazebo_world_session_id": world_session_id,
             "run_provenance": stable_provenance,
+            "source_identity": source_identity_to_mapping(source_before),
             "child_commands": {
                 "collector": list(commands.collector),
                 "mission": list(commands.mission),
@@ -323,9 +399,20 @@ def _run(config: MappingRunConfig, ros2_executable: str) -> Path:
                 "mission": mission_log,
                 "retained_at": str(config.log_directory.resolve()),
             },
+            "process_streams": process_streams,
         }
         validate_combined_run_report(report)
-        _publish_report_atomically(config.output_path.resolve(), report)
+        manifest = create_gazebo_run_manifest(
+            report,
+            source=source_before,
+            stream_contents=stream_contents,
+            started_at_utc=execution_started,
+            finished_at_utc=datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+        )
+        _publish_report_bundle_atomically(
+            config.output_path.resolve(), report, manifest
+        )
+        validate_gazebo_mapping_bundle(config.output_path.resolve())
         for temporary_artifact in (config.capture_path, config.readiness_path):
             try:
                 temporary_artifact.unlink()

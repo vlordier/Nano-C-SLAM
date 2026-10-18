@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from collections.abc import Callable
 from pathlib import Path
-from typing import cast
+from typing import BinaryIO, cast
 
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_run_model import (
     MappingRunCommands,
@@ -118,6 +118,20 @@ class MappingRunProcessTests(unittest.TestCase):
             if command == self.commands.mission:
                 assert readiness_file.is_file()
                 assert subscriptions_ready()
+            stdout_stream = kwargs.get("stdout")
+            stderr_stream = kwargs.get("stderr")
+            if hasattr(stdout_stream, "write"):
+                cast(BinaryIO, stdout_stream).write(
+                    b"mission stdout\n"
+                    if command == self.commands.mission
+                    else b"collector stdout\n"
+                )
+            if hasattr(stderr_stream, "write"):
+                cast(BinaryIO, stderr_stream).write(
+                    b"mission stderr\n"
+                    if command == self.commands.mission
+                    else b"collector stderr\n"
+                )
             index = 0 if command == self.commands.collector else 1
             if index >= len(processes):
                 exit_after, returncode = process_options[index]
@@ -164,6 +178,16 @@ class MappingRunProcessTests(unittest.TestCase):
             self.assertEqual(result.mission_returncode, 0)
             self.assertTrue(result.collector_log.is_file())
             self.assertTrue(result.mission_log.is_file())
+            self.assertEqual(
+                result.collector_stdout.read_bytes(), b"collector stdout\n"
+            )
+            self.assertEqual(
+                result.collector_stderr.read_bytes(), b"collector stderr\n"
+            )
+            self.assertEqual(
+                result.collector_log.read_bytes(),
+                b"collector stdout\ncollector stderr\n",
+            )
             self.assertTrue(all(process.waited for process in processes))
             self.assertEqual(readiness_file.read_text(encoding="utf-8"), self.run_id)
             self.assertEqual(

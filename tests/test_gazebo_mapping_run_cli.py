@@ -13,6 +13,7 @@ from scripts.gazebo_mapping_run import (
     _events_from_mission_log,
     _parse_args,
     _publish_report_atomically,
+    _publish_report_bundle_atomically,
     _run,
 )
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_run_processes import (
@@ -136,6 +137,23 @@ class MappingRunCliTests(unittest.TestCase):
 
             self.assertEqual(output_path.read_text(encoding="utf-8"), original)
             self.assertEqual(list(Path(temporary_directory).glob("*.tmp")), [])
+
+    def test_bundle_publication_writes_manifest_before_report_and_is_no_replace(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output_path = Path(temporary_directory) / "run.json"
+            report: dict[str, object] = {
+                "run_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+            }
+            manifest = b"canonical manifest fixture\n"
+            _publish_report_bundle_atomically(output_path, report, manifest)
+            sidecar = Path(temporary_directory) / "run.provenance.json"
+            self.assertEqual(sidecar.read_bytes(), manifest)
+            payload = json.loads(output_path.read_text(encoding="utf-8"))
+            self.assertEqual(payload["provenance_manifest"]["path"], sidecar.name)
+            with self.assertRaises(FileExistsError):
+                _publish_report_bundle_atomically(output_path, report, manifest)
 
 
 if __name__ == "__main__":
