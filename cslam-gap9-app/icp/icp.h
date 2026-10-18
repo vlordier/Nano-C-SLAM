@@ -34,6 +34,44 @@ typedef struct {
     int16_t has_nan; // Nonzero when alignment is invalid or non-finite.
 } icp_job_t;
 
+typedef enum {
+    ICP_RESULT_NO_MATCHES = 0,
+    ICP_RESULT_INVALID_SOLVER = 1,
+    ICP_RESULT_SENTINEL_ERROR = 2,
+    ICP_RESULT_NONFINITE_CORRECTION = 3,
+    ICP_RESULT_ERROR_REJECTED = 4,
+    ICP_RESULT_ACCEPTED = 5,
+} icp_result_status_t;
+
+static inline const char *icp_result_status_name(icp_result_status_t status) {
+    switch (status) {
+    case ICP_RESULT_NO_MATCHES: return "no_matches";
+    case ICP_RESULT_INVALID_SOLVER: return "invalid_solver";
+    case ICP_RESULT_SENTINEL_ERROR: return "sentinel_error";
+    case ICP_RESULT_NONFINITE_CORRECTION: return "nonfinite_correction";
+    case ICP_RESULT_ERROR_REJECTED: return "error_rejected";
+    case ICP_RESULT_ACCEPTED: return "accepted";
+    }
+    return "unknown";
+}
+
+/* `error` is mean squared point distance (m^2); threshold follows that unit. */
+static inline icp_result_status_t icp_classify_result(
+    size_t match_count, const icp_job_t *job, const float correction[3],
+    float maximum_mean_squared_error) {
+    if (match_count == 0) return ICP_RESULT_NO_MATCHES;
+    if (job == NULL || job->has_nan != 0) return ICP_RESULT_INVALID_SOLVER;
+    if (!isfinite(job->error)) return ICP_RESULT_SENTINEL_ERROR;
+    if (correction == NULL || !isfinite(correction[0]) ||
+        !isfinite(correction[1]) || !isfinite(correction[2]))
+        return ICP_RESULT_NONFINITE_CORRECTION;
+    if (!isfinite(maximum_mean_squared_error) ||
+        maximum_mean_squared_error <= 0.0f || job->error < 0.0f ||
+        job->error >= maximum_mean_squared_error)
+        return ICP_RESULT_ERROR_REJECTED;
+    return ICP_RESULT_ACCEPTED;
+}
+
 static inline float point_norm(icp_point_t p) {
     return sqrtf(p.x * p.x + p.y * p.y);
 }

@@ -32,7 +32,29 @@ static int optimized_fixture_poses_are_bounded(int16_t pose_count) {
 #define EXECUTION_CLASS "HOST"
 #endif
 
+static int icp_result_classification_is_correct(void) {
+    const float finite_correction[3] = {0.0f, 0.0f, 0.0f};
+    const float nonfinite_correction[3] = {NAN, 0.0f, 0.0f};
+    const icp_job_t accepted = {.error = 0.001f, .has_nan = 0};
+    const icp_job_t rejected = {.error = 0.01f, .has_nan = 0};
+    const icp_job_t sentinel = {.error = INFINITY, .has_nan = 0};
+    const icp_job_t invalid = {.error = 0.001f, .has_nan = 1};
+    return icp_classify_result(0, &accepted, finite_correction, 0.01f) ==
+               ICP_RESULT_NO_MATCHES &&
+           icp_classify_result(1, &sentinel, finite_correction, 0.01f) ==
+               ICP_RESULT_SENTINEL_ERROR &&
+           icp_classify_result(1, &accepted, nonfinite_correction, 0.01f) ==
+               ICP_RESULT_NONFINITE_CORRECTION &&
+           icp_classify_result(1, &rejected, finite_correction, 0.01f) ==
+               ICP_RESULT_ERROR_REJECTED &&
+           icp_classify_result(1, &invalid, finite_correction, 0.01f) ==
+               ICP_RESULT_INVALID_SOLVER &&
+           icp_classify_result(1, &accepted, finite_correction, 0.01f) ==
+               ICP_RESULT_ACCEPTED;
+}
+
 static int run_mapping_fixture(void) {
+    if (!icp_result_classification_is_correct()) return -1;
     slam_job_t job = {0};
     const int16_t ranges_mm[4] = {1000, 1200, 900, 1100};
     icp_points_t previous_scan = {0};
@@ -74,23 +96,40 @@ static int run_mapping_fixture(void) {
                 icp_job_t icp_job = {0};
                 static int16_t correspondences_p[SIZE_POINTS];
                 static int16_t correspondences_q[SIZE_POINTS];
+                int pair_match_count = 0;
                 if (compute_correspondences_parallel(&current_scan, &previous_scan,
                                                      0.4f, correspondences_p,
                                                      correspondences_q)) {
-                    last_correspondence_count = 0;
-                    for (size_t point = 0; point < previous_scan.num; point++)
-                        last_correspondence_count += correspondences_p[point] >= 0;
+                    pair_match_count = 0;
+                    for (size_t point = 0; point < current_scan.num; point++)
+                        pair_match_count += correspondences_p[point] >= 0;
+                    last_correspondence_count = pair_match_count;
                 }
                 icp_attempt_count++;
                 icp(&previous_scan, &current_scan, 25, 0.4f, correction, &icp_job);
                 if (isfinite(icp_job.error))
                     last_icp_error_milli = (int32_t)(icp_job.error * 1000.0f);
                 last_icp_has_nan = icp_job.has_nan;
-                if (icp_job.has_nan == 0 && icp_job.error < 0.01f) {
+                const icp_result_status_t result_status = icp_classify_result(
+                    (size_t)pair_match_count, &icp_job, correction, 0.01f);
+                if (result_status == ICP_RESULT_ACCEPTED) {
                     if (pcl_add_constraint((int16_t)scan_start,
                                            (int16_t)previous_scan_start, correction))
                         icp_constraint_count++;
                 }
+                printf("NANO_C_SLAM_%s:icp_pair from=%d to=%d points=%zu,%zu "
+                       "matches=%d status=%s error_milli_m2=%d has_nan=%d "
+                       "correction_finite=%d accepted=%d constraints=%d\n",
+                       EXECUTION_CLASS, scan_start, previous_scan_start,
+                       current_scan.num, previous_scan.num, pair_match_count,
+                       icp_result_status_name(result_status),
+                       isfinite(icp_job.error)
+                           ? (int)(icp_job.error * 1000.0f)
+                           : INT32_MAX,
+                       icp_job.has_nan,
+                       isfinite(correction[0]) && isfinite(correction[1]) &&
+                           isfinite(correction[2]),
+                       result_status == ICP_RESULT_ACCEPTED, icp_constraint_count);
             }
             add_scan_pose_id((uint16_t)scan_start);
             previous_scan = current_scan;
