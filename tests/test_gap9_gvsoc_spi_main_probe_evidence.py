@@ -168,6 +168,24 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "differ from target slam_job_t"):
             self._capture()
 
+    def test_accepts_captured_matching_optimizer_response(self) -> None:
+        expected_response = self._write_mapping_evidence()
+        transfer = json.loads(self.host_transfer_path.read_text(encoding="utf-8"))
+        transfer["control_phase"] = "optimizer_response_captured"
+        transfer["response_rx_hex"] = expected_response
+        self.host_transfer_path.write_text(json.dumps(transfer), encoding="utf-8")
+        self.log_path.write_text(
+            self.log_path.read_text(encoding="utf-8").splitlines()[-1] + "\n",
+            encoding="utf-8",
+        )
+
+        report = self._capture()
+
+        self.assertEqual(
+            report["optimizer_response_status"],
+            "captured and matched target slam_job_t",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

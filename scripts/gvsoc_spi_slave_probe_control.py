@@ -34,7 +34,7 @@ class SpiProxy(Protocol):
 
     def receive(self, size: int) -> None: ...
 
-    def get_received_bytes(self, size: int) -> bytes | None: ...
+    def get_received_bytes(self, size: int | None = None) -> bytes | None: ...
 
 
 class TestbenchProxy(Protocol):
@@ -131,15 +131,50 @@ def target_control(gvsoc: GvsocProxy) -> int:
                 raise RuntimeError("GVSOC did not return the command transfer RX bytes")
 
     if sequence == "mapping":
-        # Let production ICP/graph optimization finish. The current verified
-        # fixture compiles an explicit target-side TX skip; response capture is
-        # tracked separately while the GVSOC master receive sequence is debugged.
+        # Let production ICP/graph optimization finish and block in the real
+        # slave send before queuing master-side response clocks.
         result["control_phase"] = "waiting_for_optimizer_and_slave_tx"
         (output_root / "spi_slave_probe_host.json").write_text(
             json.dumps(result, indent=2) + "\n", encoding="utf-8"
         )
-        gvsoc.run(1_000_000_000_000)
-        result["control_phase"] = "optimizer_completed_response_not_clocked"
+        try:
+            gvsoc.run(10_000_000_000_000)
+        except BaseException as error:
+            result["control_phase"] = "optimizer_wait_failed"
+            result["control_error"] = repr(error)
+            (output_root / "spi_slave_probe_host.json").write_text(
+                json.dumps(result, indent=2) + "\n", encoding="utf-8"
+            )
+            raise
+        if os.environ.get("GAP9_GVSOC_SPI_CAPTURE_RESPONSE") == "1":
+            result["control_phase"] = "queueing_master_response_receive"
+            (output_root / "spi_slave_probe_host.json").write_text(
+                json.dumps(result, indent=2) + "\n", encoding="utf-8"
+            )
+            response_size = 18
+            spi.receive(response_size)
+            result["control_phase"] = "master_response_receive_queued"
+            (output_root / "spi_slave_probe_host.json").write_text(
+                json.dumps(result, indent=2) + "\n", encoding="utf-8"
+            )
+            gvsoc.run(100_000_000_000)
+            response = spi.get_received_bytes()
+            if response is None or len(response) != response_size:
+                response_length = None if response is None else len(response)
+                result["response_rx_length"] = response_length
+                result["control_phase"] = "optimizer_response_length_mismatch"
+                (output_root / "spi_slave_probe_host.json").write_text(
+                    json.dumps(result, indent=2) + "\n", encoding="utf-8"
+                )
+                raise RuntimeError(
+                    "GVSOC returned "
+                    f"{response_length} of {response_size} optimizer response bytes"
+                )
+            result["response_rx_hex"] = response.hex()
+            result["control_phase"] = "optimizer_response_captured"
+            print(f"NANO_C_SLAM_GVSOC_SPI_HOST:response_rx_hex={response.hex()}")
+        else:
+            result["control_phase"] = "optimizer_completed_response_not_clocked"
         (output_root / "spi_slave_probe_host.json").write_text(
             json.dumps(result, indent=2) + "\n", encoding="utf-8"
         )

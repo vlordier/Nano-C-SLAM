@@ -90,9 +90,10 @@ def capture_evidence(
             "Does not validate physical SPI, mapping accuracy, or flight behavior.",
         ]
     else:
-        if host_transfer.get("control_phase") != (
-            "optimizer_completed_response_not_clocked"
-        ):
+        if host_transfer.get("control_phase") not in {
+            "optimizer_completed_response_not_clocked",
+            "optimizer_response_captured",
+        }:
             raise ValueError("host controller did not complete the mapping phase")
         mapping_pattern = re.compile(
             r"NANO_C_SLAM_GVSOC_SPI_MAIN:mapping_ok packets=66 "

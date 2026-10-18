@@ -283,13 +283,13 @@ OPTIMIZE frame. The target must report 60 poses inserted, one checksum
 rejection, three registered scan origins, two ICP constraints/optimizer edges,
 and a finite completed graph solve.
 
-The test compile option
-`NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_SKIP_SPI_TX=ON` skips only the optimizer's
-18-byte slave response. This keeps the verified real-SPI ingress run bounded
-while host-side response clocking is investigated separately. The target's
-expected response bytes are printed for diagnosis, but this mapping evidence
-does not claim that they were transmitted or received. Child bead
-`ncs-ju6.4.7.3` tracks that unresolved response phase.
+The normal probe build keeps the production 18-byte slave response enabled.
+After the optimizer has run, the testbench queues a master RX transaction,
+clocks the actual PMSIS `spi_send_blocking`, and records the received bytes.
+The bounded test target waits briefly after its result marker so the host can
+drain and persist the asynchronous RX FIFO before simulation exit. The target
+marker and host RX bytes must both match; a target-side expected-value marker
+alone is insufficient.
 
 Build and run with the documented local Colima context:
 
@@ -297,10 +297,10 @@ Build and run with the documented local Colima context:
 DOCKER_HOST=ssh://colima-act-ci \
   GAP9_BUILD_GVSOC_SPI_MAIN_PROBE=1 \
   GAP9_BUILD_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT=66 \
-  GAP9_BUILD_GVSOC_SPI_MAIN_PROBE_SKIP_SPI_TX=ON \
   bash scripts/build_gap9_firmware.sh
 GAP9_GVSOC_ENABLE_TESTBENCH=1 \
   GAP9_GVSOC_SPI_SEQUENCE=mapping \
+  GAP9_GVSOC_SPI_CAPTURE_RESPONSE=1 \
   GAP9_GVSOC_CONTROL_SCRIPT="$PWD/scripts/gvsoc_spi_slave_probe_control.py" \
   GAP9_GVSOC_ELF="$PWD/cslam-gap9-app/BUILD-gvsoc-spi-main-probe/nano_c_slam_gvsoc_spi_main_probe" \
   GAP9_GVSOC_EXPECTED_MARKER='NANO_C_SLAM_GVSOC_SPI_MAIN:mapping_ok' \
@@ -312,16 +312,24 @@ uv run --locked python -m scripts.capture_gap9_gvsoc_spi_main_probe_evidence \
   --host-transfer "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-spi-main-mapping/spi_slave_probe_host.json" \
   --log "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-spi-main-mapping/gvsoc.log" \
   --source cslam-gap9-app/main.c \
+  --source cslam-gap9-app/CMakeLists.txt \
   --source cslam-gap9-app/spi/spi_driver.c \
   --source cslam-gap9-app/spi/spi_cmds_decode.c \
   --source cslam-gap9-app/point-cloud/point_cloud.c \
   --source cslam-gap9-app/point-cloud/external_point_cloud.c \
-  --output artifacts/gap9_gvsoc_evidence/spi_mapping_main_20261018.json
+  --source scripts/build_gap9_firmware.sh \
+  --source scripts/gvsoc_spi_slave_probe_control.py \
+  --source scripts/gap9_gvsoc_spi_probe_protocol.py \
+  --source scripts/capture_gap9_gvsoc_spi_main_probe_evidence.py \
+  --output artifacts/gap9_gvsoc_evidence/spi_mapping_main_response_20261018.json
 ```
 
 The retained report hash-binds the generated config, ELF, full host TX frame
-sequence, GVSOC log, and production sources. The run reports 641584 B of
-1536 KiB L2 shared (40.79%) and 117612 B of 131068 B L1 (89.73%); these are
-probe-build figures, not production flight-memory margin. This validates the
-mapping path on synthetic packet data in the virtual target. It does not
-establish map accuracy, physical SPI behavior, or flight readiness.
+sequence, actual host RX response, GVSOC log, and production plus test-harness
+sources. Two consecutive runs returned the same nonzero 18-byte response,
+`3c0003001500800000000100030009000100`, matching `slam_job_t`. The run reports
+641488 B of 1536 KiB L2 shared (40.78%) and 117612 B of 131068 B L1 (89.73%);
+these are probe-build figures, not production flight-memory margin. This
+validates the mapping path and feedback transfer on synthetic packet data in
+the virtual target. It does not establish map accuracy, physical SPI behavior,
+or flight readiness.

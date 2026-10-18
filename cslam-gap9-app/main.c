@@ -277,6 +277,9 @@ void slam_loop() {
 #else
 #error "SPI main probe packet count must be 2 or 66"
 #endif
+    // Keep the simulated target alive long enough for the host control script
+    // to drain its asynchronous SPI RX callback and persist the transfer.
+    pi_time_wait_us(100000);
     pmsis_exit(passed ? 0 : -1);
 #endif
 
