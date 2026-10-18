@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "evidence_class": "gvsoc-production-main-spi2-pose-scan",
+  "sdk_release": "5.20.4",
+  "interface": "SPI2/CS0, mode 0, 8-bit words",
+  "frames": [
+    "53000000000000000000000000000000000000000000ffffffffffffe803ffffffffffffffffffffffffffffb004ffffffffffffffffffffffffffff8403ffffffffffffffffffffffffffff4c04ffffffffffffffff3e3a000000000000000045",
+    "53010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000045"
+  ],
+  "target_marker": "NANO_C_SLAM_GVSOC_SPI_MAIN:run_ok packets=2 pose_decoded=1 pose_inserted=1 scans_decoded=1 scans_registered=1 poses=1 scan_origins=1",
+  "sha256": {
+    "elf": "69245382596f049c264c868a38f93adb52bd0d8d6ceefcb627b9af1544973d5a",
+    "gvsoc_config": "3c667a24b489f95f89cb882040441a11c9714eb50ea83be20063c4de21cccb01",
+    "host_transfer": "8542f9421e4a8ded3127e769e1c8c08de4caf6d7fd9bcfb8763169b02526953a",
+    "gvsoc_log": "24bd83c7502d686affb8667738f90bc5f7a2a3cfe0eff64aacf44b19a744749f",
+    "sources": {
+      "cslam-gap9-app/main.c": "c690d7030dc083617c76065fdd5689c910db98b869453eb83fbac033e0f9d5e6",
+      "cslam-gap9-app/spi/spi_driver.c": "20862abbebafb3ff570a2ab44da0eb550dea2f105910c9c899c17beff3772e3d",
+      "cslam-gap9-app/spi/spi_cmds_decode.c": "67bdf1f58674984eaffc70d52b107a3a222ccadaf40e01759a742fbb321b7dc1",
+      "cslam-gap9-app/point-cloud/point_cloud.c": "cb6b95ca309675752ab20771bb4ca47a437e5c70c301ddd31719d180eb84354f"
+    }
+  },
+  "limitations": [
+    "Proves POSE and SCAN dispatch through production main.c on GVSOC SPI2.",
+    "Does not validate physical SPI, mapping accuracy, or flight behavior."
+  ]
+}

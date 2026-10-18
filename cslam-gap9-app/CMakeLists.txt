@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.19)
 
 if(NANO_C_SLAM_GVSOC_SPI_TRACE)
     set(TARGET_NAME nano_c_slam_gvsoc_spi_trace)
+elseif(NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE)
+    set(TARGET_NAME nano_c_slam_gvsoc_spi_main_probe)
 elseif(NANO_C_SLAM_GVSOC_SPI_SLAVE_PROBE)
     set(TARGET_NAME nano_c_slam_gvsoc_spi_slave_probe)
 elseif(NANO_C_SLAM_GVSOC_DMA_SMOKE)
@@ -29,7 +31,30 @@ set_source_files_properties(
     PROPERTIES COMPILE_OPTIONS "-std=gnu11"
 )
 
-if(NANO_C_SLAM_GVSOC_SPI_SLAVE_PROBE)
+if(NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE)
+    file(GLOB GAP9_SLAM_SOURCES CONFIGURE_DEPENDS "slam/*.c" "slam/rcm/*.c")
+    file(GLOB GAP9_POINT_CLOUD_SOURCES CONFIGURE_DEPENDS "point-cloud/*.c")
+    file(GLOB GAP9_SPI_SOURCES CONFIGURE_DEPENDS "spi/*.c")
+    add_executable(
+        ${TARGET_NAME}
+        main.c
+        dma/dma_transfers.c
+        icp/icp.c
+        gpio/gpio_config.c
+        ${GAP9_SPI_SOURCES}
+        ${GAP9_SLAM_SOURCES}
+        ${GAP9_POINT_CLOUD_SOURCES}
+    )
+    target_include_directories(
+        ${TARGET_NAME}
+        PRIVATE slam slam/rcm dma icp spi point-cloud gpio
+    )
+    target_compile_definitions(
+        ${TARGET_NAME}
+        PRIVATE NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE=1 NANO_C_SLAM_TARGET_GVSOC=1
+    )
+    set(APP_OPT_LEVEL -O2)
+elseif(NANO_C_SLAM_GVSOC_SPI_SLAVE_PROBE)
     add_executable(
         ${TARGET_NAME}
         ../tests/gap9_gvsoc_spi_slave_probe.c
@@ -45,6 +70,7 @@ elseif(NANO_C_SLAM_GVSOC_SPI_TRACE)
         ${TARGET_NAME}
         main.c
         ../tests/gap9_gvsoc_spi_trace_transport.c
+        spi/spi_buffers.c
         spi/spi_cmds_decode.c
         gpio/gpio_config.c
         dma/dma_transfers.c

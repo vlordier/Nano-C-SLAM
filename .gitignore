@@ -14,6 +14,7 @@ cslam-gap9-app/BUILD-host/
 cslam-gap9-app/BUILD-gvsoc-mapping/
 cslam-gap9-app/BUILD-gvsoc-spi-trace/
 cslam-gap9-app/BUILD-gvsoc-spi-slave-probe/
+cslam-gap9-app/BUILD-gvsoc-spi-main-probe/
 cslam-gap9-app/BUILD-gvsoc-dma/
 cslam-gap9-app/BUILD-gvsoc-cluster-diag/
 .build-gap9-container/

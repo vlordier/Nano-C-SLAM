@@ -183,7 +183,8 @@ accuracy, and it is not physical board or flight evidence.
 
 For deterministic firmware-path coverage, the separate
 `NANO_C_SLAM_GVSOC_SPI_TRACE` target substitutes only `spi_rcv_blocking` and
-`spi_send_blocking`. It includes production `main.c`,
+`spi_send_blocking`; it also links production `spi/spi_buffers.c`, which
+`main.c` requires. It includes production `main.c`,
 `spi/spi_cmds_decode.c`, and owned mapping sources. A 66-frame finite trace
 passes through `get_spi_command`, the production decoders, `main.c` dispatch,
 scan registration, ICP constraint generation, graph optimization, and response
@@ -207,8 +208,8 @@ GAP9_GVSOC_ELF="$PWD/cslam-gap9-app/BUILD-gvsoc-spi-trace/nano_c_slam_gvsoc_spi_
   bash scripts/run_gap9_gvsoc_smoke.sh
 ```
 
-Run evidence for this revision: ELF SHA-256
-`82462d5da8ccf2a7da1432529fd004b7c7798e111b262a456c6c94b6e898c977`;
+Run evidence for the rebuilt target: ELF SHA-256
+`113bcebc85fc99ce50e0f10fa9a7774b2dd99ac2ecdc91b27ace9b1bc4ed8252`;
 GVSOC log SHA-256
 `b255dddfa539463ab423efc6b485ea4fcdcdfe261d54e00835dc7b3e30b65514`; the
 raw log is checked in at
@@ -217,8 +218,57 @@ index, command, ID, 97-byte receive length, checksum validity (`-1` means not
 applicable for OPTIMIZE), decoder result, and consumed pose/scan/constraint
 counts. The aggregate marker records optimizer edges, solver calls, and the
 18-byte response; the target validator compares the captured response with
-the production `slam_job_t`. The trace ELF link report uses 645104 B of 1536
-KiB L2 shared (41.01%) and 117612 B of 131068 B L1 (89.73%), leaving 13456 B
-L1. `riscv32-unknown-elf-size` reports 59750 B text, 525752 B data, and 63084 B
-BSS. L1 headroom is tight; the trace build does not establish production
-flight memory margin.
+the production `slam_job_t`. The rebuilt trace ELF link report uses 645296 B
+of 1536 KiB L2 shared (41.03%) and 117612 B of 131068 B L1 (89.73%), leaving
+13456 B L1. `riscv32-unknown-elf-size` reports 59942 B text, 525752 B data,
+and 63084 B BSS. L1 headroom is tight; the trace build does not establish
+production flight-memory margin.
+
+## Production main loop over testbench SPI2
+
+The separate `NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE` target now joins the real
+testbench SPI path to production command dispatch. It compiles `main.c`,
+`spi/spi_driver.c`, `spi/spi_cmds_decode.c`, and the owned point-cloud/ICP/graph
+sources. Only the probe build defines the two-packet bound and result counters;
+the normal firmware main loop remains unbounded and does not include them.
+
+The controller sends one 97-byte POSE frame in the production 84-byte
+`pcl_pose_t` wire layout, including four valid range samples and the unsigned
+byte-sum checksum, followed by a 97-byte SCAN frame. It waits for the target
+between transactions. The target exits successfully only after both production
+decoders succeed, the pose table contains one pose, and scan history contains
+one registered origin. A master-side transfer return without the target marker
+is not accepted.
+
+Reproduce using the documented Colima Docker context:
+
+```sh
+DOCKER_HOST=ssh://colima-act-ci GAP9_BUILD_GVSOC_SPI_MAIN_PROBE=1 \
+  bash scripts/build_gap9_firmware.sh
+GAP9_GVSOC_ENABLE_TESTBENCH=1 \
+  GAP9_GVSOC_SPI_SEQUENCE=pose-scan \
+  GAP9_GVSOC_CONTROL_SCRIPT="$PWD/scripts/gvsoc_spi_slave_probe_control.py" \
+  GAP9_GVSOC_ELF="$PWD/cslam-gap9-app/BUILD-gvsoc-spi-main-probe/nano_c_slam_gvsoc_spi_main_probe" \
+  GAP9_GVSOC_EXPECTED_MARKER='NANO_C_SLAM_GVSOC_SPI_MAIN:run_ok' \
+  GAP9_GVSOC_WORK_ROOT="${TMPDIR:-/tmp}/nano-c-slam-gvsoc-spi-main-probe" \
+  bash scripts/run_gap9_gvsoc_smoke.sh
+uv run --locked python -m scripts.capture_gap9_gvsoc_spi_main_probe_evidence \
+  --config "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-spi-main-probe/gvsoc_config.json" \
+  --elf cslam-gap9-app/BUILD-gvsoc-spi-main-probe/nano_c_slam_gvsoc_spi_main_probe \
+  --host-transfer "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-spi-main-probe/spi_slave_probe_host.json" \
+  --log "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-spi-main-probe/gvsoc.log" \
+  --source cslam-gap9-app/main.c \
+  --source cslam-gap9-app/spi/spi_driver.c \
+  --source cslam-gap9-app/spi/spi_cmds_decode.c \
+  --source cslam-gap9-app/point-cloud/point_cloud.c \
+  --output artifacts/gap9_gvsoc_evidence/spi_main_probe.json
+```
+
+Run evidence for 2026-10-18 is retained in
+`artifacts/gap9_gvsoc_evidence/spi_main_probe_20261018.json`. The GVSOC target
+reported two packets consumed, one valid pose decoded and inserted, one scan
+decoded and registered. The ELF uses 641264 B of 1536 KiB L2 shared (40.77%)
+and 117612 B of 131068 B L1 (89.73%); this is a test ELF resource report, not a
+production flight-memory margin. This demonstrates a short production software
+path through simulated SPI2. It does not run ICP/graph optimization, prove map
+quality, validate a physical bus, or establish flight behavior.
