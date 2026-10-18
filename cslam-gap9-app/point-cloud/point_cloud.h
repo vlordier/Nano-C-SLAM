@@ -46,6 +46,15 @@ typedef enum {
     DIR_RIGHT = 3,
 } direction_t;
 
+typedef struct {
+    uint32_t constraint_add_attempts;
+    uint32_t constraint_add_successes;
+    uint32_t duplicate_rejections;
+    uint32_t other_rejections;
+    uint32_t internal_icp_attempts;
+    uint32_t internal_icp_acceptances;
+} pcl_diagnostics_t;
+
 /**
  * @brief Add a new augmented pose to the pose table.
  *
@@ -141,6 +150,9 @@ uint16_t pcl_get_scan_pose_count();
 
 /** Return the number of valid pose-graph constraints currently stored. */
 int32_t pcl_get_constraint_count(void);
+
+/** Return cumulative insertion and production loop-closure counters. */
+pcl_diagnostics_t pcl_get_diagnostics(void);
 
 /** Return stored endpoint indices for a constraint, or false for invalid args.
  */

@@ -165,6 +165,7 @@ static int run_mapping_fixture(void) {
     const int32_t stored_constraints = pcl_get_constraint_count();
     const int32_t optimizer_inputs = pcl_get_optimizer_input_constraint_count();
     const int32_t optimizer_unique_edges = pcl_get_optimizer_input_unique_edge_count();
+    const pcl_diagnostics_t diagnostics_before_probes = pcl_get_diagnostics();
     int16_t duplicate_from = -1;
     int16_t duplicate_to = -1;
     float finite_measurement[3] = {0};
@@ -190,6 +191,18 @@ static int run_mapping_fixture(void) {
                                            &duplicate_to);
     const int insertion_count_unchanged =
         pcl_get_constraint_count() == stored_constraints;
+    const pcl_diagnostics_t diagnostics_after_probes = pcl_get_diagnostics();
+    const int rejection_diagnostics_are_consistent =
+        diagnostics_after_probes.constraint_add_successes ==
+            (uint32_t)stored_constraints &&
+        diagnostics_after_probes.constraint_add_successes ==
+            diagnostics_before_probes.constraint_add_successes &&
+        diagnostics_after_probes.duplicate_rejections -
+                diagnostics_before_probes.duplicate_rejections ==
+            2 &&
+        diagnostics_after_probes.other_rejections -
+                diagnostics_before_probes.other_rejections >=
+            3;
     // pcl_reduce may add distance-selected poses beyond the three scan starts;
     // successful subgraph solves are included in the final optimizer counters.
     const int passed =
@@ -203,7 +216,7 @@ static int run_mapping_fixture(void) {
         optimizer_inputs >= 2 && optimizer_unique_edges >= 2 &&
         optimizer_unique_edges <= optimizer_inputs && duplicate_rejected &&
         duplicate_external_rejected && invalid_pairs_rejected &&
-        insertion_count_unchanged;
+        insertion_count_unchanged && rejection_diagnostics_are_consistent;
     if (!passed) {
         printf("NANO_C_SLAM_%s:mapping_fail poses=%d scans=%u points=%zu "
                "icp_constraints=%d matches=%d icp_error_milli=%d "
@@ -233,6 +246,21 @@ static int run_mapping_fixture(void) {
            job.optimization_completed, job.has_nan, icp_attempt_count,
            icp_constraint_count, optimizer_inputs, optimizer_unique_edges,
            last_correspondence_count, (int)last_icp_error_milli, last_icp_has_nan);
+    printf("NANO_C_SLAM_%s:constraint_accounting fixture_icp_attempts=%d "
+           "internal_icp_attempts=%u internal_icp_accepted=%u "
+           "constraint_add_attempts=%u insertions=%u duplicate_rejections=%u "
+           "other_rejections=%u stored=%d optimizer_inputs=%d "
+           "optimizer_unique=%d duplicate_probe_delta=%u\n",
+           EXECUTION_CLASS, icp_attempt_count,
+           diagnostics_after_probes.internal_icp_attempts,
+           diagnostics_after_probes.internal_icp_acceptances,
+           diagnostics_after_probes.constraint_add_attempts,
+           diagnostics_after_probes.constraint_add_successes,
+           diagnostics_after_probes.duplicate_rejections,
+           diagnostics_after_probes.other_rejections, (int)stored_constraints,
+           (int)optimizer_inputs, (int)optimizer_unique_edges,
+           diagnostics_after_probes.duplicate_rejections -
+               diagnostics_before_probes.duplicate_rejections);
     return 0;
 }
 

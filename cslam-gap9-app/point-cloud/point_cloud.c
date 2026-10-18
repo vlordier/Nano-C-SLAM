@@ -39,6 +39,7 @@ PI_L2 static constraint optimization_constraints[MAX_CONSTRAINTS];
 static int32_t constr_counter = 0;
 static int32_t optimizer_input_constraint_count = 0;
 static int32_t optimizer_input_unique_edge_count = 0;
+static pcl_diagnostics_t diagnostics;
 
 static uint16_t int_scan_pose_ids[100];
 static uint16_t int_scan_pose_cnt = 0;
@@ -49,6 +50,8 @@ extern uint8_t verbose;
 uint16_t pcl_get_scan_pose_count() { return int_scan_pose_cnt; }
 
 int32_t pcl_get_constraint_count(void) { return constr_counter; }
+
+pcl_diagnostics_t pcl_get_diagnostics(void) { return diagnostics; }
 
 bool pcl_get_constraint_endpoints(int32_t index, int16_t *from, int16_t *to) {
     if (index < 0 || index >= constr_counter || from == NULL || to == NULL)
@@ -161,10 +164,12 @@ void check_internal_constraints(uint16_t cur_pose_id) {
             memset(icp_res, 0, 3 * sizeof(float));
 
             // Run ICP between two scans
+            diagnostics.internal_icp_attempts++;
             icp(&ref_scan, &cur_scan, 25, 0.4f, icp_res, &icp_job);
             // if (verbose) printf("%.3f  %d\n", icp_job.error,
             // icp_job.has_nan);
             if ((icp_job.has_nan == 0) && (icp_job.error < 0.01)) {
+                diagnostics.internal_icp_acceptances++;
                 if (verbose)
                     printf("Loop closure %d -> %d\n", cur_pose_id, ref_pose_id);
                 // printf("Cur %.1f %.1f  Cnt %d\n", cur_pose[0], cur_pose[1]);
@@ -268,6 +273,7 @@ static constraint comp_constr(float *icp_res, float *ref_pose, float *cur_pose,
 }
 
 bool pcl_add_constraint(int16_t from_node, int16_t to_node, float *icp) {
+    diagnostics.constraint_add_attempts++;
     if (constr_counter >= MAX_CONSTRAINTS || from_node < 0 || to_node < 0 ||
         from_node == to_node || from_node >= pose_counter ||
         to_node >= pose_counter || icp == NULL || !isfinite(icp[0]) ||
@@ -277,17 +283,24 @@ bool pcl_add_constraint(int16_t from_node, int16_t to_node, float *icp) {
         !isfinite(p_cloud[to_node].pos[2]) ||
         !isfinite(p_cloud[from_node].pos[0]) ||
         !isfinite(p_cloud[from_node].pos[1]) ||
-        !isfinite(p_cloud[from_node].pos[2]))
+        !isfinite(p_cloud[from_node].pos[2])) {
+        diagnostics.other_rejections++;
         return false;
-    if (constraint_pair_exists(constraints, constr_counter, from_node, to_node))
+    }
+    if (constraint_pair_exists(constraints, constr_counter, from_node, to_node)) {
+        diagnostics.duplicate_rejections++;
         return false;
+    }
     constraint c = comp_constr(icp, p_cloud[to_node].pos,
                                p_cloud[from_node].pos, to_node, from_node);
-    if (!isfinite(c.z[0]) || !isfinite(c.z[1]) || !isfinite(c.z[2]))
+    if (!isfinite(c.z[0]) || !isfinite(c.z[1]) || !isfinite(c.z[2])) {
+        diagnostics.other_rejections++;
         return false;
+    }
     c.external = 0;
     constraints[constr_counter] = c;
     constr_counter++;
+    diagnostics.constraint_add_successes++;
     // add_scan_pose_id(from_node);
     // add_scan_pose_id(to_node);
     return true;
