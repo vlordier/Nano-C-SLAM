@@ -106,6 +106,8 @@ static void reset_mocks(void) {
         ranging_results.distance_mm[i] = (int16_t)(100 + i);
         ranging_results.nb_target_detected[i] = 1;
         ranging_results.target_status[i] = 5;
+        ranging_results.range_sigma_mm[i] = 1;
+        ranging_results.signal_per_spad[i] = 100;
     }
 }
 
@@ -154,8 +156,19 @@ int main(void) {
     assert(get_tof_matrix(0, NULL) == TOF_CONFIG_ERROR);
 
     ranging_ready = 1;
+    ranging_results.range_sigma_mm[0] = UINT16_MAX;
+    ranging_results.signal_per_spad[0] = 0;
+    ranging_results.target_status[1] = 9;
+    ranging_results.target_status[2] = 4;
+    ranging_results.range_sigma_mm[2] = 0;
+    ranging_results.signal_per_spad[2] = UINT32_MAX;
+    ranging_results.nb_target_detected[3] = 0;
     assert(get_tof_matrix(0, matrix) == TOF_SUCCESS);
-    assert(matrix[0][0] == 100 && matrix[7][7] == 163);
+    assert(matrix[0][0] == 100); /* No unvalidated sigma/signal gate. */
+    assert(matrix[0][1] == 101); /* Status 9 is accepted. */
+    assert(matrix[0][2] == -1);  /* Status 4 is rejected. */
+    assert(matrix[0][3] == -1);  /* Missing target is rejected. */
+    assert(matrix[7][7] == 163);
     int16_t row[8];
     assert(get_tof_row(0, 3, row) == TOF_SUCCESS);
     assert(row[0] == 124 && row[7] == 131);

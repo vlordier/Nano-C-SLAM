@@ -17,6 +17,8 @@ typedef struct {
     int16_t distance_mm[64];
     uint8_t nb_target_detected[64];
     uint8_t target_status[64];
+    uint16_t range_sigma_mm[64];
+    uint32_t signal_per_spad[64];
 } VL53L5CX_ResultsData;
 
 uint8_t vl53l5cx_init(VL53L5CX_Configuration *device);
