@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
 from numbers import Integral
 
 from .mission_model import SUPPORTED_DRONE_NAMES
@@ -17,6 +18,57 @@ PAIR_LABELS = tuple(
 MAX_SOURCE_AGE_NS = 500_000_000
 MAX_SOURCE_SKEW_NS = 100_000_000
 MAX_FUTURE_NS = 100_000_000
+
+
+@dataclass(frozen=True)
+class PairwiseSnapshotEvidence:
+    sequence: int
+    publication_stamp_ns: int
+    source_stamps_ns: tuple[int, ...]
+    source_age_ns: tuple[int, ...]
+    source_skew_ns: int
+    drone_ids: tuple[str, ...]
+    pair_labels: tuple[str, ...]
+    published_ranges_m: tuple[float, ...]
+    computed_ranges_m: tuple[float, ...]
+    residuals_m: tuple[float, ...]
+
+
+@dataclass
+class StampSpan:
+    """Bounded count and first/last evidence for a strictly advancing stamp stream."""
+
+    count: int = 0
+    first_stamp_ns: int | None = None
+    last_stamp_ns: int | None = None
+
+    def observe(self, stamp_ns_value: object) -> None:
+        if (
+            isinstance(stamp_ns_value, bool)
+            or not isinstance(stamp_ns_value, int)
+            or stamp_ns_value <= 0
+        ):
+            raise ValueError("timestamp must be a positive integer")
+        if self.last_stamp_ns is not None and stamp_ns_value <= self.last_stamp_ns:
+            raise ValueError("timestamp did not advance")
+        if self.first_stamp_ns is None:
+            self.first_stamp_ns = stamp_ns_value
+        self.last_stamp_ns = stamp_ns_value
+        self.count += 1
+
+    def require_at_least(self, minimum_count: int, stream_name: str) -> None:
+        if self.count < minimum_count:
+            raise ValueError(
+                f"{stream_name} advanced {self.count} times; requires {minimum_count}"
+            )
+
+    def summary(self) -> dict[str, int | None]:
+        return {
+            "count": self.count,
+            "first_stamp_ns": self.first_stamp_ns,
+            "last_stamp_ns": self.last_stamp_ns,
+            "span_ns": (self.last_stamp_ns or 0) - (self.first_stamp_ns or 0),
+        }
 
 
 def stamp_ns(stamp: object) -> int:
@@ -72,6 +124,17 @@ def validate_pairwise_snapshot(
     odometry: Mapping[str, Mapping[int, Sequence[float]]],
 ) -> tuple[int, tuple[float, ...]]:
     """Validate pair labels and distances against exact retained odometry."""
+    evidence = analyze_pairwise_snapshot(message, now_ns=now_ns, odometry=odometry)
+    return evidence.sequence, evidence.published_ranges_m
+
+
+def analyze_pairwise_snapshot(
+    message: object,
+    *,
+    now_ns: int,
+    odometry: Mapping[str, Mapping[int, Sequence[float]]],
+) -> PairwiseSnapshotEvidence:
+    """Validate a pairwise message and retain its timestamp/distance evidence."""
     header = getattr(message, "header", None)
     publication_ns = stamp_ns(getattr(header, "stamp", None))
     if publication_ns - now_ns > MAX_FUTURE_NS:
@@ -116,4 +179,18 @@ def validate_pairwise_snapshot(
     sequence = getattr(message, "sequence", None)
     if isinstance(sequence, bool) or not isinstance(sequence, int) or sequence < 0:
         raise ValueError("pairwise sequence is invalid")
-    return sequence, ranges
+    return PairwiseSnapshotEvidence(
+        sequence=sequence,
+        publication_stamp_ns=publication_ns,
+        source_stamps_ns=source_stamps,
+        source_age_ns=tuple(now_ns - stamp for stamp in source_stamps),
+        source_skew_ns=max(source_stamps) - min(source_stamps),
+        drone_ids=tuple(message.drone_ids),
+        pair_labels=tuple(message.pair_labels),
+        published_ranges_m=ranges,
+        computed_ranges_m=tuple(expected),
+        residuals_m=tuple(
+            abs(actual - wanted)
+            for actual, wanted in zip(ranges, expected, strict=True)
+        ),
+    )

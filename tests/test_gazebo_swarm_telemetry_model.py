@@ -6,6 +6,8 @@ import types
 import unittest
 
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.swarm_telemetry_model import (
+    StampSpan,
+    analyze_pairwise_snapshot,
     validate_pairwise_snapshot,
     validate_stamped_ranges,
 )
@@ -80,6 +82,42 @@ class SwarmTelemetryModelTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "future"):
             validate_stamped_ranges(message, expected_drone="cf1", now_ns=self.now_ns)
 
+    def test_simulator_clock_requires_three_strictly_advancing_stamps(self) -> None:
+        clock = StampSpan()
+        with self.assertRaisesRegex(ValueError, "advanced 0 times"):
+            clock.require_at_least(3, "/clock")
+        clock.observe(1_000_000_000)
+        clock.observe(1_050_000_000)
+        with self.assertRaisesRegex(ValueError, "advanced 2 times"):
+            clock.require_at_least(3, "/clock")
+        clock.observe(1_100_000_000)
+        clock.require_at_least(3, "/clock")
+        self.assertEqual(
+            clock.summary(),
+            {
+                "count": 3,
+                "first_stamp_ns": 1_000_000_000,
+                "last_stamp_ns": 1_100_000_000,
+                "span_ns": 100_000_000,
+            },
+        )
+
+    def test_simulator_clock_rejects_paused_regressing_and_malformed_stamps(
+        self,
+    ) -> None:
+        for invalid in (0, -1, True, 1.5, "100"):
+            with (
+                self.subTest(stamp=invalid),
+                self.assertRaisesRegex(ValueError, "positive integer"),
+            ):
+                StampSpan().observe(invalid)
+        for invalid in (1_000_000_000, 999_999_999):
+            with self.subTest(stamp=invalid):
+                clock = StampSpan()
+                clock.observe(1_000_000_000)
+                with self.assertRaisesRegex(ValueError, "did not advance"):
+                    clock.observe(invalid)
+
     def test_accepts_pairwise_ranges_only_for_exact_source_poses(self) -> None:
         self.assertEqual(
             validate_pairwise_snapshot(
@@ -87,6 +125,21 @@ class SwarmTelemetryModelTests(unittest.TestCase):
             ),
             (4, (1.0, 2.0, 5**0.5)),
         )
+
+    def test_pairwise_analysis_retains_source_clock_and_distance_evidence(self) -> None:
+        evidence = analyze_pairwise_snapshot(
+            self.pairwise, now_ns=self.now_ns, odometry=self.positions
+        )
+
+        self.assertEqual(evidence.sequence, 4)
+        self.assertEqual(evidence.publication_stamp_ns, self.now_ns)
+        self.assertEqual(evidence.source_stamps_ns, (self.source_ns,) * 3)
+        self.assertEqual(evidence.source_age_ns, (100_000_000,) * 3)
+        self.assertEqual(evidence.source_skew_ns, 0)
+        self.assertEqual(evidence.pair_labels, tuple(self.pairwise.pair_labels))
+        self.assertEqual(evidence.published_ranges_m, (1.0, 2.0, 5**0.5))
+        self.assertEqual(evidence.computed_ranges_m, (1.0, 2.0, 5**0.5))
+        self.assertEqual(evidence.residuals_m, (0.0, 0.0, 0.0))
 
     def test_rejects_pairwise_identity_labels_and_distance_cross_assignment(
         self,

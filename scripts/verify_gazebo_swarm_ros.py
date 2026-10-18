@@ -12,6 +12,7 @@ import subprocess
 import sys
 import time
 from collections.abc import Sequence
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
@@ -19,9 +20,16 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     SUPPORTED_DRONE_NAMES,
 )
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.swarm_telemetry_model import (
-    validate_pairwise_snapshot,
+    StampSpan,
+    analyze_pairwise_snapshot,
+    stamp_ns,
     validate_stamped_ranges,
 )
+
+_CLOCK_TYPE = "rosgraph_msgs/msg/Clock"
+_ODOMETRY_TYPE = "nav_msgs/msg/Odometry"
+_RANGES_TYPE = "nano_c_slam_interfaces/msg/StampedRanges"
+_PAIRWISE_TYPE = "nano_c_slam_interfaces/msg/StampedPairwiseRanges"
 
 
 def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, object]:
@@ -33,6 +41,7 @@ def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, obj
     pairwise_type = importlib.import_module(
         "nano_c_slam_interfaces.msg"
     ).StampedPairwiseRanges
+    clock_type = importlib.import_module("rosgraph_msgs.msg").Clock
     parameter_type = importlib.import_module("rclpy.parameter").Parameter
 
     class TelemetryProbe(node_type):  # type: ignore[valid-type,misc]
@@ -44,13 +53,28 @@ def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, obj
             }
             self.odom_counts = dict.fromkeys(SUPPORTED_DRONE_NAMES, 0)
             self.last_odom_stamp_ns: dict[str, int] = {}
+            self.odom_first_stamp_ns: dict[str, int] = {}
             self.range_sequences: dict[str, int] = {}
+            self.range_stamps_ns: dict[str, int] = {}
+            self.range_first_stamp_ns: dict[str, int] = {}
+            self.range_first_sequence: dict[str, int] = {}
             self.range_counts = dict.fromkeys(SUPPORTED_DRONE_NAMES, 0)
-            self.pairwise_sequences: list[int] = []
+            self.clock_progress = StampSpan()
+            self.clock_errors: list[str] = []
+            self.pairwise_first_stamp_ns: int | None = None
+            self.pairwise_last_stamp_ns: int | None = None
+            self.pairwise_first_sequence: int | None = None
+            self.pairwise_last_sequence: int | None = None
+            self.pairwise_count = 0
+            self.pairwise_source_age_min_ns: int | None = None
+            self.pairwise_source_age_max_ns: int | None = None
+            self.pairwise_source_skew_max_ns = 0
+            self.pairwise_snapshots: list[dict[str, object]] = []
             self.pending_pairwise: list[Any] = []
             self.pairwise_errors: list[str] = []
             self.range_errors: list[str] = []
             self.cmd_vel: dict[str, dict[str, list[str]]] = {}
+            self.create_subscription(clock_type, "/clock", self._on_sim_clock, 10)
             for drone in SUPPORTED_DRONE_NAMES:
                 self.create_subscription(
                     odometry_type,
@@ -71,6 +95,13 @@ def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, obj
                 10,
             )
 
+        def _on_sim_clock(self, message: Any) -> None:  # noqa: ANN401
+            try:
+                current_stamp_ns = stamp_ns(message.clock)
+                self.clock_progress.observe(current_stamp_ns)
+            except (AttributeError, TypeError, ValueError, OverflowError) as error:
+                self.clock_errors.append(f"invalid /clock message: {error}")
+
         def _odom(self, message: Any, drone: str) -> None:  # noqa: ANN401
             stamp = message.header.stamp
             stamp_ns = int(stamp.sec) * 1_000_000_000 + int(stamp.nanosec)
@@ -88,6 +119,7 @@ def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, obj
                 self.pairwise_errors.append(f"{drone} odometry position is non-finite")
                 return
             self.odometry[drone][stamp_ns] = values
+            self.odom_first_stamp_ns.setdefault(drone, stamp_ns)
             self.last_odom_stamp_ns[drone] = stamp_ns
             while len(self.odometry[drone]) > 128:
                 del self.odometry[drone][min(self.odometry[drone])]
@@ -98,7 +130,7 @@ def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, obj
 
         def _ranges(self, message: Any, drone: str) -> None:  # noqa: ANN401
             try:
-                _, sequence, _ = validate_stamped_ranges(
+                source_stamp_ns, sequence, _ = validate_stamped_ranges(
                     message,
                     expected_drone=drone,
                     now_ns=self.get_clock().now().nanoseconds,
@@ -106,12 +138,18 @@ def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, obj
                 previous = self.range_sequences.get(drone)
                 if previous is not None and sequence <= previous:
                     raise ValueError(f"{drone} range sequence did not advance")
+                previous_stamp = self.range_stamps_ns.get(drone)
+                if previous_stamp is not None and source_stamp_ns <= previous_stamp:
+                    raise ValueError(f"{drone} range timestamp did not advance")
             except ValueError as error:
                 transient_clock_error = "stale" in str(error) or "future" in str(error)
                 if self.range_counts[drone] > 0 or not transient_clock_error:
                     self.range_errors.append(str(error))
                 return
             self.range_sequences[drone] = sequence
+            self.range_stamps_ns[drone] = source_stamp_ns
+            self.range_first_stamp_ns.setdefault(drone, source_stamp_ns)
+            self.range_first_sequence.setdefault(drone, sequence)
             self.range_counts[drone] += 1
 
         def _pairwise(self, message: Any) -> None:  # noqa: ANN401
@@ -119,12 +157,15 @@ def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, obj
 
         def _validate_pairwise(self, message: Any) -> None:  # noqa: ANN401
             try:
-                sequence, _ = validate_pairwise_snapshot(
+                evidence = analyze_pairwise_snapshot(
                     message,
                     now_ns=self.get_clock().now().nanoseconds,
                     odometry=self.odometry,
                 )
-                if self.pairwise_sequences and sequence <= self.pairwise_sequences[-1]:
+                if (
+                    self.pairwise_last_sequence is not None
+                    and evidence.sequence <= self.pairwise_last_sequence
+                ):
                     raise ValueError("pairwise sequence did not advance")
             except (ValueError, AttributeError, TypeError, OverflowError) as error:
                 if "exact pairwise source odometry is unavailable" in str(error):
@@ -132,10 +173,40 @@ def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, obj
                     self.pending_pairwise = self.pending_pairwise[-128:]
                     return
                 transient_clock_error = "stale" in str(error) or "future" in str(error)
-                if self.pairwise_sequences or not transient_clock_error:
+                if self.pairwise_count or not transient_clock_error:
                     self.pairwise_errors.append(str(error))
                 return
-            self.pairwise_sequences.append(sequence)
+            if (
+                self.pairwise_last_stamp_ns is not None
+                and evidence.publication_stamp_ns <= self.pairwise_last_stamp_ns
+            ):
+                self.pairwise_errors.append(
+                    "pairwise publication timestamp did not advance"
+                )
+                return
+            if self.pairwise_first_stamp_ns is None:
+                self.pairwise_first_stamp_ns = evidence.publication_stamp_ns
+                self.pairwise_first_sequence = evidence.sequence
+            self.pairwise_last_stamp_ns = evidence.publication_stamp_ns
+            self.pairwise_last_sequence = evidence.sequence
+            self.pairwise_count += 1
+            source_age_min = min(evidence.source_age_ns)
+            source_age_max = max(evidence.source_age_ns)
+            if self.pairwise_source_age_min_ns is None:
+                self.pairwise_source_age_min_ns = source_age_min
+                self.pairwise_source_age_max_ns = source_age_max
+            else:
+                self.pairwise_source_age_min_ns = min(
+                    self.pairwise_source_age_min_ns, source_age_min
+                )
+                self.pairwise_source_age_max_ns = max(
+                    self.pairwise_source_age_max_ns or source_age_max, source_age_max
+                )
+            self.pairwise_source_skew_max_ns = max(
+                self.pairwise_source_skew_max_ns, evidence.source_skew_ns
+            )
+            self.pairwise_snapshots.append(asdict(evidence))
+            self.pairwise_snapshots = self.pairwise_snapshots[-3:]
 
         def inspect_command_graph(self) -> dict[str, dict[str, list[str]]]:
             for drone in SUPPORTED_DRONE_NAMES:
@@ -157,8 +228,11 @@ def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, obj
             if (
                 all(count >= 3 for count in node.odom_counts.values())
                 and all(count >= 3 for count in node.range_counts.values())
-                and len(node.pairwise_sequences) >= 3
+                and node.clock_progress.count >= 3
+                and node.pairwise_count >= 3
             ):
+                break
+            if node.clock_errors:
                 break
         commands = node.inspect_command_graph() if require_mission_commands else {}
         missing = [
@@ -171,6 +245,12 @@ def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, obj
                 f"telemetry rejected: ranges={node.range_errors[-3:]}, "
                 f"pairwise={node.pairwise_errors[-3:]}"
             )
+        if node.clock_errors:
+            raise RuntimeError(f"simulator clock rejected: {node.clock_errors[-3:]}")
+        try:
+            node.clock_progress.require_at_least(3, "/clock")
+        except ValueError as error:
+            raise RuntimeError(str(error)) from error
         if any(count < 3 for count in node.odom_counts.values()):
             raise RuntimeError(
                 "odometry did not advance for all drones: "
@@ -181,7 +261,7 @@ def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, obj
                 f"four-ray ranges did not advance: {node.range_counts}; "
                 f"cmd_vel endpoints={commands}"
             )
-        if len(node.pairwise_sequences) < 3:
+        if node.pairwise_count < 3:
             raise RuntimeError(
                 "fewer than three valid fresh pairwise snapshots received; "
                 f"cmd_vel endpoints={commands}"
@@ -190,13 +270,63 @@ def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, obj
             raise RuntimeError(
                 f"cmd_vel publisher/subscriber wiring missing for {missing}"
             )
-        return {
-            "odometry_samples": node.odom_counts,
-            "range_samples": node.range_counts,
-            "pairwise_sequences": node.pairwise_sequences,
-            "cmd_vel_endpoints": commands,
-            "cmd_vel_missing_endpoints": missing,
+        expected_topics = {
+            "/clock": _CLOCK_TYPE,
+            **{f"/{drone}/odom": _ODOMETRY_TYPE for drone in SUPPORTED_DRONE_NAMES},
+            **{
+                f"/nano_c_slam/sim/{drone}/ranges_mm": _RANGES_TYPE
+                for drone in SUPPORTED_DRONE_NAMES
+            },
+            "/nano_c_slam/sim/uwb_pairwise_range_m": _PAIRWISE_TYPE,
         }
+        graph_types = dict(node.get_topic_names_and_types())
+        topic_types = {topic: graph_types.get(topic, []) for topic in expected_topics}
+        mismatched_topics = {
+            topic: topic_types[topic]
+            for topic, expected_type in expected_topics.items()
+            if topic_types[topic] != [expected_type]
+        }
+        if mismatched_topics:
+            raise RuntimeError(
+                f"required telemetry topic types differ: {mismatched_topics}"
+            )
+        result: dict[str, object] = {
+            "topic_types": topic_types,
+            "clock": node.clock_progress.summary(),
+            "odometry": {
+                drone: {
+                    "count": node.odom_counts[drone],
+                    "first_stamp_ns": node.odom_first_stamp_ns.get(drone),
+                    "last_stamp_ns": node.last_odom_stamp_ns.get(drone),
+                }
+                for drone in SUPPORTED_DRONE_NAMES
+            },
+            "ranges": {
+                drone: {
+                    "count": node.range_counts[drone],
+                    "first_stamp_ns": node.range_first_stamp_ns.get(drone),
+                    "last_stamp_ns": node.range_stamps_ns.get(drone),
+                    "first_sequence": node.range_first_sequence.get(drone),
+                    "last_sequence": node.range_sequences.get(drone),
+                }
+                for drone in SUPPORTED_DRONE_NAMES
+            },
+            "pairwise": {
+                "count": node.pairwise_count,
+                "first_stamp_ns": node.pairwise_first_stamp_ns,
+                "last_stamp_ns": node.pairwise_last_stamp_ns,
+                "first_sequence": node.pairwise_first_sequence,
+                "last_sequence": node.pairwise_last_sequence,
+                "source_age_min_ns": node.pairwise_source_age_min_ns,
+                "source_age_max_ns": node.pairwise_source_age_max_ns,
+                "source_skew_max_ns": node.pairwise_source_skew_max_ns,
+                "last_validated_snapshots": node.pairwise_snapshots,
+            },
+        }
+        if require_mission_commands:
+            result["cmd_vel_endpoints"] = commands
+            result["cmd_vel_missing_endpoints"] = missing
+        return result
     finally:
         node.destroy_node()
         if rclpy.ok():
@@ -236,12 +366,17 @@ def _publish_controlled_fixture(mode: str) -> int:
 
         def publish_snapshot(self) -> None:
             self.tick += 1
-            timestamp_ns = 10_000_000_000 + self.tick * 50_000_000
+            timestamp_ns = (
+                10_050_000_000
+                if mode == "paused-clock"
+                else 10_000_000_000 + self.tick * 50_000_000
+            )
             sec, nanosec = divmod(timestamp_ns, 1_000_000_000)
-            clock_message = clock_type()
-            clock_message.clock.sec = sec
-            clock_message.clock.nanosec = nanosec
-            self.clock.publish(clock_message)
+            if mode != "missing-clock":
+                clock_message = clock_type()
+                clock_message.clock.sec = sec
+                clock_message.clock.nanosec = nanosec
+                self.clock.publish(clock_message)
             coordinates = {
                 "cf1": (0.0, 0.0, 0.0),
                 "cf3": (1.0, 0.0, 0.0),
@@ -273,7 +408,11 @@ def _publish_controlled_fixture(mode: str) -> int:
             pairwise.source_stamps = [
                 time_type(sec=sec, nanosec=nanosec) for _ in SUPPORTED_DRONE_NAMES
             ]
-            pairwise.pair_labels = ["cf1:cf3", "cf1:cf4", "cf3:cf4"]
+            pairwise.pair_labels = (
+                ["cf1:cf3", "cf1:cf4"]
+                if mode == "incomplete-pairs"
+                else ["cf1:cf3", "cf1:cf4", "cf3:cf4"]
+            )
             pairwise.ranges_m = (
                 [2.0, 1.0, math.sqrt(5.0)]
                 if mode == "cross-assignment"
@@ -292,7 +431,12 @@ def _publish_controlled_fixture(mode: str) -> int:
     return 0
 
 
-def verify_controlled_fixture(timeout_s: float, *, mode: str) -> dict[str, object]:
+def verify_controlled_fixture(
+    timeout_s: float,
+    *,
+    mode: str,
+    require_mission_commands: bool = False,
+) -> dict[str, object]:
     """Run the passive verifier against a local fixture on a private ROS domain."""
     old_domain = os.environ.get("ROS_DOMAIN_ID")
     old_discovery = os.environ.get("ROS_AUTOMATIC_DISCOVERY_RANGE")
@@ -325,13 +469,28 @@ def verify_controlled_fixture(timeout_s: float, *, mode: str) -> dict[str, objec
             detail = publisher.stderr.read() if publisher.stderr is not None else ""
             raise RuntimeError(f"controlled ROS publisher exited early: {detail}")
         try:
-            result = verify(timeout_s, require_mission_commands=False)
+            result = verify(
+                timeout_s, require_mission_commands=require_mission_commands
+            )
         except RuntimeError as error:
             if mode == "valid":
+                if require_mission_commands and "cmd_vel publisher/subscriber" in str(
+                    error
+                ):
+                    return {
+                        "negative_fixture_rejected": "missing-command-endpoints",
+                        "diagnostic": str(error),
+                    }
                 raise
             return {"negative_fixture_rejected": mode, "diagnostic": str(error)}
         if mode != "valid":
             raise RuntimeError(f"invalid fixture unexpectedly passed: {mode}")
+        if require_mission_commands:
+            raise RuntimeError("empty mission command endpoints unexpectedly passed")
+        if "cmd_vel_endpoints" in result or "cmd_vel_missing_endpoints" in result:
+            raise RuntimeError(
+                "passive telemetry result unexpectedly includes cmd_vel data"
+            )
         return result
     finally:
         if publisher.poll() is None:
@@ -391,7 +550,7 @@ def verify_with_process_timeout(
 
 def main(args: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--timeout", type=float, default=15.0)
+    parser.add_argument("--timeout", type=float, default=20.0)
     parser.add_argument(
         "--require-mission-commands",
         action="store_true",
@@ -407,7 +566,14 @@ def main(args: Sequence[str] | None = None) -> int:
     )
     parser.add_argument(
         "--fixture-mode",
-        choices=("valid", "wrong-drone", "cross-assignment"),
+        choices=(
+            "valid",
+            "wrong-drone",
+            "cross-assignment",
+            "missing-clock",
+            "paused-clock",
+            "incomplete-pairs",
+        ),
         default="valid",
         help="controlled publisher case used with --self-test",
     )
@@ -426,7 +592,11 @@ def main(args: Sequence[str] | None = None) -> int:
             print(json.dumps(result))
             return 0
         result = (
-            verify_controlled_fixture(options.timeout, mode=options.fixture_mode)
+            verify_controlled_fixture(
+                options.timeout,
+                mode=options.fixture_mode,
+                require_mission_commands=options.require_mission_commands,
+            )
             if options.self_test
             else verify_with_process_timeout(
                 options.timeout,
@@ -436,7 +606,7 @@ def main(args: Sequence[str] | None = None) -> int:
     except (RuntimeError, ImportError, AttributeError) as error:
         print(f"Gazebo swarm telemetry check failed: {error}", file=sys.stderr)
         return 1
-    print(f"Gazebo swarm telemetry OK: {result}")
+    print(f"Gazebo swarm telemetry OK: {json.dumps(result, sort_keys=True)}")
     return 0
 
 
