@@ -107,10 +107,17 @@ To compile the code, you must first install the GAP9 SDK. If you don't have acce
 1. Connect the JTAG to the computer and to the GAP9 Deck V2
 2. Go to `cslam-gap9-app/` and run `make all run CONFIG_BOOT_DEVICE=mram`. Perform these two steps for each drone.
 
-### Run the mission
+### Run a simulated mission in Gazebo
+
+For the native macOS Gazebo/ROS 2 workflow, follow [sim/gazebo/README.md](sim/gazebo/README.md). Its bounded coordinator flies one simulated Crazyflie, captures Gazebo odometry and four-ray lidar, and replays those inputs through the owned host C mapping core. This is a pipeline smoke; it does not run GAP9 firmware, prove map accuracy, reproduce hardware ToF/UWB, or validate swarm map fusion.
+
+### Run the hardware radio demo
+
+This command connects to physical Crazyflies through a Crazyradio; it is separate from the Gazebo workflow and requires configured hardware.
+
 1. Power on the drones and place them in the environment
 2. Go to `cslam-stm32-app/run_demo.py` and configure the `DRONES` entries with each drone's radio URI and initial `(x, y, yaw)` pose.
-3. From the repository root, run `uv sync --locked`. Then, from `cslam-stm32-app/`, run `uv run --locked --project .. python run_demo.py N`. The drones will start flying and mapping the environment. The script currently lists radio addresses and initial poses for up to four drones.
+3. From the repository root, run `uv sync --locked`. Then, from `cslam-stm32-app/`, run `uv run --locked --project .. python run_demo.py N` to start the hardware radio demo. The script currently lists radio addresses and initial poses for up to four drones.
 
 See [REPRODUCTION.md](REPRODUCTION.md) for the tested build commands and current reproduction status.
 
