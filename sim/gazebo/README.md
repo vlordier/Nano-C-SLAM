@@ -247,6 +247,14 @@ uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/
   ros2 launch nano_c_slam_gazebo swarm_mission.launch.py
 ```
 
+The swarm launch keeps spatial paths disabled by default. To opt all three
+vehicles into their bounded square paths, pass `mapping_path:=true`:
+
+```sh
+uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
+  ros2 launch nano_c_slam_gazebo swarm_mission.launch.py mapping_path:=true
+```
+
 Before creating any mission node, the swarm launch reads `cf1`, `cf3`, and
 `cf4` spawn XY positions from the installed
 `ros_gz_crazyflie_gazebo/share/ros_gz_crazyflie_gazebo/worlds/crazyflie_swarm_world.sdf`
@@ -263,6 +271,14 @@ This is a deterministic planned-route check, not a physical safety margin. It
 does not model rotor extent, attitude, controller tracking error, localization
 error, command/time skew, or collision dynamics. It must not be used to claim
 collision-free physical flight.
+
+Separation policy for the current Gazebo mission is **offline verification**.
+The passive trajectory checker must fail the run evidence if any synchronized
+pairwise center distance falls below 0.50 m, but it does not send stop commands
+or protect vehicles while the mission is running. Report a passing run as
+“spacing remained above 0.50 m in this Gazebo run,” never as runtime
+separation protection or collision-free flight. Adding a reactive swarm
+monitor requires a separate design and failure-injection validation.
 
 On successful completion the mission process publishes one final zero-velocity
 command and exits. On phase failure it publishes a zero-velocity command,
