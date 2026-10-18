@@ -5,7 +5,7 @@ This integration uses the Gazebo Harmonic Crazyflie world from [`crazyswarm2_gaz
 The `nano_c_slam_gazebo` ROS package currently publishes two telemetry topics:
 
 - `/nano_c_slam/sim/<drone>/ranges_mm`: `StampedRanges` with source stamp, drone identity, sequence, and four distances in `front,back,left,right` order; `-1` marks invalid readings.
-- `/nano_c_slam/sim/uwb_pairwise_range_m`: ideal 3D distances computed from Gazebo odometry. The `Float32MultiArray` dimension label identifies each pair.
+- `/nano_c_slam/sim/uwb_pairwise_range_m`: `StampedPairwiseRanges` with a publication stamp, bridge sequence, stable drone and pair order, exact source odometry stamps, and ideal 3D distances computed from Gazebo odometry.
 
 See [RANGE_TELEMETRY.md](RANGE_TELEMETRY.md) for the timestamp, sequence, clock, pairing, and evidence contract. The bridge and collector now pair source-stamped ranges with odometry under the documented age and skew bounds.
 

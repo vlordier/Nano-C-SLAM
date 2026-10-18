@@ -6,11 +6,10 @@ import time
 from collections.abc import Sequence
 
 import rclpy
-from nano_c_slam_interfaces.msg import StampedRanges
+from nano_c_slam_interfaces.msg import StampedPairwiseRanges, StampedRanges
 from nav_msgs.msg import Odometry
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan
-from std_msgs.msg import Float32MultiArray, MultiArrayDimension
 
 from .mission_model import (
     MAX_ODOMETRY_FUTURE_SKEW_S,
@@ -40,6 +39,8 @@ class SensorBridge(Node):
 
         self._positions: dict[str, tuple[float, float, float]] = {}
         self._odometry_stamps_s: dict[str, float] = {}
+        self._odometry_source_stamps: dict[str, object] = {}
+        self._pairwise_sequence = 0
         self._last_odometry_warning_s = float("-inf")
         self._range_sequences = dict.fromkeys(self._drone_names, 0)
         self._range_publishers = {
@@ -49,7 +50,7 @@ class SensorBridge(Node):
             for name in self._drone_names
         }
         self._uwb_publisher = self.create_publisher(
-            Float32MultiArray, "/nano_c_slam/sim/uwb_pairwise_range_m", 10
+            StampedPairwiseRanges, "/nano_c_slam/sim/uwb_pairwise_range_m", 10
         )
 
         for name in self._drone_names:
@@ -119,19 +120,21 @@ class SensorBridge(Node):
             return
         self._positions = update.positions
         self._odometry_stamps_s = update.timestamps_s
+        self._odometry_source_stamps[drone] = stamp
         distances = update.distances_m
         if distances is None:
             return
-        output = Float32MultiArray()
-        output.layout.dim = [
-            MultiArrayDimension(
-                label=",".join(f"{first}:{second}" for first, second, _ in distances),
-                size=len(distances),
-                stride=len(distances),
-            )
+        output = StampedPairwiseRanges()
+        output.header.stamp = self.get_clock().now().to_msg()
+        output.sequence = self._pairwise_sequence
+        output.drone_ids = list(self._drone_names)
+        output.source_stamps = [
+            self._odometry_source_stamps[name] for name in self._drone_names
         ]
-        output.data = [distance for _, _, distance in distances]
+        output.pair_labels = [f"{first}:{second}" for first, second, _ in distances]
+        output.ranges_m = [distance for _, _, distance in distances]
         self._uwb_publisher.publish(output)
+        self._pairwise_sequence += 1
 
     def _warn_invalid_odometry(self, reason: str) -> None:
         """Throttle warnings while a drone's odometry stream is unavailable."""

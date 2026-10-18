@@ -21,6 +21,7 @@ _OWNED_INPUT_PATHS = (
     "sim/gazebo/nano_c_slam_interfaces/package.xml",
     "sim/gazebo/nano_c_slam_interfaces/CMakeLists.txt",
     "sim/gazebo/nano_c_slam_interfaces/msg/StampedRanges.msg",
+    "sim/gazebo/nano_c_slam_interfaces/msg/StampedPairwiseRanges.msg",
 )
 _REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
 OWNED_INPUT_PATHS = tuple(
