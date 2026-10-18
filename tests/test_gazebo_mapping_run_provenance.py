@@ -10,6 +10,7 @@ from pathlib import Path
 from subprocess import CompletedProcess
 from unittest.mock import patch
 
+from scripts.runtime_provenance import GAZEBO_ROS_ENVIRONMENT
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.run_provenance import (
     OVERLAY_PACKAGES,
     OWNED_INPUT_PATHS,
@@ -25,6 +26,16 @@ def _sha256(value: bytes) -> str:
 
 
 def _valid_provenance(binary_hash: str) -> dict[str, object]:
+    environment = {name: None for name in GAZEBO_ROS_ENVIRONMENT}
+    environment.update(
+        {
+            "ROS_DOMAIN_ID": "42",
+            "GZ_PARTITION": "nano_c_slam_501",
+            "RMW_IMPLEMENTATION": "rmw_cyclonedds_cpp",
+            "AMENT_PREFIX_PATH": "/overlay:/ros",
+            "COLCON_PREFIX_PATH": "/overlay:/ros",
+        }
+    )
     return {
         "schema_version": 1,
         "source": {
@@ -78,6 +89,7 @@ def _valid_provenance(binary_hash: str) -> dict[str, object]:
             "ros_domain_id": "42",
             "gazebo_partition": "nano_c_slam_501",
             "rmw_implementation": "rmw_cyclonedds_cpp",
+            "allowlisted_environment": environment,
             "prefix_paths": {
                 "AMENT_PREFIX_PATH": "/overlay:/ros",
                 "COLCON_PREFIX_PATH": "/overlay:/ros",
@@ -247,7 +259,9 @@ class GazeboRunProvenanceTests(unittest.TestCase):
                         "ROS_DISTRO": "jazzy",
                         "AMENT_PREFIX_PATH": "/overlay:/ros",
                         "COLCON_PREFIX_PATH": "/overlay:/ros",
+                        "NCS_PRIVATE_TOKEN": "must-not-be-captured",
                     },
+                    clear=True,
                 ),
             ):
                 provenance = collect_run_provenance(
@@ -266,6 +280,10 @@ class GazeboRunProvenanceTests(unittest.TestCase):
             self.assertEqual(
                 environment["prefix_paths"]["AMENT_PREFIX_PATH"], "/overlay:/ros"
             )
+            allowlisted = environment["allowlisted_environment"]
+            self.assertEqual(set(allowlisted), set(GAZEBO_ROS_ENVIRONMENT))
+            self.assertEqual(allowlisted["RMW_IMPLEMENTATION"], "<rmw-default>")
+            self.assertNotIn("NCS_PRIVATE_TOKEN", allowlisted)
             source_hashes = source["owned_input_sha256"]
             assert isinstance(source_hashes, dict)
             self.assertEqual(

@@ -8,6 +8,7 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path, PurePosixPath
 
+from scripts.runtime_provenance import GAZEBO_ROS_ENVIRONMENT
 from scripts.source_provenance import (
     SourceIdentity,
     source_identity_from_mapping,
@@ -58,6 +59,23 @@ def _mapping(value: object, name: str) -> dict[str, object]:
     if not isinstance(value, dict):
         raise ValueError(f"Gazebo manifest input is missing {name}")
     return value
+
+
+def _execution_environment(
+    runtime_environment: dict[str, object], *, run_id: str
+) -> tuple[tuple[str, str | None], ...]:
+    allowlisted = _mapping(
+        runtime_environment.get("allowlisted_environment"),
+        "allowlisted runtime environment",
+    )
+    if set(allowlisted) != set(GAZEBO_ROS_ENVIRONMENT):
+        raise ValueError("runtime environment does not match the allowlist")
+    values = {
+        key: value if isinstance(value, str) else None
+        for key, value in allowlisted.items()
+    }
+    values["NANO_C_SLAM_RUN_ID"] = run_id
+    return tuple(sorted(values.items()))
 
 
 def create_gazebo_run_manifest(
@@ -149,15 +167,8 @@ def create_gazebo_run_manifest(
             command=tuple(
                 [*commands["collector"], "--then-command--", *commands["mission"]]
             ),
-            environment=tuple(
-                sorted(
-                    (key, value if isinstance(value, str) else None)
-                    for key, value in {
-                        "ROS_DOMAIN_ID": environment.get("ros_domain_id"),
-                        "GZ_PARTITION": environment.get("gazebo_partition"),
-                        "RMW_IMPLEMENTATION": environment.get("rmw_implementation"),
-                    }.items()
-                )
+            environment=_execution_environment(
+                environment, run_id=str(report["run_id"])
             ),
             started_at_utc=started,
             finished_at_utc=finished,
@@ -243,17 +254,7 @@ def create_gazebo_replay_manifest(
         runtime_dependencies=tuple(dependencies),
         execution=ExecutionIdentity(
             command=command,
-            environment=tuple(
-                sorted(
-                    (key, value if isinstance(value, str) else None)
-                    for key, value in {
-                        "ROS_DOMAIN_ID": environment.get("ros_domain_id"),
-                        "GZ_PARTITION": environment.get("gazebo_partition"),
-                        "RMW_IMPLEMENTATION": environment.get("rmw_implementation"),
-                        "NANO_C_SLAM_RUN_ID": run_id,
-                    }.items()
-                )
-            ),
+            environment=_execution_environment(environment, run_id=run_id),
             started_at_utc=started_at_utc,
             finished_at_utc=finished_at_utc,
             exit_code=0,
@@ -327,6 +328,17 @@ def validate_gazebo_replay_bundle(report_path: Path) -> ValidationManifest:
     runtime_environment = _mapping(
         provenance.get("runtime_environment"), "runtime environment"
     )
+    manifest_environment = dict(manifest.execution.environment)
+    expected_environment = {
+        key: value if isinstance(value, str) else None
+        for key, value in _mapping(
+            runtime_environment.get("allowlisted_environment"),
+            "allowlisted environment",
+        ).items()
+    }
+    expected_environment["NANO_C_SLAM_RUN_ID"] = run_id
+    if manifest_environment != expected_environment:
+        raise ValueError("manifest allowlisted environment differs from report")
     for manifest_name, report_name in (
         ("ROS_DOMAIN_ID", "ros_domain_id"),
         ("GZ_PARTITION", "gazebo_partition"),
@@ -548,6 +560,15 @@ def validate_gazebo_mapping_bundle(report_path: Path) -> ValidationManifest:
     if not isinstance(environment, dict):
         raise ValueError("Gazebo report is missing runtime environment")
     manifest_environment = dict(manifest.execution.environment)
+    expected_environment = {
+        key: value if isinstance(value, str) else None
+        for key, value in _mapping(
+            environment.get("allowlisted_environment"), "allowlisted environment"
+        ).items()
+    }
+    expected_environment["NANO_C_SLAM_RUN_ID"] = str(report.get("run_id"))
+    if manifest_environment != expected_environment:
+        raise ValueError("manifest allowlisted environment differs from report")
     for key, field in (
         ("ROS_DOMAIN_ID", "ros_domain_id"),
         ("GZ_PARTITION", "gazebo_partition"),

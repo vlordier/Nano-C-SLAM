@@ -16,6 +16,7 @@ from scripts.gazebo_run_manifest import (
     validate_gazebo_mapping_bundle,
     validate_gazebo_replay_bundle,
 )
+from scripts.runtime_provenance import GAZEBO_ROS_ENVIRONMENT
 from scripts.source_provenance import SourceIdentity, source_identity_to_mapping
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.run_provenance import (
     OVERLAY_PACKAGES,
@@ -29,6 +30,30 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 
 def _hash(contents: bytes) -> str:
     return hashlib.sha256(contents).hexdigest()
+
+
+def _allowlisted_environment(
+    domain: str, partition: str, rmw: str
+) -> dict[str, str | None]:
+    values: dict[str, str | None] = {name: None for name in GAZEBO_ROS_ENVIRONMENT}
+    values.update(
+        {
+            "ROS_DOMAIN_ID": domain,
+            "GZ_PARTITION": partition,
+            "RMW_IMPLEMENTATION": rmw,
+            "AMENT_PREFIX_PATH": "/overlay:/ros",
+            "COLCON_PREFIX_PATH": "/overlay:/ros",
+        }
+    )
+    return values
+
+
+def _mutate_runtime_environment(
+    report: dict[str, object], field: str, variable: str, value: str
+) -> None:
+    runtime = report["run_provenance"]["runtime_environment"]
+    runtime[field] = value
+    runtime["allowlisted_environment"][variable] = value
 
 
 def _report() -> dict[str, object]:
@@ -83,6 +108,9 @@ def _report() -> dict[str, object]:
                 "ros_domain_id": "42",
                 "gazebo_partition": "nano_c_slam_501",
                 "rmw_implementation": "rmw_cyclonedds_cpp",
+                "allowlisted_environment": _allowlisted_environment(
+                    "42", "nano_c_slam_501", "rmw_cyclonedds_cpp"
+                ),
                 "prefix_paths": {
                     "AMENT_PREFIX_PATH": "/overlay:/ros",
                     "COLCON_PREFIX_PATH": "/overlay:/ros",
@@ -191,22 +219,25 @@ class GazeboRunManifestTests(unittest.TestCase):
                 "run IDs",
             ),
             (
-                lambda report: report["run_provenance"]["runtime_environment"].update(
-                    ros_domain_id="7"
+                lambda report: _mutate_runtime_environment(
+                    report, "ros_domain_id", "ROS_DOMAIN_ID", "7"
                 ),
-                "ROS_DOMAIN_ID",
+                "allowlisted environment",
             ),
             (
-                lambda report: report["run_provenance"]["runtime_environment"].update(
-                    gazebo_partition="other"
+                lambda report: _mutate_runtime_environment(
+                    report, "gazebo_partition", "GZ_PARTITION", "other"
                 ),
-                "GZ_PARTITION",
+                "allowlisted environment",
             ),
             (
-                lambda report: report["run_provenance"]["runtime_environment"].update(
-                    rmw_implementation="rmw_other_cpp"
+                lambda report: _mutate_runtime_environment(
+                    report,
+                    "rmw_implementation",
+                    "RMW_IMPLEMENTATION",
+                    "rmw_other_cpp",
                 ),
-                "RMW_IMPLEMENTATION",
+                "allowlisted environment",
             ),
             (
                 lambda report: report["run_provenance"]["executables"][
@@ -294,6 +325,9 @@ class GazeboReplayManifestTests(unittest.TestCase):
                 "ros_domain_id": "42",
                 "gazebo_partition": "partition-a",
                 "rmw_implementation": "rmw_cyclonedds_cpp",
+                "allowlisted_environment": _allowlisted_environment(
+                    "42", "partition-a", "rmw_cyclonedds_cpp"
+                ),
                 "prefix_paths": {
                     "AMENT_PREFIX_PATH": "/overlay:/ros",
                     "COLCON_PREFIX_PATH": "/overlay:/ros",
@@ -378,10 +412,10 @@ class GazeboReplayManifestTests(unittest.TestCase):
             report_data = json.loads(report_path.read_text(encoding="utf-8"))
             mutations = (
                 (
-                    lambda value: value["run_provenance"]["runtime_environment"].update(
-                        ros_domain_id="7"
+                    lambda value: _mutate_runtime_environment(
+                        value, "ros_domain_id", "ROS_DOMAIN_ID", "7"
                     ),
-                    "ROS_DOMAIN_ID",
+                    "allowlisted environment",
                 ),
                 (
                     lambda value: value["mapping_replay_command"].append("--changed"),

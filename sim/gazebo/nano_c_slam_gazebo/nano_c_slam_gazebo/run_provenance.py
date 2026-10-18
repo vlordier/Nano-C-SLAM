@@ -12,6 +12,8 @@ import sys
 from pathlib import Path
 from typing import cast
 
+from scripts.runtime_provenance import GAZEBO_ROS_ENVIRONMENT
+
 PROVENANCE_SCHEMA_VERSION = 1
 _OWNED_INPUT_PATHS = (
     "pyproject.toml",
@@ -217,6 +219,22 @@ def collect_run_provenance(
             "gazebo_partition": os.environ.get("GZ_PARTITION", "default"),
             "rmw_implementation": os.environ.get("RMW_IMPLEMENTATION", "<rmw-default>"),
             "prefix_paths": prefix_environment,
+            "allowlisted_environment": {
+                name: (
+                    os.environ.get(name, "")
+                    if name
+                    in {"ROS_DOMAIN_ID", "AMENT_PREFIX_PATH", "COLCON_PREFIX_PATH"}
+                    else os.environ.get(name)
+                    or (
+                        "default"
+                        if name == "GZ_PARTITION"
+                        else "<rmw-default>"
+                        if name == "RMW_IMPLEMENTATION"
+                        else None
+                    )
+                )
+                for name in GAZEBO_ROS_ENVIRONMENT
+            },
         },
     }
     return validate_run_provenance(provenance)
@@ -323,8 +341,28 @@ def validate_run_provenance(
         or any(
             not isinstance(path, str) for path in environment["prefix_paths"].values()
         )
+        or not isinstance(environment.get("allowlisted_environment"), dict)
+        or set(environment["allowlisted_environment"]) != set(GAZEBO_ROS_ENVIRONMENT)
+        or any(
+            value is not None and not isinstance(value, str)
+            for value in environment["allowlisted_environment"].values()
+        )
     ):
         raise ValueError("run provenance is missing ROS/Gazebo runtime identity")
+    allowlisted_environment = cast(
+        dict[str, object], environment["allowlisted_environment"]
+    )
+    if (
+        allowlisted_environment["ROS_DOMAIN_ID"] != environment["ros_domain_id"]
+        or allowlisted_environment["GZ_PARTITION"] != environment["gazebo_partition"]
+        or allowlisted_environment["RMW_IMPLEMENTATION"]
+        != environment["rmw_implementation"]
+        or allowlisted_environment["AMENT_PREFIX_PATH"]
+        != environment["prefix_paths"]["AMENT_PREFIX_PATH"]
+        or allowlisted_environment["COLCON_PREFIX_PATH"]
+        != environment["prefix_paths"]["COLCON_PREFIX_PATH"]
+    ):
+        raise ValueError("ROS/Gazebo environment fields disagree with allowlist")
     return cast(dict[str, object], value)
 
 
