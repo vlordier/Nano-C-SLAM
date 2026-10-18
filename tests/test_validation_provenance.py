@@ -76,7 +76,7 @@ class ValidationProvenanceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "exactly"):
             validate_manifest(manifest)
 
-    def accepts_hardware_attested_physical_flight_claim(self) -> None:
+    def test_accepts_hardware_attested_physical_flight_claim(self) -> None:
         manifest = _manifest()
         manifest["evidence_class"] = "physical-flight"
         manifest["hardware_attestation"] = {
