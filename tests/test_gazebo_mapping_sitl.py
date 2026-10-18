@@ -576,6 +576,8 @@ class NativeMappingReplayTests(unittest.TestCase):
                     )
 
                 replayed = _run_mapping(self.binary, samples)
+                self.assertTrue(replayed.stdout.startswith(b"{"))
+                self.assertEqual(replayed.stderr, b"")
                 retained = artifact["mapping"]
                 for field in (
                     "pose_count",
@@ -593,10 +595,10 @@ class NativeMappingReplayTests(unittest.TestCase):
                     "optimizer_input_unique_edge_pairs",
                     "has_nan",
                 ):
-                    self.assertEqual(replayed[field], retained[field], field)
+                    self.assertEqual(replayed.mapping[field], retained[field], field)
 
                 replayed_windows = cast(
-                    list[dict[str, object]], replayed["projected_scan_windows"]
+                    list[dict[str, object]], replayed.mapping["projected_scan_windows"]
                 )
                 retained_windows = retained["projected_scan_windows"]
                 self.assertEqual(len(replayed_windows), len(retained_windows))

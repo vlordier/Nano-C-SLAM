@@ -31,10 +31,16 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.run_provenance import (
 
 def main(args: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("report", type=Path, help="Gazebo mission JSON report")
+    parser.add_argument(
+        "report", type=Path, help="Gazebo mission or replay JSON report"
+    )
     options = parser.parse_args(args)
     try:
-        manifest = validate_gazebo_mapping_bundle(options.report)
+        report = json.loads(options.report.read_text(encoding="utf-8"))
+        if isinstance(report, dict) and "mapping_replay_provenance" in report:
+            manifest = validate_gazebo_replay_bundle(options.report)
+        else:
+            manifest = validate_gazebo_mapping_bundle(options.report)
     except (OSError, ValueError) as error:
         parser.exit(1, f"Gazebo bundle verification failed: {error}\n")
     print(
@@ -166,6 +172,262 @@ def create_gazebo_run_manifest(
     return serialize_manifest(manifest).encode("utf-8")
 
 
+def create_gazebo_replay_manifest(
+    *,
+    run_id: str,
+    source: SourceIdentity,
+    binary_path: Path,
+    binary_sha256: str,
+    run_provenance: dict[str, object],
+    command: tuple[str, ...],
+    stdout: bytes,
+    stderr: bytes,
+    started_at_utc: str,
+    finished_at_utc: str,
+) -> bytes:
+    """Create canonical single-process evidence for standalone mapping replay."""
+    executables = _mapping(run_provenance.get("executables"), "executables")
+    overlays = _mapping(run_provenance.get("ros_overlay_packages"), "ROS overlays")
+    dependencies: list[RuntimeDependency] = []
+    for name, raw_identity in executables.items():
+        if name == "mapping_binary":
+            continue
+        identity = _mapping(raw_identity, f"executable {name}")
+        version = identity.get("version") or identity.get("sim_version")
+        if name == "ros2":
+            version = identity.get("cli_version")
+        dependencies.append(
+            RuntimeDependency(
+                name=f"executable:{name}",
+                disposition=DependencyDisposition.SYSTEM_UNPINNED,
+                version=version if isinstance(version, str) and version else None,
+                sha256=str(identity["sha256"]),
+                path=None,
+            )
+        )
+    for name, raw_identity in overlays.items():
+        identity = _mapping(raw_identity, f"overlay {name}")
+        dependencies.append(
+            RuntimeDependency(
+                name=f"ros-overlay:{name}",
+                disposition=DependencyDisposition.SYSTEM_UNPINNED,
+                version=None,
+                sha256=str(identity["sha256"]),
+                path=None,
+            )
+        )
+    root = Path(__file__).resolve().parents[1]
+    resolved_binary = binary_path.resolve()
+    relative_binary = (
+        resolved_binary.relative_to(root).as_posix()
+        if resolved_binary.is_relative_to(root)
+        else None
+    )
+    environment = _mapping(run_provenance.get("runtime_environment"), "environment")
+    manifest = ValidationManifest(
+        schema_version=1,
+        status=RunStatus.SUCCESS,
+        evidence_class=EvidenceClass.GAZEBO,
+        claim_boundary=(
+            "Gazebo synthetic odometry/range telemetry replayed through the host "
+            "Nano-C-SLAM mapping core; map accuracy is not measured."
+        ),
+        captured_at_utc=finished_at_utc,
+        source=source,
+        build=BuildIdentity(
+            command=None,
+            configuration_sha256=None,
+            toolchain=None,
+            executable=ExecutableIdentity(relative_binary, binary_sha256),
+        ),
+        runtime_dependencies=tuple(dependencies),
+        execution=ExecutionIdentity(
+            command=command,
+            environment=tuple(
+                sorted(
+                    (key, value if isinstance(value, str) else None)
+                    for key, value in {
+                        "ROS_DOMAIN_ID": environment.get("ros_domain_id"),
+                        "GZ_PARTITION": environment.get("gazebo_partition"),
+                        "RMW_IMPLEMENTATION": environment.get("rmw_implementation"),
+                        "NANO_C_SLAM_RUN_ID": run_id,
+                    }.items()
+                )
+            ),
+            started_at_utc=started_at_utc,
+            finished_at_utc=finished_at_utc,
+            exit_code=0,
+            stdout_sha256=_digest(stdout),
+            stdout_bytes=len(stdout),
+            stderr_sha256=_digest(stderr),
+            stderr_bytes=len(stderr),
+        ),
+        hardware_attestation=None,
+    )
+    if (
+        manifest.build.executable is None
+        or manifest.build.executable.sha256 != binary_sha256
+    ):
+        raise ValueError(
+            f"mapping replay run {run_id} has inconsistent binary identity"
+        )
+    return serialize_manifest(manifest).encode("utf-8")
+
+
+def validate_gazebo_replay_bundle(report_path: Path) -> ValidationManifest:
+    """Verify standalone report, manifest, input streams, runtime, and mapper."""
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    if not isinstance(report, dict):
+        raise ValueError("Gazebo replay report must be a JSON object")
+    from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
+        validate_capture_report,
+    )
+
+    validate_capture_report(report)
+    reference = report.get("provenance_manifest")
+    if not isinstance(reference, dict) or set(reference) != {"path", "sha256"}:
+        raise ValueError("Gazebo replay report is missing manifest reference")
+    report_directory = report_path.resolve(strict=True).parent
+    manifest_path = (report_directory / _safe_relative_path(reference["path"])).resolve(
+        strict=True
+    )
+    if not manifest_path.is_relative_to(report_directory):
+        raise ValueError("manifest sidecar resolves outside report directory")
+    manifest_bytes = manifest_path.read_bytes()
+    if reference["sha256"] != _digest(manifest_bytes):
+        raise ValueError("manifest sidecar hash disagrees with report")
+    manifest = parse_manifest_json(manifest_bytes.decode("utf-8"))
+    if (
+        manifest.evidence_class is not EvidenceClass.GAZEBO
+        or manifest.status is not RunStatus.SUCCESS
+    ):
+        raise ValueError("Gazebo replay bundle requires successful Gazebo evidence")
+    if source_identity_from_mapping(report.get("source_identity")) != manifest.source:
+        raise ValueError("manifest source identity differs from report")
+    run_id = report.get("run_id")
+    command = report.get("mapping_replay_command")
+    if (
+        not isinstance(run_id, str)
+        or not isinstance(command, list)
+        or not all(isinstance(argument, str) for argument in command)
+    ):
+        raise ValueError("Gazebo replay report is missing run identity or command")
+    if manifest.execution.command != tuple(command):
+        raise ValueError("manifest replay command differs from report")
+    if dict(manifest.execution.environment).get("NANO_C_SLAM_RUN_ID") != run_id:
+        raise ValueError("manifest run ID differs from report")
+    provenance = report.get("run_provenance")
+    if not isinstance(provenance, dict):
+        raise ValueError("Gazebo replay report is missing runtime provenance")
+    from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.run_provenance import (
+        validate_run_provenance,
+    )
+
+    validate_run_provenance(provenance)
+    runtime_environment = _mapping(
+        provenance.get("runtime_environment"), "runtime environment"
+    )
+    for manifest_name, report_name in (
+        ("ROS_DOMAIN_ID", "ros_domain_id"),
+        ("GZ_PARTITION", "gazebo_partition"),
+        ("RMW_IMPLEMENTATION", "rmw_implementation"),
+    ):
+        if dict(manifest.execution.environment).get(
+            manifest_name
+        ) != runtime_environment.get(report_name):
+            raise ValueError(f"manifest {manifest_name} differs from report")
+    executables = _mapping(provenance.get("executables"), "executables")
+    overlays = _mapping(provenance.get("ros_overlay_packages"), "ROS overlays")
+    dependencies = {
+        dependency.name: dependency for dependency in manifest.runtime_dependencies
+    }
+    for name, identity_value in executables.items():
+        if name == "mapping_binary":
+            continue
+        identity = _mapping(identity_value, f"executable {name}")
+        dependency = dependencies.get(f"executable:{name}")
+        if dependency is None or dependency.sha256 != identity.get("sha256"):
+            raise ValueError("manifest runtime executable differs from report")
+    for name, identity_value in overlays.items():
+        identity = _mapping(identity_value, f"overlay {name}")
+        dependency = dependencies.get(f"ros-overlay:{name}")
+        if dependency is None or dependency.sha256 != identity.get("sha256"):
+            raise ValueError("manifest runtime ROS overlay differs from report")
+    replay = report.get("mapping_replay_provenance")
+    executable = manifest.build.executable
+    if (
+        not isinstance(replay, dict)
+        or executable is None
+        or executable.sha256 != replay.get("binary_sha256")
+    ):
+        raise ValueError("manifest mapper binary differs from report")
+    recorded_binary_path = replay.get("binary_path")
+    if not isinstance(recorded_binary_path, str) or not recorded_binary_path:
+        raise ValueError("replay report is missing mapping executable path")
+    binary_path = Path(recorded_binary_path)
+    if binary_path.is_file() and _digest(binary_path.read_bytes()) != executable.sha256:
+        raise ValueError("mapping executable changed after replay capture")
+    if executable.path is not None:
+        expected_binary = (
+            Path(__file__).resolve().parents[1] / executable.path
+        ).resolve()
+        if binary_path.resolve() != expected_binary:
+            raise ValueError("manifest executable path differs from report")
+    owned_hashes = _mapping(
+        _mapping(provenance.get("source"), "source").get("owned_input_sha256"),
+        "owned source hashes",
+    )
+    interface_identity = _mapping(
+        provenance.get("interface_identity"), "interface identity"
+    )
+    interface_hashes = _mapping(
+        interface_identity.get("source_sha256"), "interface source hashes"
+    )
+    for interface_name, source_path in (
+        (
+            "nano_c_slam_interfaces/msg/StampedRanges.msg",
+            "sim/gazebo/nano_c_slam_interfaces/msg/StampedRanges.msg",
+        ),
+        (
+            "nano_c_slam_interfaces/msg/StampedPairwiseRanges.msg",
+            "sim/gazebo/nano_c_slam_interfaces/msg/StampedPairwiseRanges.msg",
+        ),
+    ):
+        if interface_hashes.get(interface_name) != owned_hashes.get(source_path):
+            raise ValueError("replay interface identity differs from owned source")
+    streams = report.get("process_streams")
+    if not isinstance(streams, dict):
+        raise ValueError("Gazebo replay report is missing process streams")
+    contents: dict[str, bytes] = {}
+    for name in ("stdout", "stderr"):
+        record = streams.get(name)
+        if not isinstance(record, dict) or set(record) != {"path", "sha256", "bytes"}:
+            raise ValueError(f"invalid replay process stream: {name}")
+        path = (report_directory / _safe_relative_path(record["path"])).resolve(
+            strict=True
+        )
+        if not path.is_relative_to(report_directory):
+            raise ValueError(f"replay process stream resolves outside report: {name}")
+        contents[name] = path.read_bytes()
+        if record["sha256"] != _digest(contents[name]) or record["bytes"] != len(
+            contents[name]
+        ):
+            raise ValueError(f"replay process stream changed after capture: {name}")
+    for name, stream in (
+        ("stdout", contents["stdout"]),
+        ("stderr", contents["stderr"]),
+    ):
+        if getattr(manifest.execution, f"{name}_sha256") != _digest(stream) or getattr(
+            manifest.execution, f"{name}_bytes"
+        ) != len(stream):
+            raise ValueError(f"manifest {name} differs from replay process stream")
+    if manifest.execution.exit_code != 0:
+        raise ValueError("Gazebo replay manifest does not record successful execution")
+    if "map accuracy is not measured" not in manifest.claim_boundary:
+        raise ValueError("Gazebo replay manifest overstates mapping evidence")
+    return manifest
+
+
 def validate_gazebo_mapping_bundle(report_path: Path) -> ValidationManifest:
     """Verify report/manifest/process-stream hashes and critical run joins."""
     report = json.loads(report_path.read_text(encoding="utf-8"))
@@ -233,6 +495,13 @@ def validate_gazebo_mapping_bundle(report_path: Path) -> ValidationManifest:
         or manifest_executable.sha256 != capture_provenance.get("binary_sha256")
     ):
         raise ValueError("manifest mapping executable differs from capture/report")
+    recorded_binary = mapping_binary.get("path")
+    if (
+        isinstance(recorded_binary, str)
+        and Path(recorded_binary).is_file()
+        and _digest(Path(recorded_binary).read_bytes()) != manifest_executable.sha256
+    ):
+        raise ValueError("mapping executable changed after mission capture")
     dependencies = {
         dependency.name: dependency for dependency in manifest.runtime_dependencies
     }

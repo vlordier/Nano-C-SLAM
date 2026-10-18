@@ -185,11 +185,19 @@ def _publish_report_atomically(output_path: Path, report: dict[str, object]) -> 
 
 
 def _publish_report_bundle_atomically(
-    output_path: Path, report: dict[str, object], manifest: bytes
+    output_path: Path,
+    report: dict[str, object],
+    manifest: bytes,
+    *,
+    artifacts: dict[Path, bytes] | None = None,
 ) -> None:
     """Publish a manifest first and report last as the bundle commit marker."""
     manifest_path = output_path.with_suffix(".provenance.json")
-    if output_path.exists() or manifest_path.exists():
+    if (
+        output_path.exists()
+        or manifest_path.exists()
+        or any(path.exists() for path in (artifacts or {}))
+    ):
         raise FileExistsError("Gazebo report or provenance manifest already exists")
     run_id = report.get("run_id")
     if not isinstance(run_id, str):
@@ -200,19 +208,32 @@ def _publish_report_bundle_atomically(
     }
     report_temporary = output_path.with_name(f".{output_path.name}.{run_id}.tmp")
     manifest_temporary = manifest_path.with_name(f".{manifest_path.name}.{run_id}.tmp")
+    artifact_temporaries = {
+        path: path.with_name(f".{path.name}.{run_id}.tmp") for path in (artifacts or {})
+    }
+    if any(path.exists() for path in artifact_temporaries):
+        raise FileExistsError("Gazebo process stream artifact already exists")
     report_bytes = (
         json.dumps(report, indent=2, sort_keys=True, allow_nan=False) + "\n"
     ).encode()
     published: list[Path] = []
     try:
-        for temporary, contents in (
+        temporary_contents = [
+            *(
+                (artifact_temporaries[path], contents)
+                for path, contents in (artifacts or {}).items()
+            ),
             (manifest_temporary, manifest),
             (report_temporary, report_bytes),
-        ):
+        ]
+        for temporary, contents in temporary_contents:
             with temporary.open("xb") as stream:
                 stream.write(contents)
                 stream.flush()
                 os.fsync(stream.fileno())
+        for path, temporary in artifact_temporaries.items():
+            os.link(temporary, path)
+            published.append(path)
         os.link(manifest_temporary, manifest_path)
         published.append(manifest_path)
         os.link(report_temporary, output_path)
@@ -224,6 +245,8 @@ def _publish_report_bundle_atomically(
     finally:
         report_temporary.unlink(missing_ok=True)
         manifest_temporary.unlink(missing_ok=True)
+        for temporary in artifact_temporaries.values():
+            temporary.unlink(missing_ok=True)
 
 
 def _run(config: MappingRunConfig, ros2_executable: str) -> Path:

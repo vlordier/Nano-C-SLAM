@@ -23,6 +23,16 @@ from pathlib import Path
 from statistics import median
 from typing import Any, Protocol, cast
 
+from scripts.gazebo_mapping_run import _publish_report_bundle_atomically
+from scripts.gazebo_run_manifest import (
+    create_gazebo_replay_manifest,
+    validate_gazebo_replay_bundle,
+)
+from scripts.source_provenance import (
+    collect_source_identity,
+    source_identity_to_mapping,
+    verify_source_identity,
+)
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
     MappingSample,
     quaternion_yaw,
@@ -39,6 +49,10 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     SUPPORTED_DRONE_NAMES,
     create_run_id,
     validate_run_id,
+)
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.run_provenance import (
+    collect_run_provenance,
+    require_provenance_unchanged,
 )
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.telemetry_model import (
     PairingLimits,
@@ -104,6 +118,13 @@ class _CaptureResult:
     samples: list[MappingSample]
     pair_provenance: list[dict[str, int | str]]
     rejections: dict[str, int]
+
+
+@dataclass(frozen=True)
+class _MappingReplayResult:
+    mapping: dict[str, object]
+    stdout: bytes
+    stderr: bytes
 
 
 def _parse_args(args: list[str] | None) -> argparse.Namespace:
@@ -459,27 +480,28 @@ def _mapping_replay_provenance(binary: Path) -> dict[str, str | bool]:
     return {
         "source_revision": revision,
         "source_paths_dirty": bool(dirty),
+        "binary_path": str(binary.resolve()),
         "binary_sha256": digest,
         "execution": "native-host",
     }
 
 
-def _run_mapping(binary: Path, samples: list[MappingSample]) -> dict[str, object]:
+def _run_mapping(binary: Path, samples: list[MappingSample]) -> _MappingReplayResult:
     records = "\n".join(sample.to_record() for sample in samples) + "\n"
     try:
         result = subprocess.run(  # noqa: S603 -- explicit local executable path
             [str(binary)],
-            input=records,
+            input=records.encode("utf-8"),
             capture_output=True,
             check=False,
-            text=True,
             timeout=30.0,
         )
     except subprocess.TimeoutExpired as error:
         raise RuntimeError("Nano-C-SLAM host mapping replay timed out") from error
     if result.returncode:
         raise RuntimeError(
-            result.stderr.strip() or f"mapping replay exited {result.returncode}"
+            result.stderr.decode("utf-8", errors="replace").strip()
+            or f"mapping replay exited {result.returncode}"
         )
     try:
         mapping = json.loads(result.stdout)
@@ -493,7 +515,7 @@ def _run_mapping(binary: Path, samples: list[MappingSample]) -> dict[str, object
         if not isinstance(window, dict) or not isinstance(window.get("points"), list):
             raise RuntimeError("mapping replay returned malformed projected window")
         window["observability"] = summarize_projected_scan(window["points"])
-    return validated
+    return _MappingReplayResult(validated, result.stdout, result.stderr)
 
 
 def main(args: list[str] | None = None) -> int:
@@ -503,6 +525,28 @@ def main(args: list[str] | None = None) -> int:
         _build_host_runner(binary)
     if not binary.is_file():
         raise FileNotFoundError(f"host mapping executable was not built: {binary}")
+
+    output = options.output.resolve()
+    manifest_path = output.with_suffix(".provenance.json")
+    stdout_path = output.with_suffix(".stdout.log")
+    stderr_path = output.with_suffix(".stderr.log")
+    if any(path.exists() for path in (output, manifest_path, stdout_path, stderr_path)):
+        raise FileExistsError(
+            "Gazebo replay report or evidence artifact already exists"
+        )
+    if not output.parent.is_dir():
+        raise FileNotFoundError(
+            f"Gazebo replay output directory does not exist: {output.parent}"
+        )
+    ros2_executable = shutil.which("ros2")
+    if ros2_executable is None:
+        raise FileNotFoundError("ROS 2 executable is not on PATH")
+    source_before = collect_source_identity(REPOSITORY_ROOT)
+    provenance_before = collect_run_provenance(
+        REPOSITORY_ROOT,
+        ros2_executable=ros2_executable,
+        mapping_binary=binary,
+    )
 
     capture = _capture_samples(
         options.drone,
@@ -528,7 +572,10 @@ def main(args: list[str] | None = None) -> int:
         )
         for start in range(0, len(samples), 20)
     ]
-    mapping = _run_mapping(binary, samples)
+    started_at_utc = datetime.now(UTC).isoformat().replace("+00:00", "Z")
+    replay_result = _run_mapping(binary, samples)
+    finished_at_utc = datetime.now(UTC).isoformat().replace("+00:00", "Z")
+    mapping = replay_result.mapping
     range_stamps_ns = [int(pair["range_stamp_ns"]) for pair in capture.pair_provenance]
     intervals_ns = [
         current - previous
@@ -536,11 +583,23 @@ def main(args: list[str] | None = None) -> int:
         if current > previous
     ]
     median_frequency_hz = 1_000_000_000 / median(intervals_ns) if intervals_ns else 0.0
+    verify_source_identity(REPOSITORY_ROOT, source_before)
+    provenance_after = collect_run_provenance(
+        REPOSITORY_ROOT,
+        ros2_executable=ros2_executable,
+        mapping_binary=binary,
+    )
+    stable_provenance = require_provenance_unchanged(
+        provenance_before, provenance_after
+    )
     report: dict[str, Any] = {
         "schema_version": 1,
         "captured_at_utc": datetime.now(UTC).isoformat(),
         "source_provenance": _source_provenance(),
         "mapping_replay_provenance": _mapping_replay_provenance(binary),
+        "run_provenance": stable_provenance,
+        "source_identity": source_identity_to_mapping(source_before),
+        "mapping_replay_command": [str(binary)],
         "evidence_class": "host-execution-of-owned-gap9-mapping-core",
         "mapping_claim": (
             "host mapping pipeline execution only; map accuracy and completeness "
@@ -588,14 +647,46 @@ def main(args: list[str] | None = None) -> int:
         "capture_rejections": capture.rejections,
         "tof_projection": "one four-ray reading per direction in central ToF column",
         "mapping": mapping,
+        "process_streams": {
+            "stdout": {
+                "path": stdout_path.relative_to(output.parent).as_posix(),
+                "sha256": hashlib.sha256(replay_result.stdout).hexdigest(),
+                "bytes": len(replay_result.stdout),
+            },
+            "stderr": {
+                "path": stderr_path.relative_to(output.parent).as_posix(),
+                "sha256": hashlib.sha256(replay_result.stderr).hexdigest(),
+                "bytes": len(replay_result.stderr),
+            },
+        },
     }
     validate_capture_report(report)
-    options.output.parent.mkdir(parents=True, exist_ok=True)
-    options.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    manifest = create_gazebo_replay_manifest(
+        run_id=options.run_id,
+        source=source_before,
+        binary_path=binary,
+        binary_sha256=str(report["mapping_replay_provenance"]["binary_sha256"]),
+        run_provenance=stable_provenance,
+        command=(str(binary),),
+        stdout=replay_result.stdout,
+        stderr=replay_result.stderr,
+        started_at_utc=started_at_utc,
+        finished_at_utc=finished_at_utc,
+    )
+    _publish_report_bundle_atomically(
+        output,
+        report,
+        manifest,
+        artifacts={
+            stdout_path: replay_result.stdout,
+            stderr_path: replay_result.stderr,
+        },
+    )
+    validate_gazebo_replay_bundle(output)
     print(
         f"Nano-C-SLAM host mapping OK: {mapping['pose_count']} poses, "
         f"{mapping['scan_count']} scans, {mapping['map_point_count']} points, "
-        f"graph={mapping['main_graph_size']}; report: {options.output}"
+        f"graph={mapping['main_graph_size']}; report: {output}"
     )
     return 0
 
