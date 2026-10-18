@@ -15,7 +15,7 @@ Tested on macOS (Apple Silicon), with the evidence dates recorded below. The rep
 | Forced cluster Cholesky on synthetic fixture | Passed with isolated model rebuild | The 60-pose fixture passes with the FC fallback disabled only when GVSOC uses MCHAN rebuilt from committed GAP SDK source. The installed model fails the same ELF. See `artifacts/gap9_gvsoc_evidence/cluster_cholesky_clean_model_report.json` and the raw `.log`; the production fallback remains enabled pending physical-target confirmation. |
 | Production GAP9 main loop consuming deterministic SPI packets | Passed with test-only transport seam on 2026-10-18 | `NANO_C_SLAM_GVSOC_SPI_TRACE` builds production `main.c`, decoder, and mapping sources; the fixture replaces only blocking SPI receive/send. GVSOC consumed 60 valid poses, rejected one bad checksum, registered 3 of 4 scan packets, stored exact constraint edges 20→0 and 40→0, optimized once, and returned an 18-byte `slam_job_t`. This validates production software dispatch/mapping on the virtual GAP9 target, not the GVSOC SPI testbench bus, physical SPI, map accuracy, or hardware. See [cslam-gap9-app/spi/GVSOC_INTEGRATION.md](cslam-gap9-app/spi/GVSOC_INTEGRATION.md) for command, resource usage and ELF/log hashes. |
 | Production GAP9 main loop over GVSOC testbench SPI2 | Passed twice on 2026-10-18 | `NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE` drives 66 SPI2/CS0 testbench frames through production `main.c`, decoder, and mapping sources. It inserted 60 poses, rejected one bad pose checksum, registered 3 of 4 scans, accepted 2 ICP constraints, optimized once, and captured the expected 18-byte `slam_job_t`. The received response matches the expected bytes in `artifacts/gap9_gvsoc_evidence/spi_mapping_main_response_20261018.json`, which binds the ELF, GVSOC config, host transfer, log, and target sources by SHA-256. This validates the virtual SPI2 path, not physical SPI, map accuracy, or hardware. See [cslam-gap9-app/spi/GVSOC_INTEGRATION.md](cslam-gap9-app/spi/GVSOC_INTEGRATION.md) for reproduction and resource details. |
-| Host/GVSOC first recorded divergence | Compared 2026-10-18 | The host and target mapping reports share fixture SHA `56bd95c6…43a0fa` and 51 matching source hashes. `artifacts/gap9_gvsoc_evidence/host_gvsoc_comparison_20261018_v2.json` identifies the first out-of-tolerance recorded difference in `reverse-cluster.total` (41 host, 80 GVSOC), before final graph summaries. It records residuals, pose-delta norms, and convergence as unmeasured. This identifies the first logged discrepancy, not its root cause. |
+| Host/GVSOC first recorded divergence | Compared retained artifacts 2026-10-18 | The reports share fixture SHA `56bd95c6…43a0fa` and 51 shared input hashes. The comparator finds 41 versus 80 reverse correspondences at the second scan-pair registration; the next correspondence stage consumes 41 versus 80 matches, followed by different graph topology (3 versus 12 nodes) and solver work (3/9 versus 6/18 calls/iterations). Both summaries still report two accepted optimizer-visible unique edges. The GVSOC report marks the SDK worktree dirty and omits the loaded MCHAN plugin hash, so this is evidence of a behavior difference, not a reproducible supported-model result. Root cause remains open in `ncs-ju6.3.2.3`. |
 | Three-drone mission, map fusion, physical flight, quantitative map accuracy | Not demonstrated | Separate open work remains; per-drone mapping is not map fusion, and simulated four-ray lidar/ideal odometry are not hardware ToF/UWB. |
 
 The provenance-bound cluster diagnosis identified lost correspondence-array values at the cluster-to-FC boundary; bounded cluster-master stores fixed that target smoke. Production `main.c` has since passed both the deterministic transport-seam trace and a testbench SPI2 transfer sequence, including capture of a byte-matched optimizer response. The host/GVSOC graph topology and solver-work difference remains open (`ncs-ju6.3.2`). Neither synthetic fixtures nor host/GVSOC execution establishes mapping accuracy or physical hardware behavior. Repeated captures preserve earlier logs/reports; the implicit default output becomes timestamped when occupied, while an explicit path collision fails before the build.
@@ -37,12 +37,18 @@ uv run --locked python -m scripts.compare_gap9_mapping_diagnostics \
 The comparator rejects mismatched fixtures, shared source hashes, invalid
 artifacts, or log hashes before writing output. On the retained pair, the first
 observed out-of-tolerance trace difference is `reverse-cluster.total`: host
-reports 41 and GVSOC reports 80 (host log line 834; target line 919), after ICP
-iteration 24. It records 1,557 earlier float-component differences within the
-declared per-field tolerances. The later summaries differ at graph topology
-(3 versus 12 nodes) and optimizer work (3/9 versus 6/18 solver calls/iterations).
-This localizes the earliest recorded discrepancy; it does not explain its root
-cause. Individual pose/range values, scan extraction internals, and every
+reports 41 and GVSOC reports 80 (host log line 834; target line 919), after 24
+iterations of the previous scan-pair ICP. In the following registration, the
+correspondence stage consumes 41 host matches versus 80 GVSOC matches, so the
+difference changes the ICP path rather than only its diagnostics. The reports
+also differ at graph topology (3 versus 12 nodes) and optimizer work (3/9 versus
+6/18 solver calls/iterations), while both retain two accepted unique edges. The
+comparison records 1,557 earlier float-component differences within declared
+tolerances. This localizes the earliest recorded discrepancy and confirms
+downstream effect, but does not explain root cause. The GVSOC artifact marks its
+SDK worktree dirty and omits the loaded MCHAN plugin hash; it is not a fresh
+reproducible run against a pinned model. Individual pose/range values, scan
+extraction internals, and every
 intermediate optimized pose are not present in these logs, and are listed as
 unobserved by the comparator. Solver call and fixed-iteration counts describe
 work performed; residuals, pose-delta norms, objective improvement, and
