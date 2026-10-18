@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "evidence_class": "gvsoc-target-execution",
+  "claim_boundary": "Synthetic pose-graph mapping core on the GAP9 GVSOC model; not sensor, SPI, flight, or mapping-accuracy validation",
+  "hardware_measurement": false,
+  "test": "ICP loop closures and pose-graph optimization over synthetic poses",
+  "expected": {
+    "poses": 60,
+    "scans": 3,
+    "map_points": 240,
+    "finite_poses": 60,
+    "graph_nodes": 3,
+    "main_solver_returned": true,
+    "successful_solver_calls": 3,
+    "completed_solver_iterations": 9,
+    "optimization_completed": true,
+    "has_nan": false
+  },
+  "observed": {
+    "poses": 60,
+    "scans": 3,
+    "map_points": 240,
+    "finite_poses": 60,
+    "graph_nodes": 3,
+    "main_solver_returned": true,
+    "successful_solver_calls": 3,
+    "completed_solver_iterations": 9,
+    "optimization_completed": true,
+    "has_nan": false
+  },
+  "elf_bytes": 670868,
+  "elf_sha256": "0823a779a22bbea1c64e438b804ddb585e8834ad13f544821fe65c0bab2ce35a",
+  "log_sha256": "35bdaf5410b4dae21182752a781bd70ccf7a25473a49d808f20d75a2dcb45e66",
+  "gvsoc_model": {
+    "model_root": "/private/tmp/ncs-mchan-repro-a/models",
+    "mchan_plugin_sha256": "63c7a156d641118f907cdf8f2a214696209d95da642bdc28e16d74f39d719bd1",
+    "build_provenance": {
+      "sdk_source_commit": "45247566dbfd1ec7bb021f158fefe133c2aa8e10",
+      "sdk_checkout_commit": "45247566dbfd1ec7bb021f158fefe133c2aa8e10",
+      "sdk_worktree_dirty": "true",
+      "mchan_source_sha256": "e5e72f1d98d3df57e34c5e78186ec6848be3e7c4624c0b2a7a8cb96ff9ca9f4d",
+      "compiler_path": "/usr/bin/c++",
+      "compiler_version": "Apple clang version 21.0.0 (clang-2100.3.34.2)",
+      "compiler_sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9",
+      "engine_sha256": "93be2a0d75bdf8591f87c1bd2358bc06f3292f66aeab4f1685add194c2bb6724",
+      "soc_model_sha256": "e42b4399ad573e06f19e42cca1a3e7d21b0a9d6aaf82acc461c1947d0da017d1",
+      "plugin_sha256": "63c7a156d641118f907cdf8f2a214696209d95da642bdc28e16d74f39d719bd1",
+      "model_root": "/private/tmp/ncs-mchan-repro-a/models"
+    }
+  }
+}
