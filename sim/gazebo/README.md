@@ -259,7 +259,31 @@ For a future combined swarm evidence bundle, pass one canonical UUID as
 `run_id:=<uuid>` so all three mission status streams share the same run
 identity. If omitted, each mission generates its own UUID; that remains valid
 for an uncoordinated demonstration but cannot bind the three status streams as
-one run. The combined collector and process-outcome report are still pending.
+one run. The standalone mission supervisor below assigns a shared ID and
+records process outcomes; synchronized telemetry and spacing evidence remain a
+separate step.
+
+To retain a standalone mission-phase report for three concurrent processes,
+source ROS/Crazyswarm and use the same ROS domain and Gazebo partition as the
+running world, then run the supervisor against the installed world SDF:
+
+```sh
+source /opt/homebrew/opt/ros2-jazzy/setup.zsh
+source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
+export GZ_PARTITION="nano_c_slam_$(id -u)"
+export ROS_DOMAIN_ID=42
+uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
+  -m scripts.gazebo_swarm_mission_run \
+  --world ~/Work/crazyswarm2_gazebo/install/ros_gz_crazyflie_gazebo/share/ros_gz_crazyflie_gazebo/worlds/crazyflie_swarm_world.sdf \
+  --output /tmp/nano-c-slam-swarm-mission.json
+```
+
+The supervisor checks the planned routes, launches one `sim_mission` process
+per vehicle with a shared UUID, retains separate stdout/stderr logs and exit
+codes, and writes a report even when terminal evidence fails validation. A
+passing report establishes mission status only; it does not contain synchronized
+spacing telemetry or prove collision-free flight. Do not run this alongside
+another mission using the same ROS domain and world.
 
 Before creating any mission node, the swarm launch reads `cf1`, `cf3`, and
 `cf4` spawn XY positions from the installed

@@ -326,6 +326,50 @@ class SwarmProcessOutcomes:
         return all(outcome.succeeded for outcome in self.per_drone.values())
 
 
+def summarize_mission_process_outcome(
+    events: Sequence[MissionStatusEvent],
+    expected_run_id: str,
+    expected_drone_name: str,
+    process_exit_code: int,
+    *,
+    require_mapping_path: bool = False,
+) -> DroneProcessOutcome:
+    """Validate one terminal stream and classify it against its process exit."""
+    if isinstance(process_exit_code, bool) or not isinstance(process_exit_code, int):
+        raise ValueError(f"{expected_drone_name} process exit code must be an integer")
+    if not isinstance(events, Sequence) or isinstance(events, (str, bytes)):
+        raise ValueError(
+            f"{expected_drone_name} mission status stream must be a sequence"
+        )
+    if any(not isinstance(event, MissionStatusEvent) for event in events):
+        raise ValueError(
+            f"{expected_drone_name} mission status stream has invalid events"
+        )
+    terminal = validate_mission_status_events(
+        list(events),
+        expected_run_id,
+        expected_drone_name,
+        require_mapping_path=(
+            require_mapping_path
+            and bool(events)
+            and events[-1].phase is MissionPhase.COMPLETE
+        ),
+        allow_failed_terminal=True,
+    )
+    if terminal.phase is MissionPhase.COMPLETE and process_exit_code == 0:
+        classification = "success"
+    elif terminal.phase is MissionPhase.FAILED and process_exit_code != 0:
+        classification = "mission_failed"
+    else:
+        classification = "exit_status_mismatch"
+    return DroneProcessOutcome(
+        drone_name=expected_drone_name,
+        terminal=terminal,
+        process_exit_code=process_exit_code,
+        classification=classification,
+    )
+
+
 def summarize_swarm_process_outcomes(
     streams: Mapping[str, Sequence[MissionStatusEvent]],
     process_exit_codes: Mapping[str, int],
@@ -340,36 +384,16 @@ def summarize_swarm_process_outcomes(
     _validate_run_id(expected_run_id, "expected_run_id")
     outcomes: dict[str, DroneProcessOutcome] = {}
     for drone_name in SUPPORTED_DRONE_NAMES:
-        stream = streams[drone_name]
-        if not isinstance(stream, Sequence) or isinstance(stream, (str, bytes)):
-            raise ValueError(f"{drone_name} mission status stream must be a sequence")
-        if any(not isinstance(event, MissionStatusEvent) for event in stream):
-            raise ValueError(f"{drone_name} mission status stream has invalid events")
-        terminal = validate_mission_status_events(
-            list(stream),
+        outcomes[drone_name] = summarize_mission_process_outcome(
+            streams[drone_name],
             expected_run_id,
             drone_name,
+            process_exit_codes[drone_name],
             require_mapping_path=(
                 require_mapping_path
-                and bool(stream)
-                and stream[-1].phase is MissionPhase.COMPLETE
+                and bool(streams[drone_name])
+                and streams[drone_name][-1].phase is MissionPhase.COMPLETE
             ),
-            allow_failed_terminal=True,
-        )
-        exit_code = process_exit_codes[drone_name]
-        if isinstance(exit_code, bool) or not isinstance(exit_code, int):
-            raise ValueError(f"{drone_name} process exit code must be an integer")
-        if terminal.phase is MissionPhase.COMPLETE and exit_code == 0:
-            classification = "success"
-        elif terminal.phase is MissionPhase.FAILED and exit_code != 0:
-            classification = "mission_failed"
-        else:
-            classification = "exit_status_mismatch"
-        outcomes[drone_name] = DroneProcessOutcome(
-            drone_name=drone_name,
-            terminal=terminal,
-            process_exit_code=exit_code,
-            classification=classification,
         )
     return SwarmProcessOutcomes(expected_run_id, outcomes)
 
