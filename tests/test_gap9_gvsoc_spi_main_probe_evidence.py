@@ -13,7 +13,11 @@ from scripts.capture_gap9_gvsoc_spi_main_probe_evidence import (
     TARGET_MARKER,
     capture_evidence,
 )
-from scripts.gap9_gvsoc_spi_probe_protocol import make_pose_frame, make_scan_frame
+from scripts.gap9_gvsoc_spi_probe_protocol import (
+    make_mapping_trace,
+    make_pose_frame,
+    make_scan_frame,
+)
 
 
 class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
@@ -62,6 +66,47 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
             source_paths=(self.source_path,),
         )
 
+    def _write_mapping_evidence(self, response_rx_hex: str | None = None) -> str:
+        frames = make_mapping_trace()
+        commands = [
+            "POSE_BAD_CHECKSUM"
+            if index == 0
+            else {0: "POSE", 1: "SCAN", 2: "OPTIMIZE"}[frame[1]]
+            for index, frame in enumerate(frames)
+        ]
+        self.host_transfer_path.write_text(
+            json.dumps(
+                {
+                    "sequence": "mapping",
+                    "pre_cs_dummy_clock_cycles": 8,
+                    "frames": [
+                        {
+                            "command": command,
+                            "frame_tx_hex": frame.hex(),
+                            "length": len(frame),
+                        }
+                        for command, frame in zip(commands, frames, strict=True)
+                    ],
+                    "response_rx_hex": response_rx_hex,
+                    "control_phase": "optimizer_completed_response_not_clocked",
+                }
+            ),
+            encoding="utf-8",
+        )
+        expected_response = "010002000300040005000600070008000900"
+        marker = (
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:mapping_ok packets=66 "
+            "pose_decoded=60 pose_inserted=60 bad_pose_checksum=1 "
+            "scans_decoded=4 scans_registered=3 constraints=2 "
+            "optimizer_edges=2 optimize=1 graph=3 solver_calls=3 "
+            f"response_expected_hex={expected_response}"
+        )
+        self.log_path.write_text(
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:response_phase=skipped\n" + marker + "\n",
+            encoding="utf-8",
+        )
+        return expected_response
+
     def test_hash_binds_frames_target_log_and_owned_source(self) -> None:
         report = self._capture()
 
@@ -97,6 +142,30 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
         self.config_path.write_text(json.dumps(config), encoding="utf-8")
 
         with self.assertRaisesRegex(ValueError, "invalid GVSOC configuration"):
+            self._capture()
+
+    def test_accepts_full_mapping_ingress_but_labels_response_as_unvalidated(
+        self,
+    ) -> None:
+        expected_response = self._write_mapping_evidence()
+
+        report = self._capture()
+
+        self.assertEqual(report["sequence"], "mapping")
+        self.assertEqual(report["frame_count"], 66)
+        self.assertEqual(report["optimizer_response_expected_hex"], expected_response)
+        self.assertEqual(report["optimizer_response_status"], "skipped by test target")
+        self.assertTrue(
+            any(
+                "skips the SPI slave TX" in limitation
+                for limitation in cast(list[str], report["limitations"])
+            )
+        )
+
+    def test_rejects_claimed_response_bytes_when_target_skips_slave_tx(self) -> None:
+        self._write_mapping_evidence("00" * 18)
+
+        with self.assertRaisesRegex(ValueError, "differ from target slam_job_t"):
             self._capture()
 
 

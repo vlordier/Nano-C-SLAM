@@ -6,7 +6,10 @@ import unittest
 
 from scripts.gap9_gvsoc_spi_probe_protocol import (
     FRAME_SIZE,
+    OPTIMIZE_CMD,
     POSE_PAYLOAD,
+    SCAN_CMD,
+    make_mapping_trace,
     make_pose_frame,
     make_scan_frame,
 )
@@ -46,6 +49,33 @@ class Gap9GvsocSpiProbeProtocolTests(unittest.TestCase):
             (1000, 1200, 900, 1100),
         )
         self.assertEqual(frame[-1:], b"E")
+
+    def test_mapping_trace_matches_firmware_sequence_and_checksums(self) -> None:
+        frames = make_mapping_trace()
+
+        self.assertEqual(len(frames), 66)
+        self.assertEqual([frame[1] for frame in frames].count(0), 61)
+        self.assertEqual([frame[1] for frame in frames].count(SCAN_CMD), 4)
+        self.assertEqual(frames[-1][1], OPTIMIZE_CMD)
+        scans = [frame for frame in frames if frame[1] == SCAN_CMD]
+        self.assertEqual(
+            [int.from_bytes(frame[2:4], "little") for frame in scans], [0, 20, 40, 40]
+        )
+
+        invalid_pose = frames[0]
+        valid_poses = [frame for frame in frames[1:] if frame[1] == 0]
+        self.assertEqual(invalid_pose[:2], b"S\x00")
+        invalid_payload = invalid_pose[2 : 2 + POSE_PAYLOAD.size]
+        invalid_checksum = int.from_bytes(invalid_pose[86:90], "little")
+        self.assertNotEqual(invalid_checksum, sum(invalid_payload))
+        for pose_id, frame in enumerate(valid_poses):
+            payload = frame[2 : 2 + POSE_PAYLOAD.size]
+            self.assertEqual(POSE_PAYLOAD.unpack(payload)[0], pose_id)
+            self.assertEqual(int.from_bytes(frame[86:90], "little"), sum(payload))
+            self.assertEqual(frame[-1:], b"E")
+
+        for frame in scans:
+            self.assertEqual(int.from_bytes(frame[4:6], "little"), frame[2] + frame[3])
 
 
 if __name__ == "__main__":

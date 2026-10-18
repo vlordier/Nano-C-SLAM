@@ -44,6 +44,9 @@ uint8_t verbose = 1;
     defined(NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE)
 #define NANO_C_SLAM_GVSOC_HAS_PACKET_COUNTERS 1
 #endif
+#ifndef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT
+#define NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT 2
+#endif
 
 #ifdef NANO_C_SLAM_GVSOC_SPI_TRACE
 #include "gap9_gvsoc_spi_trace_transport.h"
@@ -78,10 +81,8 @@ void slam_loop() {
     int16_t bad_pose_checksums = 0;
     int16_t scan_packets_decoded = 0;
     int16_t scans_registered = 0;
-    uint16_t processed_packets = 0;
-#endif
-#ifdef NANO_C_SLAM_GVSOC_SPI_TRACE
     int16_t optimize_packets = 0;
+    uint16_t processed_packets = 0;
 #endif
 
     while (1) {
@@ -89,7 +90,8 @@ void slam_loop() {
         if (!gap9_gvsoc_spi_trace_has_packet()) break;
 #endif
 #ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
-        if (processed_packets >= 2) break;
+        if (processed_packets >= NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT)
+            break;
 #endif
         // Wait new SPI packet
         spi_rcv_blocking(spi_buf, SPI_PKT_SIZE);
@@ -177,7 +179,7 @@ void slam_loop() {
         }
 
         case OPTIMIZE_CMD: // Optimize pose graph
-#ifdef NANO_C_SLAM_GVSOC_SPI_TRACE
+#ifdef NANO_C_SLAM_GVSOC_HAS_PACKET_COUNTERS
             optimize_packets++;
 #endif
             set_cf_gpio(1); // GAP9 busy
@@ -195,7 +197,12 @@ void slam_loop() {
 
             // Send feedback to the STM32
             memcpy(spi_buf_t, &slam_job, sizeof(slam_job_t));
+#ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_SKIP_SPI_TX
+            printf("NANO_C_SLAM_GVSOC_SPI_MAIN:response_phase=skipped "
+                   "reason=GVSOC_slave_TX_not_validated\n");
+#else
             spi_send_blocking(spi_buf_t, sizeof(slam_job_t));
+#endif
             if (verbose) printf("\n");
             break;
 
@@ -229,16 +236,47 @@ void slam_loop() {
     }
 
 #ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
-    int passed = processed_packets == 2 && pose_packets_decoded == 1 &&
-                 poses_inserted == 1 && bad_pose_checksums == 0 &&
-                 scan_packets_decoded == 1 && scans_registered == 1 &&
-                 pcl_get_pose_count() == 1 && pcl_get_scan_pose_count() == 1;
+    int passed;
+#if NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT == 2
+    passed = processed_packets == 2 && pose_packets_decoded == 1 &&
+             poses_inserted == 1 && bad_pose_checksums == 0 &&
+             scan_packets_decoded == 1 && scans_registered == 1 &&
+             pcl_get_pose_count() == 1 && pcl_get_scan_pose_count() == 1;
     printf("NANO_C_SLAM_GVSOC_SPI_MAIN:run_%s packets=%u pose_decoded=%d "
            "pose_inserted=%d scans_decoded=%d scans_registered=%d "
            "poses=%d scan_origins=%u\n",
            passed ? "ok" : "fail", processed_packets, pose_packets_decoded,
            poses_inserted, scan_packets_decoded, scans_registered,
            pcl_get_pose_count(), pcl_get_scan_pose_count());
+#elif NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT == 66
+    passed = processed_packets == 66 && pose_packets_decoded == 60 &&
+             poses_inserted == 60 && bad_pose_checksums == 1 &&
+             scan_packets_decoded == 4 && scans_registered == 3 &&
+             optimize_packets == 1 && pcl_get_pose_count() == 60 &&
+             pcl_get_scan_pose_count() == 3 &&
+             pcl_get_constraint_count() == 2 &&
+             pcl_get_optimizer_input_unique_edge_count() == 2 &&
+             slam_job.number_of_poses == 60 && slam_job.main_graph_size == 3 &&
+             slam_job.has_nan == 0 && slam_job.main_solver_returned == 1 &&
+             slam_job.successful_solver_call_count >= 1 &&
+             slam_job.optimization_completed == 1;
+    printf("NANO_C_SLAM_GVSOC_SPI_MAIN:mapping_%s packets=%u "
+           "pose_decoded=%d pose_inserted=%d bad_pose_checksum=%d "
+           "scans_decoded=%d scans_registered=%d constraints=%ld "
+           "optimizer_edges=%ld optimize=%d graph=%d solver_calls=%d "
+           "response_expected_hex=",
+           passed ? "ok" : "fail", processed_packets, pose_packets_decoded,
+           poses_inserted, bad_pose_checksums, scan_packets_decoded,
+           scans_registered, (long)pcl_get_constraint_count(),
+           (long)pcl_get_optimizer_input_unique_edge_count(), optimize_packets,
+           slam_job.main_graph_size, slam_job.successful_solver_call_count);
+    const uint8_t *response_bytes = (const uint8_t *)&slam_job;
+    for (size_t index = 0; index < sizeof(slam_job); ++index)
+        printf("%02x", response_bytes[index]);
+    printf("\n");
+#else
+#error "SPI main probe packet count must be 2 or 66"
+#endif
     pmsis_exit(passed ? 0 : -1);
 #endif
 

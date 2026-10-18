@@ -21,8 +21,15 @@ project(${TARGET_NAME} C ASM)
 option(NANO_C_SLAM_ICP_DIAGNOSTICS "Enable test-only ICP stage diagnostics" OFF)
 set(NANO_C_SLAM_POSE_GRAPH_FC_THRESHOLD "64" CACHE STRING
     "Largest pose-graph dimension solved serially on the FC")
+set(NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT "2" CACHE STRING
+    "Finite command count for the test-only production SPI probe (2 or 66)")
+option(NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_SKIP_SPI_TX
+    "Skip optimizer SPI TX only for an isolated GVSOC ingress run" OFF)
 if(NOT NANO_C_SLAM_POSE_GRAPH_FC_THRESHOLD MATCHES "^[0-9]+$")
     message(FATAL_ERROR "NANO_C_SLAM_POSE_GRAPH_FC_THRESHOLD must be a nonnegative integer")
+endif()
+if(NOT NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT MATCHES "^(2|66)$")
+    message(FATAL_ERROR "SPI main probe packet count must be 2 or 66")
 endif()
 
 set_source_files_properties(
@@ -51,8 +58,16 @@ if(NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE)
     )
     target_compile_definitions(
         ${TARGET_NAME}
-        PRIVATE NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE=1 NANO_C_SLAM_TARGET_GVSOC=1
+        PRIVATE
+        NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE=1
+        NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT=${NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT}
+        NANO_C_SLAM_TARGET_GVSOC=1
     )
+    if(NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_SKIP_SPI_TX)
+        target_compile_definitions(
+            ${TARGET_NAME} PRIVATE NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_SKIP_SPI_TX=1
+        )
+    endif()
     set(APP_OPT_LEVEL -O2)
 elseif(NANO_C_SLAM_GVSOC_SPI_SLAVE_PROBE)
     add_executable(

@@ -269,6 +269,59 @@ Run evidence for 2026-10-18 is retained in
 reported two packets consumed, one valid pose decoded and inserted, one scan
 decoded and registered. The ELF uses 641264 B of 1536 KiB L2 shared (40.77%)
 and 117612 B of 131068 B L1 (89.73%); this is a test ELF resource report, not a
-production flight-memory margin. This demonstrates a short production software
-path through simulated SPI2. It does not run ICP/graph optimization, prove map
-quality, validate a physical bus, or establish flight behavior.
+ production flight-memory margin. This demonstrates a short production software
+ path through simulated SPI2. It does not run ICP/graph optimization, prove map
+ quality, validate a physical bus, or establish flight behavior.
+
+## Full mapping ingress over production SPI2
+
+The 66-command scenario drives production `main.c` and `spi/spi_driver.c` over
+the GVSOC SPI2/CS0 testbench. Unlike the trace target above, it does not replace
+the receive transport. It sends 61 POSE frames (including one invalid
+checksum), four SCAN frames (three unique origins plus one duplicate), and one
+OPTIMIZE frame. The target must report 60 poses inserted, one checksum
+rejection, three registered scan origins, two ICP constraints/optimizer edges,
+and a finite completed graph solve.
+
+The test compile option
+`NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_SKIP_SPI_TX=ON` skips only the optimizer's
+18-byte slave response. This keeps the verified real-SPI ingress run bounded
+while host-side response clocking is investigated separately. The target's
+expected response bytes are printed for diagnosis, but this mapping evidence
+does not claim that they were transmitted or received. Child bead
+`ncs-ju6.4.7.3` tracks that unresolved response phase.
+
+Build and run with the documented local Colima context:
+
+```sh
+DOCKER_HOST=ssh://colima-act-ci \
+  GAP9_BUILD_GVSOC_SPI_MAIN_PROBE=1 \
+  GAP9_BUILD_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT=66 \
+  GAP9_BUILD_GVSOC_SPI_MAIN_PROBE_SKIP_SPI_TX=ON \
+  bash scripts/build_gap9_firmware.sh
+GAP9_GVSOC_ENABLE_TESTBENCH=1 \
+  GAP9_GVSOC_SPI_SEQUENCE=mapping \
+  GAP9_GVSOC_CONTROL_SCRIPT="$PWD/scripts/gvsoc_spi_slave_probe_control.py" \
+  GAP9_GVSOC_ELF="$PWD/cslam-gap9-app/BUILD-gvsoc-spi-main-probe/nano_c_slam_gvsoc_spi_main_probe" \
+  GAP9_GVSOC_EXPECTED_MARKER='NANO_C_SLAM_GVSOC_SPI_MAIN:mapping_ok' \
+  GAP9_GVSOC_WORK_ROOT="${TMPDIR:-/tmp}/nano-c-slam-gvsoc-spi-main-mapping" \
+  bash scripts/run_gap9_gvsoc_smoke.sh
+uv run --locked python -m scripts.capture_gap9_gvsoc_spi_main_probe_evidence \
+  --config "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-spi-main-mapping/gvsoc_config.json" \
+  --elf cslam-gap9-app/BUILD-gvsoc-spi-main-probe/nano_c_slam_gvsoc_spi_main_probe \
+  --host-transfer "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-spi-main-mapping/spi_slave_probe_host.json" \
+  --log "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-spi-main-mapping/gvsoc.log" \
+  --source cslam-gap9-app/main.c \
+  --source cslam-gap9-app/spi/spi_driver.c \
+  --source cslam-gap9-app/spi/spi_cmds_decode.c \
+  --source cslam-gap9-app/point-cloud/point_cloud.c \
+  --source cslam-gap9-app/point-cloud/external_point_cloud.c \
+  --output artifacts/gap9_gvsoc_evidence/spi_mapping_main_20261018.json
+```
+
+The retained report hash-binds the generated config, ELF, full host TX frame
+sequence, GVSOC log, and production sources. The run reports 641584 B of
+1536 KiB L2 shared (40.79%) and 117612 B of 131068 B L1 (89.73%); these are
+probe-build figures, not production flight-memory margin. This validates the
+mapping path on synthetic packet data in the virtual target. It does not
+establish map accuracy, physical SPI behavior, or flight readiness.
