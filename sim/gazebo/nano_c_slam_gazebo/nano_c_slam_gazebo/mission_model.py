@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import math
 import uuid
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Any
@@ -292,6 +293,47 @@ def validate_mission_status_events(
     if require_mapping_path and not terminal.mapping_path_requested:
         raise ValueError("mapping run completed without requesting a bounded path")
     return terminal
+
+
+def validate_swarm_mission_status_events(
+    streams: Mapping[str, Sequence[MissionStatusEvent]],
+    expected_run_id: str,
+    *,
+    require_mapping_path: bool = False,
+) -> dict[str, MissionStatusEvent]:
+    """Require one successful, complete status stream for every swarm drone."""
+    if not isinstance(streams, Mapping):
+        raise ValueError("swarm mission status streams must be a mapping")
+    _validate_run_id(expected_run_id, "expected_run_id")
+    expected_drones = set(SUPPORTED_DRONE_NAMES)
+    actual_drones = set(streams)
+    missing = expected_drones - actual_drones
+    unexpected = actual_drones - expected_drones
+    if missing or unexpected:
+        details = []
+        if missing:
+            details.append(f"missing drone streams: {sorted(missing)}")
+        if unexpected:
+            details.append(f"unexpected drone streams: {sorted(unexpected)}")
+        raise ValueError("; ".join(details))
+
+    terminals: dict[str, MissionStatusEvent] = {}
+    for drone_name in SUPPORTED_DRONE_NAMES:
+        stream = streams[drone_name]
+        if not isinstance(stream, Sequence) or isinstance(stream, (str, bytes)):
+            raise ValueError(f"{drone_name} mission status stream must be a sequence")
+        if any(not isinstance(event, MissionStatusEvent) for event in stream):
+            raise ValueError(f"{drone_name} mission status stream has invalid events")
+        terminal = validate_mission_status_events(
+            list(stream),
+            expected_run_id,
+            drone_name,
+            require_mapping_path=require_mapping_path,
+        )
+        if terminal.phase is not MissionPhase.COMPLETE:
+            raise ValueError(f"{drone_name} mission did not reach COMPLETE")
+        terminals[drone_name] = terminal
+    return terminals
 
 
 def _require_finite(value: object, field_name: str) -> None:

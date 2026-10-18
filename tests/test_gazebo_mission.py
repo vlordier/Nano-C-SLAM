@@ -2,6 +2,7 @@
 
 import unittest
 import uuid
+from dataclasses import replace
 from pathlib import Path
 
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_path import (
@@ -21,6 +22,7 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     validate_drone_names,
     validate_mission_odometry,
     validate_mission_status_events,
+    validate_swarm_mission_status_events,
 )
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.swarm_geometry import (
     MINIMUM_HORIZONTAL_SEPARATION_M,
@@ -616,6 +618,96 @@ class MissionStatusEventTests(unittest.TestCase):
                 self.run_id,
                 "cf1",
             )
+
+    def _successful_swarm_streams(self) -> dict[str, list[MissionStatusEvent]]:
+        return {
+            drone: [
+                replace(event, drone_name=drone) for event in self.successful_events()
+            ]
+            for drone in SUPPORTED_DRONE_NAMES
+        }
+
+    def test_swarm_validator_returns_complete_terminal_event_for_each_drone(
+        self,
+    ) -> None:
+        terminals = validate_swarm_mission_status_events(
+            self._successful_swarm_streams(), self.run_id, require_mapping_path=True
+        )
+
+        self.assertEqual(tuple(terminals), SUPPORTED_DRONE_NAMES)
+        self.assertEqual(
+            {event.drone_name for event in terminals.values()},
+            set(SUPPORTED_DRONE_NAMES),
+        )
+        self.assertTrue(
+            all(event.phase is MissionPhase.COMPLETE for event in terminals.values())
+        )
+
+    def test_swarm_validator_rejects_missing_or_unexpected_drone_streams(self) -> None:
+        valid = self._successful_swarm_streams()
+        missing = dict(valid)
+        del missing["cf3"]
+        unexpected = {**valid, "cf2": valid["cf1"]}
+
+        for streams, expected_error in (
+            (missing, "missing drone streams"),
+            (unexpected, "unexpected drone streams"),
+        ):
+            with (
+                self.subTest(stream_names=streams.keys()),
+                self.assertRaisesRegex(ValueError, expected_error),
+            ):
+                validate_swarm_mission_status_events(streams, self.run_id)
+
+    def test_swarm_validator_rejects_invalid_per_drone_status_streams(self) -> None:
+        valid = self._successful_swarm_streams()
+        cases: list[tuple[str, dict[str, list[MissionStatusEvent]], str]] = []
+
+        foreign_run = {name: list(events) for name, events in valid.items()}
+        foreign_run["cf3"][1] = replace(foreign_run["cf3"][1], run_id=create_run_id())
+        cases.append(("foreign run", foreign_run, "run_id"))
+
+        sequence_gap = {name: list(events) for name, events in valid.items()}
+        sequence_gap["cf1"][2] = replace(sequence_gap["cf1"][2], sequence=3)
+        cases.append(("sequence gap", sequence_gap, "sequence"))
+
+        skipped_phase = {name: list(events) for name, events in valid.items()}
+        skipped_phase["cf4"][1] = replace(
+            skipped_phase["cf4"][1], phase=MissionPhase.LAND
+        )
+        cases.append(("skipped phase", skipped_phase, "transition"))
+
+        failed = {name: list(events) for name, events in valid.items()}
+        failed["cf3"] = [
+            replace(valid["cf3"][0], sequence=0, phase=MissionPhase.WAITING),
+            replace(
+                valid["cf3"][1],
+                sequence=1,
+                phase=MissionPhase.TAKEOFF,
+                mapping_path_complete=False,
+            ),
+            replace(
+                valid["cf3"][1],
+                sequence=2,
+                phase=MissionPhase.FAILED,
+                sim_time_s=2.0,
+                altitude_m=0.4,
+                mapping_path_complete=False,
+                failure_reason="injected timeout",
+            ),
+        ]
+        cases.append(("failed terminal", failed, "mission failed"))
+
+        incomplete = {name: list(events) for name, events in valid.items()}
+        incomplete["cf4"] = incomplete["cf4"][:-1]
+        cases.append(("missing terminal", incomplete, "COMPLETE"))
+
+        for label, streams, expected_error in cases:
+            with (
+                self.subTest(case=label),
+                self.assertRaisesRegex(ValueError, expected_error),
+            ):
+                validate_swarm_mission_status_events(streams, self.run_id)
 
 
 class MappingPathTests(unittest.TestCase):
