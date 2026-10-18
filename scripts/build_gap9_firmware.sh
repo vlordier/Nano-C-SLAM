@@ -40,6 +40,8 @@ BUILD_ROOT=/project/.build-gap9-container
 BUILD_JOBS="${GAP9_BUILD_JOBS:-4}"
 mkdir -p "$BUILD_ROOT"
 git config --global --add safe.directory /gap_sdk
+# The disposable build container sees host-owned /project and initialized submodules.
+git config --global --add safe.directory "*"
 git -C /gap_sdk describe --abbrev=0 --tags --match "release*" >/dev/null
 set +u
 source /gap_sdk/configs/gap9_v2.sh
@@ -178,6 +180,13 @@ uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
     cmake --build "$BUILD_ROOT/BUILD-gvsoc" --target nano_c_slam_gvsoc_smoke "-j$BUILD_JOBS"
 test -s "$BUILD_ROOT/BUILD-gvsoc/nano_c_slam_gvsoc_smoke"
 riscv32-unknown-elf-size "$BUILD_ROOT/BUILD-gvsoc/nano_c_slam_gvsoc_smoke"
+MAPPING_ARTIFACTS=/project/cslam-gap9-app/BUILD-gvsoc-mapping
+mkdir -p "$MAPPING_ARTIFACTS"
+rm -f "$MAPPING_ARTIFACTS/source-snapshot.json"
+(cd /project && uv run --project /project --locked --python 3.12 \
+    python -m scripts.write_gap9_build_provenance \
+    --capture-source-snapshot --source-root /project \
+    --output "$MAPPING_ARTIFACTS/source-snapshot.json")
 uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
     cmake -S /project/cslam-gap9-app -B "$BUILD_ROOT/BUILD-gvsoc-mapping" \
     -DCMAKE_BUILD_TYPE=Release -DNANO_C_SLAM_GVSOC_MAPPING_SMOKE=ON \
@@ -190,21 +199,22 @@ uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
 test -s "$BUILD_ROOT/BUILD-gvsoc-mapping/nano_c_slam_gvsoc_mapping_smoke"
 riscv32-unknown-elf-size \
     "$BUILD_ROOT/BUILD-gvsoc-mapping/nano_c_slam_gvsoc_mapping_smoke"
-mkdir -p /project/cslam-gap9-app/BUILD-gvsoc-mapping
 cp "$BUILD_ROOT/BUILD-gvsoc-mapping/nano_c_slam_gvsoc_mapping_smoke" \
     /project/cslam-gap9-app/BUILD-gvsoc-mapping/nano_c_slam_gvsoc_mapping_smoke
 cp "$BUILD_ROOT/BUILD-gvsoc-mapping/compile_commands.json" \
     /project/cslam-gap9-app/BUILD-gvsoc-mapping/compile_commands.json
-MAPPING_ARTIFACTS=/project/cslam-gap9-app/BUILD-gvsoc-mapping
 rm -f "$MAPPING_ARTIFACTS/build-provenance.json"
 riscv32-unknown-elf-gcc --version | sed -n 1p \
     > "$MAPPING_ARTIFACTS/toolchain-id.txt"
-uv run --no-project --python /usr/bin/python3 \
-    /project/scripts/write_gap9_build_provenance.py \
+cd /project
+uv run --project /project --locked --python 3.12 \
+    python -m scripts.write_gap9_build_provenance \
     --elf "$MAPPING_ARTIFACTS/nano_c_slam_gvsoc_mapping_smoke" \
     --compile-commands "$MAPPING_ARTIFACTS/compile_commands.json" \
     --toolchain-id "$MAPPING_ARTIFACTS/toolchain-id.txt" \
     --sdk-root /gap_sdk \
+    --source-root /project \
+    --source-snapshot "$MAPPING_ARTIFACTS/source-snapshot.json" \
     --output "$MAPPING_ARTIFACTS/build-provenance.json"
 '
 

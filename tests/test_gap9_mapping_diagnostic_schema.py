@@ -109,6 +109,17 @@ class MappingDiagnosticSchemaTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "fields do not match"):
             validate_mapping_diagnostic(missing_sdk)
 
+    def test_canonical_gvsoc_report_must_expose_build_source_snapshot_hash(
+        self,
+    ) -> None:
+        artifact = self.load_fixture("gvsoc-target-execution.json")
+        artifact["provenance_manifest"] = {
+            "path": "run.provenance.json",
+            "sha256": "a" * 64,
+        }
+        with self.assertRaisesRegex(ValueError, "omits its build source snapshot"):
+            validate_mapping_diagnostic(artifact)
+
         invalid_revision = self.load_fixture("gvsoc-target-execution.json")
         invalid_revision_build = invalid_revision["build"]
         assert isinstance(invalid_revision_build, dict)

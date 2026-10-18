@@ -38,6 +38,7 @@
         "toolchain_id": {"type": "string", "minLength": 1},
         "compiler_flags": {"type": "string", "minLength": 1},
         "binary_sha256": {"$ref": "#/$defs/sha256"},
+        "source_identity_sha256": {"$ref": "#/$defs/sha256"},
         "source_sha256": {
           "type": "object", "minProperties": 1,
           "additionalProperties": {"$ref": "#/$defs/sha256"}
@@ -107,6 +108,20 @@
         "properties": {
           "build": {"properties": {"sdk_metadata": {"type": "object"}, "compiler_commands_sha256": {"$ref": "#/$defs/sha256"}}},
           "execution": {"properties": {"log_sha256": {"$ref": "#/$defs/sha256"}, "log_bytes": {"type": "integer", "minimum": 1}}}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "evidence_class": {"const": "gvsoc-target-execution"},
+          "provenance_manifest": {"type": "object"}
+        },
+        "required": ["provenance_manifest"]
+      },
+      "then": {
+        "properties": {
+          "build": {"required": ["source_identity_sha256"]}
         }
       }
     }

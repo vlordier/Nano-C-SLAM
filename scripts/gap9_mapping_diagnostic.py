@@ -122,21 +122,34 @@ def validate_mapping_diagnostic(value: object) -> dict[str, Any]:
             "fixture counts do not match the deterministic mapping fixture"
         )
 
-    build = _object(
-        data["build"],
-        "build",
-        {
-            "toolchain_id",
-            "compiler_flags",
-            "binary_sha256",
-            "source_sha256",
-            "sdk_metadata",
-            "compiler_commands_sha256",
-        },
-    )
+    build_fields = {
+        "toolchain_id",
+        "compiler_flags",
+        "binary_sha256",
+        "source_sha256",
+        "sdk_metadata",
+        "compiler_commands_sha256",
+    }
+    build_value = data["build"]
+    if not isinstance(build_value, Mapping) or set(build_value) not in (
+        build_fields,
+        build_fields | {"source_identity_sha256"},
+    ):
+        raise ValueError("build fields do not match mapping diagnostic schema")
+    build = _object(build_value, "build", set(build_value))
     _text(build["toolchain_id"], "build.toolchain_id")
     _text(build["compiler_flags"], "build.compiler_flags")
     _hash(build["binary_sha256"], "build.binary_sha256")
+    if "source_identity_sha256" in build:
+        if evidence_class != "gvsoc-target-execution":
+            raise ValueError("host-stub report cannot include a GVSOC source snapshot")
+        _hash(build["source_identity_sha256"], "build.source_identity_sha256")
+    if (
+        evidence_class == "gvsoc-target-execution"
+        and "provenance_manifest" in data
+        and "source_identity_sha256" not in build
+    ):
+        raise ValueError("canonical GVSOC report omits its build source snapshot")
     source_hashes = build["source_sha256"]
     if not isinstance(source_hashes, Mapping) or not source_hashes:
         raise ValueError("build.source_sha256 must be a nonempty path-to-hash object")

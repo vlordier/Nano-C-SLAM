@@ -15,11 +15,14 @@ from unittest.mock import patch
 from scripts import capture_gap9_gvsoc_mapping_diagnostic as capture
 from scripts.gap9_mapping_diagnostic import validate_mapping_diagnostic
 from scripts.source_provenance import (
-    collect_source_identity,
     source_identity_to_mapping,
 )
-from scripts.validation_provenance import parse_manifest_json
-from scripts.write_gap9_build_provenance import create_provenance, git_worktree_dirty
+from scripts.validation_provenance import SourceIdentity, parse_manifest_json
+from scripts.write_gap9_build_provenance import (
+    capture_source_snapshot,
+    create_provenance,
+    git_worktree_dirty,
+)
 from test_support.gap9_mapping_fixtures import (
     GVSOC_MAPPING_LIMITATION as LIMITATION_MARKER,
 )
@@ -75,6 +78,7 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
             encoding="utf-8",
         )
         self.sdk.mkdir()
+        self.source_identity = SourceIdentity("a" * 40, False, None, ())
 
     def tearDown(self) -> None:
         self.temporary_directory.cleanup()
@@ -89,6 +93,7 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
         canonical: bool = False,
         mutate_stdout: bool = False,
         mutate_source_receipt: bool = False,
+        mutate_build_source: bool = False,
     ) -> tuple[int, str]:
         args = [
             "capture",
@@ -108,6 +113,14 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
             str(exit_code),
         ]
         if canonical:
+            source_identity = self.source_identity
+            build_record = json.loads(self.provenance.read_text(encoding="utf-8"))
+            build_record["source_identity"] = source_identity_to_mapping(
+                source_identity
+            )
+            if mutate_build_source:
+                build_record["source_identity"]["revision"] = "d" * 40
+            self.provenance.write_text(json.dumps(build_record), encoding="utf-8")
             stdout_log = self.root / "stdout.log"
             stderr_log = self.root / "stderr.log"
             stdout_log.write_bytes(self.log.read_bytes())
@@ -117,9 +130,7 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
                 json.dumps(
                     {
                         "schema_version": 2,
-                        "source": source_identity_to_mapping(
-                            collect_source_identity(capture.REPOSITORY_ROOT)
-                        ),
+                        "source": source_identity_to_mapping(source_identity),
                         "execution": {
                             "command": ["gapy", "--platform", "gvsoc"],
                             "environment": {},
@@ -183,6 +194,11 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
         with (
             patch("sys.argv", args),
             patch.object(capture, "sdk_metadata", side_effect=read_sdk_metadata),
+            patch.object(
+                capture,
+                "collect_source_identity",
+                return_value=self.source_identity,
+            ),
             contextlib.redirect_stdout(stdout),
             contextlib.redirect_stderr(stderr),
         ):
@@ -216,9 +232,7 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
         sidecar = self.output.parent / reference["path"]
         manifest = parse_manifest_json(sidecar.read_text(encoding="utf-8"))
         verified = capture.validate_gvsoc_mapping_bundle(self.output)
-        self.assertEqual(
-            manifest.source, collect_source_identity(capture.REPOSITORY_ROOT)
-        )
+        self.assertEqual(manifest.source, self.source_identity)
         self.assertEqual(verified, manifest)
         self.assertEqual(manifest.execution.stderr_bytes, 0)
         executable = manifest.build.executable
@@ -255,6 +269,12 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
         result, output = self.run_capture(canonical=True, mutate_source_receipt=True)
         self.assertEqual(result, 1)
         self.assertIn("source differs from the in-run snapshot", output)
+        self.assertFalse(self.output.exists())
+
+    def test_canonical_capture_rejects_build_and_run_source_mismatch(self) -> None:
+        result, output = self.run_capture(canonical=True, mutate_build_source=True)
+        self.assertEqual(result, 1)
+        self.assertIn("build and run source snapshots disagree", output)
         self.assertFalse(self.output.exists())
 
     def test_accepts_only_a_complete_passing_target_marker_and_zero_exit(self) -> None:
@@ -415,6 +435,112 @@ class GvsocMappingDiagnosticTests(unittest.TestCase):
         self.assertEqual(provenance["binary_sha256"], _sha256(self.elf))
         self.assertEqual(provenance["compiler_commands_sha256"], _sha256(self.commands))
         self.assertTrue(provenance["sdk_metadata"]["worktree_dirty"])
+
+    def test_build_provenance_binds_and_rechecks_prebuild_source_snapshot(self) -> None:
+        toolchain = self.provenance.with_name("toolchain-source.txt")
+        toolchain.write_text("riscv32-unknown-elf-gcc 12.2.0\n", encoding="utf-8")
+        source_root = self.root / "source-root"
+        source_root.mkdir()
+        snapshot = self.root / "source-snapshot.json"
+        identity = SourceIdentity("a" * 40, False, None, ())
+        with patch(
+            "scripts.write_gap9_build_provenance.collect_source_identity",
+            return_value=identity,
+        ):
+            capture_source_snapshot(source_root, snapshot)
+        with (
+            patch(
+                "scripts.write_gap9_build_provenance.git_value",
+                side_effect=("a" * 40, "release-v5.20.4"),
+            ),
+            patch(
+                "scripts.write_gap9_build_provenance.git_worktree_dirty",
+                return_value=False,
+            ),
+            patch(
+                "scripts.write_gap9_build_provenance.verify_source_identity"
+            ) as verify,
+        ):
+            provenance = create_provenance(
+                self.elf,
+                self.commands,
+                toolchain,
+                self.sdk,
+                source_root=source_root,
+                source_snapshot=snapshot,
+            )
+        self.assertEqual(
+            provenance["source_identity"], source_identity_to_mapping(identity)
+        )
+        verify.assert_called_once_with(source_root, identity)
+
+    def test_build_provenance_rejects_source_mutated_after_prebuild_snapshot(
+        self,
+    ) -> None:
+        toolchain = self.provenance.with_name("toolchain-mutated.txt")
+        toolchain.write_text("riscv32-unknown-elf-gcc 12.2.0\n", encoding="utf-8")
+        source_root = self.root / "source-root-mutated"
+        source_root.mkdir()
+        snapshot = self.root / "source-snapshot-mutated.json"
+        identity = SourceIdentity("c" * 40, False, None, ())
+        with patch(
+            "scripts.write_gap9_build_provenance.collect_source_identity",
+            return_value=identity,
+        ):
+            capture_source_snapshot(source_root, snapshot)
+        with (
+            patch(
+                "scripts.write_gap9_build_provenance.git_value",
+                side_effect=("a" * 40, "release-v5.20.4"),
+            ),
+            patch(
+                "scripts.write_gap9_build_provenance.git_worktree_dirty",
+                return_value=False,
+            ),
+            patch(
+                "scripts.write_gap9_build_provenance.verify_source_identity",
+                side_effect=ValueError("source changed"),
+            ),
+            self.assertRaisesRegex(ValueError, "source changed"),
+        ):
+            create_provenance(
+                self.elf,
+                self.commands,
+                toolchain,
+                self.sdk,
+                source_root=source_root,
+                source_snapshot=snapshot,
+            )
+
+    def test_build_provenance_rejects_malformed_prebuild_source_receipt(self) -> None:
+        toolchain = self.provenance.with_name("toolchain-malformed.txt")
+        toolchain.write_text("riscv32-unknown-elf-gcc 12.2.0\n", encoding="utf-8")
+        source_root = self.root / "source-root-malformed"
+        source_root.mkdir()
+        snapshot = self.root / "source-snapshot-malformed.json"
+        snapshot.write_text(
+            '{"schema_version":1,"schema_version":1,"source":{}}',
+            encoding="utf-8",
+        )
+        with (
+            patch(
+                "scripts.write_gap9_build_provenance.git_value",
+                side_effect=("a" * 40, "release-v5.20.4"),
+            ),
+            patch(
+                "scripts.write_gap9_build_provenance.git_worktree_dirty",
+                return_value=False,
+            ),
+            self.assertRaisesRegex(ValueError, "duplicate JSON object key"),
+        ):
+            create_provenance(
+                self.elf,
+                self.commands,
+                toolchain,
+                self.sdk,
+                source_root=source_root,
+                source_snapshot=snapshot,
+            )
 
     def test_sdk_dirty_check_handles_clean_and_modified_results(self) -> None:
         with patch(

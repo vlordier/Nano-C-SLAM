@@ -20,6 +20,7 @@ from scripts.gap9_mapping_diagnostic import (
 from scripts.source_provenance import (
     collect_source_identity,
     source_identity_from_mapping,
+    source_identity_to_mapping,
 )
 from scripts.validation_provenance import (
     BuildIdentity,
@@ -28,6 +29,7 @@ from scripts.validation_provenance import (
     ExecutableIdentity,
     RunStatus,
     RuntimeDependency,
+    SourceIdentity,
     ValidationManifest,
     _execution,
     parse_manifest_json,
@@ -58,6 +60,16 @@ FAIL_MARKER = re.compile(
 
 def sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
+
+
+def _source_identity_digest(identity: SourceIdentity) -> str:
+    canonical = json.dumps(
+        source_identity_to_mapping(identity),
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return sha256_bytes(canonical)
 
 
 def sha256_file(path: Path) -> str:
@@ -102,6 +114,10 @@ def _validate_gvsoc_manifest_join(
         raise ValueError("GVSOC manifest executable identity is missing")
     if manifest.build.executable.sha256 != artifact["build"]["binary_sha256"]:
         raise ValueError("GVSOC report and manifest ELF hashes disagree")
+    if artifact["build"].get("source_identity_sha256") != _source_identity_digest(
+        manifest.source
+    ):
+        raise ValueError("GVSOC build source identity disagrees with manifest source")
     execution = manifest.execution
     if execution.exit_code != artifact["execution"]["exit_code"]:
         raise ValueError("GVSOC report and manifest exit codes disagree")
@@ -505,14 +521,33 @@ def main() -> int:
             if receipt_path
             else None,
         }
-        build_provenance = json.loads(build_provenance_file.read_text(encoding="utf-8"))
-        if not isinstance(build_provenance, dict) or set(build_provenance) != {
+        build_provenance = json.loads(
+            build_provenance_file.read_text(encoding="utf-8"),
+            object_pairs_hook=_strict_json_object,
+            parse_constant=_reject_json_constant,
+        )
+        required_build_fields = {
             "toolchain_id",
             "binary_sha256",
             "compiler_commands_sha256",
             "sdk_metadata",
-        }:
+        }
+        if not isinstance(build_provenance, dict) or set(build_provenance) not in (
+            required_build_fields,
+            required_build_fields | {"source_identity"},
+        ):
             raise ValueError("build provenance fields do not match the target contract")
+        build_source = (
+            source_identity_from_mapping(build_provenance["source_identity"])
+            if "source_identity" in build_provenance
+            else None
+        )
+        if receipt_path is not None and build_source is None:
+            raise ValueError(
+                "canonical GVSOC capture requires a build-time source identity"
+            )
+        if build_source is not None and build_source != source_identity:
+            raise ValueError("GVSOC build and run source snapshots disagree")
         if build_provenance["binary_sha256"] != before["elf"]:
             raise ValueError("target ELF does not match its build-time provenance")
         if build_provenance["compiler_commands_sha256"] != before["compile_commands"]:
@@ -623,6 +658,11 @@ def main() -> int:
                 "source_sha256": source_hashes,
                 "sdk_metadata": sdk,
                 "compiler_commands_sha256": before["compile_commands"],
+                **(
+                    {"source_identity_sha256": _source_identity_digest(build_source)}
+                    if build_source is not None
+                    else {}
+                ),
             },
             "execution": {
                 "exit_code": args.gvsoc_exit_code,
@@ -653,9 +693,8 @@ def main() -> int:
                     artifact["claim_boundary"]
                     + " The manifest records selected runtime environment keys; "
                     "other inherited environment values are not captured. The "
-                    "source identity describes the target execution tree; this "
-                    "build receipt does not attest that the ELF was compiled "
-                    "from that exact root-tree snapshot."
+                    "build-time recursive source snapshot was verified after "
+                    "compilation and must match the target execution snapshot."
                 ),
                 captured_at_utc=datetime.now(UTC).isoformat().replace("+00:00", "Z"),
                 source=source_identity,

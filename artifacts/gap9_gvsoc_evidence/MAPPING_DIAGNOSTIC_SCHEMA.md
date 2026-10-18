@@ -19,9 +19,12 @@ inputs in `build.source_sha256`, its built binary hash, compiler/toolchain
 identity and flags. GVSOC evidence also binds the SDK commit, release and dirty
 state, plus the exact compile database hash. Both host PMSIS and GVSOC artifacts
 retain the exact combined process output and bind its SHA-256 and byte count.
-For canonical GVSOC reports, the manifest records hashes of the selected model
-plugin and launcher files; this does not prove dynamic-loader residency. The
-manifest records selected GVSOC environment keys, not every inherited value.
+For canonical GVSOC reports, the build receipt contains the recursive source
+snapshot collected before CMake and verified after compilation; the run is
+rejected if its independent execution snapshot differs. The manifest records
+hashes of the selected model plugin and launcher files; this does not prove
+dynamic-loader residency. It also records selected GVSOC environment keys,
+not every inherited value, and the target toolchain executable is not hashed.
 Host PMSIS evidence leaves SDK and target-build fields null; its retained log
 does not imply target execution. Fixture counts describe poses, extracted scans
 and final map points. `evidence_class` must be `host-pmsis-stubs` or
