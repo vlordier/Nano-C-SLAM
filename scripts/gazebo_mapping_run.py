@@ -12,6 +12,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path
+from subprocess import SubprocessError
 from typing import Protocol, cast
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
@@ -31,6 +32,11 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     MissionPhase,
     MissionStatusEvent,
     validate_mission_status_events,
+)
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.run_provenance import (
+    collect_run_provenance,
+    require_provenance_unchanged,
+    validate_combined_run_report,
 )
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model import (
     claim_world_session,
@@ -178,6 +184,11 @@ def _run(config: MappingRunConfig, ros2_executable: str) -> Path:
         ros2_executable=ros2_executable,
         collector_script=REPOSITORY_ROOT / "scripts/gazebo_mapping_sitl.py",
     )
+    provenance_before = collect_run_provenance(
+        REPOSITORY_ROOT,
+        ros2_executable=ros2_executable,
+        mapping_binary=config.binary_path,
+    )
     world_session_id = claim_world_session(
         session_file_for_partition(os.environ.get("GZ_PARTITION", "default")),
         scene=config.scene,
@@ -279,12 +290,21 @@ def _run(config: MappingRunConfig, ros2_executable: str) -> Path:
             raise RuntimeError("telemetry timestamps fall outside the mission interval")
 
         collector_log = process_result.collector_log.read_text(encoding="utf-8")
+        provenance_after = collect_run_provenance(
+            REPOSITORY_ROOT,
+            ros2_executable=ros2_executable,
+            mapping_binary=config.binary_path,
+        )
+        stable_provenance = require_provenance_unchanged(
+            provenance_before, provenance_after
+        )
         report: dict[str, object] = {
-            "schema_version": 1,
+            "schema_version": 2,
             "run_id": config.run_id,
             "drone": config.drone_name,
             "scene": config.scene,
             "gazebo_world_session_id": world_session_id,
+            "run_provenance": stable_provenance,
             "child_commands": {
                 "collector": list(commands.collector),
                 "mission": list(commands.mission),
@@ -302,6 +322,7 @@ def _run(config: MappingRunConfig, ros2_executable: str) -> Path:
                 "retained_at": str(config.log_directory.resolve()),
             },
         }
+        validate_combined_run_report(report)
         _publish_report_atomically(config.output_path.resolve(), report)
         for temporary_artifact in (config.capture_path, config.readiness_path):
             try:
@@ -333,6 +354,7 @@ def main(args: list[str] | None = None) -> int:
         ImportError,
         OSError,
         RuntimeError,
+        SubprocessError,
         TimeoutError,
         ValueError,
     ) as error:

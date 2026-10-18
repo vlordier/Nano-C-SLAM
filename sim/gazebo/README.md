@@ -321,7 +321,14 @@ had at least three directions within the cutoff in 19–20 poses per window, and
 each of the four directions had multiple in-range values over the capture; it
 does not claim every beam is valid in every pose. The JSON report contains raw
 sample records, per-direction range accounting, finite pose estimates, exact
-constraint endpoint accounting, and projected map points. On Linux, use the ROS and workspace setup paths from the Linux
+constraint endpoint accounting, and projected map points. Current coordinator
+reports use schema v2 and include SHA-256 for the owned capture/mission/mapping
+inputs, Python/ROS 2/Gazebo executables, host replay binary, and installed
+Nano-C-SLAM interface/mission and Crazyswarm2 Gazebo packages. The coordinator
+compares these identities before and after capture and refuses to publish a
+passing report if any change during the run. Earlier schema-v1 reports remain
+useful run evidence but are historical and lack complete tool/overlay binding.
+On Linux, use the ROS and workspace setup paths from the Linux
 section and replace the Python path with `/usr/bin/python3`.
 
 Treat this as one mapping run per freshly launched world. The launch holds an

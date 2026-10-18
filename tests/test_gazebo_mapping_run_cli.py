@@ -32,6 +32,10 @@ class MappingRunCliTests(unittest.TestCase):
             with (
                 patch.object(type(config), "validate_runtime"),
                 patch(
+                    "scripts.gazebo_mapping_run.collect_run_provenance",
+                    return_value={},
+                ),
+                patch(
                     "scripts.gazebo_mapping_run.session_file_for_partition",
                     return_value=directory / "missing-session.json",
                 ),
