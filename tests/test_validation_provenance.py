@@ -6,7 +6,11 @@ import copy
 import unittest
 from typing import cast
 
-from scripts.validation_provenance import validate_manifest
+from scripts.validation_provenance import (
+    parse_manifest_json,
+    serialize_manifest,
+    validate_manifest,
+)
 
 
 def _manifest() -> dict[str, object]:
@@ -60,6 +64,27 @@ def _mapping(value: object) -> dict[str, object]:
 
 
 class ValidationProvenanceTests(unittest.TestCase):
+    def test_manifest_json_round_trip_is_canonical_and_stable(self) -> None:
+        parsed = validate_manifest(_manifest())
+
+        encoded = serialize_manifest(parsed)
+        decoded = parse_manifest_json(encoded)
+
+        self.assertEqual(decoded, parsed)
+        self.assertEqual(serialize_manifest(decoded), encoded)
+
+    def test_manifest_json_rejects_duplicate_keys_and_nonfinite_numbers(self) -> None:
+        encoded = serialize_manifest(validate_manifest(_manifest()))
+        duplicate_key = encoded.replace(
+            '"schema_version": 1,',
+            '"schema_version": 1, "schema_version": 1,',
+            1,
+        )
+        with self.assertRaisesRegex(ValueError, "duplicate JSON object key"):
+            parse_manifest_json(duplicate_key)
+        with self.assertRaisesRegex(ValueError, "non-finite JSON number"):
+            parse_manifest_json('{"manifest": NaN}')
+
     def test_accepts_a_complete_host_pass_and_normalizes_environment(self) -> None:
         manifest = _manifest()
         _mapping(manifest["execution"])["environment"] = {"Z": "", "A": None}

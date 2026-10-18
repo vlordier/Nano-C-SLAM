@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+import json
 import re
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from enum import StrEnum
 from typing import cast
@@ -509,3 +510,60 @@ def validate_manifest(value: object) -> ValidationManifest:
     ):
         raise ValueError("physical FAIL requires hardware measurement attestation")
     return manifest
+
+
+def manifest_to_mapping(manifest: ValidationManifest) -> dict[str, object]:
+    """Convert a validated model to its portable JSON object representation."""
+    value = cast(dict[str, object], asdict(manifest))
+    value["status"] = manifest.status.value
+    value["evidence_class"] = manifest.evidence_class.value
+    value["runtime_dependencies"] = [
+        {
+            **asdict(dependency),
+            "disposition": dependency.disposition.value,
+        }
+        for dependency in manifest.runtime_dependencies
+    ]
+    source = cast(dict[str, object], value["source"])
+    build = cast(dict[str, object], value["build"])
+    execution = cast(dict[str, object], value["execution"])
+    source["submodules"] = [
+        asdict(submodule) for submodule in manifest.source.submodules
+    ]
+    build["command"] = list(manifest.build.command)
+    execution["command"] = list(manifest.execution.command)
+    execution["environment"] = dict(manifest.execution.environment)
+    return value
+
+
+def _unique_object(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    result: dict[str, object] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON object key: {key}")
+        result[key] = value
+    return result
+
+
+def _reject_json_constant(value: str) -> None:
+    raise ValueError(f"non-finite JSON number is forbidden: {value}")
+
+
+def parse_manifest_json(contents: str) -> ValidationManifest:
+    """Parse strict JSON with duplicate-key rejection and validate schema v1."""
+    try:
+        value = json.loads(
+            contents,
+            object_pairs_hook=_unique_object,
+            parse_constant=_reject_json_constant,
+        )
+    except (json.JSONDecodeError, RecursionError) as error:
+        raise ValueError("manifest is not valid JSON") from error
+    return validate_manifest(value)
+
+
+def serialize_manifest(manifest: ValidationManifest) -> str:
+    """Return deterministic UTF-8-compatible JSON for one valid manifest."""
+    value = manifest_to_mapping(manifest)
+    validate_manifest(value)
+    return json.dumps(value, indent=2, sort_keys=True, allow_nan=False) + "\n"
