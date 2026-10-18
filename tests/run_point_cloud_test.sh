@@ -46,6 +46,12 @@ cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
 /tmp/gap9_spi_driver_test
 
 cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
+    -Itests/stubs/gap9_spi -Icslam-gap9-app/spi \
+    tests/gap9_spi_buffers_test.c cslam-gap9-app/spi/spi_buffers.c \
+    -o /tmp/gap9_spi_buffers_test
+/tmp/gap9_spi_buffers_test
+
+cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
     -ffunction-sections -fdata-sections \
     -Itests/stubs -Icslam-gap9-app/slam -Icslam-gap9-app/slam/rcm \
     tests/pose_graph_validation_test.c \

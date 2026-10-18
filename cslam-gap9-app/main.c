@@ -23,6 +23,7 @@ struct pi_cluster_conf cl_conf;
 #include "pmsis.h"
 #include "point_cloud.h"
 #include "rcm-sparse-matrix.h"
+#include "spi_buffers.h"
 #include "spi_cmds_decode.h"
 #include "spi_driver.h"
 
@@ -45,8 +46,12 @@ uint8_t verbose = 1;
 
 void slam_loop() {
     gpio_init();
-    spi_buf = pi_l2_malloc(SPIBUF_SIZE);
-    spi_buf_t = pi_l2_malloc(3 * SPIBUF_SIZE + 1);
+    if (spi_buffers_allocate(&spi_buf, &spi_buf_t, pi_l2_malloc, pi_l2_free) !=
+        0) {
+        printf("NANO_C_SLAM_SPI:error stage=buffer_alloc status=-1\n");
+        pmsis_exit(-1);
+        return;
+    }
     if (spi_slave_driver_init() != 0) {
         pmsis_exit(-1);
         return;

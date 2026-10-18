@@ -16,9 +16,7 @@
 #include "external_point_cloud.h"
 #include "pmsis.h"
 #include "point_cloud.h"
-
-#define SPIBUF_SIZE (200)
-#define SPI_PKT_SIZE (97)
+#include "spi_protocol.h"
 
 typedef enum {
     POSE_CMD = 0,

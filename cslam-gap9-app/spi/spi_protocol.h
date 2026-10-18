@@ -1,0 +1,7 @@
+#ifndef NANO_C_SLAM_SPI_PROTOCOL_H
+#define NANO_C_SLAM_SPI_PROTOCOL_H
+
+#define SPIBUF_SIZE (200)
+#define SPI_PKT_SIZE (97)
+
+#endif
