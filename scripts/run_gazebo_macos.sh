@@ -86,6 +86,22 @@ fi
 set -u
 # Keep the source-built Gazebo CLI ahead of Homebrew's ROS-bundled CLI.
 export PATH="$gz_install/bin:$PATH"
+
+# Fail before starting Gazebo if the sourced workspace still exposes the old
+# telemetry interface. The mapping verifier requires source odometry stamps.
+if ! interface_definition="$(uv run --no-project --python "$python311" \
+    ros2 interface show nano_c_slam_interfaces/msg/StampedPairwiseRanges 2>&1)"; then
+    printf '%s\n' \
+        "The sourced ROS workspace does not provide StampedPairwiseRanges." \
+        "Build the Nano-C-SLAM overlay with scripts/build_gazebo_ros_overlay.sh and set NANO_C_SLAM_OVERLAY_SETUP to its local_setup.bash." \
+        "ROS interface lookup output: $interface_definition" >&2
+    exit 1
+fi
+if [[ "$interface_definition" != *"ranges_m"* || "$interface_definition" != *"source_stamps"* ]]; then
+    echo "The sourced StampedPairwiseRanges interface is stale; rebuild and source the current Nano-C-SLAM ROS overlay." >&2
+    exit 1
+fi
+
 export PYTHONPATH="$firmware_build${PYTHONPATH:+:$PYTHONPATH}"
 export GZ_CONFIG_PATH="$gz_install/share/gz"
 export GZ_SIM_SYSTEM_PLUGIN_PATH="$gz_install/lib:$ros_prefix/lib/gz-sim-8/plugins:$ros_prefix/lib"
