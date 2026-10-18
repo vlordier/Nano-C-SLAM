@@ -13,6 +13,9 @@ static unsigned int fail_i2c_operation;
 static unsigned int sensor_api_call;
 static unsigned int fail_sensor_api_call;
 static uint8_t output_register;
+static uint8_t ranging_ready;
+static uint8_t ranging_data_status;
+static VL53L5CX_ResultsData ranging_results;
 
 void test_debug_print(const char *format, ...) {
     (void)format;
@@ -81,14 +84,14 @@ uint8_t vl53l5cx_start_ranging(VL53L5CX_Configuration *device) {
 }
 uint8_t vl53l5cx_check_data_ready(VL53L5CX_Configuration *device, uint8_t *ready) {
     (void)device;
-    *ready = 0;
+    *ready = ranging_ready;
     return VL53L5CX_STATUS_OK;
 }
 uint8_t vl53l5cx_get_ranging_data(VL53L5CX_Configuration *device,
                                   VL53L5CX_ResultsData *results) {
     (void)device;
-    (void)results;
-    return VL53L5CX_STATUS_OK;
+    *results = ranging_results;
+    return ranging_data_status;
 }
 
 static void reset_mocks(void) {
@@ -97,6 +100,13 @@ static void reset_mocks(void) {
     sensor_api_call = 0;
     fail_sensor_api_call = 0;
     output_register = UINT8_MAX;
+    ranging_ready = 0;
+    ranging_data_status = VL53L5CX_STATUS_OK;
+    for (unsigned int i = 0; i < 64; i++) {
+        ranging_results.distance_mm[i] = (int16_t)(100 + i);
+        ranging_results.nb_target_detected[i] = 1;
+        ranging_results.target_status[i] = 5;
+    }
 }
 
 int main(void) {
@@ -138,6 +148,35 @@ int main(void) {
     fail_i2c_operation = 1;
     assert(!I2C_expander_set_pin(0, 1));
     assert(i2c_operation == 1);
+
+    int16_t matrix[8][8];
+    assert(get_tof_matrix(4, matrix) == TOF_CONFIG_ERROR);
+    assert(get_tof_matrix(0, NULL) == TOF_CONFIG_ERROR);
+
+    ranging_ready = 1;
+    assert(get_tof_matrix(0, matrix) == TOF_SUCCESS);
+    assert(matrix[0][0] == 100 && matrix[7][7] == 163);
+    int16_t row[8];
+    assert(get_tof_row(0, 3, row) == TOF_SUCCESS);
+    assert(row[0] == 124 && row[7] == 131);
+    assert(get_tof_row(0, 8, row) == TOF_CONFIG_ERROR);
+    assert(get_tof_row(0, 0, NULL) == TOF_CONFIG_ERROR);
+
+    ranging_ready = 0;
+    for (unsigned int i = 0; i < 8; i++)
+        row[i] = 42;
+    assert(get_tof_row(0, 2, row) == TOF_NOT_READY);
+    for (unsigned int i = 0; i < 8; i++)
+        assert(row[i] == -1);
+
+    ranging_ready = 1;
+    ranging_data_status = 1;
+    for (unsigned int i = 0; i < 8; i++)
+        row[i] = 42;
+    assert(get_tof_row(0, 2, row) == TOF_DATA_ERROR);
+    for (unsigned int i = 0; i < 8; i++)
+        assert(row[i] == -1);
+
     puts("STM32 ToF initialization fault injection passed");
     return 0;
 }

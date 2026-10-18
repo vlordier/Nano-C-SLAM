@@ -102,6 +102,9 @@ tof_err_code_e config_sensors(VL53L5CX_Configuration *p_dev,
 }
 
 tof_err_code_e get_tof_matrix(uint8_t sensor_id, int16_t matrix[][8]) {
+    if (matrix == NULL || sensor_id >= NR_OF_SENSORS)
+        return TOF_CONFIG_ERROR;
+
     tof_dev.platform = tof_i2c_addresses[sensor_id];
 
     uint8_t ranging_ready = 255;
@@ -123,16 +126,24 @@ tof_err_code_e get_tof_matrix(uint8_t sensor_id, int16_t matrix[][8]) {
                     (tof_data.target_status[i] != 9))
                     matrix[i / 8][i % 8] = -1;
             }
-        } else
+        } else {
+            memset(matrix, 0xff, NR_OF_PIXELS * sizeof(matrix[0][0]));
             ret_value = TOF_DATA_ERROR;
+        }
     } else
         ret_value = TOF_NOT_READY;
+
+    if (ret_value != TOF_SUCCESS)
+        memset(matrix, 0xff, NR_OF_PIXELS * sizeof(matrix[0][0]));
 
     return ret_value;
 }
 
 tof_err_code_e get_tof_row(uint8_t sensor_id, uint8_t row_idx, int16_t *row) {
-    int16_t matrix[8][8];
+    if (row == NULL || row_idx >= 8)
+        return TOF_CONFIG_ERROR;
+
+    int16_t matrix[8][8] = {{0}};
     tof_err_code_e ret_value = get_tof_matrix(sensor_id, matrix);
     memcpy(row, &matrix[row_idx][0], 8 * sizeof(int16_t));
 

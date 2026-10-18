@@ -14,7 +14,7 @@ typedef struct {
 } VL53L5CX_Configuration;
 
 typedef struct {
-    uint16_t distance_mm[64];
+    int16_t distance_mm[64];
     uint8_t nb_target_detected[64];
     uint8_t target_status[64];
 } VL53L5CX_ResultsData;
