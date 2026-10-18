@@ -22,6 +22,16 @@ GVSOC_LOG="$WORK_ROOT/gvsoc.log"
 MAPPING_OUTPUT="${GAP9_GVSOC_MAPPING_OUTPUT:-$ROOT/artifacts/gap9_gvsoc_evidence/mapping_diagnostic.json}"
 MAPPING_REPORT="${GAP9_GVSOC_MAPPING_REPORT:-$ROOT/artifacts/gap9_gvsoc_evidence/mapping_report.json}"
 RUN_TIMEOUT_S="${GAP9_GVSOC_TIMEOUT_S:-600}"
+ENABLE_TESTBENCH="${GAP9_GVSOC_ENABLE_TESTBENCH:-0}"
+GVSOC_TESTBENCH_CONFIG_ARGS=()
+if [[ "$ENABLE_TESTBENCH" == "1" ]]; then
+    GVSOC_TESTBENCH_CONFIG_ARGS+=(
+        --target-opt=addon_testbench_enabled=true
+    )
+elif [[ "$ENABLE_TESTBENCH" != "0" ]]; then
+    echo "GAP9_GVSOC_ENABLE_TESTBENCH must be 0 or 1" >&2
+    exit 2
+fi
 
 if [[ "$MAPPING_CAPTURE" == "1" ]]; then
     if [[ "$MAPPING_OUTPUT" != /* ]]; then
@@ -107,10 +117,17 @@ uv run --project "$ROOT" --python 3.12 \
     --target-property boot.flash_device=mram \
     --target-property boot.mode=flash \
     --target-property boot.mode_on_pads=mram \
+    "${GVSOC_TESTBENCH_CONFIG_ARGS[@]}" \
     --flash-content "$LAYOUT@mram" \
     --work-dir "$WORK_ROOT" image flash run
 GVSOC_EXIT_CODE=$?
 set -e
+
+if [[ "$ENABLE_TESTBENCH" == "1" ]]; then
+    uv run --project "$ROOT" --locked --python 3.12 \
+        python -m scripts.validate_gap9_gvsoc_testbench \
+        "$WORK_ROOT/gvsoc_config.json"
+fi
 
 if [[ "$MAPPING_CAPTURE" == "1" ]]; then
     if [[ "$GVSOC_EXIT_CODE" == "124" ]]; then
