@@ -16,6 +16,10 @@ from scripts.gap9_mapping_diagnostic import (
     mapping_source_paths,
     validate_mapping_diagnostic,
 )
+from scripts.source_provenance import (
+    collect_source_identity,
+    source_identity_from_mapping,
+)
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 FIXTURE_COUNTS = (60, 3, 240)
@@ -49,6 +53,19 @@ def sha256_file(path: Path) -> str:
         for chunk in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _strict_json_object(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    result: dict[str, object] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON object key: {key}")
+        result[key] = value
+    return result
+
+
+def _reject_json_constant(value: str) -> None:
+    raise ValueError(f"non-finite JSON number is forbidden: {value}")
 
 
 def parse_target_marker(log_text: str) -> tuple[str, dict[str, int | bool]]:
@@ -240,6 +257,7 @@ def main() -> int:
     parser.add_argument("--sdk-root", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--retained-log", type=Path)
+    parser.add_argument("--source-receipt", type=Path)
     parser.add_argument("--gvsoc-exit-code", required=True, type=int)
     args = parser.parse_args()
 
@@ -258,6 +276,28 @@ def main() -> int:
             raise ValueError(
                 "ELF, compile commands, build provenance, and GVSOC log must be files"
             )
+        source_identity = None
+        receipt_path: Path | None = None
+        if args.source_receipt is not None:
+            receipt_path = args.source_receipt.resolve(strict=True)
+            receipt_bytes = receipt_path.read_bytes()
+            receipt = json.loads(
+                receipt_bytes.decode("utf-8"),
+                object_pairs_hook=_strict_json_object,
+                parse_constant=_reject_json_constant,
+            )
+            if (
+                not isinstance(receipt, dict)
+                or set(receipt) != {"schema_version", "source"}
+                or isinstance(receipt["schema_version"], bool)
+                or not isinstance(receipt["schema_version"], int)
+                or receipt["schema_version"] != 1
+            ):
+                raise ValueError("GVSOC source receipt does not match its schema")
+            identity = source_identity_from_mapping(receipt["source"])
+            if collect_source_identity(REPOSITORY_ROOT) != identity:
+                raise ValueError("repository source differs from the in-run snapshot")
+            source_identity = identity
         output = args.output.resolve()
         retained_log = (
             args.retained_log.resolve()
@@ -271,6 +311,7 @@ def main() -> int:
             "log": sha256_file(log),
             "compile_commands": sha256_file(compile_commands),
             "build_provenance": sha256_file(build_provenance_file),
+            "source_receipt": sha256_file(receipt_path) if receipt_path else None,
         }
         build_provenance = json.loads(build_provenance_file.read_text(encoding="utf-8"))
         if not isinstance(build_provenance, dict) or set(build_provenance) != {
@@ -318,6 +359,7 @@ def main() -> int:
             "log": sha256_file(log),
             "compile_commands": sha256_file(compile_commands),
             "build_provenance": sha256_file(build_provenance_file),
+            "source_receipt": sha256_file(receipt_path) if receipt_path else None,
         }
         if before != after:
             raise ValueError("ELF, log, or compile commands changed during capture")
@@ -326,6 +368,15 @@ def main() -> int:
             for path in mapping_source_paths(REPOSITORY_ROOT)
         }:
             raise ValueError("mapping source changed during capture")
+        if receipt_path is not None and before["source_receipt"] != sha256_file(
+            receipt_path
+        ):
+            raise ValueError("GVSOC source receipt changed during capture")
+        if (
+            source_identity is not None
+            and collect_source_identity(REPOSITORY_ROOT) != source_identity
+        ):
+            raise ValueError("repository source changed after the in-run snapshot")
         if sdk != sdk_metadata(sdk_root):
             raise ValueError("GAP SDK revision or worktree changed during capture")
         artifact: dict[str, Any] = {

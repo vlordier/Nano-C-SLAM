@@ -113,12 +113,21 @@ fi
 export PATH="$WORK_ROOT/launcher-bin:$PATH"
 
 cd "$ROOT"
-uv run --project "$ROOT" --python 3.12 \
+uv run --project "$ROOT" --locked --python 3.12 \
     python "$ROOT/scripts/create_gap9_gvsoc_layout.py" "$ELF" "$LAYOUT"
+SOURCE_PROVENANCE_ARGS=()
+if [[ "$MAPPING_CAPTURE" == "1" ]]; then
+    rm -f "$WORK_ROOT/gvsoc-source-receipt.json"
+    SOURCE_PROVENANCE_ARGS=(
+        --source-root "$ROOT"
+        --source-receipt "$WORK_ROOT/gvsoc-source-receipt.json"
+    )
+fi
 set +e
-uv run --project "$ROOT" --python 3.12 \
+uv run --project "$ROOT" --locked --python 3.12 \
     python -m scripts.run_gap9_gvsoc_target \
-    --log "$GVSOC_LOG" --cwd "$WORK_ROOT" --timeout-s "$RUN_TIMEOUT_S" -- \
+    --log "$GVSOC_LOG" --cwd "$WORK_ROOT" --timeout-s "$RUN_TIMEOUT_S" \
+    "${SOURCE_PROVENANCE_ARGS[@]}" -- \
     uv run --no-project --python 3.12 \
     --with pycryptodome --with kconfiglib --with pyelftools \
     --with prettytable --with pexpect --with lz4 --with rich \
@@ -151,12 +160,13 @@ if [[ "$MAPPING_CAPTURE" == "1" ]]; then
         echo "GVSOC timed out; raw log retained at $GVSOC_LOG, no mapping artifact published." >&2
         exit 124
     fi
-    uv run --project "$ROOT" --python 3.12 \
+    uv run --project "$ROOT" --locked --python 3.12 \
         python -m scripts.capture_gap9_gvsoc_mapping_diagnostic \
         --elf "$ELF" --log "$GVSOC_LOG" \
         --compile-commands "$ROOT/cslam-gap9-app/BUILD-gvsoc-mapping/compile_commands.json" \
         --build-provenance "$ROOT/cslam-gap9-app/BUILD-gvsoc-mapping/build-provenance.json" \
         --sdk-root "$SDK_ROOT" --output "$MAPPING_OUTPUT" \
+        --source-receipt "$WORK_ROOT/gvsoc-source-receipt.json" \
         --gvsoc-exit-code "$GVSOC_EXIT_CODE"
     exit $?
 fi
@@ -168,7 +178,7 @@ fi
 
 grep -Fq "$EXPECTED_MARKER" "$GVSOC_LOG"
 if [[ "$ELF" == "$DEFAULT_ELF" ]]; then
-    uv run --project "$ROOT" --python 3.12 \
+    uv run --project "$ROOT" --locked --python 3.12 \
         python "$ROOT/scripts/capture_gap9_gvsoc_evidence.py" \
         --elf "$ELF" --log "$GVSOC_LOG" \
         --output "$ROOT/artifacts/gap9_gvsoc_evidence/report.json"
@@ -180,7 +190,7 @@ elif [[ "$EXPECTED_MARKER" == NANO_C_SLAM_GVSOC:mapping_ok* ]]; then
             --pose-graph-fc-threshold "$GAP9_GVSOC_POSE_GRAPH_FC_THRESHOLD"
         )
     fi
-    uv run --project "$ROOT" --python 3.12 \
+    uv run --project "$ROOT" --locked --python 3.12 \
         python "$ROOT/scripts/capture_gap9_gvsoc_mapping_evidence.py" \
         --elf "$ELF" --log "$GVSOC_LOG" \
         --output "$MAPPING_REPORT" "${MAPPING_EVIDENCE_ARGS[@]}"

@@ -6,7 +6,7 @@ import hashlib
 import re
 import stat
 import subprocess
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import cast
 
@@ -125,6 +125,18 @@ def collect_source_identity(root: Path) -> SourceIdentity:
         dirty_patch_sha256=before.patch_sha256,
         submodules=submodules_before,
     )
+
+
+def source_identity_to_mapping(identity: SourceIdentity) -> dict[str, object]:
+    """Return the exact JSON-compatible recursive source identity."""
+    return cast(dict[str, object], asdict(identity))
+
+
+def source_identity_from_mapping(value: object) -> SourceIdentity:
+    """Validate a serialized source identity using the manifest's strict schema."""
+    from scripts.validation_provenance import _source
+
+    return _source(value)
 
 
 def verify_source_identity(root: Path, expected: SourceIdentity) -> None:
