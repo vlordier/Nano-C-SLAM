@@ -267,7 +267,7 @@ class SimMission(Node):
         self._timer.cancel()
 
     def _publish_zero_command_if_active(self) -> None:
-        """Keep the controller commanded to hover after the mission terminates."""
+        """Publish a best-effort zero velocity command while ROS is active."""
         if rclpy.ok():
             self._publisher.publish(Twist())
 
