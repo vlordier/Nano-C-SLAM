@@ -87,7 +87,7 @@ class RuntimeDependency:
 @dataclass(frozen=True)
 class ExecutionIdentity:
     command: tuple[str, ...]
-    environment: tuple[tuple[str, str], ...]
+    environment: tuple[tuple[str, str | None], ...]
     started_at_utc: str | None
     finished_at_utc: str | None
     exit_code: int | None
@@ -140,8 +140,10 @@ def _repo_path(value: object, name: str) -> str:
     return path
 
 
-def _optional_text(value: object, name: str) -> str | None:
-    return None if value is None else _text(value, name)
+def _optional_text(
+    value: object, name: str, *, allow_empty: bool = False
+) -> str | None:
+    return None if value is None else _text(value, name, allow_empty=allow_empty)
 
 
 def _sha256(value: object, name: str) -> str:
@@ -352,7 +354,9 @@ def _execution(value: object) -> ExecutionIdentity:
         sorted(
             (
                 _text(key, "execution.environment key"),
-                _text(value, f"execution.environment[{key}]", allow_empty=True),
+                _optional_text(
+                    value, f"execution.environment[{key}]", allow_empty=True
+                ),
             )
             for key, value in environment.items()
         )
