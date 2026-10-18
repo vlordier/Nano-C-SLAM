@@ -18,7 +18,7 @@
 #define SPI_SLAVE_IS_SLAVE 1
 
 // Spi slave pad configuration
-#define SPI_SLAVE_PAD_SCK PI_PAD_056 // Ball H1  > GAP9 EVK CN6 connector, pin 5
+#define SPI_SLAVE_PAD_SCK PI_PAD_056 // Ball H1  > GAP9 EVK CN6 connector, pin 3
 #define SPI_SLAVE_PAD_CS0 PI_PAD_057 // Ball H2  > GAP9 EVK CN6 connector, pin 7
 #define SPI_SLAVE_PAD_CS1                                                      \
     PI_PAD_053 // Ball H7  > GAP9 EVK CN5 connector, pin 10
