@@ -113,6 +113,14 @@ static void reset_mocks(void) {
 
 int main(void) {
     reset_mocks();
+    int16_t matrix[8][8];
+    for (unsigned int i = 0; i < 64; i++)
+        ((int16_t *)matrix)[i] = 42;
+    assert(get_tof_matrix(0, matrix) == TOF_CONFIG_ERROR);
+    assert(i2c_operation == 0 && sensor_api_call == 0);
+    for (unsigned int i = 0; i < 64; i++)
+        assert(((int16_t *)matrix)[i] == -1);
+
     assert(tof_matrix_init() == TOF_SUCCESS);
     assert(sensor_api_call == 28);
     assert(output_register == 0x0f);
@@ -123,6 +131,7 @@ int main(void) {
         assert(tof_matrix_init() == TOF_CONFIG_ERROR);
         assert(sensor_api_call == failed_step);
         assert(output_register == 0);
+        assert(get_tof_matrix(0, matrix) == TOF_CONFIG_ERROR);
 
         fail_sensor_api_call = 0;
         sensor_api_call = 0;
@@ -151,8 +160,11 @@ int main(void) {
     assert(!I2C_expander_set_pin(0, 1));
     assert(i2c_operation == 1);
 
-    int16_t matrix[8][8];
+    for (unsigned int i = 0; i < 64; i++)
+        ((int16_t *)matrix)[i] = 42;
     assert(get_tof_matrix(4, matrix) == TOF_CONFIG_ERROR);
+    for (unsigned int i = 0; i < 64; i++)
+        assert(((int16_t *)matrix)[i] == -1);
     assert(get_tof_matrix(0, NULL) == TOF_CONFIG_ERROR);
 
     ranging_ready = 1;

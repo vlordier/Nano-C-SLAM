@@ -29,8 +29,18 @@
 static VL53L5CX_Configuration tof_dev;
 static VL53L5CX_ResultsData tof_data;
 static uint8_t tof_i2c_addresses[NR_OF_SENSORS];
+static bool tof_initialized;
+
+static void invalidate_matrix(int16_t matrix[][8]) {
+    for (uint8_t row = 0; row < 8; row++) {
+        for (uint8_t column = 0; column < 8; column++) {
+            matrix[row][column] = -1;
+        }
+    }
+}
 
 tof_err_code_e tof_matrix_init() {
+    tof_initialized = false;
     DEBUG_PRINT("Configured for %d ToF sensor(s) \n", NR_OF_SENSORS);
     // Power-cycle all sensors so a retry can recover after partial setup.
     if (!I2C_expander_initialize()) {
@@ -69,6 +79,7 @@ tof_err_code_e tof_matrix_init() {
         }
     }
 
+    tof_initialized = true;
     return TOF_SUCCESS;
 }
 
@@ -102,7 +113,11 @@ tof_err_code_e config_sensors(VL53L5CX_Configuration *p_dev,
 }
 
 tof_err_code_e get_tof_matrix(uint8_t sensor_id, int16_t matrix[][8]) {
-    if (matrix == NULL || sensor_id >= NR_OF_SENSORS)
+    if (matrix == NULL)
+        return TOF_CONFIG_ERROR;
+
+    invalidate_matrix(matrix);
+    if (!tof_initialized || sensor_id >= NR_OF_SENSORS)
         return TOF_CONFIG_ERROR;
 
     tof_dev.platform = tof_i2c_addresses[sensor_id];
@@ -127,14 +142,13 @@ tof_err_code_e get_tof_matrix(uint8_t sensor_id, int16_t matrix[][8]) {
                     matrix[i / 8][i % 8] = -1;
             }
         } else {
-            memset(matrix, 0xff, NR_OF_PIXELS * sizeof(matrix[0][0]));
             ret_value = TOF_DATA_ERROR;
         }
     } else
         ret_value = TOF_NOT_READY;
 
     if (ret_value != TOF_SUCCESS)
-        memset(matrix, 0xff, NR_OF_PIXELS * sizeof(matrix[0][0]));
+        invalidate_matrix(matrix);
 
     return ret_value;
 }
