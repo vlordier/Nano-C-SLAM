@@ -43,6 +43,17 @@ class Stm32TofMatrixInitTests(unittest.TestCase):
         self.assertIn("if (mission_timeout.landing_requested)", mission_task)
         self.assertNotIn("portMAX_DELAY", mission_task)
 
+    def test_failed_uwb_token_sweep_requests_landing(self) -> None:
+        source = (REPOSITORY_ROOT / "cslam-stm32-app/src/uwb_ranging.c").read_text(
+            encoding="utf-8"
+        )
+        handoff = source.split("if (!uwb_token_try_handoff(", 1)[1].split(
+            "agent_has_token = 0", 1
+        )[0]
+        self.assertIn("land = 1", handoff)
+        self.assertIn("vTaskDelete(NULL)", handoff)
+        self.assertNotIn("while (token_pass_ok != UWB_SUCCESS)", source)
+
     def _compile(self, harness: Path, sources: list[Path], executable: Path) -> None:
         compiler = shutil.which("cc") or shutil.which("clang")
         if compiler is None:

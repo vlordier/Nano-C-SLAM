@@ -30,8 +30,10 @@
 #include "uwb_api_message_utils.h"
 #include "uwb_collision_det.h"
 #include "uwb_ranging.h"
+#include "uwb_token_handoff.h"
 
 extern uint8_t NODE_ID;
+extern volatile uint8_t land;
 extern QueueHandle_t poseQueue;
 
 static volatile uint32_t uwb_pkt_loss = 0;
@@ -74,10 +76,6 @@ uwb_node_coordinates_t get_current_pos_mm(void) {
     pos.y = (int16_t)(1000 * logGetFloat(logGetVarId("kalman", "stateY")));
     pos.z = (int16_t)(1000 * logGetFloat(logGetVarId("kalman", "stateZ")));
     return pos;
-}
-
-uint8_t get_next_node(uint8_t node, uint8_t node_nr) {
-    return (node + 1) % node_nr;
 }
 
 uwb_err_code_e uwb_4way_ranging_with_retry(uint8_t dest_id,
@@ -246,6 +244,15 @@ uwb_err_code_e pass_token_with_opt(uint8_t target_id, uint8_t attempts) {
     return UWB_RX_TIMEOUT;
 }
 
+static bool pass_token_attempt(uint8_t target_id, uint8_t with_optimization,
+                               void *context) {
+    (void)context;
+    uwb_err_code_e result = with_optimization
+                                ? pass_token_with_opt(target_id, 5)
+                                : pass_token(target_id, 5);
+    return result == UWB_SUCCESS;
+}
+
 float filter_dist(float x, float y_prev, float alpha) {
     return (alpha * y_prev + (1 - alpha) * x);
 }
@@ -391,7 +398,8 @@ void ekf_correct_position(float *pose_unopt) {
     float dyaw = pose_opt[2] - pose_unopt[2];
 
     vTaskDelay(M2T(2));
-    if (!estimatorKalmanInitToPose(x_cur + dx, y_cur + dy, z_cur, yaw_cur + dyaw)) {
+    if (!estimatorKalmanInitToPose(x_cur + dx, y_cur + dy, z_cur,
+                                   yaw_cur + dyaw)) {
         DEBUG_PRINT("Failed to queue optimized estimator pose\n");
     }
 }
@@ -504,24 +512,18 @@ void uwb_ranging_task(void *parameters) {
             }
 
             // 6. Pass token and switch to listening mode
-            uwb_err_code_e token_pass_ok = UWB_RX_TIMEOUT;
-            uint8_t target_id = NODE_ID;
             vTaskDelay(M2T(2));
-            while (token_pass_ok != UWB_SUCCESS) {
-                target_id = get_next_node(target_id, NR_OF_NODES);
-                if (target_id == NODE_ID) {
-                    // DEBUG_PRINT("Error: Could not forward the token!\n");
-                    vTaskDelay(M2T(10));
-                    continue;
-                }
-
-                if (send_token_with_opt && target_id > NODE_ID) {
-                    token_pass_ok = pass_token_with_opt(target_id, 5);
-                } else {
-                    token_pass_ok = pass_token(target_id, 5);
-                }
-                send_token_with_opt = 0;
+            uint8_t target_id = NODE_ID;
+            if (!uwb_token_try_handoff(NODE_ID, NR_OF_NODES,
+                                       send_token_with_opt, pass_token_attempt,
+                                       NULL, &target_id)) {
+                DEBUG_PRINT(
+                    "UWB token handoff exhausted; requesting landing\n");
+                land = 1;
+                vTaskDelete(NULL);
+                return;
             }
+            send_token_with_opt = 0;
 
             agent_has_token = 0;
             uwb_responder_on();

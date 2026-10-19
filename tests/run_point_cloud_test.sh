@@ -80,6 +80,12 @@ cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
 /tmp/mission_timeout_test
 
 cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
+    -Icslam-stm32-app/src \
+    tests/uwb_token_handoff_test.c cslam-stm32-app/src/uwb_token_handoff.c \
+    -o /tmp/uwb_token_handoff_test
+/tmp/uwb_token_handoff_test
+
+cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
     -ffunction-sections -fdata-sections \
     -Itests/stubs -Icslam-gap9-app/slam -Icslam-gap9-app/slam/rcm \
     tests/pose_graph_validation_test.c \
