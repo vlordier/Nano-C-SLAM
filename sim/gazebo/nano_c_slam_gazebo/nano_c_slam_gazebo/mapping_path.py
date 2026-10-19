@@ -38,10 +38,17 @@ class MappingPath:
             raise ValueError("mapping path configuration must be finite")
         if max_speed_m_s <= 0 or tolerance_m <= 0 or waypoint_timeout_s <= 0:
             raise ValueError("mapping path limits must be positive")
-        if not offsets_m:
+        if not isinstance(offsets_m, tuple) or not offsets_m:
             raise ValueError("mapping path needs at least one waypoint")
         if any(
-            len(offset) != 2 or any(not math.isfinite(value) for value in offset)
+            not isinstance(offset, tuple)
+            or len(offset) != 2
+            or any(
+                isinstance(value, bool)
+                or not isinstance(value, (int, float))
+                or not math.isfinite(value)
+                for value in offset
+            )
             for offset in offsets_m
         ):
             raise ValueError("mapping path waypoints must be finite 2D offsets")

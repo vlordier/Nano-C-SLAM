@@ -4,6 +4,7 @@ import unittest
 import uuid
 from dataclasses import replace
 from pathlib import Path
+from typing import cast
 
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_path import (
     MappingPath,
@@ -840,6 +841,24 @@ class MappingPathTests(unittest.TestCase):
         invalid_paths = (
             lambda: MappingPath(0.0, 0.0, 0.0, offsets_m=()),
             lambda: MappingPath(0.0, 0.0, 0.0, offsets_m=((0.6, 0.0),)),
+            lambda: MappingPath(
+                0.0,
+                0.0,
+                0.0,
+                offsets_m=cast(tuple[tuple[float, float], ...], None),
+            ),
+            lambda: MappingPath(
+                0.0,
+                0.0,
+                0.0,
+                offsets_m=cast(tuple[tuple[float, float], ...], ((1.0,),)),
+            ),
+            lambda: MappingPath(
+                0.0,
+                0.0,
+                0.0,
+                offsets_m=cast(tuple[tuple[float, float], ...], ((1.0, None),)),
+            ),
             lambda: MappingPath(0.0, 0.0, 0.0, waypoint_timeout_s=float("inf")),
         )
         for invalid_path in invalid_paths:
