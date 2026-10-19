@@ -237,8 +237,9 @@ def _verify_world_binding(
         world_attestation.get("schema_version") != 1
         or world_attestation.get("session_id") != session.get("session_id")
         or world_attestation.get("session_sha256") != _sha256(session_path)
-        or world_attestation.get("gazebo_server_sdf_argument")
-        != str(launched_sdf_paths[0])
+        or not isinstance(world_attestation.get("gazebo_server_sdf_argument"), str)
+        or Path(str(world_attestation.get("gazebo_server_sdf_argument"))).resolve()
+        != launched_sdf_paths[0].resolve()
         or world_attestation.get("world_sdf_sha256") != expected_sdf_hash
         or world_attestation.get("archived_sdf_sha256") != expected_sdf_hash
         or world_attestation.get("verified_while_server_active") is not True

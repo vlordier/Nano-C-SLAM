@@ -640,6 +640,17 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
         report = self._analyze()
         self.assertEqual(report["world_session_id"], self.session_id)
 
+    def test_redundant_separator_in_attested_sdf_path_is_normalized(self) -> None:
+        attestation = json.loads(self.world_attestation_path.read_text())
+        attestation["gazebo_server_sdf_argument"] = str(
+            self.launched_sdf_path.resolve()
+        ).replace("/launched-", "//launched-")
+        self.world_attestation_path.write_text(json.dumps(attestation))
+
+        report = self._analyze()
+
+        self.assertEqual(report["world_session_id"], self.session_id)
+
     def test_incomplete_mission_and_missing_target_point_are_rejected(self) -> None:
         target = json.loads(self.target_path.read_text())
         target["gazebo_source"]["mission_terminal_phase"] = "FAILED"
