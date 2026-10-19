@@ -246,6 +246,36 @@ those are the next tests. The integrated Gazebo launcher now selects this
 force-capable backend by default, while `NANO_C_SLAM_GZ_PHYSICS_ENGINE` can
 override it.
 
+## Controlled CrazySim command-path probe (2026-10-19)
+
+A temporary raised platform was added to the pinned CrazySim world so the
+firmware would remain upright during gyro calibration. With a diagnostic
+`cf2` build and the Gazebo sensor/plugin path active, the plugin logged
+stationary IMU input (`acc=(0,0,9.80665)`, `gyro=(0,0,0)`). A CRTP high-level
+takeoff datagram was also observed by the plugin (`8c 07 ...`) and the custom
+firmware logged that it had received the bytes. These observations prove the
+wire command reached the firmware boundary, but the current capture lacks a
+correlated finite pose trace, commander acceptance marker, and motor trace
+attributed specifically to the stabilizer/controller output. The takeoff
+packet was sent with an absolute target height below the platform's current
+world height, so it was not a valid climb test.
+
+Do not treat the same run's repeated `36000` motor values as flight evidence:
+they followed a one-byte `ff` plugin probe and may represent the plugin's
+direct-motor test path, not the firmware controller. Earlier temporary runs
+reported estimator resets, off-rate warnings, non-finite angular odometry,
+and a crash on landing. Together these make the reference flight **failed / not
+qualified**. The platform, custom instrumentation, and firmware priority
+changes exist only under `/tmp`; no vendor/submodule changes are maintained.
+
+The next valid test must start from a clean server with a unique Gazebo
+partition, record synchronized `/cf_1/odom`, `/cf_1/imu`, plugin motor topic,
+firmware controller/setpoint output, and packet source; omit all `ff` direct
+motor probes during the flight window; issue a takeoff target above the
+measured starting pose; reject any non-finite odometry or motor value; and
+demonstrate hold plus bounded landing. This still qualifies only upstream
+CrazySim firmware. Nano-owned STM32 tasks and mapping remain unexecuted.
+
 The temporary debug edits live only in `/tmp/ncs-crazysim` in the Lima guest;
 they are not a maintained patch and were not copied into the submodule. Bead
 `ncs-fea.5.8.1` now isolates readiness gating and bounded-queue diagnosis.
