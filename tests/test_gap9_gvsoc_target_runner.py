@@ -106,6 +106,49 @@ class GvsocTargetRunnerTests(unittest.TestCase):
             self.assertIn("started", log.read_text(encoding="utf-8"))
             self.assertIn("log retained", stderr.getvalue())
 
+    def test_completion_marker_stops_persistent_target_successfully(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            log = Path(temporary_directory) / "target.log"
+            args = [
+                "run",
+                "--log",
+                str(log),
+                "--completion-marker",
+                "mapping-finished",
+                "--timeout-s",
+                "2",
+                "--",
+                sys.executable,
+                "-u",
+                "-c",
+                "import time; print('mapping-finished'); time.sleep(5)",
+            ]
+            stdout_bytes = io.BytesIO()
+            with patch("sys.argv", args), patch("sys.stdout") as stdout:
+                stdout.buffer = stdout_bytes
+                self.assertEqual(main(), 0)
+
+            self.assertIn("mapping-finished", log.read_text(encoding="utf-8"))
+            self.assertIn("mapping-finished", stdout_bytes.getvalue().decode())
+
+    def test_completion_marker_is_required_when_configured(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            log = Path(temporary_directory) / "target.log"
+            args = [
+                "run",
+                "--log",
+                str(log),
+                "--completion-marker",
+                "mapping-finished",
+                "--",
+                sys.executable,
+                "-c",
+                "print('other-output')",
+            ]
+            with patch("sys.argv", args), patch("sys.stdout") as stdout:
+                stdout.buffer = io.BytesIO()
+                self.assertEqual(main(), 3)
+
     def test_source_receipt_binds_successful_target_to_recursive_snapshot(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             root = Path(temporary_directory) / "source"

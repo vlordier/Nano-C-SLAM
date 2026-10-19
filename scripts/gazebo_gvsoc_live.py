@@ -128,6 +128,7 @@ def _commands(
         "GAP9_GVSOC_EXPECTED_MARKER": (
             "NANO_C_SLAM_GVSOC_SPI_MAIN:gazebo_capture_ok packets=64"
         ),
+        "GAP9_GVSOC_COMPLETION_MARKER": ("NANO_C_SLAM_GVSOC_SPI_MAIN:map_dump_done"),
     }
     gazebo = (
         shutil.which("uv") or "uv",

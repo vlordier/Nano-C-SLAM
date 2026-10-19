@@ -12,6 +12,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -29,6 +30,10 @@ def main() -> int:
     parser.add_argument("--log", required=True, type=Path)
     parser.add_argument("--cwd", type=Path, default=Path.cwd())
     parser.add_argument("--timeout-s", type=float, default=600.0)
+    parser.add_argument(
+        "--completion-marker",
+        help="stop the target successfully after this marker appears in its log",
+    )
     parser.add_argument("--source-root", type=Path)
     parser.add_argument("--source-receipt", type=Path)
     parser.add_argument("--stdout-log", type=Path)
@@ -76,7 +81,12 @@ def main() -> int:
                     cwd=args.cwd,
                 )
                 try:
-                    result_code = process.wait(timeout=args.timeout_s)
+                    result_code = _wait_for_target(
+                        process,
+                        args.timeout_s,
+                        args.stdout_log,
+                        args.completion_marker,
+                    )
                 except subprocess.TimeoutExpired:
                     _terminate_process_group(process)
                     result_code = 124
@@ -91,7 +101,9 @@ def main() -> int:
                     cwd=args.cwd,
                 )
                 try:
-                    result_code = process.wait(timeout=args.timeout_s)
+                    result_code = _wait_for_target(
+                        process, args.timeout_s, args.log, args.completion_marker
+                    )
                 except subprocess.TimeoutExpired:
                     _terminate_process_group(process)
                     result_code = 124
@@ -125,6 +137,38 @@ def main() -> int:
             file=sys.stderr,
         )
     return result_code
+
+
+def _wait_for_target(
+    process: subprocess.Popen[bytes],
+    timeout_s: float,
+    output_path: Path | None,
+    completion_marker: str | None,
+) -> int:
+    """Wait for process exit or stop a persistent target after its proof marker."""
+    deadline = time.monotonic() + timeout_s
+    marker_bytes = completion_marker.encode() if completion_marker else None
+    while True:
+        result_code = process.poll()
+        if result_code is not None:
+            if (
+                marker_bytes is not None
+                and output_path is not None
+                and marker_bytes not in output_path.read_bytes()
+            ):
+                return result_code or 3
+            return result_code
+        if (
+            marker_bytes is not None
+            and output_path is not None
+            and marker_bytes in output_path.read_bytes()
+        ):
+            _terminate_process_group(process)
+            return 0
+        remaining_s = deadline - time.monotonic()
+        if remaining_s <= 0:
+            raise subprocess.TimeoutExpired(process.args, timeout_s)
+        time.sleep(min(0.05, remaining_s))
 
 
 def _utc_now() -> str:

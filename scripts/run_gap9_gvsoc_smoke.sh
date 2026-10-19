@@ -48,6 +48,10 @@ GVSOC_TRACE_ARGS=()
 if [[ -n "$TRACE_PATTERN" ]]; then
     GVSOC_TRACE_ARGS+=(--trace "$TRACE_PATTERN" --trace-level "$TRACE_LEVEL")
 fi
+GVSOC_COMPLETION_ARGS=()
+if [[ -n "${GAP9_GVSOC_COMPLETION_MARKER:-}" ]]; then
+    GVSOC_COMPLETION_ARGS+=(--completion-marker "$GAP9_GVSOC_COMPLETION_MARKER")
+fi
 
 if [[ "$MAPPING_CAPTURE" == "1" ]]; then
     if [[ "$MAPPING_OUTPUT" != /* ]]; then
@@ -136,7 +140,7 @@ set +u # macOS Bash 3.2 treats an initialized empty array as unset under nounset
 uv run --project "$ROOT" --locked --python 3.12 \
     python -m scripts.run_gap9_gvsoc_target \
     --log "$GVSOC_LOG" --cwd "$WORK_ROOT" --timeout-s "$RUN_TIMEOUT_S" \
-    "${SOURCE_PROVENANCE_ARGS[@]}" -- \
+    "${SOURCE_PROVENANCE_ARGS[@]}" "${GVSOC_COMPLETION_ARGS[@]}" -- \
     uv run --no-project --python 3.12 \
     --with pycryptodome --with kconfiglib --with pyelftools \
     --with prettytable --with pexpect --with lz4 --with rich \

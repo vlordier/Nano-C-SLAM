@@ -24,6 +24,10 @@ class GazeboGvsocLiveCliTests(unittest.TestCase):
         self.assertIn("--run-id", commands.gazebo)
         self.assertIn("15a06f08-657e-4012-922e-4ca35f7dda22", commands.gazebo)
         self.assertIn("--stream-socket", commands.gazebo)
+        self.assertEqual(
+            commands.gvsoc_environment["GAP9_GVSOC_COMPLETION_MARKER"],
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:map_dump_done",
+        )
         self.assertEqual(options.mission_timeout, 600.0)
         self.assertEqual(options.mission_hover_duration, 120.0)
         hover_index = commands.gazebo.index("--mission-hover-duration")
