@@ -1,0 +1,12 @@
+{
+  "acceptance_override": "failed",
+  "evidence": {
+    "enable_true_after_failed_status": 1,
+    "failed_status_received_wall_s": 5.617182999994839,
+    "last_enable_true_received_wall_s": 5.617211167002097
+  },
+  "failed_check": "no_enable_true_after_failed_status",
+  "probe_report_passed_before_audit": true,
+  "probe_report_sha256": "c3c50006eb2f9241c070de3a71a69f90231612adec110f46df3edb4a28fabe98",
+  "reason": "The probe version used for this trial did not yet assert this check. One enable=True was received within 28 microseconds of FAILED; conservatively treating cross-topic ordering as a violation triggered the mission ordering fix and a required clean rerun."
+}

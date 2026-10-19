@@ -2628,7 +2628,6 @@
   "mission_stderr_path": "/private/tmp/nano-c-slam-failure-probe-final.mission.stderr.log",
   "mission_stdout_path": "/private/tmp/nano-c-slam-failure-probe-final.mission.stdout.log",
   "passed": true,
-  "gui_process_audit_after_stop": {"available": true, "returncode": 0, "matching_processes": []},
   "post_exit_observation_observed_s": 5.001019166986225,
   "post_exit_observation_requested_s": 5.0,
   "post_exit_odometry": {

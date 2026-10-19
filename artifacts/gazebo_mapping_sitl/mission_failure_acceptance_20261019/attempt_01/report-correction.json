@@ -1,0 +1,12 @@
+{
+  "artifact": "probe.json",
+  "current_sha256": "09301d9922baaccb283f8c17b4cf4d62b70e145e0ce6404ca3503ed7d23d4c76",
+  "previous_sha256": "e930772b8b622fe3c101da2c46874e81be661da9a91511bfc8a4719e69c3c869",
+  "reason": "The probe captures while the Gazebo world is intentionally still running; matching a partition string against `ps` command lines cannot verify post-shutdown ownership. Use the retained processes.after-stop.txt (or a session PID audit) for teardown evidence.",
+  "removed_field": "gui_process_audit_after_stop",
+  "removed_value": {
+    "available": true,
+    "matching_processes": [],
+    "returncode": 0
+  }
+}
