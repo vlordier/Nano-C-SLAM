@@ -193,6 +193,22 @@ class PairwiseRangeTests(unittest.TestCase):
             (("cf1", "cf3", 5.0), ("cf1", "cf4", 12.0), ("cf3", "cf4", 13.0)),
         )
 
+    def test_pairwise_cache_order_does_not_depend_on_callback_arrival(self) -> None:
+        update = update_odometry_cache(
+            {"cf4": (0.0, 0.0, 12.0), "cf1": (0.0, 0.0, 0.0)},
+            {"cf4": 10.0, "cf1": 10.0},
+            drone="cf3",
+            position=(3.0, 4.0, 0.0),
+            stamp_s=10.0,
+            drone_names=("cf1", "cf3", "cf4"),
+            now_s=10.0,
+        )
+
+        self.assertEqual(
+            update.distances_m,
+            (("cf1", "cf3", 5.0), ("cf1", "cf4", 12.0), ("cf3", "cf4", 13.0)),
+        )
+
     def test_rejects_invalid_odometry_positions(self) -> None:
         with self.assertRaises(ValueError):
             pairwise_ranges_m({"cf1": (0.0, 1.0)})

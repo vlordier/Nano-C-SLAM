@@ -120,7 +120,10 @@ def update_odometry_cache(
         )
     except OdometrySynchronizationError:
         return OdometryCacheUpdate(candidate_positions, candidate_timestamps_s, None)
-    distances = pairwise_ranges_m(candidate_positions)
+    # Dict insertion order follows simulator callback timing. Build the snapshot
+    # in the configured drone order so published pair labels remain stable.
+    ordered_positions = {name: candidate_positions[name] for name in drone_names}
+    distances = pairwise_ranges_m(ordered_positions)
     if any(
         not math.isfinite(distance) or distance > FLOAT32_MAX
         for _, _, distance in distances
