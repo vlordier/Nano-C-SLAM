@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import re
 import struct
 import sys
@@ -41,6 +42,17 @@ SPI_DIAGNOSTICS_PATTERN = re.compile(
 SCAN_BUSY_PATTERN = re.compile(
     r"^NANO_C_SLAM_GVSOC_SPI_MAIN:scan_busy index=(\d+) "
     r"pose_id=(-?\d+) duration_us=(\d+)$",
+    re.MULTILINE,
+)
+OPTIMIZED_POSE_PATTERN = re.compile(
+    r"^NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=(\d+) "
+    r"x_bits=([0-9a-f]{8}) y_bits=([0-9a-f]{8}) "
+    r"z_bits=([0-9a-f]{8}) finite=([01])$",
+    re.MULTILINE,
+)
+MAP_POINT_PATTERN = re.compile(
+    r"^NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=(\d+) "
+    r"x_bits=([0-9a-f]{8}) y_bits=([0-9a-f]{8}) finite=([01])$",
     re.MULTILINE,
 )
 COMMAND_NAMES = (
@@ -99,6 +111,89 @@ def _validate_live_gazebo_completion(
     ):
         raise ValueError("live Gazebo run lacks its matching COMPLETE status")
     return {"collector": 0, "mission": 0}, "COMPLETE"
+
+
+def _parse_target_poses(
+    log: str, *, expected_count: int
+) -> list[dict[str, float | int]]:
+    """Parse ordered, finite pose coordinates emitted by the GAP9 target."""
+    start = re.findall(
+        r"^NANO_C_SLAM_GVSOC_SPI_MAIN:pose_dump_start count=(\d+)$",
+        log,
+        re.MULTILINE,
+    )
+    done = re.findall(
+        r"^NANO_C_SLAM_GVSOC_SPI_MAIN:pose_dump_done count=(\d+) finite=(\d+)$",
+        log,
+        re.MULTILINE,
+    )
+    records = OPTIMIZED_POSE_PATTERN.findall(log)
+    if start != [str(expected_count)] or done != [
+        (str(expected_count), str(expected_count))
+    ]:
+        raise ValueError("target pose dump is missing or has an unexpected count")
+    if len(records) != expected_count:
+        raise ValueError("target pose dump does not contain every pose")
+    poses: list[dict[str, float | int]] = []
+    for expected_id, record in enumerate(records):
+        pose_id, *coordinates, finite = record
+        position = tuple(
+            struct.unpack("<f", int(value, 16).to_bytes(4, "little"))[0]
+            for value in coordinates
+        )
+        if int(pose_id) != expected_id:
+            raise ValueError("target pose IDs must be unique, ordered, and contiguous")
+        if finite != "1" or len(position) != 3 or not all(map(math.isfinite, position)):
+            raise ValueError("target pose dump contains a nonfinite pose")
+        poses.append(
+            {
+                "pose_id": expected_id,
+                "x_m": position[0],
+                "y_m": position[1],
+                "z_m": position[2],
+            }
+        )
+    return poses
+
+
+def _parse_target_map_points(log: str) -> list[dict[str, float | int]]:
+    """Parse the finite map points extracted by the GAP9 production code."""
+    start = re.findall(
+        r"^NANO_C_SLAM_GVSOC_SPI_MAIN:map_dump_start count=(\d+) "
+        r"range_limit_mm=(\d+)$",
+        log,
+        re.MULTILINE,
+    )
+    done = re.findall(
+        r"^NANO_C_SLAM_GVSOC_SPI_MAIN:map_dump_done count=(\d+) finite=(\d+)$",
+        log,
+        re.MULTILINE,
+    )
+    records = MAP_POINT_PATTERN.findall(log)
+    if len(start) != 1 or start[0][1] != "1400":
+        raise ValueError("target map dump is missing or has an unexpected range gate")
+    expected_count = int(start[0][0])
+    expected_done = [(str(expected_count), str(expected_count))]
+    if not 0 < expected_count <= 512 or done != expected_done:
+        raise ValueError("target map dump is incomplete or has an invalid count")
+    if len(records) != expected_count:
+        raise ValueError("target map dump does not contain every point")
+    points: list[dict[str, float | int]] = []
+    for expected_id, record in enumerate(records):
+        point_id, *coordinates, finite = record
+        point = tuple(
+            struct.unpack("<f", int(value, 16).to_bytes(4, "little"))[0]
+            for value in coordinates
+        )
+        if (
+            int(point_id) != expected_id
+            or finite != "1"
+            or len(point) != 2
+            or not all(map(math.isfinite, point))
+        ):
+            raise ValueError("target map points must be ordered, finite XY pairs")
+        points.append({"point_id": expected_id, "x_m": point[0], "y_m": point[1]})
+    return points
 
 
 def _capture_pose_request_evidence(
@@ -315,6 +410,7 @@ def capture_evidence(
     expected_records: list[dict[str, object]] = []
     gazebo_process_exit_codes: dict[str, int] | None = None
     gazebo_mission_terminal_phase: str | None = None
+    target_map_points: list[dict[str, float | int]] | None = None
     if sequence in {"mapping", "max-mapping", "capacity-mapping"}:
         expected = list(
             make_mapping_trace(
@@ -458,6 +554,7 @@ def capture_evidence(
     slam_job_fields: dict[str, int] | None = None
     transaction_accounting: dict[str, object] | None = None
     marker_optimizer_fields: dict[str, int] = {}
+    target_poses: list[dict[str, float | int]] | None = None
     if sequence == "pose-scan":
         if TARGET_MARKER not in log:
             raise ValueError(
@@ -590,6 +687,11 @@ def capture_evidence(
             raise ValueError("GVSOC log lacks the validated full-mapping marker")
         target_marker = match.group(0)
         if sequence in {"gazebo-capture", "gazebo-live"}:
+            if sequence == "gazebo-live":
+                target_poses = _parse_target_poses(
+                    log, expected_count=len(gazebo_samples)
+                )
+                target_map_points = _parse_target_map_points(log)
             response_expected_hex = match.group(3)
             marker_graph = int(match.group(1))
             marker_calls = int(match.group(2))
@@ -847,6 +949,8 @@ def capture_evidence(
         "frame_count": len(expected),
         "frames": [frame.hex() for frame in expected],
         "target_marker": target_marker,
+        "target_optimized_poses": target_poses,
+        "target_projected_map_points": target_map_points,
         "optimizer_response_expected_hex": response_expected_hex,
         "optimizer_time_ms": optimizer_time_ms,
         "optimizer_graph_size": optimizer_graph_size,

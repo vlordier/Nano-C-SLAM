@@ -36,7 +36,7 @@ def _parse_args(args: list[str] | None) -> argparse.Namespace:
         "--scene", choices=("default", "nearfield-mapping"), default="nearfield-mapping"
     )
     parser.add_argument("--samples", type=int, default=SAMPLE_COUNT)
-    parser.add_argument("--mission-timeout", type=float, default=120.0)
+    parser.add_argument("--mission-timeout", type=float, default=600.0)
     parser.add_argument("--timeout", type=float, default=600.0)
     parser.add_argument("--stream-timeout", type=float, default=15.0)
     parser.add_argument(

@@ -24,6 +24,9 @@ class GazeboGvsocLiveCliTests(unittest.TestCase):
         self.assertIn("--run-id", commands.gazebo)
         self.assertIn("15a06f08-657e-4012-922e-4ca35f7dda22", commands.gazebo)
         self.assertIn("--stream-socket", commands.gazebo)
+        self.assertEqual(options.mission_timeout, 600.0)
+        mission_timeout_index = commands.gazebo.index("--timeout")
+        self.assertEqual(commands.gazebo[mission_timeout_index + 1], "600.0")
         self.assertEqual(
             commands.gvsoc_environment["GAP9_GVSOC_SPI_STREAM_SOCKET"],
             str(socket_path),

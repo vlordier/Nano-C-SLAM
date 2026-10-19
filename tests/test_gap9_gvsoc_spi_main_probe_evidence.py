@@ -13,6 +13,8 @@ from typing import cast
 
 from scripts.capture_gap9_gvsoc_spi_main_probe_evidence import (
     TARGET_MARKER,
+    _parse_target_map_points,
+    _parse_target_poses,
     _validate_live_gazebo_completion,
     capture_evidence,
 )
@@ -81,6 +83,57 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
         bundle["mission_terminal"] = {"run_id": run_id, "phase": "FAILED"}
         with self.assertRaisesRegex(ValueError, "matching COMPLETE"):
             _validate_live_gazebo_completion(bundle, expected_run_id=run_id)
+
+    def test_target_pose_dump_requires_complete_ordered_finite_records(self) -> None:
+        log = (
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_dump_start count=2\n"
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=0 "
+            "x_bits=00000000 y_bits=3f000000 z_bits=3dcccccd finite=1\n"
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=1 "
+            "x_bits=3f800000 y_bits=3f400000 z_bits=3e4ccccd finite=1\n"
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_dump_done count=2 finite=2\n"
+        )
+        poses = _parse_target_poses(log, expected_count=2)
+
+        self.assertEqual(len(poses), 2)
+        self.assertEqual(poses[1]["pose_id"], 1)
+        self.assertEqual(poses[1]["x_m"], 1.0)
+        self.assertEqual(poses[1]["y_m"], 0.75)
+        self.assertAlmostEqual(float(poses[1]["z_m"]), 0.2)
+
+        invalid_logs = (
+            log.replace("id=1", "id=0"),
+            log.replace("x_bits=3f800000", "x_bits=7fc00000"),
+            log.replace("finite=2", "finite=1"),
+            log.replace("optimized_pose id=0", "missing_pose id=0"),
+        )
+        for invalid_log in invalid_logs:
+            with self.subTest(log=invalid_log), self.assertRaises(ValueError):
+                _parse_target_poses(invalid_log, expected_count=2)
+
+    def test_target_map_dump_requires_complete_ordered_finite_records(self) -> None:
+        log = (
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:map_dump_start count=2 range_limit_mm=1400\n"
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=0 "
+            "x_bits=3f800000 y_bits=bf000000 finite=1\n"
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=1 "
+            "x_bits=00000000 y_bits=3f400000 finite=1\n"
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:map_dump_done count=2 finite=2\n"
+        )
+        points = _parse_target_map_points(log)
+
+        self.assertEqual(points[0], {"point_id": 0, "x_m": 1.0, "y_m": -0.5})
+        self.assertEqual(points[1]["y_m"], 0.75)
+        invalid_logs = (
+            log.replace("id=1", "id=0"),
+            log.replace("x_bits=3f800000", "x_bits=7fc00000"),
+            log.replace("finite=2", "finite=1"),
+            log.replace("range_limit_mm=1400", "range_limit_mm=1401"),
+            log.replace("map_point id=0", "missing_point id=0"),
+        )
+        for invalid_log in invalid_logs:
+            with self.subTest(log=invalid_log), self.assertRaises(ValueError):
+                _parse_target_map_points(invalid_log)
 
     @staticmethod
     def _transfer_lengths(frames: Sequence[bytes]) -> list[dict[str, int]]:

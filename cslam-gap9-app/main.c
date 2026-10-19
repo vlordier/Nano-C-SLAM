@@ -30,6 +30,8 @@ struct pi_cluster_conf cl_conf;
 #include "spi_diagnostics.h"
 #endif
 #include "spi_driver.h"
+#include <math.h>
+#include <string.h>
 
 static uint8_t *spi_buf, *spi_buf_t;
 static float requested_poses[3 * 100];
@@ -243,6 +245,67 @@ void slam_loop() {
 
             // Optimize graph
             pcl_optimize(&slam_job); // Optimize graph
+#if defined(NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE) &&                         \
+    NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT == 64
+            // Preserve target-origin pose output for the bounded Gazebo
+            // integration probe. This is diagnostic text only; the production
+            // SPI protocol and the STM32-facing firmware path are unchanged.
+            {
+                int16_t target_pose_count = pcl_get_pose_count();
+                int16_t finite_target_pose_count = 0;
+                float target_pose[3] = {0.0f, 0.0f, 0.0f};
+                printf("NANO_C_SLAM_GVSOC_SPI_MAIN:pose_dump_start count=%d\n",
+                       target_pose_count);
+                for (int16_t pose_id = 0; pose_id < target_pose_count;
+                     ++pose_id) {
+                    int finite = pcl_to_poses(target_pose, pose_id, 1) &&
+                                 isfinite(target_pose[0]) &&
+                                 isfinite(target_pose[1]) &&
+                                 isfinite(target_pose[2]);
+                    uint32_t target_pose_bits[3];
+                    memcpy(target_pose_bits, target_pose,
+                           sizeof(target_pose_bits));
+                    if (finite) finite_target_pose_count++;
+                    printf("NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=%d "
+                           "x_bits=%08lx y_bits=%08lx z_bits=%08lx "
+                           "finite=%d\n",
+                           pose_id, (unsigned long)target_pose_bits[0],
+                           (unsigned long)target_pose_bits[1],
+                           (unsigned long)target_pose_bits[2], finite);
+                }
+                printf("NANO_C_SLAM_GVSOC_SPI_MAIN:pose_dump_done count=%d "
+                       "finite=%d\n",
+                       target_pose_count, finite_target_pose_count);
+
+                // Emit the final firmware-projected map as target-origin
+                // coordinates for the bounded Gazebo geometry comparison.
+                // The host replay's map is deliberately not substituted here.
+                icp_points_t target_map;
+                pcl_extract_scan(0, target_pose_count, &target_map, 1400);
+                int16_t finite_target_points = 0;
+                printf("NANO_C_SLAM_GVSOC_SPI_MAIN:map_dump_start "
+                       "count=%d range_limit_mm=1400\n",
+                       (int)target_map.num);
+                for (size_t point_id = 0; point_id < target_map.num;
+                     ++point_id) {
+                    float x = target_map.items[point_id].x;
+                    float y = target_map.items[point_id].y;
+                    uint32_t x_bits;
+                    uint32_t y_bits;
+                    memcpy(&x_bits, &x, sizeof(x_bits));
+                    memcpy(&y_bits, &y, sizeof(y_bits));
+                    int finite = isfinite(x) && isfinite(y);
+                    if (finite) finite_target_points++;
+                    printf("NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=%d "
+                           "x_bits=%08lx y_bits=%08lx finite=%d\n",
+                           (int)point_id, (unsigned long)x_bits,
+                           (unsigned long)y_bits, finite);
+                }
+                printf("NANO_C_SLAM_GVSOC_SPI_MAIN:map_dump_done count=%d "
+                       "finite=%d\n",
+                       (int)target_map.num, finite_target_points);
+            }
+#endif
             set_cf_gpio(0);          // GAP9 free
 
             // Send feedback to the STM32
