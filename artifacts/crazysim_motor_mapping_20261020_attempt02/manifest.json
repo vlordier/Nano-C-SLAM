@@ -1,0 +1,52 @@
+{
+  "attempt": "CrazySim model-matched motor mapping, clean positive flight attempt 02",
+  "date": "2026-10-20",
+  "valid_for_acceptance": false,
+  "scope": "Upstream Crazyflie SITL firmware under Gazebo; this is not Nano-C-SLAM firmware or mapping validation.",
+  "sources": {
+    "firmware_commit": "f42b903610e8b4ea1796ba6eba4b1c92cde70766",
+    "firmware_binary_sha256": "8d0cc0505f72282eff5f2d57df4e5671cd92cd31354d71d79efc094a4d38dc9c",
+    "crazysim_plugin_commit": "36594bc335102a435d2290621586d2ed5ea6ea43",
+    "gz_sim_odometry_patch_commit": "b25695048c8da5e9e185acdeb6b2f3e43c87bb22",
+    "plugin_binary_sha256": "6f5c6a68bf6b0509232c5860cb9c975831c1997bd3a3daef383450e1a41b6c2c",
+    "sampler_source": "scripts/crazysim_flight_sampler.cc",
+    "sampler_source_sha256": "2f44d1fb62076bc262d90531cf7eacbd7a4760fb0b734152d1ed621cc6a4b948",
+    "sampler_binary_sha256": "02161bada836a93b8bf2ccc09078629775d60d6c191ffed48cf4b3d2ffa66368"
+  },
+  "runtime": {
+    "gazebo_sim_version": "8.14.0",
+    "physics_engine": "gz-physics-bullet-featherstone-plugin",
+    "partition": "ncs-flight-motor-map-clean-20261020",
+    "gazebo_gz_ip": "127.0.0.1",
+    "sampler_gz_ip": "127.0.0.1",
+    "firmware_process_count_before_stop": 1,
+    "firmware_process_exit_code": 143,
+    "gazebo_process_exit_code": 130,
+    "launch_command_capture": "incomplete; exact Gazebo invocation was not persisted at capture time"
+  },
+  "model_motor_parameters": {
+    "motorConstant": 1.7965e-8,
+    "maxRotVelocity": 3052,
+    "matches_all_four_rotor_plugins": true
+  },
+  "capture": {
+    "duration_s": 14,
+    "format": "Gazebo Transport protobuf text",
+    "sampler_callback_counts": {"odometry": 1186, "imu": 653, "motor_messages": 671, "world_stats": 27},
+    "parsed_counts": {"odometry": 1186, "imu": 653, "motor_components": 2684, "world_stats": 27},
+    "z_start_m": 2.014993906,
+    "z_min_m": 2.013774633,
+    "z_max_m": 2.886781454,
+    "z_end_m": 2.014994144,
+    "hover_target_m": 2.615,
+    "longest_stable_hover_s": 0.64,
+    "max_motor_speed_rad_s": 2726.116,
+    "aggregate_real_time_factor": 0.998875,
+    "firmware_acknowledged_takeoff_and_land": true
+  },
+  "acceptance": {
+    "stable_flight_gate_passed": false,
+    "strict_paired_checker_passed": false,
+    "reasons": ["positive stability lasted 0.64 s, below 5.0 s", "odometry gap 0.290 s", "IMU gap 0.092 s", "world stats cover 85.2%", "firmware reports stabilizer and Kalman cadence warnings", "firmware and Gazebo were stopped by SIGTERM/Ctrl-C (143/130)"]
+  }
+}

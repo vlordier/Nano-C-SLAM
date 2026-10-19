@@ -1,0 +1,405 @@
+goo.gle/debugonly   
+sim_time {
+  sec: 8
+  nsec: 153000000
+}
+real_time {
+  sec: 9
+  nsec: 711395125
+}
+iterations: 8153
+real_time_factor: 0.999542209667972
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 8
+  nsec: 756000000
+}
+real_time {
+  sec: 10
+  nsec: 314502084
+}
+iterations: 8756
+real_time_factor: 0.98615244733452856
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 9
+  nsec: 254000000
+}
+real_time {
+  sec: 10
+  nsec: 817353625
+}
+iterations: 9254
+real_time_factor: 0.97879346087664654
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 9
+  nsec: 758000000
+}
+real_time {
+  sec: 11
+  nsec: 321358042
+}
+iterations: 9758
+real_time_factor: 0.9803123863450327
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 10
+  nsec: 262000000
+}
+real_time {
+  sec: 11
+  nsec: 825351084
+}
+iterations: 10262
+real_time_factor: 1.0058672235147617
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 10
+  nsec: 867000000
+}
+real_time {
+  sec: 12
+  nsec: 430337459
+}
+iterations: 10867
+real_time_factor: 1.0015855098621118
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 11
+  nsec: 369000000
+}
+real_time {
+  sec: 12
+  nsec: 932244375
+}
+iterations: 11369
+real_time_factor: 1.128562448438803
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 11
+  nsec: 870000000
+}
+real_time {
+  sec: 13
+  nsec: 433360209
+}
+iterations: 11870
+real_time_factor: 0.96622185033416785
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 12
+  nsec: 373000000
+}
+real_time {
+  sec: 13
+  nsec: 936253750
+}
+iterations: 12373
+real_time_factor: 1.09474108278651
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 12
+  nsec: 977000000
+}
+real_time {
+  sec: 14
+  nsec: 540346709
+}
+iterations: 12977
+real_time_factor: 0.96126856690236973
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 13
+  nsec: 478000000
+}
+real_time {
+  sec: 15
+  nsec: 41411709
+}
+iterations: 13478
+real_time_factor: 0.85659194615120393
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 13
+  nsec: 981000000
+}
+real_time {
+  sec: 15
+  nsec: 544244292
+}
+iterations: 13981
+real_time_factor: 1.0827877887524335
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 14
+  nsec: 483000000
+}
+real_time {
+  sec: 16
+  nsec: 46392959
+}
+iterations: 14483
+real_time_factor: 0.87038489290349086
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 15
+  nsec: 87000000
+}
+real_time {
+  sec: 16
+  nsec: 650395334
+}
+iterations: 15087
+real_time_factor: 0.86871538712129437
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 15
+  nsec: 590000000
+}
+real_time {
+  sec: 17
+  nsec: 153331959
+}
+iterations: 15590
+real_time_factor: 1.0354196348696199
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 16
+  nsec: 95000000
+}
+real_time {
+  sec: 17
+  nsec: 658305042
+}
+iterations: 16095
+real_time_factor: 1.0596026490066226
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 16
+  nsec: 699000000
+}
+real_time {
+  sec: 18
+  nsec: 262347125
+}
+iterations: 16699
+real_time_factor: 0.99866877452356007
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 17
+  nsec: 203000000
+}
+real_time {
+  sec: 18
+  nsec: 766244167
+}
+iterations: 17203
+real_time_factor: 1.020582078782813
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 17
+  nsec: 706000000
+}
+real_time {
+  sec: 19
+  nsec: 269348042
+}
+iterations: 17706
+real_time_factor: 1.0042257820910392
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 18
+  nsec: 305000000
+}
+real_time {
+  sec: 19
+  nsec: 873293459
+}
+iterations: 18305
+real_time_factor: 0.84180965505165761
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 18
+  nsec: 804000000
+}
+real_time {
+  sec: 20
+  nsec: 377764750
+}
+iterations: 18804
+real_time_factor: 1.0669990012889348
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 19
+  nsec: 306000000
+}
+real_time {
+  sec: 20
+  nsec: 879842750
+}
+iterations: 19306
+real_time_factor: 0.86027721572999682
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 19
+  nsec: 809000000
+}
+real_time {
+  sec: 21
+  nsec: 382680209
+}
+iterations: 19809
+real_time_factor: 1.0776338178734191
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 20
+  nsec: 311000000
+}
+real_time {
+  sec: 21
+  nsec: 884772959
+}
+iterations: 20311
+real_time_factor: 1.014240957281185
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 20
+  nsec: 814000000
+}
+real_time {
+  sec: 22
+  nsec: 387822500
+}
+iterations: 20814
+real_time_factor: 0.9444734607679891
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 21
+  nsec: 318000000
+}
+real_time {
+  sec: 22
+  nsec: 891838500
+}
+iterations: 21318
+real_time_factor: 0.86346465191581223
+step_size {
+  nsec: 1000000
+}
+
+goo.gle/debugonly   
+sim_time {
+  sec: 21
+  nsec: 820000000
+}
+real_time {
+  sec: 23
+  nsec: 393786084
+}
+iterations: 21820
+real_time_factor: 0.98977169925984876
+step_size {
+  nsec: 1000000
+}
+

@@ -121,6 +121,39 @@ motor output, but it does not yet pass a stable flight.** Older attempts below
 that reported no motor output are retained as historical failures; the
 single-process live retest near the end of this document supersedes them.
 
+### Model-consistent motor mapping and strict paired run (2026-10-20)
+
+The CrazySim plugin previously converted firmware PWM using the thrust-upgrade
+model's constants (`2.3375e-8`, `2797 rad/s`) even when the selected standard
+Crazyflie model used `1.7965e-8`, `3052 rad/s`. The fork now passes the chosen
+model's `motorConstant` and `maxRotVelocity` from the SDF interface plugin,
+matching all four rotor plugins. The implementation is in fork commit
+[`36594bc`](https://github.com/vlordier/crazyflie-simulation/commit/36594bc335102a435d2290621586d2ed5ea6ea43)
+on `codex/cf2-motor-thrust-coefficients`. Its C++ motor conversion test and
+seven rendered-SDF tests pass. This repairs a real actuator-model inconsistency;
+it does not by itself prove a stable flight.
+
+The paired captures in `artifacts/crazysim_motor_mapping_20261020_attempt02`
+and `attempt03` use the upstream Crazyflie SITL binary, not Nano firmware.
+Attempt01 is explicitly invalid because two firmware processes were alive.
+In clean positive attempt02, one firmware acknowledged takeoff and landing,
+Gazebo RTF was 0.998875, and altitude rose from 2.015 m to 2.887 m before
+returning to the platform. But the longest stable interval near the 2.615 m
+target was only 0.64 s. The exact strict checker result is preserved in
+`attempt02/paired-check.json`: it fails due to a 0.290 s odometry gap, a
+0.092 s IMU gap, world statistics covering only 85.2% of odometry time,
+firmware rate/estimator warnings, nonzero shutdown statuses (143/130), and
+0.64 s stable hover against the unchanged 5.0 s requirement.
+
+The negative control in attempt03 passes its behavioral checks: the plugin
+reported a disconnected actuator bridge, all 2,248 motor components were zero,
+and altitude stayed exactly at the 2.015 m spawn height while firmware commands
+were acknowledged. The combined flight gate remains open. The run manifests
+also call out that the exact Gazebo launch command was not persisted, so this
+pair is diagnostic evidence rather than a fully reproducible acceptance run.
+No Nano firmware execution, Nano mapping result, multi-drone flight, or hardware
+validation is established by these runs.
+
 A Lima Ubuntu 24.04.5
 ARM64 VM was created with 4 CPUs, 6 GiB RAM, and a 25 GiB disk using
 `--containerd=none`; only the firmware build/runtime uses Linux. Gazebo remains

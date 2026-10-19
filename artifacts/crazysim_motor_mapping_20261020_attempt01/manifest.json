@@ -1,0 +1,8 @@
+{
+  "attempt": "CrazySim model-matched motor mapping attempt 01",
+  "date": "2026-10-20",
+  "valid_for_acceptance": false,
+  "reason": "Post-run guest process inspection found two concurrent cf2 processes. The flight was contaminated by a prior session and is excluded from all acceptance results.",
+  "cleanup": "Both task-owned cf2 processes were sent SIGTERM; a subsequent guest process check was empty.",
+  "scope": "Upstream Crazyflie SITL only; not Nano-C-SLAM firmware validation."
+}

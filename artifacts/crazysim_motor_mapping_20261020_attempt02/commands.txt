@@ -1,0 +1,30 @@
+Environment captured from the run:
+  Gazebo Harmonic 8.14.0, native macOS; Bullet Featherstone physics.
+  GZ_PARTITION=ncs-flight-motor-map-clean-20261020
+  GZ_IP=127.0.0.1 for Gazebo and the sampler.
+  One cf2 firmware process was checked before stopping the run.
+
+The launch sequence used the attempt's world.sdf, model-matched CrazySim plugin,
+patched Gazebo odometry publisher, and scripts/crazysim_flight_sampler.cc with a
+14-second capture. The exact Gazebo command line was not saved; see manifest.
+High-level TAKEOFF_2 and LAND_2 were sent via scripts/crazysim_bridge_command.py
+and both firmware responses had result 0. Firmware and Gazebo were stopped by
+SIGTERM and Ctrl-C respectively (143 and 130); these are recorded as failures
+by the strict gate, not successful clean exits.
+
+Strict checker command:
+uv run --locked python scripts/check_crazysim_flight.py \
+  --odometry artifacts/crazysim_motor_mapping_20261020_attempt02/capture/odometry.txt \
+  --imu artifacts/crazysim_motor_mapping_20261020_attempt02/capture/imu.txt \
+  --world-stats artifacts/crazysim_motor_mapping_20261020_attempt02/capture/world-stats.txt \
+  --motors artifacts/crazysim_motor_mapping_20261020_attempt02/capture/motors.txt \
+  --firmware-log artifacts/crazysim_motor_mapping_20261020_attempt02/firmware-positive.log \
+  --plugin-log artifacts/crazysim_motor_mapping_20261020_attempt02/plugin-positive.log \
+  --negative-control-odometry artifacts/crazysim_motor_mapping_20261020_attempt03/capture/odometry.txt \
+  --negative-control-motors artifacts/crazysim_motor_mapping_20261020_attempt03/capture/motors.txt \
+  --negative-control-log artifacts/crazysim_motor_mapping_20261020_attempt03/negative-control.log \
+  --firmware-process-count 1 --negative-control-firmware-process-count 1 \
+  --firmware-exit-code 143 --gazebo-exit-code 130 \
+  --negative-control-firmware-exit-code 143 --negative-control-gazebo-exit-code 130 \
+  --hover-target-z 2.615
+Result: exit 1; see paired-check.json. Do not alter thresholds to make this pass.

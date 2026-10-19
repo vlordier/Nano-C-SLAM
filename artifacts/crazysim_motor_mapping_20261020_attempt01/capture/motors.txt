@@ -1,0 +1,4038 @@
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 2346.017333984375
+velocity: 2346.017333984375
+velocity: 2346.017333984375
+velocity: 2346.017333984375
+
+goo.gle/debugonly   
+velocity: 2346.017333984375
+velocity: 2346.017333984375
+velocity: 2346.017333984375
+velocity: 2346.017333984375
+
+goo.gle/debugonly   
+velocity: 2345.9521484375
+velocity: 2345.9521484375
+velocity: 2345.9521484375
+velocity: 2345.9521484375
+
+goo.gle/debugonly   
+velocity: 2344.778564453125
+velocity: 2344.778564453125
+velocity: 2344.778564453125
+velocity: 2344.778564453125
+
+goo.gle/debugonly   
+velocity: 2340.66748046875
+velocity: 2340.66748046875
+velocity: 2340.66748046875
+velocity: 2340.66748046875
+
+goo.gle/debugonly   
+velocity: 2331.93115234375
+velocity: 2331.93115234375
+velocity: 2331.93115234375
+velocity: 2331.93115234375
+
+goo.gle/debugonly   
+velocity: 2317.198486328125
+velocity: 2317.198486328125
+velocity: 2317.198486328125
+velocity: 2317.198486328125
+
+goo.gle/debugonly   
+velocity: 2295.122314453125
+velocity: 2295.122314453125
+velocity: 2295.122314453125
+velocity: 2295.122314453125
+
+goo.gle/debugonly   
+velocity: 2264.8125
+velocity: 2264.8125
+velocity: 2264.8125
+velocity: 2264.8125
+
+goo.gle/debugonly   
+velocity: 2226.001708984375
+velocity: 2226.001708984375
+velocity: 2226.001708984375
+velocity: 2226.001708984375
+
+goo.gle/debugonly   
+velocity: 2149.585693359375
+velocity: 2149.585693359375
+velocity: 2149.585693359375
+velocity: 2149.585693359375
+
+goo.gle/debugonly   
+velocity: 2086.6806640625
+velocity: 2086.6806640625
+velocity: 2086.6806640625
+velocity: 2086.6806640625
+
+goo.gle/debugonly   
+velocity: 2011.242919921875
+velocity: 2011.242919921875
+velocity: 2011.242919921875
+velocity: 2011.242919921875
+
+goo.gle/debugonly   
+velocity: 1923.506591796875
+velocity: 1923.506591796875
+velocity: 1923.506591796875
+velocity: 1923.506591796875
+
+goo.gle/debugonly   
+velocity: 1823.7509765625
+velocity: 1823.7509765625
+velocity: 1823.7509765625
+velocity: 1823.7509765625
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1782.1573486328125
+velocity: 1782.1573486328125
+velocity: 1782.1573486328125
+velocity: 1782.1573486328125
+
+goo.gle/debugonly   
+velocity: 1858.5855712890625
+velocity: 1858.5855712890625
+velocity: 1858.5855712890625
+velocity: 1858.5855712890625
+
+goo.gle/debugonly   
+velocity: 1934.32568359375
+velocity: 1934.32568359375
+velocity: 1934.32568359375
+velocity: 1934.32568359375
+
+goo.gle/debugonly   
+velocity: 2008.770751953125
+velocity: 2008.770751953125
+velocity: 2008.770751953125
+velocity: 2008.770751953125
+
+goo.gle/debugonly   
+velocity: 2081.47216796875
+velocity: 2081.47216796875
+velocity: 2081.47216796875
+velocity: 2081.47216796875
+
+goo.gle/debugonly   
+velocity: 2127.89013671875
+velocity: 2127.89013671875
+velocity: 2127.89013671875
+velocity: 2127.89013671875
+
+goo.gle/debugonly   
+velocity: 2227.066162109375
+velocity: 2227.066162109375
+velocity: 2227.066162109375
+velocity: 2227.066162109375
+
+goo.gle/debugonly   
+velocity: 2292.4228515625
+velocity: 2292.4228515625
+velocity: 2292.4228515625
+velocity: 2292.4228515625
+
+goo.gle/debugonly   
+velocity: 2353.69482421875
+velocity: 2353.69482421875
+velocity: 2353.69482421875
+velocity: 2353.69482421875
+
+goo.gle/debugonly   
+velocity: 2434.729248046875
+velocity: 2434.729248046875
+velocity: 2434.729248046875
+velocity: 2434.729248046875
+
+goo.gle/debugonly   
+velocity: 2479.035888671875
+velocity: 2479.035888671875
+velocity: 2479.035888671875
+velocity: 2479.035888671875
+
+goo.gle/debugonly   
+velocity: 2514.97705078125
+velocity: 2514.97705078125
+velocity: 2514.97705078125
+velocity: 2514.97705078125
+
+goo.gle/debugonly   
+velocity: 2539.086669921875
+velocity: 2539.086669921875
+velocity: 2539.086669921875
+velocity: 2539.086669921875
+
+goo.gle/debugonly   
+velocity: 2552.478759765625
+velocity: 2552.478759765625
+velocity: 2552.478759765625
+velocity: 2552.478759765625
+
+goo.gle/debugonly   
+velocity: 2554.3349609375
+velocity: 2554.3349609375
+velocity: 2554.3349609375
+velocity: 2554.3349609375
+
+goo.gle/debugonly   
+velocity: 2545.641357421875
+velocity: 2545.641357421875
+velocity: 2545.641357421875
+velocity: 2545.641357421875
+
+goo.gle/debugonly   
+velocity: 2536.646484375
+velocity: 2536.646484375
+velocity: 2536.646484375
+velocity: 2536.646484375
+
+goo.gle/debugonly   
+velocity: 2488.392333984375
+velocity: 2488.392333984375
+velocity: 2488.392333984375
+velocity: 2488.392333984375
+
+goo.gle/debugonly   
+velocity: 2437.365478515625
+velocity: 2437.365478515625
+velocity: 2437.365478515625
+velocity: 2437.365478515625
+
+goo.gle/debugonly   
+velocity: 2411.16162109375
+velocity: 2411.16162109375
+velocity: 2411.16162109375
+velocity: 2411.16162109375
+
+goo.gle/debugonly   
+velocity: 2279.481201171875
+velocity: 2279.481201171875
+velocity: 2279.481201171875
+velocity: 2279.481201171875
+
+goo.gle/debugonly   
+velocity: 2182.47802734375
+velocity: 2182.47802734375
+velocity: 2182.47802734375
+velocity: 2182.47802734375
+
+goo.gle/debugonly   
+velocity: 2051.396728515625
+velocity: 2051.396728515625
+velocity: 2051.396728515625
+velocity: 2051.396728515625
+
+goo.gle/debugonly   
+velocity: 1791.05712890625
+velocity: 1791.05712890625
+velocity: 1791.05712890625
+velocity: 1791.05712890625
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.205078125
+velocity: 1749.079345703125
+velocity: 1749.079345703125
+velocity: 1748.205078125
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.5111083984375
+velocity: 1748.5111083984375
+velocity: 1748.7735595703125
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.729736328125
+velocity: 1748.729736328125
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.729736328125
+velocity: 1748.729736328125
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.8609619140625
+velocity: 1748.423828125
+velocity: 1748.423828125
+velocity: 1748.8609619140625
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.729736328125
+velocity: 1748.729736328125
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.729736328125
+velocity: 1748.729736328125
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.729736328125
+velocity: 1748.729736328125
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.9483642578125
+velocity: 1748.3363037109375
+velocity: 1748.3363037109375
+velocity: 1748.9483642578125
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.7735595703125
+velocity: 1748.7735595703125
+velocity: 1748.5111083984375
+
+goo.gle/debugonly   
+velocity: 1748.817138671875
+velocity: 1748.467529296875
+velocity: 1748.467529296875
+velocity: 1748.817138671875
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.729736328125
+velocity: 1748.729736328125
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.642333984375
+velocity: 1748.729736328125
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.68603515625
+velocity: 1748.7735595703125
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.817138671875
+velocity: 1748.3800048828125
+velocity: 1748.467529296875
+velocity: 1748.904541015625
+
+goo.gle/debugonly   
+velocity: 1805.6373291015625
+velocity: 1805.7220458984375
+velocity: 1805.806640625
+velocity: 1805.7220458984375
+
+goo.gle/debugonly   
+velocity: 1899.99462890625
+velocity: 1899.1092529296875
+velocity: 1898.3040771484375
+velocity: 1899.1898193359375
+
+goo.gle/debugonly   
+velocity: 2036.9619140625
+velocity: 2037.337158203125
+velocity: 2037.787353515625
+velocity: 2037.4122314453125
+
+goo.gle/debugonly   
+velocity: 2129.8291015625
+velocity: 2129.8291015625
+velocity: 2129.8291015625
+velocity: 2129.8291015625
+
+goo.gle/debugonly   
+velocity: 2220.087158203125
+velocity: 2220.087158203125
+velocity: 2220.087158203125
+velocity: 2220.087158203125
+
+goo.gle/debugonly   
+velocity: 2304.827392578125
+velocity: 2304.827392578125
+velocity: 2304.827392578125
+velocity: 2304.827392578125
+
+goo.gle/debugonly   
+velocity: 2384.669921875
+velocity: 2384.669921875
+velocity: 2384.669921875
+velocity: 2384.669921875
+
+goo.gle/debugonly   
+velocity: 2457.2314453125
+velocity: 2457.169189453125
+velocity: 2457.169189453125
+velocity: 2457.2314453125
+
+goo.gle/debugonly   
+velocity: 2521.1396484375
+velocity: 2521.078857421875
+velocity: 2521.078857421875
+velocity: 2521.1396484375
+
+goo.gle/debugonly   
+velocity: 2575.406494140625
+velocity: 2575.287841796875
+velocity: 2575.287841796875
+velocity: 2575.406494140625
+
+goo.gle/debugonly   
+velocity: 2618.676025390625
+velocity: 2619.201171875
+velocity: 2619.201171875
+velocity: 2618.676025390625
+
+goo.gle/debugonly   
+velocity: 2652.350830078125
+velocity: 2652.177978515625
+velocity: 2652.177978515625
+velocity: 2652.350830078125
+
+goo.gle/debugonly   
+velocity: 2669.7880859375
+velocity: 2670.18896484375
+velocity: 2670.131591796875
+velocity: 2669.730712890625
+
+goo.gle/debugonly   
+velocity: 2675.8798828125
+velocity: 2675.994140625
+velocity: 2675.93701171875
+velocity: 2675.82275390625
+
+goo.gle/debugonly   
+velocity: 2669.7880859375
+velocity: 2669.21533203125
+velocity: 2669.1005859375
+velocity: 2669.673583984375
+
+goo.gle/debugonly   
+velocity: 2649.8134765625
+velocity: 2650.21728515625
+velocity: 2650.563720703125
+velocity: 2650.159423828125
+
+goo.gle/debugonly   
+velocity: 2610.020751953125
+velocity: 2610.079345703125
+velocity: 2610.196533203125
+velocity: 2610.137939453125
+
+goo.gle/debugonly   
+velocity: 2556.668212890625
+velocity: 2556.72802734375
+velocity: 2556.548583984375
+velocity: 2556.48876953125
+
+goo.gle/debugonly   
+velocity: 2444.974853515625
+velocity: 2444.974853515625
+velocity: 2445.224853515625
+velocity: 2445.224853515625
+
+goo.gle/debugonly   
+velocity: 2399.179443359375
+velocity: 2399.179443359375
+velocity: 2399.306884765625
+velocity: 2399.306884765625
+
+goo.gle/debugonly   
+velocity: 2231.934814453125
+velocity: 2232.072021484375
+velocity: 2231.52392578125
+velocity: 2231.38671875
+
+goo.gle/debugonly   
+velocity: 2167.329345703125
+velocity: 2167.399658203125
+velocity: 2167.8935546875
+velocity: 2167.822998046875
+
+goo.gle/debugonly   
+velocity: 2022.1595458984375
+velocity: 2021.4034423828125
+velocity: 2021.5545654296875
+velocity: 2022.310791015625
+
+goo.gle/debugonly   
+velocity: 1750.826904296875
+velocity: 1751.961669921875
+velocity: 1751.5252685546875
+velocity: 1750.39013671875
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.3363037109375
+velocity: 1748.7735595703125
+velocity: 1748.9483642578125
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.423828125
+velocity: 1748.5986328125
+velocity: 1748.8609619140625
+
+goo.gle/debugonly   
+velocity: 1748.3800048828125
+velocity: 1748.729736328125
+velocity: 1748.904541015625
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.2926025390625
+velocity: 1748.729736328125
+velocity: 1748.991943359375
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.9483642578125
+velocity: 1748.7735595703125
+velocity: 1748.3363037109375
+velocity: 1748.5111083984375
+
+goo.gle/debugonly   
+velocity: 1748.2926025390625
+velocity: 1748.2926025390625
+velocity: 1748.991943359375
+velocity: 1748.991943359375
+
+goo.gle/debugonly   
+velocity: 1748.2926025390625
+velocity: 1748.2926025390625
+velocity: 1748.991943359375
+velocity: 1748.991943359375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.729736328125
+velocity: 1748.642333984375
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.7735595703125
+velocity: 1748.68603515625
+velocity: 1748.5111083984375
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.7735595703125
+velocity: 1748.68603515625
+velocity: 1748.5111083984375
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.817138671875
+velocity: 1748.729736328125
+velocity: 1748.467529296875
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1748.904541015625
+velocity: 1748.817138671875
+velocity: 1748.3800048828125
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1748.2926025390625
+velocity: 1748.817138671875
+velocity: 1748.991943359375
+
+goo.gle/debugonly   
+velocity: 1748.8609619140625
+velocity: 1748.68603515625
+velocity: 1748.423828125
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.161376953125
+velocity: 1749.0357666015625
+velocity: 1749.1231689453125
+velocity: 1748.248779296875
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1748.467529296875
+velocity: 1748.554931640625
+velocity: 1748.817138671875
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.554931640625
+velocity: 1748.729736328125
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.5111083984375
+velocity: 1748.7735595703125
+velocity: 1748.7735595703125
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.7735595703125
+velocity: 1748.5111083984375
+velocity: 1748.5111083984375
+
+goo.gle/debugonly   
+velocity: 1748.3363037109375
+velocity: 1748.3363037109375
+velocity: 1748.9483642578125
+velocity: 1748.9483642578125
+
+goo.gle/debugonly   
+velocity: 1748.9483642578125
+velocity: 1748.8609619140625
+velocity: 1748.3363037109375
+velocity: 1748.423828125
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1748.642333984375
+velocity: 1748.554931640625
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.9483642578125
+velocity: 1748.5986328125
+velocity: 1748.3363037109375
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.205078125
+velocity: 1749.079345703125
+velocity: 1749.079345703125
+velocity: 1748.205078125
+
+goo.gle/debugonly   
+velocity: 1748.904541015625
+velocity: 1748.3800048828125
+velocity: 1748.3800048828125
+velocity: 1748.904541015625
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.5986328125
+velocity: 1748.5111083984375
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.3363037109375
+velocity: 1749.0357666015625
+velocity: 1748.9483642578125
+velocity: 1748.248779296875
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.073974609375
+velocity: 1748.5111083984375
+velocity: 1749.2105712890625
+
+goo.gle/debugonly   
+velocity: 1748.991943359375
+velocity: 1748.817138671875
+velocity: 1748.2926025390625
+velocity: 1748.467529296875
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.817138671875
+velocity: 1748.642333984375
+velocity: 1748.467529296875
+
+goo.gle/debugonly   
+velocity: 1749.0357666015625
+velocity: 1748.5111083984375
+velocity: 1748.248779296875
+velocity: 1748.7735595703125
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1748.642333984375
+velocity: 1748.817138671875
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.8609619140625
+velocity: 1748.5111083984375
+velocity: 1748.423828125
+
+goo.gle/debugonly   
+velocity: 1748.3363037109375
+velocity: 1748.3363037109375
+velocity: 1748.9483642578125
+velocity: 1748.9483642578125
+
+goo.gle/debugonly   
+velocity: 1749.079345703125
+velocity: 1749.079345703125
+velocity: 1748.205078125
+velocity: 1748.205078125
+
+goo.gle/debugonly   
+velocity: 1748.3363037109375
+velocity: 1748.3363037109375
+velocity: 1748.9483642578125
+velocity: 1748.9483642578125
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.554931640625
+velocity: 1748.642333984375
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1748.554931640625
+velocity: 1748.554931640625
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.5111083984375
+velocity: 1748.5111083984375
+velocity: 1748.7735595703125
+
+goo.gle/debugonly   
+velocity: 1748.8609619140625
+velocity: 1748.5111083984375
+velocity: 1748.423828125
+velocity: 1748.7735595703125
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.7735595703125
+velocity: 1748.68603515625
+velocity: 1748.5111083984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.817138671875
+velocity: 1748.642333984375
+velocity: 1748.467529296875
+
+goo.gle/debugonly   
+velocity: 1748.991943359375
+velocity: 1748.0301513671875
+velocity: 1748.2926025390625
+velocity: 1749.2542724609375
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.68603515625
+velocity: 1748.7735595703125
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.7735595703125
+velocity: 1748.5111083984375
+velocity: 1748.5111083984375
+
+goo.gle/debugonly   
+velocity: 1748.3800048828125
+velocity: 1748.3800048828125
+velocity: 1748.904541015625
+velocity: 1748.904541015625
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.161376953125
+velocity: 1748.9483642578125
+velocity: 1749.1231689453125
+velocity: 1748.3363037109375
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.554931640625
+velocity: 1748.729736328125
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.9483642578125
+velocity: 1748.9483642578125
+velocity: 1748.3363037109375
+velocity: 1748.3363037109375
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.5986328125
+velocity: 1748.7735595703125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.642333984375
+velocity: 1748.729736328125
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.991943359375
+velocity: 1748.11767578125
+velocity: 1748.2926025390625
+velocity: 1749.1668701171875
+
+goo.gle/debugonly   
+velocity: 1748.8609619140625
+velocity: 1749.2979736328125
+velocity: 1748.423828125
+velocity: 1747.9864501953125
+
+goo.gle/debugonly   
+velocity: 1748.3800048828125
+velocity: 1748.467529296875
+velocity: 1748.904541015625
+velocity: 1748.817138671875
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1748.642333984375
+velocity: 1748.817138671875
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.904541015625
+velocity: 1749.079345703125
+velocity: 1748.3800048828125
+velocity: 1748.205078125
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1748.0301513671875
+velocity: 1748.554931640625
+velocity: 1749.2542724609375
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1749.2105712890625
+velocity: 1748.5111083984375
+velocity: 1748.073974609375
+
+goo.gle/debugonly   
+velocity: 1748.8609619140625
+velocity: 1748.5986328125
+velocity: 1748.423828125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1780.4837646484375
+velocity: 1780.31201171875
+velocity: 1780.4837646484375
+velocity: 1780.655517578125
+
+goo.gle/debugonly   
+velocity: 1890.1522216796875
+velocity: 1889.666748046875
+velocity: 1889.5858154296875
+velocity: 1890.0712890625
+
+goo.gle/debugonly   
+velocity: 1996.2880859375
+velocity: 1996.21142578125
+velocity: 1996.21142578125
+velocity: 1996.2880859375
+
+goo.gle/debugonly   
+velocity: 2103.065185546875
+velocity: 2103.7919921875
+velocity: 2103.7919921875
+velocity: 2103.065185546875
+
+goo.gle/debugonly   
+velocity: 2244.12890625
+velocity: 2243.99267578125
+velocity: 2243.99267578125
+velocity: 2244.12890625
+
+goo.gle/debugonly   
+velocity: 2337.92236328125
+velocity: 2337.92236328125
+velocity: 2337.92236328125
+velocity: 2337.92236328125
+
+goo.gle/debugonly   
+velocity: 2425.48095703125
+velocity: 2425.48095703125
+velocity: 2425.48095703125
+velocity: 2425.48095703125
+
+goo.gle/debugonly   
+velocity: 2507.24462890625
+velocity: 2507.3056640625
+velocity: 2507.36669921875
+velocity: 2507.3056640625
+
+goo.gle/debugonly   
+velocity: 2573.090087890625
+velocity: 2573.208984375
+velocity: 2573.327880859375
+velocity: 2573.208984375
+
+goo.gle/debugonly   
+velocity: 2631.605224609375
+velocity: 2631.430908203125
+velocity: 2631.489013671875
+velocity: 2631.6630859375
+
+goo.gle/debugonly   
+velocity: 2681.929443359375
+velocity: 2681.758544921875
+velocity: 2681.473388671875
+velocity: 2681.644287109375
+
+goo.gle/debugonly   
+velocity: 2718.337646484375
+velocity: 2718.50634765625
+velocity: 2718.78759765625
+velocity: 2718.61865234375
+
+goo.gle/debugonly   
+velocity: 2746.649169921875
+velocity: 2746.593505859375
+velocity: 2746.426513671875
+velocity: 2746.48193359375
+
+goo.gle/debugonly   
+velocity: 2760.668212890625
+velocity: 2760.613037109375
+velocity: 2760.502197265625
+velocity: 2760.557373046875
+
+goo.gle/debugonly   
+velocity: 2746.81591796875
+velocity: 2746.81591796875
+velocity: 2746.760498046875
+velocity: 2746.760498046875
+
+goo.gle/debugonly   
+velocity: 2721.59765625
+velocity: 2720.979736328125
+velocity: 2720.923583984375
+velocity: 2721.54150390625
+
+goo.gle/debugonly   
+velocity: 2700.789306640625
+velocity: 2701.072265625
+velocity: 2701.015625
+velocity: 2700.732666015625
+
+goo.gle/debugonly   
+velocity: 2651.976318359375
+velocity: 2651.976318359375
+velocity: 2651.976318359375
+velocity: 2651.976318359375
+
+goo.gle/debugonly   
+velocity: 2539.29736328125
+velocity: 2539.417724609375
+velocity: 2539.417724609375
+velocity: 2539.29736328125
+
+goo.gle/debugonly   
+velocity: 2445.60009765625
+velocity: 2445.037353515625
+velocity: 2445.037353515625
+velocity: 2445.60009765625
+
+goo.gle/debugonly   
+velocity: 2384.830078125
+velocity: 2384.509521484375
+velocity: 2383.868408203125
+velocity: 2384.18896484375
+
+goo.gle/debugonly   
+velocity: 2259.947021484375
+velocity: 2260.42041015625
+velocity: 2260.488037109375
+velocity: 2260.0146484375
+
+goo.gle/debugonly   
+velocity: 2027.5958251953125
+velocity: 2027.671142578125
+velocity: 2027.671142578125
+velocity: 2027.5958251953125
+
+goo.gle/debugonly   
+velocity: 1836.6156005859375
+velocity: 1836.1160888671875
+velocity: 1836.1160888671875
+velocity: 1836.6156005859375
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1749.3416748046875
+velocity: 1749.1668701171875
+velocity: 1747.9427490234375
+velocity: 1748.11767578125
+
+goo.gle/debugonly   
+velocity: 1748.904541015625
+velocity: 1748.642333984375
+velocity: 1748.3800048828125
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.248779296875
+velocity: 1748.423828125
+velocity: 1749.0357666015625
+velocity: 1748.8609619140625
+
+goo.gle/debugonly   
+velocity: 1748.817138671875
+velocity: 1748.904541015625
+velocity: 1748.467529296875
+velocity: 1748.3800048828125
+
+goo.gle/debugonly   
+velocity: 1749.1668701171875
+velocity: 1748.642333984375
+velocity: 1748.11767578125
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.3800048828125
+velocity: 1748.642333984375
+velocity: 1748.904541015625
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.817138671875
+velocity: 1748.642333984375
+velocity: 1748.467529296875
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.904541015625
+velocity: 1748.642333984375
+velocity: 1748.3800048828125
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1748.205078125
+velocity: 1748.817138671875
+velocity: 1749.079345703125
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.5986328125
+velocity: 1748.7735595703125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1749.0357666015625
+velocity: 1749.1231689453125
+velocity: 1748.248779296875
+velocity: 1748.161376953125
+
+goo.gle/debugonly   
+velocity: 1748.8609619140625
+velocity: 1748.9483642578125
+velocity: 1748.423828125
+velocity: 1748.3363037109375
+
+goo.gle/debugonly   
+velocity: 1749.4727783203125
+velocity: 1748.8609619140625
+velocity: 1747.8115234375
+velocity: 1748.423828125
+
+goo.gle/debugonly   
+velocity: 1748.423828125
+velocity: 1748.5111083984375
+velocity: 1748.8609619140625
+velocity: 1748.7735595703125
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.3800048828125
+velocity: 1747.855224609375
+velocity: 1748.904541015625
+velocity: 1749.4290771484375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.817138671875
+velocity: 1748.467529296875
+velocity: 1748.467529296875
+velocity: 1748.817138671875
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.5986328125
+velocity: 1748.7735595703125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.423828125
+velocity: 1748.5986328125
+velocity: 1748.8609619140625
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.904541015625
+velocity: 1748.642333984375
+velocity: 1748.3800048828125
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1749.0357666015625
+velocity: 1748.5111083984375
+velocity: 1748.248779296875
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.3800048828125
+velocity: 1748.729736328125
+velocity: 1748.904541015625
+
+goo.gle/debugonly   
+velocity: 1747.9427490234375
+velocity: 1748.817138671875
+velocity: 1749.3416748046875
+velocity: 1748.467529296875
+
+goo.gle/debugonly   
+velocity: 1748.904541015625
+velocity: 1748.3800048828125
+velocity: 1748.3800048828125
+velocity: 1748.904541015625
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1748.554931640625
+velocity: 1748.817138671875
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1748.554931640625
+velocity: 1748.817138671875
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.8609619140625
+velocity: 1748.5986328125
+velocity: 1748.423828125
+
+goo.gle/debugonly   
+velocity: 1748.205078125
+velocity: 1748.3800048828125
+velocity: 1749.079345703125
+velocity: 1748.904541015625
+
+goo.gle/debugonly   
+velocity: 1748.11767578125
+velocity: 1748.3800048828125
+velocity: 1749.1668701171875
+velocity: 1748.904541015625
+
+goo.gle/debugonly   
+velocity: 1749.0357666015625
+velocity: 1748.423828125
+velocity: 1748.248779296875
+velocity: 1748.8609619140625
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.68603515625
+velocity: 1748.5111083984375
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.68603515625
+velocity: 1748.5111083984375
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.817138671875
+velocity: 1748.642333984375
+velocity: 1748.467529296875
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.161376953125
+velocity: 1749.1231689453125
+velocity: 1749.1231689453125
+velocity: 1748.161376953125
+
+goo.gle/debugonly   
+velocity: 1748.8609619140625
+velocity: 1748.5986328125
+velocity: 1748.423828125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.817138671875
+velocity: 1748.642333984375
+velocity: 1748.467529296875
+
+goo.gle/debugonly   
+velocity: 1747.855224609375
+velocity: 1748.554931640625
+velocity: 1749.4290771484375
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1749.2105712890625
+velocity: 1748.68603515625
+velocity: 1748.073974609375
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.68603515625
+velocity: 1748.5111083984375
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1748.729736328125
+velocity: 1748.554931640625
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1748.729736328125
+velocity: 1748.554931640625
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.248779296875
+velocity: 1748.248779296875
+velocity: 1749.0357666015625
+velocity: 1749.0357666015625
+
+goo.gle/debugonly   
+velocity: 1748.2926025390625
+velocity: 1748.2926025390625
+velocity: 1748.991943359375
+velocity: 1748.991943359375
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1748.3800048828125
+velocity: 1748.817138671875
+velocity: 1748.904541015625
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.423828125
+velocity: 1748.7735595703125
+velocity: 1748.8609619140625
+
+goo.gle/debugonly   
+velocity: 1749.3416748046875
+velocity: 1749.2542724609375
+velocity: 1747.9427490234375
+velocity: 1748.0301513671875
+
+goo.gle/debugonly   
+velocity: 1749.4727783203125
+velocity: 1749.3853759765625
+velocity: 1747.8115234375
+velocity: 1747.8990478515625
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.423828125
+velocity: 1748.68603515625
+velocity: 1748.8609619140625
+
+goo.gle/debugonly   
+velocity: 1747.6802978515625
+velocity: 1748.467529296875
+velocity: 1749.603759765625
+velocity: 1748.817138671875
+
+goo.gle/debugonly   
+velocity: 1748.8609619140625
+velocity: 1748.423828125
+velocity: 1748.423828125
+velocity: 1748.8609619140625
+
+goo.gle/debugonly   
+velocity: 1749.4290771484375
+velocity: 1748.642333984375
+velocity: 1747.855224609375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.2926025390625
+velocity: 1748.642333984375
+velocity: 1748.991943359375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.7735595703125
+velocity: 1748.7735595703125
+velocity: 1748.5111083984375
+
+goo.gle/debugonly   
+velocity: 1749.0357666015625
+velocity: 1748.248779296875
+velocity: 1748.248779296875
+velocity: 1749.0357666015625
+
+goo.gle/debugonly   
+velocity: 1810.4149169921875
+velocity: 1810.921630859375
+velocity: 1810.837158203125
+velocity: 1810.3304443359375
+
+goo.gle/debugonly   
+velocity: 1868.63525390625
+velocity: 1868.717041015625
+velocity: 1868.5533447265625
+velocity: 1868.4715576171875
+
+goo.gle/debugonly   
+velocity: 2033.0177001953125
+velocity: 2032.1903076171875
+velocity: 2032.716796875
+velocity: 2033.5440673828125
+
+goo.gle/debugonly   
+velocity: 2132.3759765625
+velocity: 2132.3759765625
+velocity: 2131.73046875
+velocity: 2131.73046875
+
+goo.gle/debugonly   
+velocity: 2235.015380859375
+velocity: 2234.947021484375
+velocity: 2235.494140625
+velocity: 2235.5625
+
+goo.gle/debugonly   
+velocity: 2276.4609375
+velocity: 2276.32666015625
+velocity: 2276.4609375
+velocity: 2276.595458984375
+
+goo.gle/debugonly   
+velocity: 2408.338134765625
+velocity: 2408.71923828125
+velocity: 2408.782470703125
+velocity: 2408.40185546875
+
+goo.gle/debugonly   
+velocity: 2485.410888671875
+velocity: 2484.918701171875
+velocity: 2484.980224609375
+velocity: 2485.47216796875
+
+goo.gle/debugonly   
+velocity: 2557.206298828125
+velocity: 2557.26611328125
+velocity: 2557.325927734375
+velocity: 2557.26611328125
+
+goo.gle/debugonly   
+velocity: 2612.187255859375
+velocity: 2612.947998046875
+velocity: 2613.006591796875
+velocity: 2612.24560546875
+
+goo.gle/debugonly   
+velocity: 2657.332275390625
+velocity: 2657.274658203125
+velocity: 2657.332275390625
+velocity: 2657.389892578125
+
+goo.gle/debugonly   
+velocity: 2697.787353515625
+velocity: 2697.787353515625
+velocity: 2697.843994140625
+velocity: 2697.843994140625
+
+goo.gle/debugonly   
+velocity: 2723.029541015625
+velocity: 2723.029541015625
+velocity: 2723.0859375
+velocity: 2723.0859375
+
+goo.gle/debugonly   
+velocity: 2736.024658203125
+velocity: 2736.63916015625
+velocity: 2736.695068359375
+velocity: 2736.08056640625
+
+goo.gle/debugonly   
+velocity: 2735.018798828125
+velocity: 2735.018798828125
+velocity: 2735.074462890625
+velocity: 2735.074462890625
+
+goo.gle/debugonly   
+velocity: 2717.268798828125
+velocity: 2717.21240234375
+velocity: 2717.324951171875
+velocity: 2717.38134765625
+
+goo.gle/debugonly   
+velocity: 2654.51171875
+velocity: 2654.7421875
+velocity: 2655.087646484375
+velocity: 2654.857177734375
+
+goo.gle/debugonly   
+velocity: 2607.7060546875
+velocity: 2607.9990234375
+velocity: 2608.057861328125
+velocity: 2607.7646484375
+
+goo.gle/debugonly   
+velocity: 2532.544921875
+velocity: 2532.36376953125
+velocity: 2532.544921875
+velocity: 2532.72607421875
+
+goo.gle/debugonly   
+velocity: 2489.0068359375
+velocity: 2488.9453125
+velocity: 2489.19091796875
+velocity: 2489.25244140625
+
+goo.gle/debugonly   
+velocity: 2334.51953125
+velocity: 2335.043212890625
+velocity: 2334.912109375
+velocity: 2334.388427734375
+
+goo.gle/debugonly   
+velocity: 2202.07470703125
+velocity: 2201.796875
+velocity: 2202.4912109375
+velocity: 2202.76904296875
+
+goo.gle/debugonly   
+velocity: 2046.8453369140625
+velocity: 2046.8453369140625
+velocity: 2046.397216796875
+velocity: 2046.397216796875
+
+goo.gle/debugonly   
+velocity: 1869.9439697265625
+velocity: 1869.9439697265625
+velocity: 1869.9439697265625
+velocity: 1869.9439697265625
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.642333984375
+velocity: 1748.729736328125
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.3800048828125
+velocity: 1748.642333984375
+velocity: 1748.904541015625
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.248779296875
+velocity: 1748.68603515625
+velocity: 1749.0357666015625
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.904541015625
+velocity: 1748.817138671875
+velocity: 1748.3800048828125
+velocity: 1748.467529296875
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1749.079345703125
+velocity: 1749.1668701171875
+velocity: 1748.205078125
+velocity: 1748.11767578125
+
+goo.gle/debugonly   
+velocity: 1749.1231689453125
+velocity: 1749.2105712890625
+velocity: 1748.161376953125
+velocity: 1748.073974609375
+
+goo.gle/debugonly   
+velocity: 1747.9427490234375
+velocity: 1748.2926025390625
+velocity: 1749.3416748046875
+velocity: 1748.991943359375
+
+goo.gle/debugonly   
+velocity: 1748.11767578125
+velocity: 1748.554931640625
+velocity: 1749.1668701171875
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1747.9864501953125
+velocity: 1748.5111083984375
+velocity: 1749.2979736328125
+velocity: 1748.7735595703125
+
+goo.gle/debugonly   
+velocity: 1749.7786865234375
+velocity: 1749.079345703125
+velocity: 1747.50537109375
+velocity: 1748.205078125
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.7735595703125
+velocity: 1748.7735595703125
+velocity: 1748.5111083984375
+
+goo.gle/debugonly   
+velocity: 1748.248779296875
+velocity: 1748.248779296875
+velocity: 1749.0357666015625
+velocity: 1749.0357666015625
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1748.729736328125
+velocity: 1748.554931640625
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.7735595703125
+velocity: 1748.5111083984375
+velocity: 1748.5111083984375
+
+goo.gle/debugonly   
+velocity: 1748.2926025390625
+velocity: 1748.2926025390625
+velocity: 1748.991943359375
+velocity: 1748.991943359375
+
+goo.gle/debugonly   
+velocity: 1749.0357666015625
+velocity: 1749.0357666015625
+velocity: 1748.248779296875
+velocity: 1748.248779296875
+
+goo.gle/debugonly   
+velocity: 1748.3363037109375
+velocity: 1748.3363037109375
+velocity: 1748.9483642578125
+velocity: 1748.9483642578125
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1748.554931640625
+velocity: 1748.554931640625
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1748.554931640625
+velocity: 1748.554931640625
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.817138671875
+velocity: 1748.554931640625
+velocity: 1748.467529296875
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.904541015625
+velocity: 1748.729736328125
+velocity: 1748.3800048828125
+
+goo.gle/debugonly   
+velocity: 1748.9483642578125
+velocity: 1748.5986328125
+velocity: 1748.3363037109375
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1749.0357666015625
+velocity: 1748.68603515625
+velocity: 1748.248779296875
+
+goo.gle/debugonly   
+velocity: 1748.8609619140625
+velocity: 1747.9864501953125
+velocity: 1748.423828125
+velocity: 1749.2979736328125
+
+goo.gle/debugonly   
+velocity: 1748.2926025390625
+velocity: 1748.817138671875
+velocity: 1748.991943359375
+velocity: 1748.467529296875
+
+goo.gle/debugonly   
+velocity: 1749.0357666015625
+velocity: 1749.0357666015625
+velocity: 1748.248779296875
+velocity: 1748.248779296875
+
+goo.gle/debugonly   
+velocity: 1748.073974609375
+velocity: 1748.073974609375
+velocity: 1749.2105712890625
+velocity: 1749.2105712890625
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1748.729736328125
+velocity: 1748.554931640625
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.7735595703125
+velocity: 1748.5111083984375
+velocity: 1748.5111083984375
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.554931640625
+velocity: 1748.642333984375
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.467529296875
+velocity: 1748.642333984375
+velocity: 1748.817138671875
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.2926025390625
+velocity: 1748.729736328125
+velocity: 1748.991943359375
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.423828125
+velocity: 1748.5111083984375
+velocity: 1748.8609619140625
+
+goo.gle/debugonly   
+velocity: 1748.3800048828125
+velocity: 1748.729736328125
+velocity: 1748.904541015625
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.991943359375
+velocity: 1749.1668701171875
+velocity: 1748.2926025390625
+velocity: 1748.11767578125
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.248779296875
+velocity: 1748.5986328125
+velocity: 1749.0357666015625
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1748.554931640625
+velocity: 1748.817138671875
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.729736328125
+velocity: 1748.642333984375
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1748.554931640625
+velocity: 1748.817138671875
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.817138671875
+velocity: 1748.904541015625
+velocity: 1748.467529296875
+velocity: 1748.3800048828125
+
+goo.gle/debugonly   
+velocity: 1748.073974609375
+velocity: 1748.5111083984375
+velocity: 1749.2105712890625
+velocity: 1748.7735595703125
+
+goo.gle/debugonly   
+velocity: 1748.9483642578125
+velocity: 1748.9483642578125
+velocity: 1748.3363037109375
+velocity: 1748.3363037109375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.729736328125
+velocity: 1748.642333984375
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.11767578125
+velocity: 1748.205078125
+velocity: 1749.1668701171875
+velocity: 1749.079345703125
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1748.817138671875
+velocity: 1748.554931640625
+velocity: 1748.467529296875
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.729736328125
+velocity: 1748.729736328125
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.68603515625
+velocity: 1748.7735595703125
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.817138671875
+velocity: 1748.3800048828125
+velocity: 1748.467529296875
+velocity: 1748.904541015625
+
+goo.gle/debugonly   
+velocity: 1757.4942626953125
+velocity: 1757.8421630859375
+velocity: 1758.01611328125
+velocity: 1757.668212890625
+
+goo.gle/debugonly   
+velocity: 1866.957275390625
+velocity: 1866.3839111328125
+velocity: 1866.629638671875
+velocity: 1867.202880859375
+
+goo.gle/debugonly   
+velocity: 1973.3333740234375
+velocity: 1974.10791015625
+velocity: 1973.8756103515625
+velocity: 1973.1009521484375
+
+goo.gle/debugonly   
+velocity: 2077.722900390625
+velocity: 2077.20751953125
+velocity: 2076.986572265625
+velocity: 2077.501953125
+
+goo.gle/debugonly   
+velocity: 2178.9375
+velocity: 2178.797119140625
+velocity: 2178.65673828125
+velocity: 2178.797119140625
+
+goo.gle/debugonly   
+velocity: 2271.3173828125
+velocity: 2271.3173828125
+velocity: 2271.721435546875
+velocity: 2271.721435546875
+
+goo.gle/debugonly   
+velocity: 2364.032470703125
+velocity: 2364.032470703125
+velocity: 2363.838623046875
+velocity: 2363.838623046875
+
+goo.gle/debugonly   
+velocity: 2446.06884765625
+velocity: 2446.06884765625
+velocity: 2445.94384765625
+velocity: 2445.94384765625
+
+goo.gle/debugonly   
+velocity: 2522.837158203125
+velocity: 2522.837158203125
+velocity: 2523.26123046875
+velocity: 2523.26123046875
+
+goo.gle/debugonly   
+velocity: 2592.181640625
+velocity: 2592.181640625
+velocity: 2592.004638671875
+velocity: 2592.004638671875
+
+goo.gle/debugonly   
+velocity: 2649.005615234375
+velocity: 2649.063232421875
+velocity: 2648.947998046875
+velocity: 2648.89013671875
+
+goo.gle/debugonly   
+velocity: 2696.88037109375
+velocity: 2696.993896484375
+velocity: 2697.220703125
+velocity: 2697.107177734375
+
+goo.gle/debugonly   
+velocity: 2748.068115234375
+velocity: 2747.845458984375
+velocity: 2747.7900390625
+velocity: 2748.012451171875
+
+goo.gle/debugonly   
+velocity: 2763.2421875
+velocity: 2763.629638671875
+velocity: 2763.518798828125
+velocity: 2763.131591796875
+
+goo.gle/debugonly   
+velocity: 2764.65283203125
+velocity: 2764.597412109375
+velocity: 2765.039794921875
+velocity: 2765.09521484375
+
+goo.gle/debugonly   
+velocity: 2760.114501953125
+velocity: 2760.05908203125
+velocity: 2759.726806640625
+velocity: 2759.781982421875
+
+goo.gle/debugonly   
+velocity: 2718
+velocity: 2718
+velocity: 2717.831298828125
+velocity: 2717.831298828125
+
+goo.gle/debugonly   
+velocity: 2672.621337890625
+velocity: 2672.621337890625
+velocity: 2673.078857421875
+velocity: 2673.078857421875
+
+goo.gle/debugonly   
+velocity: 2608.87841796875
+velocity: 2608.87841796875
+velocity: 2608.99560546875
+velocity: 2608.99560546875
+
+goo.gle/debugonly   
+velocity: 2525.653564453125
+velocity: 2525.7744140625
+velocity: 2525.169189453125
+velocity: 2525.048095703125
+
+goo.gle/debugonly   
+velocity: 2421.696044921875
+velocity: 2421.064697265625
+velocity: 2421.38037109375
+velocity: 2422.01171875
+
+goo.gle/debugonly   
+velocity: 2295.7216796875
+velocity: 2295.388671875
+velocity: 2295.388671875
+velocity: 2295.7216796875
+
+goo.gle/debugonly   
+velocity: 2146.774658203125
+velocity: 2147.0595703125
+velocity: 2147.0595703125
+velocity: 2146.774658203125
+
+goo.gle/debugonly   
+velocity: 2063.43505859375
+velocity: 2063.509033203125
+velocity: 2063.509033203125
+velocity: 2063.43505859375
+
+goo.gle/debugonly   
+velocity: 1748.9483642578125
+velocity: 1748.5111083984375
+velocity: 1748.3363037109375
+velocity: 1748.7735595703125
+
+goo.gle/debugonly   
+velocity: 1749.0357666015625
+velocity: 1748.5111083984375
+velocity: 1748.248779296875
+velocity: 1748.7735595703125
+
+goo.gle/debugonly   
+velocity: 1748.817138671875
+velocity: 1748.817138671875
+velocity: 1748.467529296875
+velocity: 1748.467529296875
+
+goo.gle/debugonly   
+velocity: 1748.3800048828125
+velocity: 1748.3800048828125
+velocity: 1748.904541015625
+velocity: 1748.904541015625
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1748.554931640625
+velocity: 1748.554931640625
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.5111083984375
+velocity: 1748.5111083984375
+velocity: 1748.7735595703125
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1748.817138671875
+velocity: 1748.817138671875
+velocity: 1748.467529296875
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.205078125
+velocity: 1748.11767578125
+velocity: 1749.079345703125
+velocity: 1749.1668701171875
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.5986328125
+velocity: 1748.5111083984375
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.5111083984375
+velocity: 1748.5986328125
+velocity: 1748.7735595703125
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.423828125
+velocity: 1748.5111083984375
+velocity: 1748.8609619140625
+
+goo.gle/debugonly   
+velocity: 1748.9483642578125
+velocity: 1749.1231689453125
+velocity: 1748.3363037109375
+velocity: 1748.161376953125
+
+goo.gle/debugonly   
+velocity: 1748.817138671875
+velocity: 1748.2926025390625
+velocity: 1748.467529296875
+velocity: 1748.991943359375
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.5986328125
+velocity: 1748.7735595703125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.5111083984375
+velocity: 1748.7735595703125
+velocity: 1748.7735595703125
+
+goo.gle/debugonly   
+velocity: 1748.991943359375
+velocity: 1748.991943359375
+velocity: 1748.2926025390625
+velocity: 1748.2926025390625
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1748.729736328125
+velocity: 1748.554931640625
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.3800048828125
+velocity: 1748.3800048828125
+velocity: 1748.904541015625
+velocity: 1748.904541015625
+
+goo.gle/debugonly   
+velocity: 1748.423828125
+velocity: 1748.423828125
+velocity: 1748.8609619140625
+velocity: 1748.8609619140625
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.3800048828125
+velocity: 1748.904541015625
+velocity: 1748.904541015625
+velocity: 1748.3800048828125
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1749.079345703125
+velocity: 1748.11767578125
+velocity: 1748.205078125
+velocity: 1749.1668701171875
+
+goo.gle/debugonly   
+velocity: 1748.3363037109375
+velocity: 1748.68603515625
+velocity: 1748.9483642578125
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.3800048828125
+velocity: 1748.991943359375
+velocity: 1748.904541015625
+velocity: 1748.2926025390625
+
+goo.gle/debugonly   
+velocity: 1748.3363037109375
+velocity: 1748.3363037109375
+velocity: 1748.9483642578125
+velocity: 1748.9483642578125
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.3800048828125
+velocity: 1748.729736328125
+velocity: 1748.904541015625
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1748.205078125
+velocity: 1748.554931640625
+velocity: 1749.079345703125
+
+goo.gle/debugonly   
+velocity: 1747.111572265625
+velocity: 1749.56005859375
+velocity: 1750.1717529296875
+velocity: 1747.7239990234375
+
+goo.gle/debugonly   
+velocity: 1748.904541015625
+velocity: 1748.0301513671875
+velocity: 1748.3800048828125
+velocity: 1749.2542724609375
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.3363037109375
+velocity: 1748.68603515625
+velocity: 1748.9483642578125
+
+goo.gle/debugonly   
+velocity: 1748.991943359375
+velocity: 1748.904541015625
+velocity: 1748.2926025390625
+velocity: 1748.3800048828125
+
+goo.gle/debugonly   
+velocity: 1748.904541015625
+velocity: 1748.729736328125
+velocity: 1748.3800048828125
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.68603515625
+velocity: 1748.5111083984375
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.68603515625
+velocity: 1748.5111083984375
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.817138671875
+velocity: 1748.729736328125
+velocity: 1748.467529296875
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.5111083984375
+velocity: 1748.7735595703125
+velocity: 1748.7735595703125
+
+goo.gle/debugonly   
+velocity: 1748.817138671875
+velocity: 1748.817138671875
+velocity: 1748.467529296875
+velocity: 1748.467529296875
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1748.904541015625
+velocity: 1748.554931640625
+velocity: 1748.3800048828125
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.5986328125
+velocity: 1748.7735595703125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.5986328125
+velocity: 1748.7735595703125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.729736328125
+velocity: 1748.729736328125
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1749.2542724609375
+velocity: 1748.554931640625
+velocity: 1748.0301513671875
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1748.3800048828125
+velocity: 1748.554931640625
+velocity: 1748.904541015625
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.7735595703125
+velocity: 1748.7735595703125
+velocity: 1748.5111083984375
+
+goo.gle/debugonly   
+velocity: 1748.9483642578125
+velocity: 1748.3363037109375
+velocity: 1748.3363037109375
+velocity: 1748.9483642578125
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.729736328125
+velocity: 1748.729736328125
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.5986328125
+velocity: 1748.5111083984375
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.2926025390625
+velocity: 1749.1668701171875
+velocity: 1748.991943359375
+velocity: 1748.11767578125
+
+goo.gle/debugonly   
+velocity: 1748.991943359375
+velocity: 1748.554931640625
+velocity: 1748.2926025390625
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.3363037109375
+velocity: 1748.161376953125
+velocity: 1748.9483642578125
+velocity: 1749.1231689453125
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1749.079345703125
+velocity: 1748.817138671875
+velocity: 1748.205078125
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.423828125
+velocity: 1748.68603515625
+velocity: 1748.8609619140625
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.3800048828125
+velocity: 1748.642333984375
+velocity: 1748.904541015625
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1749.2105712890625
+velocity: 1748.5111083984375
+velocity: 1748.073974609375
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.3800048828125
+velocity: 1748.729736328125
+velocity: 1748.904541015625
+
+goo.gle/debugonly   
+velocity: 1748.11767578125
+velocity: 1748.904541015625
+velocity: 1749.1668701171875
+velocity: 1748.3800048828125
+
+goo.gle/debugonly   
+velocity: 1749.079345703125
+velocity: 1748.3800048828125
+velocity: 1748.205078125
+velocity: 1748.904541015625
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.5111083984375
+velocity: 1748.68603515625
+velocity: 1748.7735595703125
+
+goo.gle/debugonly   
+velocity: 1748.904541015625
+velocity: 1749.079345703125
+velocity: 1748.3800048828125
+velocity: 1748.205078125
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.073974609375
+velocity: 1748.68603515625
+velocity: 1749.2105712890625
+
+goo.gle/debugonly   
+velocity: 1748.904541015625
+velocity: 1749.079345703125
+velocity: 1748.3800048828125
+velocity: 1748.205078125
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1748.554931640625
+velocity: 1748.817138671875
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1748.554931640625
+velocity: 1748.817138671875
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1749.1231689453125
+velocity: 1748.5111083984375
+velocity: 1748.161376953125
+velocity: 1748.7735595703125
+
+goo.gle/debugonly   
+velocity: 1748.3800048828125
+velocity: 1748.3800048828125
+velocity: 1748.904541015625
+velocity: 1748.904541015625
+
+goo.gle/debugonly   
+velocity: 1748.817138671875
+velocity: 1748.817138671875
+velocity: 1748.467529296875
+velocity: 1748.467529296875
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1748.642333984375
+velocity: 1748.554931640625
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.991943359375
+velocity: 1748.817138671875
+velocity: 1748.2926025390625
+velocity: 1748.467529296875
+
+goo.gle/debugonly   
+velocity: 1748.248779296875
+velocity: 1749.0357666015625
+velocity: 1749.0357666015625
+velocity: 1748.248779296875
+
+goo.gle/debugonly   
+velocity: 1748.991943359375
+velocity: 1748.2926025390625
+velocity: 1748.2926025390625
+velocity: 1748.991943359375
+
+goo.gle/debugonly   
+velocity: 1751.2633056640625
+velocity: 1751.00146484375
+velocity: 1751.00146484375
+velocity: 1751.2633056640625
+
+goo.gle/debugonly   
+velocity: 1870.9248046875
+velocity: 1871.2515869140625
+velocity: 1871.2515869140625
+velocity: 1870.9248046875
+
+goo.gle/debugonly   
+velocity: 1986.3837890625
+velocity: 1985.9990234375
+velocity: 1985.9990234375
+velocity: 1986.3837890625
+
+goo.gle/debugonly   
+velocity: 2096.657958984375
+velocity: 2097.168212890625
+velocity: 2097.2412109375
+velocity: 2096.73095703125
+
+goo.gle/debugonly   
+velocity: 2203.323974609375
+velocity: 2203.393310546875
+velocity: 2203.5322265625
+velocity: 2203.462890625
+
+goo.gle/debugonly   
+velocity: 2305.291748046875
+velocity: 2305.158935546875
+velocity: 2304.893798828125
+velocity: 2305.0263671875
+
+goo.gle/debugonly   
+velocity: 2401.058349609375
+velocity: 2401.185791015625
+velocity: 2401.31298828125
+velocity: 2401.185791015625
+
+goo.gle/debugonly   
+velocity: 2490.91015625
+velocity: 2490.4189453125
+velocity: 2490.5419921875
+velocity: 2491.032958984375
+
+goo.gle/debugonly   
+velocity: 2610.401611328125
+velocity: 2610.6357421875
+velocity: 2610.4599609375
+velocity: 2610.225830078125
+
+goo.gle/debugonly   
+velocity: 2678.906494140625
+velocity: 2678.449951171875
+velocity: 2678.735107421875
+velocity: 2679.191650390625
+
+goo.gle/debugonly   
+velocity: 2736.4716796875
+velocity: 2736.974365234375
+velocity: 2736.806884765625
+velocity: 2736.303955078125
+
+goo.gle/debugonly   
+velocity: 2782.86962890625
+velocity: 2782.759765625
+velocity: 2782.704833984375
+velocity: 2782.81494140625
+
+goo.gle/debugonly   
+velocity: 2816.264404296875
+velocity: 2816.156005859375
+velocity: 2815.830078125
+velocity: 2815.938720703125
+
+goo.gle/debugonly   
+velocity: 2835.2822265625
+velocity: 2835.5517578125
+velocity: 2835.44384765625
+velocity: 2835.17431640625
+
+goo.gle/debugonly   
+velocity: 2839.700439453125
+velocity: 2839.646484375
+velocity: 2839.5390625
+velocity: 2839.5927734375
+
+goo.gle/debugonly   
+velocity: 2827.72265625
+velocity: 2827.6689453125
+velocity: 2828.209228515625
+velocity: 2828.263427734375
+
+goo.gle/debugonly   
+velocity: 2798.756591796875
+velocity: 2799.193359375
+velocity: 2799.029541015625
+velocity: 2798.5927734375
+
+goo.gle/debugonly   
+velocity: 2777.673095703125
+velocity: 2777.39794921875
+velocity: 2777.287841796875
+velocity: 2777.56298828125
+
+goo.gle/debugonly   
+velocity: 2674.19384765625
+velocity: 2674.251220703125
+velocity: 2674.13671875
+velocity: 2674.07958984375
+
+goo.gle/debugonly   
+velocity: 2585.271728515625
+velocity: 2585.39013671875
+velocity: 2585.212646484375
+velocity: 2585.094482421875
+
+goo.gle/debugonly   
+velocity: 2473.75732421875
+velocity: 2473.942626953125
+velocity: 2474.18994140625
+velocity: 2474.00439453125
+
+goo.gle/debugonly   
+velocity: 2402.777099609375
+velocity: 2403.03173828125
+velocity: 2402.458984375
+velocity: 2402.204345703125
+
+goo.gle/debugonly   
+velocity: 2327.107177734375
+velocity: 2327.435791015625
+velocity: 2327.04150390625
+velocity: 2326.713134765625
+
+goo.gle/debugonly   
+velocity: 2017.4664306640625
+velocity: 2017.31494140625
+velocity: 2017.0118408203125
+velocity: 2017.163330078125
+
+goo.gle/debugonly   
+velocity: 1776.5723876953125
+velocity: 1776.2281494140625
+velocity: 1776.314208984375
+velocity: 1776.658447265625
+
+goo.gle/debugonly   
+velocity: 1748.8609619140625
+velocity: 1748.8609619140625
+velocity: 1748.423828125
+velocity: 1748.423828125
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.7735595703125
+velocity: 1748.68603515625
+velocity: 1748.5111083984375
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.7735595703125
+velocity: 1748.68603515625
+velocity: 1748.5111083984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.904541015625
+velocity: 1748.642333984375
+velocity: 1748.3800048828125
+
+goo.gle/debugonly   
+velocity: 1748.991943359375
+velocity: 1748.642333984375
+velocity: 1748.2926025390625
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.11767578125
+velocity: 1748.642333984375
+velocity: 1749.1668701171875
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1748.642333984375
+velocity: 1748.817138671875
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1749.3416748046875
+velocity: 1748.817138671875
+velocity: 1747.9427490234375
+velocity: 1748.467529296875
+
+goo.gle/debugonly   
+velocity: 1748.205078125
+velocity: 1748.467529296875
+velocity: 1749.079345703125
+velocity: 1748.817138671875
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.554931640625
+velocity: 1748.642333984375
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.423828125
+velocity: 1748.5986328125
+velocity: 1748.8609619140625
+
+goo.gle/debugonly   
+velocity: 1749.1668701171875
+velocity: 1748.904541015625
+velocity: 1748.11767578125
+velocity: 1748.3800048828125
+
+goo.gle/debugonly   
+velocity: 1748.161376953125
+velocity: 1748.68603515625
+velocity: 1749.1231689453125
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.642333984375
+velocity: 1748.729736328125
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.991943359375
+velocity: 1748.11767578125
+velocity: 1748.2926025390625
+velocity: 1749.1668701171875
+
+goo.gle/debugonly   
+velocity: 1749.0357666015625
+velocity: 1749.0357666015625
+velocity: 1748.248779296875
+velocity: 1748.248779296875
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1748.2926025390625
+velocity: 1748.817138671875
+velocity: 1748.991943359375
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.3363037109375
+velocity: 1748.68603515625
+velocity: 1748.9483642578125
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1749.2979736328125
+velocity: 1748.68603515625
+velocity: 1747.9864501953125
+
+goo.gle/debugonly   
+velocity: 1748.8609619140625
+velocity: 1747.9864501953125
+velocity: 1748.423828125
+velocity: 1749.2979736328125
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.11767578125
+velocity: 1748.642333984375
+velocity: 1749.1668701171875
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.9483642578125
+velocity: 1748.7735595703125
+velocity: 1748.3363037109375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.073974609375
+velocity: 1749.1231689453125
+velocity: 1749.2105712890625
+velocity: 1748.161376953125
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.554931640625
+velocity: 1748.729736328125
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.554931640625
+velocity: 1748.729736328125
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.7735595703125
+velocity: 1748.5111083984375
+velocity: 1748.5111083984375
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.5111083984375
+velocity: 1748.7735595703125
+velocity: 1748.7735595703125
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.5111083984375
+velocity: 1748.7735595703125
+velocity: 1748.7735595703125
+
+goo.gle/debugonly   
+velocity: 1748.7735595703125
+velocity: 1748.7735595703125
+velocity: 1748.5111083984375
+velocity: 1748.5111083984375
+
+goo.gle/debugonly   
+velocity: 1748.2926025390625
+velocity: 1748.2926025390625
+velocity: 1748.991943359375
+velocity: 1748.991943359375
+
+goo.gle/debugonly   
+velocity: 1748.9483642578125
+velocity: 1748.9483642578125
+velocity: 1748.3363037109375
+velocity: 1748.3363037109375
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1748.642333984375
+velocity: 1748.817138671875
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.904541015625
+velocity: 1748.642333984375
+velocity: 1748.3800048828125
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1748.11767578125
+velocity: 1748.817138671875
+velocity: 1749.1668701171875
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1749.2542724609375
+velocity: 1748.554931640625
+velocity: 1748.0301513671875
+
+goo.gle/debugonly   
+velocity: 1748.817138671875
+velocity: 1748.642333984375
+velocity: 1748.467529296875
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1748.423828125
+velocity: 1748.423828125
+velocity: 1748.8609619140625
+velocity: 1748.8609619140625
+
+goo.gle/debugonly   
+velocity: 1748.817138671875
+velocity: 1748.817138671875
+velocity: 1748.467529296875
+velocity: 1748.467529296875
+
+goo.gle/debugonly   
+velocity: 1748.248779296875
+velocity: 1748.248779296875
+velocity: 1749.0357666015625
+velocity: 1749.0357666015625
+
+goo.gle/debugonly   
+velocity: 1748.9483642578125
+velocity: 1749.0357666015625
+velocity: 1748.3363037109375
+velocity: 1748.248779296875
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1748.554931640625
+velocity: 1748.817138671875
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.423828125
+velocity: 1748.68603515625
+velocity: 1748.8609619140625
+velocity: 1748.5986328125
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.9483642578125
+velocity: 1748.68603515625
+velocity: 1748.3363037109375
+
+goo.gle/debugonly   
+velocity: 1748.8609619140625
+velocity: 1748.3363037109375
+velocity: 1748.423828125
+velocity: 1748.9483642578125
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.5111083984375
+velocity: 1748.5986328125
+velocity: 1748.7735595703125
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1749.5164794921875
+velocity: 1748.554931640625
+velocity: 1747.767822265625
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1748.467529296875
+velocity: 1748.554931640625
+velocity: 1748.817138671875
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.68603515625
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.205078125
+velocity: 1749.1668701171875
+velocity: 1749.079345703125
+velocity: 1748.11767578125
+
+goo.gle/debugonly   
+velocity: 1748.729736328125
+velocity: 1748.642333984375
+velocity: 1748.554931640625
+velocity: 1748.642333984375
+
+goo.gle/debugonly   
+velocity: 1749.1668701171875
+velocity: 1748.2926025390625
+velocity: 1748.11767578125
+velocity: 1748.991943359375
+
+goo.gle/debugonly   
+velocity: 1748.817138671875
+velocity: 1748.729736328125
+velocity: 1748.467529296875
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.0301513671875
+velocity: 1748.729736328125
+velocity: 1749.2542724609375
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1748.642333984375
+velocity: 1748.3800048828125
+velocity: 1748.642333984375
+velocity: 1748.904541015625
+
+goo.gle/debugonly   
+velocity: 1748.904541015625
+velocity: 1748.817138671875
+velocity: 1748.3800048828125
+velocity: 1748.467529296875
+
+goo.gle/debugonly   
+velocity: 1748.5111083984375
+velocity: 1748.3363037109375
+velocity: 1748.7735595703125
+velocity: 1748.9483642578125
+
+goo.gle/debugonly   
+velocity: 1749.079345703125
+velocity: 1748.554931640625
+velocity: 1748.205078125
+velocity: 1748.729736328125
+
+goo.gle/debugonly   
+velocity: 1748.423828125
+velocity: 1748.248779296875
+velocity: 1748.8609619140625
+velocity: 1749.0357666015625
+
+goo.gle/debugonly   
+velocity: 1748.3800048828125
+velocity: 1748.729736328125
+velocity: 1748.904541015625
+velocity: 1748.554931640625
+
+goo.gle/debugonly   
+velocity: 1749.1668701171875
+velocity: 1748.904541015625
+velocity: 1748.11767578125
+velocity: 1748.3800048828125
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1748.2926025390625
+velocity: 1748.729736328125
+velocity: 1748.991943359375
+
+goo.gle/debugonly   
+velocity: 1748.3363037109375
+velocity: 1748.7735595703125
+velocity: 1748.9483642578125
+velocity: 1748.5111083984375
+
+goo.gle/debugonly   
+velocity: 1749.2542724609375
+velocity: 1748.467529296875
+velocity: 1748.0301513671875
+velocity: 1748.817138671875
+
+goo.gle/debugonly   
+velocity: 1748.205078125
+velocity: 1748.817138671875
+velocity: 1749.079345703125
+velocity: 1748.467529296875
+
+goo.gle/debugonly   
+velocity: 1749.0357666015625
+velocity: 1749.0357666015625
+velocity: 1748.248779296875
+velocity: 1748.248779296875
+
+goo.gle/debugonly   
+velocity: 1748.248779296875
+velocity: 1748.248779296875
+velocity: 1749.0357666015625
+velocity: 1749.0357666015625
+
+goo.gle/debugonly   
+velocity: 1748.5986328125
+velocity: 1748.5986328125
+velocity: 1748.68603515625
+velocity: 1748.68603515625
+
+goo.gle/debugonly   
+velocity: 1748.554931640625
+velocity: 1749.4290771484375
+velocity: 1748.729736328125
+velocity: 1747.855224609375
+
+goo.gle/debugonly   
+velocity: 1748.3363037109375
+velocity: 1749.9095458984375
+velocity: 1748.9483642578125
+velocity: 1747.3741455078125
+
+goo.gle/debugonly   
+velocity: 1747.855224609375
+velocity: 1749.603759765625
+velocity: 1749.4290771484375
+velocity: 1747.6802978515625
+
+goo.gle/debugonly   
+velocity: 1748.2926025390625
+velocity: 1749.5164794921875
+velocity: 1748.991943359375
+velocity: 1747.767822265625
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1749.3416748046875
+velocity: 1748.817138671875
+velocity: 1747.9427490234375
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1749.3416748046875
+velocity: 1748.817138671875
+velocity: 1747.9427490234375
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1749.3416748046875
+velocity: 1748.817138671875
+velocity: 1747.9427490234375
+
+goo.gle/debugonly   
+velocity: 1748.467529296875
+velocity: 1749.3416748046875
+velocity: 1748.817138671875
+velocity: 1747.9427490234375
+
+goo.gle/debugonly   
+velocity: 1748.423828125
+velocity: 1749.3853759765625
+velocity: 1748.8609619140625
+velocity: 1747.8990478515625
+
+goo.gle/debugonly   
+velocity: 1748.3800048828125
+velocity: 1749.3416748046875
+velocity: 1748.904541015625
+velocity: 1747.9427490234375
+
+goo.gle/debugonly   
+velocity: 1748.3800048828125
+velocity: 1749.3416748046875
+velocity: 1748.904541015625
+velocity: 1747.9427490234375
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugonly   
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+

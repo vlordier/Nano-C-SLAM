@@ -1,0 +1,2 @@
+NCS_SITL actuator_bridge=disconnected
+TRACE_MOTOR_NONZERO NCS_SITL_ACTUATOR source=firmware ratio=35999,35999,35999,35999 omega_rad_s=2346.02,2346.02,2346.02,2346.02

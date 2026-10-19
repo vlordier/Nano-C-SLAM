@@ -1,0 +1,38 @@
+{
+  "attempt": "CrazySim disconnected actuator negative control attempt 03",
+  "date": "2026-10-20",
+  "valid_for_negative_control": true,
+  "scope": "Upstream Crazyflie SITL firmware under Gazebo; this does not validate Nano-C-SLAM firmware or mapping.",
+  "sources": {
+    "firmware_commit": "f42b903610e8b4ea1796ba6eba4b1c92cde70766",
+    "firmware_binary_sha256": "8d0cc0505f72282eff5f2d57df4e5671cd92cd31354d71d79efc094a4d38dc9c",
+    "crazysim_plugin_commit": "36594bc335102a435d2290621586d2ed5ea6ea43",
+    "gz_sim_odometry_patch_commit": "b25695048c8da5e9e185acdeb6b2f3e43c87bb22",
+    "sampler_source_sha256": "2f44d1fb62076bc262d90531cf7eacbd7a4760fb0b734152d1ed621cc6a4b948",
+    "sampler_binary_sha256": "02161bada836a93b8bf2ccc09078629775d60d6c191ffed48cf4b3d2ffa66368"
+  },
+  "runtime": {
+    "gazebo_sim_version": "8.14.0",
+    "physics_engine": "gz-physics-bullet-featherstone-plugin",
+    "partition": "ncs-flight-motor-map-negative-20261020",
+    "gazebo_gz_ip": "127.0.0.1",
+    "sampler_gz_ip": "127.0.0.1",
+    "NCS_CRAZYSIM_DISABLE_ACTUATORS": "1",
+    "firmware_process_count_before_stop": 1,
+    "firmware_process_exit_code": 143,
+    "gazebo_process_exit_code": 130,
+    "launch_command_capture": "incomplete; exact Gazebo invocation was not persisted at capture time"
+  },
+  "capture": {
+    "sampler_callback_counts": {"odometry": 979, "imu": 543, "motor_messages": 562, "world_stats": 23},
+    "parsed_counts": {"odometry": 979, "imu": 543, "motor_components": 2248, "world_stats": 23},
+    "z_min_m": 2.014993906,
+    "z_max_m": 2.014993906,
+    "z_end_m": 2.014993906,
+    "max_motor_speed_rad_s": 0.0,
+    "nonzero_motor_values": 0,
+    "firmware_acknowledged_takeoff_and_land": true,
+    "plugin_reported_disconnected_actuator_bridge": true
+  },
+  "acceptance": {"negative_control_passed": true, "positive_flight_gate_passed": false}
+}

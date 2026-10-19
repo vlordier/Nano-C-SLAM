@@ -1,0 +1,14 @@
+{
+  "passed": false,
+  "errors": [
+    "odometry: stale sample gap 0.290s exceeds 0.020s",
+    "IMU: stale sample gap 0.092s exceeds 0.050s",
+    "world stats cover only 85.2% of the positive odometry interval; requires at least 95%",
+    "firmware reported estimator/rate/crash failure",
+    "firmware exited with status 143",
+    "Gazebo exited with status 130",
+    "negative-control firmware exited with status 143",
+    "negative-control Gazebo exited with status 130",
+    "stable hover lasted 0.64s; requires 5.00s"
+  ]
+}
