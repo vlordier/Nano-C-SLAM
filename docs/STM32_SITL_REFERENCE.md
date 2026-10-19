@@ -627,3 +627,27 @@ finite-state, rate, crash, and landing criteria. Passing this upstream
 CrazySim gate would still not prove execution of Nano-C-SLAM's STM32 tasks or
 validate mapping; those require their own firmware-integrated capture and
 geometry comparison.
+
+## Rate-supervisor configuration fix (2026-10-19)
+
+The published Crazyflie fork branch `codex/sitl-imu-wakeup` now also contains
+commit `0f577c99` (`fix(sitl): derive stabilizer rate checks from loop config`).
+`sitl_make` exposes `CRAZYSIM_RATE_MAIN_LOOP` as a validated 500/1000-Hz CMake
+setting and passes it into the firmware compile. The stabilizer header accepts
+that override, and its rate supervisor now derives the bounds from the compiled
+loop frequency while preserving the previous 997–1003 events/s bounds at
+1 kHz (498–501 at 500 Hz). This fixes the prior diagnostic mismatch where a
+500-Hz loop was compared against 997–1003 events/s. Unity tests cover nominal
+500-Hz and 1000-Hz counts and reject a 460-Hz stream; all 11 rate-supervisor
+tests pass with Clang and the pinned Unity source.
+
+A Linux `cf2` target build completed at 500 Hz during implementation, before
+the final tolerance expression was tightened to preserve the original
+per-mille bound. A clean build of the exact pushed commit could not be repeated:
+the Lima submodule fetch failed with an `fsync` I/O error after the guest had
+reported an I/O error, and the follow-up Gazebo run did not produce a valid
+firmware capture. Therefore this commit fixes the measurement configuration;
+it does not explain or fix the observed Kalman shortfall (95–98/100 Hz),
+non-finite angular odometry, short hover, or landing timeout. The firmware
+flight bead remains open, and no Nano-C-SLAM STM32 application or mapping
+validation is claimed.
