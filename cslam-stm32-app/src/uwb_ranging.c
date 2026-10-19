@@ -31,12 +31,14 @@
 #include "uwb_collision_det.h"
 #include "uwb_ranging.h"
 #include "uwb_token_handoff.h"
+#include "uwb_token_lease.h"
 
 extern uint8_t NODE_ID;
 extern volatile uint8_t land;
 extern QueueHandle_t poseQueue;
 
 static volatile uint32_t uwb_pkt_loss = 0;
+static volatile uint32_t uwb_token_lease_expirations = 0;
 static Measurement measurements[NR_OF_NODES];
 
 static scan_poses_t scan_poses = {0};
@@ -131,18 +133,6 @@ uwb_err_code_e uwb_send_data_packet(uint8_t *data, uint8_t data_len,
         }
     }
     return UWB_RX_TIMEOUT;
-}
-
-static uint8_t is_token(const uint8_t *array, uint8_t data_len) {
-    if (data_len < 5)
-        return 0;
-    char key[] = "TOKEN";
-    int res = strncmp(array, key, 5);
-    if (res == 0) {
-        return 1;
-    } else {
-        return 0;
-    }
 }
 
 uint8_t is_scan_pose(uint8_t data_len) {
@@ -422,6 +412,9 @@ void uwb_ranging_task(void *parameters) {
     UWB_message uwb_msg = {0};
 
     uint8_t agent_has_token = 0;
+    uwb_token_lease_t token_lease = {0};
+    uint8_t token_pending = 0;
+    uint32_t token_received_tick = 0;
 
     if (NODE_ID == 0) {
         uwb_responder_off();
@@ -429,11 +422,11 @@ void uwb_ranging_task(void *parameters) {
         uwb_set_gpio0(1);
     } else {
         uwb_responder_on();
+        uwb_token_lease_arm(&token_lease, (uint32_t)xTaskGetTickCount());
     }
 
     vTaskDelay(M2T(100));
 
-    uint32_t token_rcv_time = 0;
     const TickType_t xPeriod = 5;
     TickType_t xLastWakeTime = xTaskGetTickCount();
     TickType_t last_tick_count = xTaskGetTickCount();
@@ -566,11 +559,11 @@ void uwb_ranging_task(void *parameters) {
             send_token_with_opt = 0;
 
             agent_has_token = 0;
+            uwb_token_lease_arm(&token_lease, (uint32_t)xTaskGetTickCount());
             uwb_responder_on();
         } else { // Listening mode: Execute while not having the token
             // Perform ranging with other drones that request it
             if (get_msrm_from_queue(&uwb_msrm, 1) == UWB_SUCCESS) {
-                token_rcv_time = 0;
                 float range_m = uwb_msrm.range;
                 float x_source = uwb_msrm.posx / 1000.0f;
                 float y_source = uwb_msrm.posy / 1000.0f;
@@ -580,18 +573,16 @@ void uwb_ranging_task(void *parameters) {
 
             // Check new UWB messages
             if (get_msg_from_queue(&uwb_msg, 1) == UWB_SUCCESS) {
-                token_rcv_time = 0;
-                // Received token and do optimization in the next loop
-                if (uwb_msg.code == UWB_ACK_MSG && uwb_msg.src < NR_OF_NODES &&
-                    is_token(uwb_msg.data, uwb_msg.data_len) &&
-                    uwb_msg.dest == NODE_ID && uwb_msg.data_len == 8) {
-                    token_rcv_time = xTaskGetTickCount();
-                    optimize = 1;
-                } else if (uwb_msg.code == UWB_ACK_MSG &&
-                           uwb_msg.src < NR_OF_NODES &&
-                           is_token(uwb_msg.data, uwb_msg.data_len) &&
-                           uwb_msg.dest == NODE_ID) { // Received token
-                    token_rcv_time = xTaskGetTickCount();
+                bool token_requests_optimization = false;
+                if (uwb_token_message_valid(
+                        uwb_msg.code, UWB_ACK_MSG, uwb_msg.src, uwb_msg.dest,
+                        NODE_ID, NR_OF_NODES, uwb_msg.data, uwb_msg.data_len,
+                        &token_requests_optimization)) {
+                    if (token_requests_optimization)
+                        optimize = 1;
+                    uwb_token_lease_disarm(&token_lease);
+                    token_received_tick = (uint32_t)xTaskGetTickCount();
+                    token_pending = 1;
                 } else if (uwb_msg.code == UWB_ACK2_MSG &&
                            uwb_msg.src < NR_OF_NODES &&
                            uwb_msg.data_len == sizeof(aug_pose_t) &&
@@ -625,12 +616,25 @@ void uwb_ranging_task(void *parameters) {
                 }
             }
 
-            if (xTaskGetTickCount() - token_rcv_time > (2 * RETRY_TIME_MS) &&
-                token_rcv_time > 0) {
-                token_rcv_time = 0;
+            if (token_pending && (uint32_t)((uint32_t)xTaskGetTickCount() -
+                                            token_received_tick) >
+                                     M2T(UWB_TOKEN_TAKEOVER_SETTLE_MS)) {
+                token_pending = 0;
                 agent_has_token = 1;
                 uwb_responder_off();
                 vTaskDelay(M2T(1));
+            }
+
+            if (uwb_token_lease_expired(&token_lease,
+                                        (uint32_t)xTaskGetTickCount(),
+                                        M2T(UWB_TOKEN_LEASE_TIMEOUT_MS))) {
+                uwb_token_lease_disarm(&token_lease);
+                agent_has_token = 0;
+                uwb_token_lease_expirations++;
+                DEBUG_PRINT("UWB token lease expired; requesting landing\n");
+                land = 1;
+                vTaskDelete(NULL);
+                return;
             }
         }
 
@@ -643,4 +647,5 @@ void uwb_ranging_task(void *parameters) {
 
 LOG_GROUP_START(UWB)
 LOG_ADD(LOG_UINT32, packet_loss, &uwb_pkt_loss)
+LOG_ADD(LOG_UINT32, token_lease_expirations, &uwb_token_lease_expirations)
 LOG_GROUP_STOP(UWB)
