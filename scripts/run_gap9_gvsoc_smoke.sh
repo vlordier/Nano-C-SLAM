@@ -132,6 +132,7 @@ if [[ "$MAPPING_CAPTURE" == "1" ]]; then
     )
 fi
 set +e
+set +u # macOS Bash 3.2 treats an initialized empty array as unset under nounset.
 uv run --project "$ROOT" --locked --python 3.12 \
     python -m scripts.run_gap9_gvsoc_target \
     --log "$GVSOC_LOG" --cwd "$WORK_ROOT" --timeout-s "$RUN_TIMEOUT_S" \
@@ -155,6 +156,7 @@ uv run --project "$ROOT" --locked --python 3.12 \
     --flash-content "$LAYOUT@mram" \
     --work-dir "$WORK_ROOT" image flash run
 GVSOC_EXIT_CODE=$?
+set -u
 set -e
 
 if [[ "$ENABLE_TESTBENCH" == "1" ]]; then

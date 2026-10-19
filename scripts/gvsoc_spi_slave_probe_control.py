@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib
 import json
 import os
+import socket
 from pathlib import Path
 from typing import Protocol, cast
 
@@ -16,9 +17,16 @@ from scripts.gap9_gvsoc_spi_probe_protocol import (
     make_pose_request_frame,
     make_scan_frame,
 )
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.firmware_protocol import (
+    OPTIMIZE_CMD,
+)
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_packets import (
     encode_mapping_samples,
     samples_from_run_bundle,
+)
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_stream import (
+    MappingStreamDecoder,
+    iter_mapping_stream_records,
 )
 
 
@@ -50,6 +58,108 @@ class TestbenchProxy(Protocol):
 
 class GvsocControlModule(Protocol):
     def Testbench(self, gvsoc: GvsocProxy) -> TestbenchProxy: ...
+
+
+def _run_live_mapping_stream(
+    gvsoc: GvsocProxy,
+    spi: SpiProxy,
+    *,
+    socket_path: Path,
+    ready_path: Path,
+    run_id: str,
+    drone_id: str,
+    packet_count: int,
+    timeout_s: float,
+    output_path: Path,
+) -> dict[str, object]:
+    """Receive one bounded live run and clock each frame into production SPI."""
+    if socket_path.exists() or ready_path.exists():
+        raise FileExistsError("live GVSOC socket or readiness marker already exists")
+    if len(os.fsencode(socket_path)) >= 104:
+        raise ValueError("live GVSOC Unix socket path exceeds the local limit")
+    socket_path.parent.mkdir(parents=True, exist_ok=True)
+    server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    client: socket.socket | None = None
+    socket_owned = False
+    readiness_owned = False
+    frames: list[dict[str, object]] = []
+    transfers: list[dict[str, int]] = []
+    result: dict[str, object] = {
+        "sequence": "gazebo-live",
+        "run_id": run_id,
+        "drone_id": drone_id,
+        "pre_cs_dummy_clock_cycles": 8,
+        "frames": frames,
+        "command_transfer_lengths": transfers,
+    }
+    try:
+        server.bind(str(socket_path))
+        socket_owned = True
+        server.listen(1)
+        server.settimeout(timeout_s)
+        with ready_path.open("x", encoding="utf-8") as ready:
+            readiness_owned = True
+            ready.write(f"{run_id}\n")
+            ready.flush()
+            os.fsync(ready.fileno())
+        client, _ = server.accept()
+        decoder = MappingStreamDecoder(run_id=run_id, drone_id=drone_id)
+        optimize_seen = False
+        for record in iter_mapping_stream_records(client, decoder, timeout_s=timeout_s):
+            if optimize_seen:
+                raise ValueError("live stream contains commands after OPTIMIZE")
+            spi.full_duplex(record.frame, len(record.frame))
+            gvsoc.run(
+                1_000_000_000_000 if record.command == SCAN_CMD else 100_000_000_000
+            )
+            rx_data = spi.get_received_bytes(len(record.frame))
+            if rx_data is None or len(rx_data) != len(record.frame):
+                raise RuntimeError("GVSOC did not complete a live SPI frame")
+            frames.append(
+                {
+                    "sequence": record.sequence,
+                    "command": record.command,
+                    "pose_id": record.pose_id,
+                    "source_stamp_ns": record.source_stamp_ns,
+                    "frame_tx_hex": record.frame.hex(),
+                    "length": len(record.frame),
+                }
+            )
+            transfers.append(
+                {"master_tx_bytes": len(record.frame), "master_rx_bytes": len(rx_data)}
+            )
+            result["control_phase"] = f"received_{len(frames)}_frames"
+            output_path.write_text(
+                json.dumps(result, indent=2) + "\n", encoding="utf-8"
+            )
+            optimize_seen = record.command == OPTIMIZE_CMD
+        decoder.finish()
+        if len(frames) != packet_count:
+            raise ValueError(
+                f"live stream ended after {len(frames)} frames; expected {packet_count}"
+            )
+        if not optimize_seen:
+            raise ValueError("live stream ended without an OPTIMIZE command")
+        result["control_phase"] = "waiting_for_optimizer_and_slave_tx"
+        output_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+        gvsoc.run(10_000_000_000_000)
+        spi.receive(18)
+        gvsoc.run(100_000_000_000)
+        response = spi.get_received_bytes()
+        if response is None or len(response) != 18:
+            raise RuntimeError("GVSOC did not capture the 18-byte optimizer response")
+        result["response_rx_hex"] = response.hex()
+        result["control_phase"] = "optimizer_response_captured"
+        output_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+        return result
+    finally:
+        if client is not None:
+            client.close()
+        server.close()
+        if socket_owned:
+            socket_path.unlink(missing_ok=True)
+        if readiness_owned:
+            ready_path.unlink(missing_ok=True)
 
 
 def target_control(gvsoc: GvsocProxy) -> int:
@@ -250,6 +360,42 @@ def target_control(gvsoc: GvsocProxy) -> int:
             ],
             "command_transfer_lengths": [],
         }
+    elif sequence == "gazebo-live":
+        socket_value = os.environ.get("GAP9_GVSOC_SPI_STREAM_SOCKET")
+        ready_value = os.environ.get("GAP9_GVSOC_SPI_STREAM_READY")
+        run_id = os.environ.get("GAP9_GVSOC_SPI_STREAM_RUN_ID")
+        drone_id = os.environ.get("GAP9_GVSOC_SPI_STREAM_DRONE", "cf1")
+        if not socket_value or not ready_value or not run_id:
+            raise ValueError(
+                "live stream socket, readiness marker, and run ID environment "
+                "variables are required"
+            )
+        try:
+            timeout_s = float(os.environ.get("GAP9_GVSOC_SPI_STREAM_TIMEOUT_S", "15"))
+            packet_count = int(
+                os.environ.get("GAP9_BUILD_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT", "64")
+            )
+        except ValueError as error:
+            raise ValueError(
+                "live stream timeout and packet count must be numeric"
+            ) from error
+        live_result = _run_live_mapping_stream(
+            gvsoc,
+            spi,
+            socket_path=Path(socket_value),
+            ready_path=Path(ready_value),
+            run_id=run_id,
+            drone_id=drone_id,
+            packet_count=packet_count,
+            timeout_s=timeout_s,
+            output_path=Path(os.environ.get("GAP9_GVSOC_WORK_ROOT", "."))
+            / "spi_slave_probe_host.json",
+        )
+        print(
+            "NANO_C_SLAM_GVSOC_SPI_HOST:live_response_rx_hex="
+            f"{live_result['response_rx_hex']}"
+        )
+        return 0
     else:
         raise ValueError(
             "GAP9_GVSOC_SPI_SEQUENCE must be scan, pose-scan, pose-request, "

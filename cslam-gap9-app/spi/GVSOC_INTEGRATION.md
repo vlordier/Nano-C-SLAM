@@ -580,3 +580,37 @@ GVSOC. Gazebo and GVSOC ran sequentially: it is telemetry replay, not live
 co-simulation, flight-controller firmware in Gazebo, or physical/hardware
 validation. The STM32 Crazyflie control firmware is still not executed in this
 simulation path.
+
+## Live Gazebo-to-GAP9 GVSOC mapping run
+
+`scripts/gazebo_gvsoc_live.py` now composes the local ROS 2/Gazebo mission with
+the production GAP9 probe. It starts GVSOC first, waits for the SPI2 target to
+boot and publish a run-ID-bound Unix socket readiness marker, then starts the
+existing bounded Gazebo collector and mission. Each validated range/odometry
+pair becomes a 97-byte production POSE frame, every 20 poses close a SCAN
+window, and the final OPTIMIZE command clocks the firmware response. Both child
+process groups have one wall-clock deadline and retained logs.
+
+Run it from the sourced local ROS 2/Crazyswarm2 environment on macOS (the
+runner uses the Python 3.11 ROS ABI and the GAP SDK 5.20.4 GVSOC runtime):
+
+```sh
+source /opt/homebrew/opt/ros2-jazzy/setup.zsh
+source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
+export GZ_PARTITION="nano_c_slam_$(id -u)"
+export ROS_DOMAIN_ID=42
+uv run --locked python -m scripts.gazebo_gvsoc_live \
+  --samples 60 \
+  --output artifacts/gazebo_mapping_sitl/gvsoc-live-run.json
+```
+
+The CLI currently fixes the run to 60 telemetry pairs because the GAP9 probe
+build is configured for exactly 64 SPI commands. It reports each child status,
+retains GVSOC and mission logs, and leaves the host-side mapping report and
+firmware receive/optimizer response JSON in the run-scoped directory. This
+executes the GAP9 Nano-C-SLAM production command path live against Gazebo
+telemetry. The Crazyflie STM32 flight-control firmware is still not running in
+Gazebo; Crazyswarm2 controls the simulated drone, and map accuracy is not
+validated by a single successful firmware optimizer response.
+
+Live GVSOC receiver evidence currently validates the IPC and GAP9 production SPI path with telemetry captured from a completed Gazebo run. A fresh, unclaimed Gazebo world is still required to validate the coordinated in-flight mission.

@@ -307,9 +307,9 @@ def capture_evidence(
             else {0: "POSE", 1: "SCAN", 2: "OPTIMIZE"}[frame[1]]
             for index, frame in enumerate(expected)
         ]
-    elif sequence == "gazebo-capture":
+    elif sequence in {"gazebo-capture", "gazebo-live"}:
         if gazebo_run_bundle_path is None:
-            raise ValueError("gazebo-capture evidence requires the source run bundle")
+            raise ValueError(f"{sequence} evidence requires the source run bundle")
         try:
             loaded_bundle = json.loads(
                 gazebo_run_bundle_path.read_text(encoding="utf-8")
@@ -324,14 +324,17 @@ def capture_evidence(
         gazebo_run_id, gazebo_samples = samples_from_run_bundle(
             loaded_bundle, expected_run_id=host_run_id
         )
-        if host_transfer.get("source_run_json") != str(
-            gazebo_run_bundle_path.resolve()
-        ):
-            raise ValueError(
-                "host transfer source path differs from the evidence input"
-            )
-        if host_transfer.get("input_pose_count") != len(gazebo_samples):
-            raise ValueError("host transfer pose count differs from the source run")
+        if sequence == "gazebo-capture":
+            if host_transfer.get("source_run_json") != str(
+                gazebo_run_bundle_path.resolve()
+            ):
+                raise ValueError(
+                    "host transfer source path differs from the evidence input"
+                )
+            if host_transfer.get("input_pose_count") != len(gazebo_samples):
+                raise ValueError("host transfer pose count differs from the source run")
+        elif host_transfer.get("drone_id") != loaded_bundle.get("drone"):
+            raise ValueError("live stream host drone differs from the source run")
         gazebo_run_bundle = cast(dict[str, object], loaded_bundle)
         gazebo_packets = encode_mapping_samples(gazebo_samples)
         expected = [packet.frame for packet in gazebo_packets]
@@ -378,7 +381,7 @@ def capture_evidence(
         frames, list
     ):
         raise ValueError("host transfer must contain the 8 pre-CS clocks and frames")
-    if sequence != "gazebo-capture":
+    if sequence not in {"gazebo-capture", "gazebo-live"}:
         expected_records = [
             {"command": command, "frame_tx_hex": frame.hex(), "length": len(frame)}
             for command, frame in zip(expected_commands, expected, strict=True)
@@ -386,7 +389,13 @@ def capture_evidence(
     if frames != expected_records:
         raise ValueError("host transfer bytes/order differ from expected sequence")
     command_transfer_lengths = host_transfer.get("command_transfer_lengths")
-    if sequence in {"mapping", "max-mapping", "capacity-mapping", "gazebo-capture"}:
+    if sequence in {
+        "mapping",
+        "max-mapping",
+        "capacity-mapping",
+        "gazebo-capture",
+        "gazebo-live",
+    }:
         expected_transfer_lengths = [
             {"master_tx_bytes": len(frame), "master_rx_bytes": len(frame)}
             for frame in expected
@@ -438,7 +447,7 @@ def capture_evidence(
             "optimizer_response_captured",
         }:
             raise ValueError("host controller did not complete the mapping phase")
-        if sequence == "gazebo-capture":
+        if sequence in {"gazebo-capture", "gazebo-live"}:
             if host_transfer.get("control_phase") != "optimizer_response_captured":
                 raise ValueError("Gazebo replay did not capture the optimizer response")
             mapping_pattern = re.compile(
@@ -511,6 +520,7 @@ def capture_evidence(
             "max-mapping": 14,
             "capacity-mapping": 131,
             "gazebo-capture": 3,
+            "gazebo-live": 3,
         }[sequence]
         expected_scan_pose_ids = [
             int.from_bytes(frame[2:4], "little", signed=True)
@@ -549,7 +559,7 @@ def capture_evidence(
         if match is None:
             raise ValueError("GVSOC log lacks the validated full-mapping marker")
         target_marker = match.group(0)
-        if sequence == "gazebo-capture":
+        if sequence in {"gazebo-capture", "gazebo-live"}:
             response_expected_hex = match.group(3)
             marker_graph = int(match.group(1))
             marker_calls = int(match.group(2))
@@ -566,7 +576,11 @@ def capture_evidence(
                     "Gazebo replay marker reports an invalid optimizer result"
                 )
             optimizer_graph_size = marker_graph
-            mapping_outcome = "gazebo_capture_replayed; optimizer_completed"
+            mapping_outcome = (
+                "gazebo_telemetry_replayed; optimizer_completed"
+                if sequence == "gazebo-capture"
+                else "gazebo_telemetry_streamed_over_ipc; optimizer_completed"
+            )
         elif sequence == "capacity-mapping":
             constraints, edges, poses, graph, calls, duration, completed = (
                 int(value) for value in match.groups()[:7]
@@ -739,7 +753,7 @@ def capture_evidence(
             limitations = []
         pose_count = (
             len(gazebo_samples)
-            if sequence == "gazebo-capture"
+            if sequence in {"gazebo-capture", "gazebo-live"}
             else (260 if sequence != "mapping" else 60)
         )
         limitations.extend(
@@ -764,6 +778,12 @@ def capture_evidence(
                 "Replays completed Gazebo telemetry after the Gazebo run; it is "
                 "not live co-simulation or simulated flight control."
             )
+        elif sequence == "gazebo-live":
+            limitations.append(
+                "Recorded Gazebo telemetry was streamed over the live IPC socket "
+                "after its mission completed; this validates the socket/GVSOC "
+                "receiver, not in-flight co-simulation or simulated flight control."
+            )
 
     return {
         "schema_version": 1,
@@ -780,7 +800,11 @@ def capture_evidence(
                     else (
                         "gvsoc-firmware-replay-of-gazebo-telemetry"
                         if sequence == "gazebo-capture"
-                        else "gvsoc-production-scan-and-constraint-capacity-spi2"
+                        else (
+                            "gvsoc-firmware-ipc-stream-of-recorded-gazebo-telemetry"
+                            if sequence == "gazebo-live"
+                            else "gvsoc-production-scan-and-constraint-capacity-spi2"
+                        )
                     )
                 )
             )
@@ -797,7 +821,7 @@ def capture_evidence(
         "slam_job_fields": slam_job_fields,
         "transaction_accounting": transaction_accounting,
         "mapping_outcome": mapping_outcome
-        if sequence in {"capacity-mapping", "gazebo-capture"}
+        if sequence in {"capacity-mapping", "gazebo-capture", "gazebo-live"}
         else None,
         "scan_busy_durations_us": scan_busy_durations_us,
         "scan_busy_max_us": (
@@ -806,7 +830,14 @@ def capture_evidence(
             else None
         ),
         "optimizer_response_rx_hex": host_transfer.get("response_rx_hex")
-        if sequence in {"mapping", "max-mapping", "capacity-mapping", "gazebo-capture"}
+        if sequence
+        in {
+            "mapping",
+            "max-mapping",
+            "capacity-mapping",
+            "gazebo-capture",
+            "gazebo-live",
+        }
         else None,
         "optimizer_response_status": response_status,
         "spi_diagnostics": spi_diagnostics,
@@ -826,12 +857,20 @@ def capture_evidence(
                 if gazebo_run_bundle_path is not None
                 else None,
                 "claim_boundary": (
-                    "Recorded Gazebo telemetry was replayed into GAP9 production "
-                    "firmware under GVSOC after the Gazebo run completed. This "
-                    "is not live co-simulation or flight control."
+                    "Recorded Gazebo telemetry was streamed over the bounded "
+                    "Unix socket into GAP9 production firmware under GVSOC "
+                    "after the Gazebo run completed. This validates live socket "
+                    "transport and target receipt, not live Gazebo co-simulation "
+                    "or flight control."
+                    if sequence == "gazebo-live"
+                    else (
+                        "Recorded Gazebo telemetry was replayed into GAP9 "
+                        "production firmware under GVSOC after the Gazebo run "
+                        "completed. This is not live co-simulation or flight control."
+                    )
                 ),
             }
-            if sequence == "gazebo-capture"
+            if sequence in {"gazebo-capture", "gazebo-live"}
             else None
         ),
         "limitations": limitations,

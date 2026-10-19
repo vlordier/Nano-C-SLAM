@@ -38,6 +38,7 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_run_processes impo
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     MissionPhase,
     MissionStatusEvent,
+    create_run_id,
     validate_mission_status_events,
 )
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.odometry_preflight import (
@@ -200,9 +201,18 @@ def _parse_args(
         default=REPOSITORY_ROOT / "cslam-gap9-app/BUILD-host/mapping_replay",
     )
     parser.add_argument("--ros2", default="ros2", help="ROS 2 CLI executable")
+    parser.add_argument("--run-id", help="explicit run ID shared with GVSOC")
+    parser.add_argument(
+        "--stream-socket",
+        type=Path,
+        help="stream accepted telemetry to the live GVSOC SPI receiver",
+    )
+    parser.add_argument("--stream-timeout", type=float, default=1.0)
     options = parser.parse_args(args)
     if not math.isfinite(options.preflight_timeout) or options.preflight_timeout <= 0:
         parser.error("preflight timeout must be finite and positive")
+    if not math.isfinite(options.stream_timeout) or options.stream_timeout <= 0:
+        parser.error("stream timeout must be finite and positive")
     try:
         config = MappingRunConfig(
             output_path=options.output,
@@ -211,6 +221,9 @@ def _parse_args(
             scene=options.scene,
             sample_count=options.samples,
             timeout_s=options.timeout,
+            run_id=options.run_id or create_run_id(),
+            stream_socket_path=options.stream_socket,
+            stream_timeout_s=options.stream_timeout,
         )
     except (FileExistsError, FileNotFoundError, ValueError) as error:
         parser.error(str(error))

@@ -110,6 +110,28 @@ class MappingRunCliTests(unittest.TestCase):
         self.assertEqual(options.drone, "cf3")
         self.assertEqual(str(uuid.UUID(config.run_id)), config.run_id)
 
+    def test_cli_binds_live_stream_socket_and_run_id(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            directory = Path(temporary_directory)
+            run_id = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+            options, config = _parse_args(
+                [
+                    "--run-id",
+                    run_id,
+                    "--stream-socket",
+                    str(directory / "gvsoc.sock"),
+                    "--stream-timeout",
+                    "2.5",
+                    "--output",
+                    str(directory / "run.json"),
+                ]
+            )
+
+        self.assertEqual(options.run_id, run_id)
+        self.assertEqual(config.run_id, run_id)
+        self.assertEqual(config.stream_socket_path, directory / "gvsoc.sock")
+        self.assertEqual(config.stream_timeout_s, 2.5)
+
     def test_rejects_invalid_cli_drone_before_starting_children(self) -> None:
         with (
             tempfile.TemporaryDirectory() as temporary_directory,
