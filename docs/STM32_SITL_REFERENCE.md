@@ -1071,6 +1071,29 @@ patched odometry dylib and the CrazySim bridge from their intended paths. The
 all pose/twist values finite, and no angular-velocity NaNs. This closes the
 publisher's runtime finite-output check.
 
+The integration target also passes when its test server and system plugins use
+the same build tree. An earlier CTest abort mixed the test binary's build-tree
+`libgz-sim` with system plugins from the shared install; protobuf then
+registered `gz/sim/private_msgs/peer_control.proto` twice. An isolated build
+prefix and explicit plugin path avoid that split:
+
+```sh
+cmake -S /tmp/ncs-gz-sim-odometry -B /tmp/ncs-gz-sim-odometry-build-qt \
+  -DCMAKE_INSTALL_PREFIX=/tmp/ncs-gz-sim-odometry-build-qt/install
+cmake --build /tmp/ncs-gz-sim-odometry-build-qt --target \
+  INTEGRATION_odometry_publisher gz-sim8-odometry-publisher-system \
+  gz-sim8-physics-system gz-sim8-user-commands-system \
+  gz-sim8-scene-broadcaster-system -j4
+GZ_SIM_SYSTEM_PLUGIN_PATH=/tmp/ncs-gz-sim-odometry-build-qt/lib \
+  ctest --test-dir /tmp/ncs-gz-sim-odometry-build-qt \
+  -R '^INTEGRATION_odometry_publisher$' --output-on-failure
+```
+
+That run passed all ten GoogleTest cases (CTest 1/1) without installing over
+or changing the shared Gazebo workspace. The integration test and matched-rate
+runtime capture now agree on finite angular output; flight control remains a
+separate failed gate.
+
 The firmware still does not pass flight acceptance: altitude was 2.0149 to
 3.0964 m and ended at 2.6360 m, the longest target-hover interval was 0.205 s,
 and peak angular speed was 6.149 rad/s. The firmware received TAKEOFF_2 and
