@@ -489,6 +489,54 @@ rate tolerances based on these two failed runs. The CrazySim plugin still
 blocks during shutdown in this setup, so the run procedure must also make its
 cleanup explicit and record any forced termination.
 
+## IMU-trigger correction and flight retest (2026-10-19)
+
+The CrazySim sensor adapter gave the `dataReady` semaphore after every packet
+on `CRTP_PORT_SETPOINT_SIM`. The stabilizer waits on that semaphore and uses
+the most recent gyro/accelerometer values, so a simulated 50-Hz barometer
+packet could trigger another controller iteration with stale IMU data. The
+reference model publishes IMU at 500 Hz and barometer at 50 Hz. Commit
+[`743ebe99`](https://github.com/vlordier/crazyflie-firmware/commit/743ebe99)
+on branch `codex/sitl-imu-wakeup` now gives the semaphore only after
+`SENSOR_GYRO_ACC_SIM`.
+
+A paired before/after diagnostic used the same single-drone raised-platform
+world, Featherstone physics, 500-Hz IMU, 200-Hz odometry, and one `cf2`
+process. Before the change, the firmware reported `535 Hz; expected 500 Hz`;
+the diagnostic `cf2` SHA-256 was
+`116573d136471c417c2266c88445bdf8cbbd22e4f3ce3cc2c50f5153ad9c96f8`, and
+Gazebo's aggregate RTF was `0.996`. The capture had 4,768 odometry samples,
+only 4,473 fully finite samples, a 2.979-m peak from a 2.040-m spawn, and only
+0.355 s within the 2.40-m hover envelope. Both TAKEOFF_2 and LAND_2 reached
+the firmware, but it logged `Landing timeout, disarming`.
+
+With the IMU-only wakeup, the 500-Hz stabilizer warning disappeared in the
+first retest; the diagnostic `cf2` SHA-256 was
+`1934c3dbd9a05ef544b41b0a0c82848420ee2918ce274d064ab474b22370ae0c` and
+aggregate Gazebo RTF was `0.994`. The trajectory still failed:
+4,853 odometry samples had only 4,542 fully finite values; altitude peaked at
+2.922 m and ended at 2.040 m; the longest 2.40-m hover interval was 0.380 s;
+and `Landing timeout, disarming` remained. The first nonfinite odometry
+angular velocity occurred after the commanded flight. Kalman rate warnings
+continued between 83 and 98 predictions per second against the configured
+100-Hz rate. The firmware binary also contained temporary SITL-only task,
+filter, and tracing edits, so this is behavioral evidence for the semaphore
+fix, not a clean acceptance run of commit `743ebe99` by itself.
+
+A follow-up changed the diagnostic Kalman task priority from 2 to 4 but did
+not isolate a scheduler fix: one capture had aggregate RTF `0.902`, and a
+later one had `0.948`, below the flight gate's minimum. It still showed
+Kalman-rate warnings, nonfinite angular odometry, and less than 0.5 s in the
+hover envelope. Treat both as failed diagnostic runs; do not use them to
+justify widening rate thresholds.
+
+This closes one concrete cause of excess stabilizer wakeups only. The
+reference still needs a synchronized, clean positive capture with finite
+estimator/odometry state, at least five seconds of stable hover, and a
+successful commanded landing, plus a paired disconnected-actuator negative
+control. This CrazySim adapter fix does not run Nano-C-SLAM's STM32
+application and does not validate mapping.
+
 ## Reproducible flight-capture gate
 
 `scripts/check_crazysim_flight.py` checks paired positive-flight and
