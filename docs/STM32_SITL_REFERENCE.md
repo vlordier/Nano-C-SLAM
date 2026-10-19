@@ -113,7 +113,12 @@ seams still need to be ported behind explicit simulated-device adapters.
 
 ## Reproduction state
 
-**Partially reproduced; reference flight failed.** A Lima Ubuntu 24.04.5
+**Current status: diagnostic upstream CrazySim firmware can rise under Gazebo
+motor output, but it does not yet pass a stable flight.** Older attempts below
+that reported no motor output are retained as historical failures; the
+single-process live retest near the end of this document supersedes them.
+
+A Lima Ubuntu 24.04.5
 ARM64 VM was created with 4 CPUs, 6 GiB RAM, and a 25 GiB disk using
 `--containerd=none`; only the firmware build/runtime uses Linux. Gazebo remains
 native on macOS. The pinned reference firmware was built there with:
@@ -129,7 +134,7 @@ emits upstream warnings, including implicit EEPROM declarations, a
 `CONTROLLER` macro redefinition, and `getMotorRatio()` reaching the end of a
 non-void function.
 
-With the Gazebo plugin and model running, the firmware logged `Connection
+In the first run, with the Gazebo plugin and model running, the firmware logged `Connection
 established with gazebo`, `Software-in-the-Loop Simulator is up and running!`,
 and `SYS: Self test passed!` after the plugin answered its UDP handshake. That
 proves a guest-to-host request and host-to-guest reply. A high-level takeoff
@@ -264,21 +269,45 @@ the observed `36000` values are firmware-originated actuator packets, not a
 direct-motor command from the cflib socket. The separate one-byte `ff` packet
 is a cflib ping echo and does not call the motor handler.
 
-This establishes an initial firmware-commanded rise in the diagnostic
-CrazySim build, but does **not** pass the flight acceptance criteria. The
-captured trajectory lacks a stable finite hover; earlier attempts reported
-estimator resets, stabilizer-rate warnings, non-finite angular odometry, and
-a crash during landing. Thus the reference flight is **partial and unstable**,
-not a successful takeoff/hover/land. The platform, custom instrumentation,
-and firmware priority changes exist only under `/tmp`; no vendor/submodule
-changes are maintained.
+The first captured run was later found to have two `cf2` processes connected
+to one plugin. Do not use its trajectory as single-firmware evidence. A fresh
+single-process repetition and priority experiments are recorded below.
 
-The next valid test must start from a clean server with a unique Gazebo
-partition, record synchronized `/cf_1/odom`, `/cf_1/imu`, plugin motor topic,
-firmware controller/setpoint output, and packet source; reject any non-finite
-odometry or motor value; and demonstrate stable hold plus bounded landing.
-This still qualifies only upstream CrazySim firmware. Nano-owned STM32 tasks
-and mapping remain unexecuted.
+## Single-process firmware-driven rise and stability failure (2026-10-19)
+
+A clean native Gazebo server on Featherstone, a fresh `crazyflie_1` model on
+the raised calibration platform, and exactly one Lima `cf2` process were used.
+The firmware logged a successful self-test, received live Gazebo IMU over the
+socket/CRTP/sensor tasks, found gyro bias, started the stabilizer, and accepted
+the captured TAKEOFF_2 command. Captured 200-Hz odometry has 2,391 pose
+samples: z begins at `2.03999 m`, rises to `2.54461 m`, then returns to
+`2.03999 m`. The plugin motor topic has 47,824 components, 12,250 nonzero,
+with maximum `2774.98 rad/s`. This proves an initial firmware-commanded rise.
+
+The same run is a flight failure: angular twist first becomes non-finite at
+about `2.855 s`, firmware reports stabilizer rate `823` vs expected `1000`,
+Kalman prediction rate `98` vs expected `100`, and supervisor reports
+`Crashed, recovery required`. The aircraft returns to the platform before the
+scheduled land command. It does not demonstrate stable hover or commanded
+landing. This result belongs to a diagnostic build whose temporary task
+priorities and trace edits are only in `/tmp/ncs-crazysim`.
+
+Priority tests isolate a remaining scheduling problem but are not fixes. Giving
+socket, CRTP RX and sensor tasks maximum priority permits sensor calibration
+but starves the stabilizer. Lowering all three to priority 4 (below the
+stabilizer's priority 5) allows handshake but stalls sensor delivery before
+calibration. Raising them to priority 5 restores calibration, yet the
+stabilizer still reports about `840 Hz`; one command capture had no accepted
+high-level packet and produced no motor output. `gz topic -f` measured odometry
+near 200 Hz and Gazebo stats near 10 Hz; these measurements do not establish
+the simulation's 1-kHz sensor scheduling or explain the missing stabilizer
+ticks. Keep `ncs-fea.5.8.2` open to identify a valid task/clock configuration.
+
+The passing subset is therefore limited to hardware-free upstream diagnostic
+firmware readiness, sensor ingestion, high-level command reception, firmware
+motor packet emission, and initial Gazebo rise. Stable flight, finite state,
+hover, land, disconnected-actuator control, Nano STM32 task execution, and
+Nano mapping remain unproven.
 
 The temporary debug edits live only in `/tmp/ncs-crazysim` in the Lima guest;
 they are not a maintained patch and were not copied into the submodule. Bead
