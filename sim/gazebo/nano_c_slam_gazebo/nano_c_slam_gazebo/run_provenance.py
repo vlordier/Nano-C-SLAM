@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import importlib.metadata
+import json
 import math
 import os
 import platform
@@ -17,6 +18,12 @@ from scripts.runtime_loaded_libraries import capture_session_gazebo_libraries
 from scripts.runtime_provenance import (
     GAZEBO_ROS_ENVIRONMENT,
     sha256_file_stable,
+)
+
+from .mission_model import (
+    MissionPhase,
+    MissionStatusEvent,
+    validate_mission_status_events,
 )
 
 PROVENANCE_SCHEMA_VERSION = 1
@@ -529,7 +536,7 @@ def _ros2_cli_version() -> str:
 
 
 def validate_combined_run_report(value: object) -> dict[str, object]:
-    """Validate provenance is present and agrees with the replay executable."""
+    """Validate mission, capture, and provenance agree for one bounded run."""
     if not isinstance(value, dict) or value.get("schema_version") != 2:
         raise ValueError("combined Gazebo run report is not provenance schema v2")
     run_id = value.get("run_id")
@@ -538,6 +545,54 @@ def validate_combined_run_report(value: object) -> dict[str, object]:
         raise ValueError("combined Gazebo run report is missing run identity/capture")
     if capture.get("run_id") != run_id:
         raise ValueError("combined Gazebo report and capture run IDs do not match")
+    drone = value.get("drone")
+    raw_events = value.get("mission_events")
+    raw_terminal = value.get("mission_terminal")
+    if not isinstance(drone, str) or not isinstance(raw_events, list):
+        raise ValueError("combined Gazebo report is missing mission status evidence")
+    try:
+        events = [
+            MissionStatusEvent.from_json(json.dumps(event, allow_nan=False))
+            for event in raw_events
+        ]
+        terminal = validate_mission_status_events(
+            events, run_id, drone, require_mapping_path=True
+        )
+        if terminal.phase is not MissionPhase.COMPLETE:
+            raise ValueError("mission did not reach COMPLETE")
+        reported_terminal = MissionStatusEvent.from_json(
+            json.dumps(raw_terminal, allow_nan=False)
+        )
+    except (TypeError, ValueError) as error:
+        raise ValueError(
+            f"combined Gazebo mission status is invalid: {error}"
+        ) from error
+    if reported_terminal != terminal:
+        raise ValueError("mission terminal summary differs from final status event")
+    capture_time = capture.get("input_sim_time_ms")
+    if not isinstance(capture_time, dict):
+        raise ValueError("combined Gazebo capture is missing simulation timestamps")
+    start_ms = capture_time.get("start")
+    end_ms = capture_time.get("end")
+    first_active = next(
+        (
+            event
+            for event in events
+            if event.phase in (MissionPhase.TAKEOFF, MissionPhase.HOVER)
+        ),
+        None,
+    )
+    if (
+        first_active is None
+        or isinstance(start_ms, bool)
+        or not isinstance(start_ms, int)
+        or isinstance(end_ms, bool)
+        or not isinstance(end_ms, int)
+        or start_ms < int(first_active.sim_time_s * 1000) - 1
+        or end_ms > int(terminal.sim_time_s * 1000) + 1
+        or end_ms < start_ms
+    ):
+        raise ValueError("capture timestamps fall outside successful mission interval")
     replay_provenance = capture.get("mapping_replay_provenance")
     if not isinstance(replay_provenance, dict):
         raise ValueError("combined Gazebo capture is missing mapping provenance")

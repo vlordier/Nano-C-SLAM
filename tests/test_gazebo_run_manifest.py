@@ -21,7 +21,9 @@ from scripts.source_provenance import SourceIdentity, source_identity_to_mapping
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.run_provenance import (
     OVERLAY_PACKAGES,
     OWNED_INPUT_PATHS,
+    validate_combined_run_report,
 )
+from test_support.gazebo_mission_fixtures import successful_mapping_mission_events
 
 RUN_ID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
 BINARY_HASH = "1" * 64
@@ -68,6 +70,7 @@ def _mutate_runtime_environment(
 
 
 def _report() -> dict[str, object]:
+    mission_events = successful_mapping_mission_events(RUN_ID, "cf1")
     return {
         "schema_version": 2,
         "run_id": RUN_ID,
@@ -84,9 +87,12 @@ def _report() -> dict[str, object]:
             "mission": ["/ros2", "run", "nano_c_slam_gazebo", "sim_mission"],
         },
         "process_exit_codes": {"collector": 0, "mission": 0},
+        "mission_events": [json.loads(event.to_json()) for event in mission_events],
+        "mission_terminal": json.loads(mission_events[-1].to_json()),
         "capture_report": {
             "run_id": RUN_ID,
             "mapping_replay_provenance": {"binary_sha256": BINARY_HASH},
+            "input_sim_time_ms": {"start": 200, "end": 1400},
         },
         "run_provenance": {
             "schema_version": 1,
@@ -215,6 +221,79 @@ class GazeboRunManifestTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "stream changed"):
                 (report_path.parent / "logs/mission.stdout.log").write_bytes(b"mutated")
                 validate_gazebo_mapping_bundle(report_path)
+
+    def test_combined_report_requires_complete_mission_join(self) -> None:
+        report = _report()
+        validate_combined_run_report(report)
+
+        missing_events = copy.deepcopy(report)
+        del missing_events["mission_events"]
+        with self.assertRaisesRegex(ValueError, "mission status evidence"):
+            validate_combined_run_report(missing_events)
+
+        terminal_mismatch = copy.deepcopy(report)
+        terminal_mismatch["mission_terminal"]["sequence"] = 5
+        with self.assertRaisesRegex(ValueError, "terminal summary"):
+            validate_combined_run_report(terminal_mismatch)
+
+        outside_interval = copy.deepcopy(report)
+        outside_interval["capture_report"]["input_sim_time_ms"]["end"] = 1500
+        with self.assertRaisesRegex(ValueError, "outside successful mission"):
+            validate_combined_run_report(outside_interval)
+
+        incomplete_path = copy.deepcopy(report)
+        incomplete_path["mission_events"][-1]["mapping_path_complete"] = False
+        incomplete_path["mission_terminal"]["mapping_path_complete"] = False
+        with self.assertRaisesRegex(ValueError, "mapping path"):
+            validate_combined_run_report(incomplete_path)
+
+        for mutation, expected in (
+            (
+                lambda report: report["mission_events"][2].update(sequence=9),
+                "sequence is missing",
+            ),
+            (
+                lambda report: report["mission_events"][2].update(
+                    run_id="bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
+                ),
+                "run_id does not match",
+            ),
+            (
+                lambda report: report["mission_events"][2].update(drone_name="cf3"),
+                "drone_name does not match",
+            ),
+            (
+                lambda report: report["capture_report"]["input_sim_time_ms"].update(
+                    start=98
+                ),
+                "outside successful mission",
+            ),
+        ):
+            with self.subTest(expected=expected):
+                invalid = copy.deepcopy(report)
+                mutation(invalid)
+                with self.assertRaisesRegex(ValueError, expected):
+                    validate_combined_run_report(invalid)
+
+        failed_mission = copy.deepcopy(report)
+        failed_mission["mission_events"][-1].update(
+            phase="FAILED", failure_reason="fixture failure"
+        )
+        failed_mission["mission_terminal"] = copy.deepcopy(
+            failed_mission["mission_events"][-1]
+        )
+        with self.assertRaisesRegex(ValueError, "mission failed"):
+            validate_combined_run_report(failed_mission)
+
+        unbounded_mission = copy.deepcopy(report)
+        for event in unbounded_mission["mission_events"]:
+            event["mapping_path_requested"] = False
+            event["mapping_path_complete"] = False
+        unbounded_mission["mission_terminal"] = copy.deepcopy(
+            unbounded_mission["mission_events"][-1]
+        )
+        with self.assertRaisesRegex(ValueError, "without requesting a bounded path"):
+            validate_combined_run_report(unbounded_mission)
 
     def test_sidecar_source_and_command_mutations_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:

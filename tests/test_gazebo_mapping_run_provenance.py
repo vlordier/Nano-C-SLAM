@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -20,6 +21,7 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.run_provenance import (
     validate_combined_run_report,
     validate_discovered_topic_types,
 )
+from test_support.gazebo_mission_fixtures import successful_mapping_mission_events
 
 
 def _sha256(value: bytes) -> str:
@@ -128,9 +130,12 @@ def _unknown_library() -> dict[str, object]:
 
 def _valid_report() -> dict[str, object]:
     binary_hash = "1" * 64
+    run_id = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    mission_events = successful_mapping_mission_events(run_id, "cf1")
     return {
         "schema_version": 2,
-        "run_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+        "run_id": run_id,
+        "drone": "cf1",
         "child_commands": {
             "collector": [
                 "/python",
@@ -141,9 +146,12 @@ def _valid_report() -> dict[str, object]:
             ],
             "mission": ["/ros2", "run", "nano_c_slam_gazebo", "sim_mission"],
         },
+        "mission_events": [json.loads(event.to_json()) for event in mission_events],
+        "mission_terminal": json.loads(mission_events[-1].to_json()),
         "capture_report": {
-            "run_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+            "run_id": run_id,
             "mapping_replay_provenance": {"binary_sha256": binary_hash},
+            "input_sim_time_ms": {"start": 200, "end": 1400},
         },
         "run_provenance": _valid_provenance(binary_hash),
     }
