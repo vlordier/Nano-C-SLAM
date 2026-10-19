@@ -124,6 +124,8 @@ export GZ_RENDERING_RESOURCE_PATH="$gz_install/share/gz/gz-rendering8"
 export GZ_GUI_PLUGIN_PATH="$gz_install/lib/gz-sim-8/plugins/gui:$gz_install/lib/gz-gui-8/plugins"
 export QML2_IMPORT_PATH="$gz_install/lib/gz-sim-8/plugins/gui"
 export GZ_PARTITION="${NANO_C_SLAM_GZ_PARTITION:-nano_c_slam_${UID:-$(id -u)}}"
+# A local GUI/server pair should advertise loopback instead of every macOS NIC.
+export GZ_IP="${GZ_IP:-127.0.0.1}"
 export ROS_DOMAIN_ID="${NANO_C_SLAM_ROS_DOMAIN_ID:-42}"
 export GZ_DISCOVERY_MULTICAST_IP="${GZ_DISCOVERY_MULTICAST_IP:-239.255.0.17}"
 export GZ_DISCOVERY_MSG_PORT="${GZ_DISCOVERY_MSG_PORT:-42327}"

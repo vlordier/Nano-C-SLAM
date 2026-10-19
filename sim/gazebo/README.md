@@ -133,6 +133,10 @@ Only one `run_gazebo_macos.sh` launch may be active at a time because the
 Abseil compatibility link is shared through Homebrew's global `opt` directory.
 The launcher rejects a second invocation while that link points into another
 Nano-C-SLAM launch's temporary directory; wait for the active launch to exit.
+For this same-machine GUI/server setup, the launcher advertises Gazebo
+Transport on `127.0.0.1` by default to avoid ambiguous macOS network interfaces.
+Set `GZ_IP` to another local interface only when connecting a remote Gazebo
+client; the selected address is recorded in run provenance.
 
 Install Python 3.11.9 from [python.org](https://www.python.org/downloads/release/python-3119/) (the final 3.11 macOS installer), then install the ROS 2 Jazzy formula and its dependencies as described by [idesign0/homebrew-ros2](https://github.com/idesign0/homebrew-ros2). The Homebrew formula's Python is not compatible with the prebuilt ROS bindings; use the python.org interpreter below. Install the remaining libraries and the historical Abseil bottle:
 

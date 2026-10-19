@@ -411,6 +411,7 @@ class GazeboRunProvenanceTests(unittest.TestCase):
                         "ROS_DISTRO": "jazzy",
                         "AMENT_PREFIX_PATH": "/overlay:/ros",
                         "COLCON_PREFIX_PATH": "/overlay:/ros",
+                        "GZ_IP": "127.0.0.1",
                         "NCS_PRIVATE_TOKEN": "must-not-be-captured",
                     },
                     clear=True,
@@ -440,6 +441,7 @@ class GazeboRunProvenanceTests(unittest.TestCase):
             allowlisted = environment["allowlisted_environment"]
             self.assertEqual(set(allowlisted), set(GAZEBO_ROS_ENVIRONMENT))
             self.assertEqual(allowlisted["RMW_IMPLEMENTATION"], "<rmw-default>")
+            self.assertEqual(allowlisted["GZ_IP"], "127.0.0.1")
             self.assertNotIn("NCS_PRIVATE_TOKEN", allowlisted)
             source_hashes = source["owned_input_sha256"]
             assert isinstance(source_hashes, dict)
