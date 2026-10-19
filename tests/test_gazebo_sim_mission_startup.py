@@ -171,6 +171,15 @@ class SimMissionStartupTests(unittest.TestCase):
         self.assertIn('"phase": "FAILED"', node._status_publisher.messages[-1].data)
         self.assertEqual(self.module.mission_exit_code(node._sequence.phase), 1)
 
+    def test_waiting_without_odometry_does_not_enable_or_publish_motion(self) -> None:
+        node = self.module.SimMission()
+
+        node._step()
+
+        self.assertEqual(node._sequence.phase.name, "WAITING")
+        self.assertEqual(node._enable_publisher.messages, [])
+        self.assertEqual(node._publisher.messages, [])
+
     def test_received_odometry_disables_startup_timeout(self) -> None:
         node = self.module.SimMission()
         node._odometry_startup_timeout_s = 0.1

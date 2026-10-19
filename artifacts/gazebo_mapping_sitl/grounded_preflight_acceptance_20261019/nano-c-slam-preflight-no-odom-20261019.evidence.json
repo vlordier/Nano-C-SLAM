@@ -1,0 +1,36 @@
+{
+  "command": [
+    "uv",
+    "run",
+    "--no-project",
+    "--python",
+    "/Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11",
+    "python",
+    "-m",
+    "scripts.gazebo_mapping_run",
+    "--drone",
+    "cf1",
+    "--samples",
+    "60",
+    "--scene",
+    "nearfield-mapping",
+    "--timeout",
+    "120",
+    "--preflight-timeout",
+    "2",
+    "--output",
+    "/tmp/nano-c-slam-preflight-no-odom-20261019.json"
+  ],
+  "coordinator_pid": 98999,
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "Gazebo mapping run failed: odometry preflight timed out: no grounded samples arrived\n",
+  "gazebo_session_id": "8a782542-ee55-4a2b-b90e-e3887504ed4a",
+  "gazebo_server_pids": [
+    98754
+  ],
+  "report_exists": false,
+  "provenance_exists": false,
+  "child_log_or_capture_artifacts": [],
+  "child_processes_started": false
+}

@@ -155,6 +155,9 @@ class SimMission(Node):
                 self._timer.cancel()
             return
 
+        if self._sequence.phase is MissionPhase.WAITING and self._altitude_m is None:
+            return
+
         if (
             self._mapping_path_enabled
             and self._sequence.phase is MissionPhase.WAITING

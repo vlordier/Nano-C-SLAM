@@ -1,0 +1,37 @@
+{
+  "command": [
+    "uv",
+    "run",
+    "--no-project",
+    "--python",
+    "/Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11",
+    "python",
+    "-m",
+    "scripts.gazebo_mapping_run",
+    "--drone",
+    "cf1",
+    "--samples",
+    "60",
+    "--scene",
+    "nearfield-mapping",
+    "--timeout",
+    "120",
+    "--preflight-timeout",
+    "10",
+    "--output",
+    "/tmp/nano-c-slam-preflight-duplicate-final42-20261019.json"
+  ],
+  "coordinator_pid": 93961,
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "Gazebo mapping run failed: this Gazebo launch already has a mapping-run claim; restart the near-field Gazebo world before another mapping run\n",
+  "gazebo_session_id": "ab97b10b-13cd-47c1-9391-cf0ccddb5d38",
+  "gazebo_server_pids": [
+    90759
+  ],
+  "gazebo_server_alive_after_rejection": true,
+  "report_exists": false,
+  "provenance_exists": false,
+  "child_log_or_capture_artifacts": [],
+  "child_processes_started": false
+}

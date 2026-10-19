@@ -1,0 +1,95 @@
+{
+  "command": [
+    "uv",
+    "run",
+    "--no-project",
+    "--python",
+    "/Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11",
+    "python",
+    "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.Dvetqa/install/nano_c_slam_gazebo/lib/nano_c_slam_gazebo/sim_mission",
+    "--ros-args",
+    "-p",
+    "use_sim_time:=True",
+    "-p",
+    "odometry_startup_timeout_s:=2.0"
+  ],
+  "mission_pid": 7576,
+  "exit_code": 1,
+  "ros_domain_id": "48",
+  "environment_prefixes": {
+    "ROS_DOMAIN_ID": "48",
+    "RMW_IMPLEMENTATION": null,
+    "AMENT_PREFIX_PATH": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.Dvetqa/install/nano_c_slam_gazebo:/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.Dvetqa/install/crazyflie_ros2_multiranger_bringup:/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.Dvetqa/install/ros_gz_crazyflie_bringup:/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.Dvetqa/install/ros_gz_crazyflie_gazebo:/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.Dvetqa/install/nano_c_slam_interfaces:/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.Dvetqa/install/crazyflie_ros2_multiranger_wall_following:/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.Dvetqa/install/crazyflie_ros2_multiranger_simple_mapper:/Users/vincent/Work/crazyswarm2_gazebo/install/nano_c_slam_gazebo:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie_ros2_multiranger_bringup:/Users/vincent/Work/crazyswarm2_gazebo/install/ros_gz_crazyflie_control:/Users/vincent/Work/crazyswarm2_gazebo/install/nano_c_slam_interfaces:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie:/Users/vincent/Work/crazyswarm2_gazebo/install/motion_capture_tracking_interfaces:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie_sim:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie_ros2_multiranger_wall_following:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie_ros2_multiranger_simple_mapper:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie_examples:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie_py:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie_interfaces:/opt/homebrew/opt/ros2-jazzy",
+    "COLCON_PREFIX_PATH": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.Dvetqa/install:/Users/vincent/Work/crazyswarm2_gazebo/install:/Users/vincent/Work/gz-macOS/ws/install:/opt/homebrew/opt/ros2-jazzy"
+  },
+  "package_prefix": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.Dvetqa/install/nano_c_slam_gazebo",
+  "source_sha256": "fee441ec88c87245b392af928e80eccbaab742be9bc1e5f12a5dd5a2e16a24ac",
+  "installed_sha256": "fee441ec88c87245b392af928e80eccbaab742be9bc1e5f12a5dd5a2e16a24ac",
+  "source_matches_installed": true,
+  "odometry_publisher_count": 0,
+  "clock_publisher_count": 0,
+  "mission_status": [
+    {
+      "altitude_m": null,
+      "drone_name": "cf1",
+      "failure_reason": null,
+      "landing_height_m": 0.1,
+      "landing_stable_since_s": null,
+      "mapping_path_complete": false,
+      "mapping_path_requested": false,
+      "odometry_stamp_s": null,
+      "phase": "WAITING",
+      "run_id": "5d61d5d9-62c0-473b-81ed-cbb8fbd457cb",
+      "schema_version": 2,
+      "sequence": 0,
+      "sim_time_s": 0.0
+    },
+    {
+      "altitude_m": null,
+      "drone_name": "cf1",
+      "failure_reason": "odometry was not received before startup timeout",
+      "landing_height_m": 0.1,
+      "landing_stable_since_s": null,
+      "mapping_path_complete": false,
+      "mapping_path_requested": false,
+      "odometry_stamp_s": null,
+      "phase": "FAILED",
+      "run_id": "5d61d5d9-62c0-473b-81ed-cbb8fbd457cb",
+      "schema_version": 2,
+      "sequence": 1,
+      "sim_time_s": 0.0
+    }
+  ],
+  "enable_messages": [],
+  "cmd_vel_messages": [
+    [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  ],
+  "stdout": "",
+  "stderr": "[INFO] [1792388556.837867000] [nano_c_slam_sim_mission]: Mission run 5d61d5d9-62c0-473b-81ed-cbb8fbd457cb; waiting for /cf1/odom before takeoff to 0.50 m\n[INFO] [1792388556.838215000] [nano_c_slam_sim_mission]: mission_status={\"altitude_m\": null, \"drone_name\": \"cf1\", \"failure_reason\": null, \"landing_height_m\": 0.1, \"landing_stable_since_s\": null, \"mapping_path_complete\": false, \"mapping_path_requested\": false, \"odometry_stamp_s\": null, \"phase\": \"WAITING\", \"run_id\": \"5d61d5d9-62c0-473b-81ed-cbb8fbd457cb\", \"schema_version\": 2, \"sequence\": 0, \"sim_time_s\": 0.0}\n[INFO] [1792388558.828778000] [nano_c_slam_sim_mission]: mission_status={\"altitude_m\": null, \"drone_name\": \"cf1\", \"failure_reason\": \"odometry was not received before startup timeout\", \"landing_height_m\": 0.1, \"landing_stable_since_s\": null, \"mapping_path_complete\": false, \"mapping_path_requested\": false, \"odometry_stamp_s\": null, \"phase\": \"FAILED\", \"run_id\": \"5d61d5d9-62c0-473b-81ed-cbb8fbd457cb\", \"schema_version\": 2, \"sequence\": 1, \"sim_time_s\": 0.0}\n[ERROR] [1792388558.828988000] [nano_c_slam_sim_mission]: cf1 mission failed: odometry was not received before startup timeout before takeoff; odometry_callbacks=0, odometry_stamp_s=None\n",
+  "acceptance": {
+    "failed_status": true,
+    "zero_odometry_callbacks": true,
+    "no_enable_true": true,
+    "only_zero_cmd_vel": true,
+    "nonzero_exit": true
+  },
+  "repository_revision": "c232ffe11a2cc338a296193a8bcd2872481de6b6",
+  "repository_status_porcelain": " M scripts/gazebo_mapping_run.py\n M sim/gazebo/README.md\n M sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/run_provenance.py\n M sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/sim_mission.py\n M tests/test_gazebo_mapping_run.py\n M tests/test_gazebo_mapping_run_provenance.py\n M tests/test_gazebo_run_manifest.py\n M tests/test_gazebo_sim_mission_startup.py\n?? artifacts/gazebo_mapping_sitl/grounded_preflight_acceptance_20261019/\n?? sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/odometry_preflight.py\n?? tests/test_gazebo_odometry_preflight.py\n",
+  "overlay_build_receipt": {
+    "path": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.Dvetqa/build-receipt.txt",
+    "sha256": "abd051556f82ee247b89b74852940b800d2c926316bd1c298c8750f9bb1b8117",
+    "bytes": 1595
+  },
+  "overlay_source_snapshot": {
+    "path": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.Dvetqa/source-snapshot.before.txt",
+    "sha256": "a352e30020b6ddd9115c8b64a39f65c5708c353bc2b076afd3d13178a4f7bcfe",
+    "bytes": 622346
+  }
+}
