@@ -77,6 +77,7 @@ include = [
     "tests/test_gazebo_mapping_run.py",
     "tests/test_gazebo_mapping_run_processes.py",
     "tests/test_gazebo_mapping_run_cli.py",
+    "tests/test_gazebo_failure_probe.py",
     "tests/test_gap9_host_mapping_diagnostic.py",
     "tests/test_gap9_gvsoc_mapping_diagnostic.py",
     "tests/test_gap9_gvsoc_target_runner.py",
@@ -90,6 +91,7 @@ include = [
     "tests/test_gap9_mapping_diagnostic_schema.py",
     "sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/mapping_run_processes.py",
     "scripts/gazebo_mapping_run.py",
+    "scripts/gazebo_failure_probe.py",
     "test_support/gap9_mapping_fixtures.py",
     "test_support/ros_fixtures.py",
 ]
