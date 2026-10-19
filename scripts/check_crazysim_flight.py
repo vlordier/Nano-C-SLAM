@@ -9,6 +9,7 @@ import math
 import re
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 type Vector3 = tuple[float, float, float]
 type Vector4 = tuple[float, float, float, float]
@@ -68,6 +69,49 @@ def _messages(text: str) -> list[str]:
     return [text[start:end] for start, end in zip(starts, ends, strict=True)]
 
 
+def _json_messages(text: str) -> list[dict[str, Any]] | None:
+    """Read newline-delimited JSON emitted by `gz topic --json-output`."""
+    if not text.lstrip().startswith("{"):
+        return None
+    messages: list[dict[str, Any]] = []
+    try:
+        for line in text.splitlines():
+            if not line.strip():
+                continue
+            value = json.loads(line)
+            if not isinstance(value, dict):
+                return None
+            messages.append(value)
+    except json.JSONDecodeError:
+        return None
+    return messages
+
+
+def _object(value: object) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
+def _json_number(value: object, default: float = 0.0) -> float:
+    if not isinstance(value, (str, int, float)):
+        return default
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _json_timestamp(message: dict[str, Any], field: str = "header") -> float | None:
+    stamp = _object(_object(message.get(field)).get("stamp"))
+    if "sec" not in stamp:
+        return None
+    return _json_number(stamp.get("sec")) + _json_number(stamp.get("nsec")) / 1e9
+
+
+def _json_vector(message: dict[str, Any], field: str, axes: str) -> tuple[float, ...]:
+    values = _object(message.get(field))
+    return tuple(_json_number(values.get(axis)) for axis in axes)
+
+
 def _vector(message: str, field: str, axes: str) -> tuple[float, ...]:
     match = re.search(rf"\b{re.escape(field)}\s*\{{([^{{}}]*)\}}", message, re.DOTALL)
     if match is None:
@@ -77,8 +121,35 @@ def _vector(message: str, field: str, axes: str) -> tuple[float, ...]:
 
 
 def parse_odometry(text: str) -> list[OdometrySample]:
-    """Read Gazebo's protobuf text output for gz.msgs.Odometry."""
+    """Read protobuf text or JSON output for gz.msgs.Odometry."""
     samples: list[OdometrySample] = []
+    json_messages = _json_messages(text)
+    if json_messages is not None:
+        for message in json_messages:
+            timestamp = _json_timestamp(message)
+            if timestamp is None:
+                continue
+            pose = _object(message.get("pose"))
+            position = _json_vector(pose, "position", "xyz")
+            orientation = _json_vector(pose, "orientation", "xyzw")
+            twist = _object(message.get("twist"))
+            linear = _json_vector(twist, "linear", "xyz")
+            angular = _json_vector(twist, "angular", "xyz")
+            samples.append(
+                OdometrySample(
+                    time_s=timestamp,
+                    position=(position[0], position[1], position[2]),
+                    orientation=(
+                        orientation[0],
+                        orientation[1],
+                        orientation[2],
+                        orientation[3],
+                    ),
+                    linear_velocity=(linear[0], linear[1], linear[2]),
+                    angular_velocity=(angular[0], angular[1], angular[2]),
+                )
+            )
+        return samples
     for message in _messages(text):
         stamp = _STAMP.search(message)
         if stamp is None:
@@ -106,8 +177,15 @@ def parse_odometry(text: str) -> list[OdometrySample]:
 
 
 def parse_imu_timestamps(text: str) -> list[float]:
-    """Read timestamps from captured gz.msgs.IMU protobuf text."""
+    """Read timestamps from captured protobuf text or JSON IMU messages."""
     timestamps: list[float] = []
+    json_messages = _json_messages(text)
+    if json_messages is not None:
+        return [
+            timestamp
+            for message in json_messages
+            if (timestamp := _json_timestamp(message)) is not None
+        ]
     for message in _messages(text):
         stamp = _STAMP.search(message)
         if stamp is None:
@@ -118,8 +196,22 @@ def parse_imu_timestamps(text: str) -> list[float]:
 
 
 def parse_imu_vectors(text: str) -> list[tuple[Vector3, Vector3]]:
-    """Read acceleration and angular velocity vectors from captured IMU text."""
+    """Read IMU vectors from captured protobuf text or JSON messages."""
     vectors: list[tuple[Vector3, Vector3]] = []
+    json_messages = _json_messages(text)
+    if json_messages is not None:
+        for message in json_messages:
+            if _json_timestamp(message) is None:
+                continue
+            acceleration = _json_vector(message, "linear_acceleration", "xyz")
+            angular = _json_vector(message, "angular_velocity", "xyz")
+            vectors.append(
+                (
+                    (acceleration[0], acceleration[1], acceleration[2]),
+                    (angular[0], angular[1], angular[2]),
+                )
+            )
+        return vectors
     for message in _messages(text):
         if _STAMP.search(message) is None:
             continue
@@ -135,7 +227,18 @@ def parse_imu_vectors(text: str) -> list[tuple[Vector3, Vector3]]:
 
 
 def parse_motor_components(text: str) -> list[float]:
-    """Read repeated velocity fields from gz.msgs.Actuators text output."""
+    """Read motor speeds from protobuf text or JSON Actuators messages."""
+    json_messages = _json_messages(text)
+    if json_messages is not None:
+        return [
+            _json_number(value)
+            for message in json_messages
+            for value in (
+                message.get("velocity", [])
+                if isinstance(message.get("velocity", []), list)
+                else []
+            )
+        ]
     return [
         float(value)
         for value in re.findall(rf"\bvelocity:\s*({_NUMBER})", text, re.IGNORECASE)
@@ -143,7 +246,25 @@ def parse_motor_components(text: str) -> list[float]:
 
 
 def parse_world_stats(text: str) -> list[WorldStatsSample]:
-    """Read sim and wall-clock timestamps from Gazebo WorldStatistics text."""
+    """Read Gazebo WorldStatistics from protobuf text or JSON output."""
+    json_messages = _json_messages(text)
+    if json_messages is not None:
+        samples: list[WorldStatsSample] = []
+        for message in json_messages:
+            sim_time = _json_timestamp({"header": {"stamp": message.get("sim_time")}})
+            real_time = _json_timestamp({"header": {"stamp": message.get("real_time")}})
+            if sim_time is None or real_time is None:
+                continue
+            samples.append(
+                WorldStatsSample(
+                    sim_time_s=sim_time,
+                    real_time_s=real_time,
+                    real_time_factor=_json_number(
+                        message.get("real_time_factor"), math.nan
+                    ),
+                )
+            )
+        return samples
     number = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?|[-+]?(?:nan|inf)"
     pattern = re.compile(
         rf"sim_time\s*\{{\s*sec:\s*(-?\d+)\s*nsec:\s*(-?\d+)\s*\}}\s*"

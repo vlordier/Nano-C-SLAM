@@ -1,9 +1,17 @@
 from __future__ import annotations
 
+import json
 import unittest
 from dataclasses import replace
 
-from scripts.check_crazysim_flight import validate_capture
+from scripts.check_crazysim_flight import (
+    parse_imu_timestamps,
+    parse_imu_vectors,
+    parse_motor_components,
+    parse_odometry,
+    parse_world_stats,
+    validate_capture,
+)
 from test_support.crazysim_flight_fixtures import passing_capture
 
 
@@ -26,6 +34,50 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
             ),
         )
         return errors
+
+    def test_gazebo_json_topic_captures_parse_like_protobuf_text(self) -> None:
+        odometry = json.dumps(
+            {
+                "header": {"stamp": {"sec": "12", "nsec": 500_000_000}},
+                "pose": {
+                    "position": {"x": 1, "y": 2, "z": 2.4},
+                    "orientation": {"x": 0, "y": 0, "z": 0, "w": 1},
+                },
+                "twist": {
+                    "linear": {"x": 0.1, "y": 0.2, "z": 0.3},
+                    "angular": {"x": 0.01, "y": 0.02, "z": 0.03},
+                },
+            }
+        )
+        imu = json.dumps(
+            {
+                "header": {"stamp": {"sec": "12", "nsec": 750_000_000}},
+                "linear_acceleration": {"x": 0, "y": 0, "z": 9.81},
+                "angular_velocity": {"x": 0.1, "y": 0.2, "z": 0.3},
+            }
+        )
+        motors = json.dumps({"velocity": [1000, 1100, 1200, 1300]})
+        world_stats = json.dumps(
+            {
+                "sim_time": {"sec": "12", "nsec": 500_000_000},
+                "real_time": {"sec": "12", "nsec": 250_000_000},
+                "real_time_factor": 1.1,
+            }
+        )
+
+        pose_sample = parse_odometry(odometry)[0]
+        self.assertEqual(pose_sample.time_s, 12.5)
+        self.assertEqual(pose_sample.position, (1.0, 2.0, 2.4))
+        self.assertEqual(pose_sample.angular_velocity, (0.01, 0.02, 0.03))
+        self.assertEqual(parse_imu_timestamps(imu), [12.75])
+        self.assertEqual(parse_imu_vectors(imu), [((0.0, 0.0, 9.81), (0.1, 0.2, 0.3))])
+        self.assertEqual(
+            parse_motor_components(motors), [1000.0, 1100.0, 1200.0, 1300.0]
+        )
+        self.assertEqual(
+            parse_world_stats(world_stats)[0].real_time_factor,
+            1.1,
+        )
 
     def test_realistic_takeoff_hover_land_and_disconnected_control_pass(self) -> None:
         capture = passing_capture()
