@@ -28,6 +28,8 @@ from .mission_model import (
     validate_mission_odometry,
 )
 
+TERMINAL_STATUS_DRAIN_S = 0.5
+
 
 class SimMission(Node):
     """Drive one simulated Crazyflie through a bounded vertical mission."""
@@ -73,6 +75,7 @@ class SimMission(Node):
         self._mapping_path: MappingPath | None = None
         self._mapping_path_finished = False
         self._status_sequence = 0
+        self._failure_zero_started_wall_s: float | None = None
         self._publisher = self.create_publisher(
             Twist, f"/{self._drone_name}/cmd_vel", 10
         )
@@ -98,6 +101,11 @@ class SimMission(Node):
         self._startup_timer = self.create_timer(
             0.1,
             self._check_odometry_startup_timeout,
+            clock=Clock(clock_type=ClockType.STEADY_TIME),
+        )
+        self._failure_zero_timer = self.create_timer(
+            0.05,
+            self._keep_zero_command_after_failure,
             clock=Clock(clock_type=ClockType.STEADY_TIME),
         )
         self.get_logger().info(
@@ -274,6 +282,22 @@ class SimMission(Node):
         if rclpy.ok():
             self._publisher.publish(Twist())
 
+    def _keep_zero_command_after_failure(self) -> None:
+        """Repeat zero commands during the bounded terminal status drain."""
+        if self._sequence.phase is MissionPhase.COMPLETE:
+            self._failure_zero_timer.cancel()
+            return
+        if self._sequence.phase is not MissionPhase.FAILED:
+            return
+
+        now_s = time.monotonic()
+        if self._failure_zero_started_wall_s is None:
+            self._failure_zero_started_wall_s = now_s
+        if now_s - self._failure_zero_started_wall_s >= TERMINAL_STATUS_DRAIN_S:
+            self._failure_zero_timer.cancel()
+            return
+        self._publish_zero_command_if_active()
+
     def destroy_node(self) -> None:
         """Stop commanded motion before releasing the ROS publisher."""
         self._publish_zero_command_if_active()
@@ -321,7 +345,7 @@ def main(args: Sequence[str] | None = None) -> int:
             # Keep the transient-local status publisher alive long enough for
             # late DDS subscribers to receive the terminal event after process
             # exit is observed by the coordinator.
-            terminal_deadline = time.monotonic() + 0.5
+            terminal_deadline = time.monotonic() + TERMINAL_STATUS_DRAIN_S
             while rclpy.ok() and time.monotonic() < terminal_deadline:
                 rclpy.spin_once(node, timeout_sec=0.05)
     except KeyboardInterrupt:

@@ -209,6 +209,31 @@ class SimMissionStartupTests(unittest.TestCase):
         self.assertEqual(node._enable_publisher.messages, [])
         self.assertEqual(node._publisher.messages[-1].linear.z, 0.0)
 
+    def test_failure_repeats_zero_commands_until_bounded_terminal_drain_ends(
+        self,
+    ) -> None:
+        node = self.module.SimMission()
+        node.subscriptions[0].callback(odometry_message(x=0.0, z=float("nan")))
+
+        failure_timer = node.timers[2]
+        with patch.object(
+            self.module.time,
+            "monotonic",
+            side_effect=(10.0, 10.1, 10.49, 10.5),
+        ):
+            failure_timer.callback()
+            failure_timer.callback()
+            failure_timer.callback()
+            failure_timer.callback()
+
+        zero_commands = [
+            message
+            for message in node._publisher.messages
+            if message.linear.x == message.linear.y == message.linear.z == 0.0
+        ]
+        self.assertEqual(len(zero_commands), 4)
+        self.assertTrue(failure_timer.canceled)
+
     def test_mapping_mission_rejects_airborne_start_before_enabling(self) -> None:
         node = self.module.SimMission()
         node.get_clock().now().nanoseconds = 1_000_000_000
