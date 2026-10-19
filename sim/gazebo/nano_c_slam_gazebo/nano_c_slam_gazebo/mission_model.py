@@ -11,6 +11,7 @@ from enum import Enum, auto
 from typing import Any
 
 SUPPORTED_DRONE_NAMES = ("cf1", "cf3", "cf4")
+MISSION_STATUS_QOS_DEPTH = 4096
 MAX_ODOMETRY_FUTURE_SKEW_S = 0.1
 
 

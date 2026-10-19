@@ -601,16 +601,26 @@ export GZ_PARTITION="nano_c_slam_$(id -u)"
 export ROS_DOMAIN_ID=42
 uv run --locked python -m scripts.gazebo_gvsoc_live \
   --samples 60 \
-  --output artifacts/gazebo_mapping_sitl/gvsoc-live-run.json
+  --output /tmp/nano-c-slam-gvsoc-live/run.json
 ```
 
 The CLI currently fixes the run to 60 telemetry pairs because the GAP9 probe
 build is configured for exactly 64 SPI commands. It reports each child status,
-retains GVSOC and mission logs, and leaves the host-side mapping report and
-firmware receive/optimizer response JSON in the run-scoped directory. This
-executes the GAP9 Nano-C-SLAM production command path live against Gazebo
-telemetry. The Crazyflie STM32 flight-control firmware is still not running in
-Gazebo; Crazyswarm2 controls the simulated drone, and map accuracy is not
-validated by a single successful firmware optimizer response.
+build is configured for exactly 64 SPI commands. The launcher holds the drone
+in hover for up to 120 simulated seconds after the mapping path so the bounded
+GVSOC receiver can process every frame. Keep the run output outside the Git
+checkout; run provenance intentionally rejects artifacts created inside the
+source tree during capture. Retained logs and the mapping report are placed
+next to that output.
 
-Live GVSOC receiver evidence currently validates the IPC and GAP9 production SPI path with telemetry captured from a completed Gazebo run. A fresh, unclaimed Gazebo world is still required to validate the coordinated in-flight mission.
+Validated on 2026-10-19 with run ID
+`44454f7c-5c40-4ede-90e3-76f018e4f883`: 60 in-flight telemetry pairs became 60
+POSE, 3 SCAN, and 1 OPTIMIZE frame. The GAP9 production path completed with 3
+registered scans, 2 constraints, 3 solver calls, no NaN, and response
+`3c0003001500820000000100030009000100`; both supervised child processes exited
+0. The correlated evidence is
+`artifacts/gap9_gvsoc_evidence/gazebo_live_firmware_20261019.json`. This validates
+GAP9 mapping firmware running under GVSOC during simulated flight. Crazyswarm2
+still supplies the flight control in Gazebo; the Crazyflie STM32 flight-control
+firmware is not running in this path, and one successful solve does not validate
+map accuracy.

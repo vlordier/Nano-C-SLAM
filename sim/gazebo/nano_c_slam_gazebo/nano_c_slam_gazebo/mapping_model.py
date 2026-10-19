@@ -56,9 +56,9 @@ class MappingSample:
         fields = (
             str(self.sample_id),
             str(self.timestamp_ms),
-            format(self.x_m, ".9g"),
-            format(self.y_m, ".9g"),
-            format(self.yaw_rad, ".9g"),
+            format(self.x_m, ".17g"),
+            format(self.y_m, ".17g"),
+            format(self.yaw_rad, ".17g"),
             *(str(value) for value in self.ranges_mm),
         )
         return " ".join(fields)

@@ -87,6 +87,7 @@ class MappingRunConfig:
     run_id: str = field(default_factory=create_run_id)
     stream_socket_path: Path | None = None
     stream_timeout_s: float = 1.0
+    mission_hover_duration_s: float = 3.0
 
     def __post_init__(self) -> None:
         validate_drone_name(self.drone_name)
@@ -123,6 +124,13 @@ class MappingRunConfig:
             or self.stream_timeout_s <= 0
         ):
             raise ValueError("stream_timeout_s must be finite and positive")
+        if (
+            isinstance(self.mission_hover_duration_s, bool)
+            or not isinstance(self.mission_hover_duration_s, (int, float))
+            or not math.isfinite(self.mission_hover_duration_s)
+            or self.mission_hover_duration_s < 0
+        ):
+            raise ValueError("mission_hover_duration_s must be finite and nonnegative")
         if not isinstance(self.output_path, Path) or not isinstance(
             self.binary_path, Path
         ):
@@ -211,6 +219,8 @@ class MappingRunConfig:
             f"run_id:={self.run_id}",
             "-p",
             "mapping_path:=True",
+            "-p",
+            f"hover_duration_s:={self.mission_hover_duration_s}",
         )
         return MappingRunCommands(collector=collector, mission=mission)
 

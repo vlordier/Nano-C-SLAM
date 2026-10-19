@@ -6,6 +6,7 @@ import copy
 import json
 import math
 import os
+import struct
 import subprocess
 import tempfile
 import unittest
@@ -122,6 +123,23 @@ class MappingSampleTests(unittest.TestCase):
         sample = MappingSample(4, 250, 1.25, -0.5, 0.75, (1000, -1, 850, 1200))
 
         self.assertEqual(sample.to_record(), "4 250 1.25 -0.5 0.75 1000 -1 850 1200")
+
+    def test_pose_record_preserves_float32_wire_rounding(self) -> None:
+        sample = MappingSample(
+            5,
+            27400,
+            -0.455216032,
+            -0.500083349,
+            0.0015395611990243196,
+            (985, 979, 1351, 900),
+        )
+        fields = sample.to_record().split()
+        wire_coordinates = struct.pack("<fff", *(float(value) for value in fields[2:5]))
+
+        self.assertEqual(
+            wire_coordinates,
+            struct.pack("<fff", sample.x_m, sample.y_m, sample.yaw_rad),
+        )
 
     def test_rejects_invalid_samples_and_zero_quaternion(self) -> None:
         with self.assertRaisesRegex(ValueError, "int16"):

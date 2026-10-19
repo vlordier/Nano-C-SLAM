@@ -208,6 +208,12 @@ def _parse_args(
         help="stream accepted telemetry to the live GVSOC SPI receiver",
     )
     parser.add_argument("--stream-timeout", type=float, default=1.0)
+    parser.add_argument(
+        "--mission-hover-duration",
+        type=float,
+        default=3.0,
+        help="simulated seconds to hover after the mapping path completes",
+    )
     options = parser.parse_args(args)
     if not math.isfinite(options.preflight_timeout) or options.preflight_timeout <= 0:
         parser.error("preflight timeout must be finite and positive")
@@ -224,6 +230,7 @@ def _parse_args(
             run_id=options.run_id or create_run_id(),
             stream_socket_path=options.stream_socket,
             stream_timeout_s=options.stream_timeout,
+            mission_hover_duration_s=options.mission_hover_duration,
         )
     except (FileExistsError, FileNotFoundError, ValueError) as error:
         parser.error(str(error))

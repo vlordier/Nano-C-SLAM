@@ -53,6 +53,7 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_stream import (
     MappingStreamWriter,
 )
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
+    MISSION_STATUS_QOS_DEPTH,
     SUPPORTED_DRONE_NAMES,
     create_run_id,
     validate_run_id,
@@ -290,7 +291,7 @@ def _capture_samples(
             )
             if self._mission_gate is not None:
                 status_qos = qos_module.QoSProfile(
-                    depth=10,
+                    depth=MISSION_STATUS_QOS_DEPTH,
                     durability=qos_module.DurabilityPolicy.TRANSIENT_LOCAL,
                     history=qos_module.HistoryPolicy.KEEP_LAST,
                 )

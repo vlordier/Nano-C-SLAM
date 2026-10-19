@@ -13,8 +13,9 @@ from test_support.ros_fixtures import odometry_message
 
 
 class _Publisher:
-    def __init__(self) -> None:
+    def __init__(self, qos: object = None) -> None:
         self.messages: list[object] = []
+        self.qos = qos
 
     def publish(self, message: object) -> None:
         self.messages.append(message)
@@ -52,8 +53,9 @@ class _Node:
     def get_parameter(self, name: str) -> types.SimpleNamespace:
         return types.SimpleNamespace(value=self.parameters[name])
 
-    def create_publisher(self, *_args: object, **_kwargs: object) -> _Publisher:
-        publisher = _Publisher()
+    def create_publisher(self, *args: object, **kwargs: object) -> _Publisher:
+        qos = args[2] if len(args) > 2 else kwargs.get("qos")
+        publisher = _Publisher(qos)
         self.publishers.append(publisher)
         return publisher
 
@@ -109,7 +111,7 @@ class SimMissionStartupTests(unittest.TestCase):
         self.rcl_qos = types.ModuleType("rclpy.qos")
         self.rcl_qos.DurabilityPolicy = types.SimpleNamespace(TRANSIENT_LOCAL=1)
         self.rcl_qos.HistoryPolicy = types.SimpleNamespace(KEEP_LAST=1)
-        self.rcl_qos.QoSProfile = lambda **_kwargs: object()
+        self.rcl_qos.QoSProfile = lambda **kwargs: types.SimpleNamespace(**kwargs)
         self.std = types.ModuleType("std_msgs.msg")
         self.std.Bool = type("Bool", (), {})
         self.std.String = type("String", (), {})
@@ -170,6 +172,11 @@ class SimMissionStartupTests(unittest.TestCase):
         self.assertEqual(node._enable_publisher.messages, [])
         self.assertIn('"phase": "FAILED"', node._status_publisher.messages[-1].data)
         self.assertEqual(self.module.mission_exit_code(node._sequence.phase), 1)
+
+    def test_mission_status_history_covers_bounded_run(self) -> None:
+        node = self.module.SimMission()
+
+        self.assertEqual(node._status_publisher.qos.depth, 4096)
 
     def test_waiting_without_odometry_does_not_enable_or_publish_motion(self) -> None:
         node = self.module.SimMission()

@@ -26,6 +26,7 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 SAMPLE_COUNT = 60
 PACKET_COUNT = 64
+LIVE_MISSION_HOVER_SECONDS = 120.0
 
 
 def _parse_args(args: list[str] | None) -> argparse.Namespace:
@@ -138,6 +139,8 @@ def _commands(
         str(socket_path),
         "--stream-timeout",
         str(options.stream_timeout),
+        "--mission-hover-duration",
+        str(LIVE_MISSION_HOVER_SECONDS),
         "--output",
         str(output),
         "--binary",

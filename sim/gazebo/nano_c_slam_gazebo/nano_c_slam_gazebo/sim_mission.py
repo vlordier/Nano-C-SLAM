@@ -17,6 +17,7 @@ from std_msgs.msg import Bool, String
 
 from .mapping_path import MappingPath
 from .mission_model import (
+    MISSION_STATUS_QOS_DEPTH,
     MissionPhase,
     MissionSequence,
     MissionStatusEvent,
@@ -86,7 +87,7 @@ class SimMission(Node):
             String,
             f"/{self._drone_name}/mission_status",
             QoSProfile(
-                depth=10,
+                depth=MISSION_STATUS_QOS_DEPTH,
                 durability=DurabilityPolicy.TRANSIENT_LOCAL,
                 history=HistoryPolicy.KEEP_LAST,
             ),

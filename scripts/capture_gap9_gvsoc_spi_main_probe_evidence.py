@@ -80,6 +80,27 @@ def _decode_slam_job(response_hex: str) -> dict[str, int]:
     return dict(zip(SLAM_JOB_FIELDS, values, strict=True))
 
 
+def _validate_live_gazebo_completion(
+    bundle: dict[str, object], *, expected_run_id: str
+) -> tuple[dict[str, int], str]:
+    """Require successful mission and collector children for live evidence."""
+    process_exit_codes = bundle.get("process_exit_codes")
+    mission_terminal = bundle.get("mission_terminal")
+    if (
+        not isinstance(process_exit_codes, dict)
+        or process_exit_codes.get("collector") != 0
+        or process_exit_codes.get("mission") != 0
+    ):
+        raise ValueError("live Gazebo child processes did not both exit 0")
+    if (
+        not isinstance(mission_terminal, dict)
+        or mission_terminal.get("run_id") != expected_run_id
+        or mission_terminal.get("phase") != "COMPLETE"
+    ):
+        raise ValueError("live Gazebo run lacks its matching COMPLETE status")
+    return {"collector": 0, "mission": 0}, "COMPLETE"
+
+
 def _capture_pose_request_evidence(
     *,
     config_path: Path,
@@ -292,6 +313,8 @@ def capture_evidence(
     expected: list[bytes] = []
     expected_commands: list[str] = []
     expected_records: list[dict[str, object]] = []
+    gazebo_process_exit_codes: dict[str, int] | None = None
+    gazebo_mission_terminal_phase: str | None = None
     if sequence in {"mapping", "max-mapping", "capacity-mapping"}:
         expected = list(
             make_mapping_trace(
@@ -335,6 +358,13 @@ def capture_evidence(
                 raise ValueError("host transfer pose count differs from the source run")
         elif host_transfer.get("drone_id") != loaded_bundle.get("drone"):
             raise ValueError("live stream host drone differs from the source run")
+        else:
+            (
+                gazebo_process_exit_codes,
+                gazebo_mission_terminal_phase,
+            ) = _validate_live_gazebo_completion(
+                cast(dict[str, object], loaded_bundle), expected_run_id=host_run_id
+            )
         gazebo_run_bundle = cast(dict[str, object], loaded_bundle)
         gazebo_packets = encode_mapping_samples(gazebo_samples)
         expected = [packet.frame for packet in gazebo_packets]
@@ -760,7 +790,8 @@ def capture_evidence(
             [
                 "Exercises the production command path over GVSOC SPI2 ingress "
                 f"with {pose_count} poses.",
-                "Does not validate map accuracy, physical SPI, or flight behavior.",
+                "Does not validate map accuracy, physical SPI, or onboard flight "
+                "control.",
                 "Receive counters cannot detect frames for which no clocks were "
                 "observed, and sequence-less identical commands cannot be "
                 "distinguished as dropped or duplicated.",
@@ -780,9 +811,10 @@ def capture_evidence(
             )
         elif sequence == "gazebo-live":
             limitations.append(
-                "Recorded Gazebo telemetry was streamed over the live IPC socket "
-                "after its mission completed; this validates the socket/GVSOC "
-                "receiver, not in-flight co-simulation or simulated flight control."
+                "In-flight Gazebo telemetry was streamed over the bounded IPC "
+                "socket into GAP9 production firmware under GVSOC. This validates "
+                "live firmware receipt during simulated flight, not execution of "
+                "Crazyflie STM32 flight-control firmware or mapping accuracy."
             )
 
     return {
@@ -801,7 +833,7 @@ def capture_evidence(
                         "gvsoc-firmware-replay-of-gazebo-telemetry"
                         if sequence == "gazebo-capture"
                         else (
-                            "gvsoc-firmware-ipc-stream-of-recorded-gazebo-telemetry"
+                            "gvsoc-firmware-ipc-stream-of-inflight-gazebo-telemetry"
                             if sequence == "gazebo-live"
                             else "gvsoc-production-scan-and-constraint-capacity-spi2"
                         )
@@ -853,15 +885,18 @@ def capture_evidence(
                 "run_id": gazebo_run_id,
                 "drone": gazebo_run_bundle.get("drone") if gazebo_run_bundle else None,
                 "sample_count": len(gazebo_samples),
+                "process_exit_codes": gazebo_process_exit_codes,
+                "mission_terminal_phase": gazebo_mission_terminal_phase,
                 "run_bundle_sha256": _sha256(gazebo_run_bundle_path)
                 if gazebo_run_bundle_path is not None
                 else None,
                 "claim_boundary": (
-                    "Recorded Gazebo telemetry was streamed over the bounded "
-                    "Unix socket into GAP9 production firmware under GVSOC "
-                    "after the Gazebo run completed. This validates live socket "
-                    "transport and target receipt, not live Gazebo co-simulation "
-                    "or flight control."
+                    "In-flight Gazebo telemetry was streamed over the bounded "
+                    "Unix socket into GAP9 production firmware under GVSOC during "
+                    "the same mission run. This validates live firmware receipt "
+                    "during simulated Crazyflie flight; the Crazyflie STM32 flight "
+                    "controller is not executed, and mapping accuracy is not "
+                    "validated."
                     if sequence == "gazebo-live"
                     else (
                         "Recorded Gazebo telemetry was replayed into GAP9 "

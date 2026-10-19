@@ -13,6 +13,7 @@ from typing import cast
 
 from scripts.capture_gap9_gvsoc_spi_main_probe_evidence import (
     TARGET_MARKER,
+    _validate_live_gazebo_completion,
     capture_evidence,
 )
 from scripts.gap9_gvsoc_spi_probe_protocol import (
@@ -59,6 +60,27 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
             ],
         }
         self.host_transfer_path.write_text(json.dumps(transfer), encoding="utf-8")
+
+    def test_live_completion_joins_matching_terminal_and_zero_child_exits(self) -> None:
+        run_id = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+        bundle: dict[str, object] = {
+            "process_exit_codes": {"collector": 0, "mission": 0},
+            "mission_terminal": {"run_id": run_id, "phase": "COMPLETE"},
+        }
+
+        self.assertEqual(
+            _validate_live_gazebo_completion(bundle, expected_run_id=run_id),
+            ({"collector": 0, "mission": 0}, "COMPLETE"),
+        )
+
+        bundle["process_exit_codes"] = {"collector": 0, "mission": 1}
+        with self.assertRaisesRegex(ValueError, "both exit 0"):
+            _validate_live_gazebo_completion(bundle, expected_run_id=run_id)
+
+        bundle["process_exit_codes"] = {"collector": 0, "mission": 0}
+        bundle["mission_terminal"] = {"run_id": run_id, "phase": "FAILED"}
+        with self.assertRaisesRegex(ValueError, "matching COMPLETE"):
+            _validate_live_gazebo_completion(bundle, expected_run_id=run_id)
 
     @staticmethod
     def _transfer_lengths(frames: Sequence[bytes]) -> list[dict[str, int]]:

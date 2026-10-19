@@ -130,6 +130,21 @@ class MappingRunConfigTests(unittest.TestCase):
         self.assertIn("--stream-timeout", commands.collector)
         self.assertIn("2.5", commands.collector)
 
+    def test_mission_hover_duration_is_forwarded_as_a_ros_parameter(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            directory = Path(temporary_directory)
+            config = MappingRunConfig(
+                output_path=directory / "mapping-run.json",
+                binary_path=directory / "mapping_replay",
+                mission_hover_duration_s=120.0,
+            )
+            commands = config.build_commands(
+                python_executable=sys.executable,
+                ros2_executable="ros2",
+            )
+
+        self.assertIn("hover_duration_s:=120.0", commands.mission)
+
     def test_rejects_invalid_drone_bounds_timeout_and_run_id(self) -> None:
         invalid_configs = (
             lambda path, binary: MappingRunConfig(
@@ -152,6 +167,9 @@ class MappingRunConfigTests(unittest.TestCase):
             ),
             lambda path, binary: MappingRunConfig(
                 output_path=path, binary_path=binary, stream_timeout_s=0.0
+            ),
+            lambda path, binary: MappingRunConfig(
+                output_path=path, binary_path=binary, mission_hover_duration_s=-1.0
             ),
         )
         with tempfile.TemporaryDirectory() as temporary_directory:
