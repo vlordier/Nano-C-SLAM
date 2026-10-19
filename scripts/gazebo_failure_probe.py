@@ -702,6 +702,51 @@ def _velocity_controller_plugin(evidence: object) -> dict[str, object] | None:
     return None
 
 
+def _cli_summary(result: dict[str, object]) -> dict[str, object]:
+    post_exit = result.get("post_exit_odometry")
+    if not isinstance(post_exit, dict):
+        post_exit = {}
+    return {
+        "output": result.get("output"),
+        "passed": result.get("passed"),
+        "mission_exit_code": result.get("mission_exit_code"),
+        "acceptance_checks": result.get("acceptance_checks"),
+        "gui_process_audit_after_stop": result.get("gui_process_audit_after_stop"),
+        "post_exit_motion": post_exit.get("motion_classification"),
+        "post_exit_sample_count": post_exit.get("sample_count"),
+        "post_exit_altitude_min_m": post_exit.get("altitude_min_m"),
+        "post_exit_altitude_max_m": post_exit.get("altitude_max_m"),
+        "post_exit_max_abs_vertical_velocity_m_s": post_exit.get(
+            "max_abs_vertical_velocity_m_s"
+        ),
+    }
+
+
+def _gui_process_audit(partition: str | None) -> dict[str, object]:
+    """Record whether a Gazebo GUI is still running after world teardown."""
+    ps = shutil.which("ps")
+    if ps is None:
+        return {"available": False, "matching_processes": []}
+    result = subprocess.run(  # noqa: S603 - executable is resolved from PATH.
+        [ps, "-axo", "pid=,command="],
+        capture_output=True,
+        check=False,
+        text=True,
+        timeout=5,
+    )
+    matches = []
+    for line in result.stdout.splitlines():
+        if not ("gz sim" in line or "gz-gui" in line or "gazebo_gui" in line):
+            continue
+        if partition and partition in line:
+            matches.append(line.strip())
+    return {
+        "available": result.returncode == 0,
+        "returncode": result.returncode,
+        "matching_processes": matches,
+    }
+
+
 def _classify_post_exit_motion(
     altitudes_m: list[float], abs_vertical_speeds_m_s: list[float]
 ) -> str:
@@ -767,14 +812,12 @@ def main(args: list[str] | None = None) -> int:
             encoding="utf-8",
         )
         parser.exit(1, f"Gazebo failure probe failed: {error}\n")
+    result["gui_process_audit_after_stop"] = _gui_process_audit(
+        os.environ.get("GZ_PARTITION")
+    )
     print(
         json.dumps(
-            {
-                "output": str(options.output),
-                "mission_exit_code": result["mission_exit_code"],
-                "post_exit_motion": result["post_exit_odometry"],
-            },
-            sort_keys=True,
+            _cli_summary({**result, "output": str(options.output)}), sort_keys=True
         )
     )
     return 0 if result["passed"] else 1

@@ -6,6 +6,8 @@ import unittest
 
 from scripts.gazebo_failure_probe import (
     _classify_post_exit_motion,
+    _cli_summary,
+    _gui_process_audit,
     _matching_hashes,
     _velocity_controller_plugin,
 )
@@ -87,3 +89,27 @@ class InstalledSourceIdentityTests(unittest.TestCase):
                 }
             )
         )
+
+    def test_cli_summary_excludes_raw_odometry_samples(self) -> None:
+        summary = _cli_summary(
+            {
+                "passed": True,
+                "mission_exit_code": 1,
+                "post_exit_odometry": {
+                    "motion_classification": "held",
+                    "sample_count": 249,
+                    "altitude_min_m": 0.58,
+                    "altitude_max_m": 0.59,
+                    "max_abs_vertical_velocity_m_s": 0.001,
+                    "samples": [{"raw": "high-volume evidence"}],
+                },
+            }
+        )
+
+        self.assertEqual(summary["post_exit_sample_count"], 249)
+        self.assertNotIn("samples", summary)
+
+    def test_gui_process_audit_ignores_unrelated_gazebo_worktrees(self) -> None:
+        audit = _gui_process_audit("nano_c_slam_failure_probe_final_20261019")
+        self.assertTrue(audit["available"])
+        self.assertEqual(audit["matching_processes"], [])
