@@ -6,12 +6,33 @@ SDK_ROOT="${GAP9_SDK_ROOT:-$HOME/Work/da3_gap9/third_party/gap_sdk_private}"
 TOOLCHAIN_ROOT="${GAP9_TOOLCHAIN_ROOT:-$HOME/Work/da3_gap9/deploy/gap_riscv_toolchain}"
 BUILD_IMAGE="${GAP9_BUILD_IMAGE:-nano-c-slam-gap9-build:ubuntu22-uv0117}"
 BUILD_DNS="${GAP9_BUILD_DNS:-1.1.1.1}"
+MAPPING_ARTIFACTS="$ROOT/cslam-gap9-app/BUILD-gvsoc-mapping"
+MAPPING_SOURCE_SNAPSHOT=""
+MAPPING_BUILD_PROVENANCE=""
 
 for required in \
     "$SDK_ROOT/utils/cmake/setup.cmake" \
     "$TOOLCHAIN_ROOT/bin/riscv32-unknown-elf-gcc"; do
     [[ -e "$required" ]] || { echo "missing GAP9 build prerequisite: $required" >&2; exit 2; }
 done
+
+# Capture and verify repository state on the host. Recursive Git inspection is
+# much slower through Docker Desktop bind mounts and must not rebuild the host
+# uv environment from inside the Linux container.
+if [[ "${GAP9_BUILD_GVSOC_DMA_SMOKE:-0}" != "1" && \
+      "${GAP9_BUILD_GVSOC_SPI_TRACE:-0}" != "1" && \
+      "${GAP9_BUILD_GVSOC_SPI_MAIN_PROBE:-0}" != "1" && \
+      "${GAP9_BUILD_GVSOC_SPI_SLAVE_PROBE:-0}" != "1" && \
+      "${GAP9_BUILD_GVSOC_CLUSTER_DIAGNOSTIC:-0}" != "1" ]]; then
+    mkdir -p "$MAPPING_ARTIFACTS"
+    MAPPING_SOURCE_SNAPSHOT="$MAPPING_ARTIFACTS/.source-snapshot.$$.json"
+    MAPPING_BUILD_PROVENANCE="$MAPPING_ARTIFACTS/.build-provenance.$$.json"
+    trap 'rm -f "$MAPPING_SOURCE_SNAPSHOT" "$MAPPING_BUILD_PROVENANCE"' EXIT
+    uv run --project "$ROOT" --locked --python 3.12 \
+        python -m scripts.write_gap9_build_provenance \
+        --capture-source-snapshot --source-root "$ROOT" \
+        --output "$MAPPING_SOURCE_SNAPSHOT"
+fi
 
 if ! docker image inspect "$BUILD_IMAGE" >/dev/null 2>&1; then
     docker build --platform linux/amd64 \
@@ -182,11 +203,6 @@ test -s "$BUILD_ROOT/BUILD-gvsoc/nano_c_slam_gvsoc_smoke"
 riscv32-unknown-elf-size "$BUILD_ROOT/BUILD-gvsoc/nano_c_slam_gvsoc_smoke"
 MAPPING_ARTIFACTS=/project/cslam-gap9-app/BUILD-gvsoc-mapping
 mkdir -p "$MAPPING_ARTIFACTS"
-rm -f "$MAPPING_ARTIFACTS/source-snapshot.json"
-(cd /project && uv run --project /project --locked --python 3.12 \
-    python -m scripts.write_gap9_build_provenance \
-    --capture-source-snapshot --source-root /project \
-    --output "$MAPPING_ARTIFACTS/source-snapshot.json")
 uv run --no-project --python /usr/bin/python3 "${SDK_PYTHON_ARGS[@]}" \
     cmake -S /project/cslam-gap9-app -B "$BUILD_ROOT/BUILD-gvsoc-mapping" \
     -DCMAKE_BUILD_TYPE=Release -DNANO_C_SLAM_GVSOC_MAPPING_SMOKE=ON \
@@ -206,17 +222,22 @@ cp "$BUILD_ROOT/BUILD-gvsoc-mapping/compile_commands.json" \
 rm -f "$MAPPING_ARTIFACTS/build-provenance.json"
 riscv32-unknown-elf-gcc --version | sed -n 1p \
     > "$MAPPING_ARTIFACTS/toolchain-id.txt"
-cd /project
-uv run --project /project --locked --python 3.12 \
-    python -m scripts.write_gap9_build_provenance \
-    --elf "$MAPPING_ARTIFACTS/nano_c_slam_gvsoc_mapping_smoke" \
-    --compile-commands "$MAPPING_ARTIFACTS/compile_commands.json" \
-    --toolchain-id "$MAPPING_ARTIFACTS/toolchain-id.txt" \
-    --sdk-root /gap_sdk \
-    --source-root /project \
-    --source-snapshot "$MAPPING_ARTIFACTS/source-snapshot.json" \
-    --output "$MAPPING_ARTIFACTS/build-provenance.json"
 '
+
+if [[ -n "$MAPPING_SOURCE_SNAPSHOT" ]]; then
+    uv run --project "$ROOT" --locked --python 3.12 \
+        python -m scripts.write_gap9_build_provenance \
+        --elf "$MAPPING_ARTIFACTS/nano_c_slam_gvsoc_mapping_smoke" \
+        --compile-commands "$MAPPING_ARTIFACTS/compile_commands.json" \
+        --toolchain-id "$MAPPING_ARTIFACTS/toolchain-id.txt" \
+        --sdk-root "$SDK_ROOT" \
+        --source-root "$ROOT" \
+        --source-snapshot "$MAPPING_SOURCE_SNAPSHOT" \
+        --output "$MAPPING_BUILD_PROVENANCE"
+    mv -f "$MAPPING_SOURCE_SNAPSHOT" "$MAPPING_ARTIFACTS/source-snapshot.json"
+    mv -f "$MAPPING_BUILD_PROVENANCE" "$MAPPING_ARTIFACTS/build-provenance.json"
+    trap - EXIT
+fi
 
 if [[ "${GAP9_BUILD_GVSOC_DMA_SMOKE:-0}" == "1" ]]; then
     echo "GAP9 GVSOC DMA smoke ELF: $ROOT/cslam-gap9-app/BUILD-gvsoc-dma/nano_c_slam_gvsoc_dma_smoke"
