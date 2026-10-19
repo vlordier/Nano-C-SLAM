@@ -20,6 +20,31 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model import
 
 
 class WorldSessionTests(unittest.TestCase):
+    def test_bridge_roles_distinguish_killable_cf1_odometry_path(self) -> None:
+        self.assertEqual(
+            world_process_role(
+                [
+                    "/opt/ros/bin/parameter_bridge",
+                    "--ros-args",
+                    "-r",
+                    "__node:=nano_c_slam_cf1_odom_bridge",
+                ]
+            ),
+            "cf1-odometry-bridge",
+        )
+        self.assertEqual(
+            world_process_role(
+                [
+                    "/opt/ros/bin/parameter_bridge",
+                    "--ros-args",
+                    "-r",
+                    "__node:=nano_c_slam_cf1_truth_odom_bridge",
+                ]
+            ),
+            "cf1-truth-odometry-bridge",
+        )
+        self.assertEqual(world_process_role(["gz", "sim", "-g"]), "gazebo-gui")
+
     def test_partition_lock_rejects_concurrent_launch_and_releases_on_close(
         self,
     ) -> None:
@@ -126,8 +151,9 @@ class WorldSessionTests(unittest.TestCase):
                     record_world_process_event(path, pid=server.pid, argv=server.cmd),
                     "gazebo-server",
                 )
-                self.assertIsNone(
-                    record_world_process_event(path, pid=gui.pid, argv=gui.cmd)
+                self.assertEqual(
+                    record_world_process_event(path, pid=gui.pid, argv=gui.cmd),
+                    "gazebo-gui",
                 )
                 self.assertIsNone(
                     record_world_process_event(path, pid=other.pid, argv=other.cmd)
@@ -145,7 +171,15 @@ class WorldSessionTests(unittest.TestCase):
                         "argv": ["gz", "sim", "world.sdf", "-r", "-s"],
                         "executable_path": None,
                         "observed_at_utc": manifest["processes"][0]["observed_at_utc"],
-                    }
+                    },
+                    {
+                        "role": "gazebo-gui",
+                        "pid": 1235,
+                        "launch_pid": manifest["launch_pid"],
+                        "argv": ["/opt/gz/bin/gz", "sim", "-g"],
+                        "executable_path": None,
+                        "observed_at_utc": manifest["processes"][1]["observed_at_utc"],
+                    },
                 ],
             )
             self.assertTrue(manifest["processes"][0]["observed_at_utc"].endswith("Z"))
@@ -212,8 +246,9 @@ class WorldSessionTests(unittest.TestCase):
             world_process_role(["ruby /opt/gz-macos/bin/gz sim", "world.sdf -r -s"]),
             "gazebo-server",
         )
-        self.assertIsNone(
-            world_process_role(["/usr/bin/ruby", "/opt/gz-macos/bin/gz", "sim", "-g"])
+        self.assertEqual(
+            world_process_role(["/usr/bin/ruby", "/opt/gz-macos/bin/gz", "sim", "-g"]),
+            "gazebo-gui",
         )
         self.assertEqual(
             world_process_role(["/opt/ros/bin/parameter_bridge", "--ros-args"]),

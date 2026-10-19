@@ -130,6 +130,10 @@ export ROS_DOMAIN_ID="${NANO_C_SLAM_ROS_DOMAIN_ID:-42}"
 export GZ_DISCOVERY_MULTICAST_IP="${GZ_DISCOVERY_MULTICAST_IP:-239.255.0.17}"
 export GZ_DISCOVERY_MSG_PORT="${GZ_DISCOVERY_MSG_PORT:-42327}"
 export GZ_DISCOVERY_SRV_PORT="${GZ_DISCOVERY_SRV_PORT:-42328}"
+failure_truth_odometry_argument=()
+if [[ "${NANO_C_SLAM_FAILURE_TRUTH_ODOMETRY:-0}" == "1" ]]; then
+    failure_truth_odometry_argument=("failure_truth_odometry:=true")
+fi
 
 printf 'Gazebo: %s\n' "$(command -v gz)"
 printf 'Gazebo partition: %s\n' "$GZ_PARTITION"
@@ -138,8 +142,10 @@ printf 'Gazebo GUI will join after the server starts.\n'
 
 if [[ -n "$nearfield_world" ]]; then
     uv run --no-project --python "$python311" ros2 launch \
-        nano_c_slam_gazebo crazyswarm2_gazebo.launch.py "world:=$nearfield_world"
+        nano_c_slam_gazebo crazyswarm2_gazebo.launch.py "world:=$nearfield_world" \
+        "${failure_truth_odometry_argument[@]}"
 else
     uv run --no-project --python "$python311" ros2 launch \
-        nano_c_slam_gazebo crazyswarm2_gazebo.launch.py
+        nano_c_slam_gazebo crazyswarm2_gazebo.launch.py \
+        "${failure_truth_odometry_argument[@]}"
 fi

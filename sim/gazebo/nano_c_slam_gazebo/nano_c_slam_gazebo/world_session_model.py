@@ -91,8 +91,15 @@ def world_process_role(argv: Sequence[str]) -> str | None:
     ):
         if "-s" in command or "--server" in command:
             return "gazebo-server"
+        if "-g" in command or "--gui" in command:
+            return "gazebo-gui"
         return None
     if "parameter_bridge" in executable_names:
+        command_text = " ".join(command)
+        if "__node:=nano_c_slam_cf1_odom_bridge" in command_text:
+            return "cf1-odometry-bridge"
+        if "__node:=nano_c_slam_cf1_truth_odom_bridge" in command_text:
+            return "cf1-truth-odometry-bridge"
         return "ros-gazebo-bridge"
     if "sensor_bridge" in executable_names:
         return "nano-sensor-bridge"
@@ -105,7 +112,10 @@ def record_world_process(
     """Atomically add an observed launch-owned process to the session manifest."""
     if role not in {
         "gazebo-server",
+        "gazebo-gui",
         "ros-gazebo-bridge",
+        "cf1-odometry-bridge",
+        "cf1-truth-odometry-bridge",
         "nano-sensor-bridge",
     }:
         raise ValueError("unsupported world-session process role")
