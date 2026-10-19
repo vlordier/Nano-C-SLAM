@@ -1,0 +1,1 @@
+ROS_DOMAIN_ID=55 GZ_PARTITION=nano_c_slam_trial_a_retry_20261019; source ROS Jazzy, gz-macOS, Crazyswarm2, and build/gazebo-ros-overlay.ZxGDQ3; run a 3 s rclpy graph probe; inspect ps -axo pid=,ppid=,comm=,command= excluding probe ancestry; check package prefixes and StampedPairwiseRanges fields.

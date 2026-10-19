@@ -1,0 +1,41 @@
+{
+  "captured_at_utc": "2026-10-19T06:12:23.963698Z",
+  "decision": "PASS; no conflicting Nano-C-SLAM session, isolated ROS domain, unique Gazebo partition",
+  "gazebo_partition": "nano_c_slam_trial_a_retry_20261019",
+  "graph_nodes": [
+    [
+      "nano_c_slam_trial_a_preflight",
+      "/"
+    ]
+  ],
+  "interface_has_source_stamps_and_ranges": true,
+  "nano_c_slam_conflicts": [],
+  "overlay_build_receipt": "build/gazebo-ros-overlay.ZxGDQ3/build-receipt.txt",
+  "overlay_build_receipt_sha256": "861023e20cc4902697c07ea41a0aa5e0ca3b2c79ecef117684714e19cb51b43b",
+  "overlay_prefixes": {
+    "nano_c_slam_gazebo": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.ZxGDQ3/install/nano_c_slam_gazebo",
+    "nano_c_slam_interfaces": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.ZxGDQ3/install/nano_c_slam_interfaces"
+  },
+  "processes": [
+    {
+      "comm": "gz",
+      "command": "sim -v 2 -s - gz sim -v 2 -s --seed 0 /Users/vincent/Work/durandal-gz-swarm-sim/runs/coordinated-flight-45-contract-replay-20261010/gazebo/mock-overlay-cflightmock2/runtime-world-simclock.sdf        ",
+      "family": "durandal-gz-swarm-sim",
+      "partition_relation": "unrelated worktree world; left running",
+      "pid": 38302,
+      "ppid": 36475
+    },
+    {
+      "comm": "gz",
+      "command": "sim -v 2 -g   gz sim -v 2 -g     ",
+      "family": "durandal-gz-swarm-sim",
+      "partition_relation": "unrelated worktree world; left running",
+      "pid": 39029,
+      "ppid": 39017
+    }
+  ],
+  "ros_domain_id": 55,
+  "ros_graph_isolated": true,
+  "source_revision": "808168a",
+  "source_status_clean_before_evidence_capture": true
+}
