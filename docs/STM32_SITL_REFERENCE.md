@@ -55,16 +55,44 @@ boundary, not a missing Python dependency. No firmware executable was
 produced, so no CrazySim runtime, sensor exchange, actuator exchange, or flight
 was reproduced.
 
-The Gazebo plugin source recognizes Harmonic, but a native plugin build did
-not complete with the installed Homebrew dependency set. Initial CMake package
-discovery did not find `gz-plugin2` until Homebrew prefixes were supplied. With
-Gazebo 8, `gz-plugin`, `gz-sim`, `gz-msgs`, `gz-transport`, `gz-cmake`, Qt 5,
-and their Homebrew prefixes provided, the plugin C++ source compiled, then
-linking failed with an undefined protobuf symbol using Abseil namespace
-`lts_20250512`. Adding the ROS Jazzy protobuf include path made the generated
-Gazebo message headers incompatible at compile time. Do not mask this ABI
-mismatch by allowing unresolved symbols; the plugin has not been loaded into
-Gazebo.
+The Gazebo plugin builds natively after passing the Gazebo and Qt Homebrew
+prefixes and putting the matching Abseil headers ahead of the stale global
+Homebrew include path:
+
+```sh
+cmake -S crazyflie-firmware/tools/crazyflie-simulation/simulator_files/gazebo/plugins/CrazySim \
+  -B /tmp/ncs-crazysim-gz-build -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_PREFIX_PATH='/opt/homebrew/opt/gz-plugin2;/opt/homebrew/opt/gz-sim8;/opt/homebrew/opt/gz-msgs10;/opt/homebrew/opt/gz-transport13;/opt/homebrew/opt/gz-cmake3;/opt/homebrew/opt/gz-common5;/opt/homebrew/opt/gz-math7;/opt/homebrew/opt/gz-utils2;/opt/homebrew/opt/qt@5' \
+  -DCMAKE_CXX_FLAGS='-I/opt/homebrew/opt/abseil/include'
+cmake --build /tmp/ncs-crazysim-gz-build --clean-first -j 8
+```
+
+The result is an arm64 Mach-O `libgz_crazysim_plugin.dylib`. Without the
+Abseil include override, the build reaches link and fails with an undefined
+protobuf symbol using Abseil namespace `lts_20250512`; this Homebrew setup has
+new protobuf/Abseil libraries plus a stale global Abseil header symlink. Adding
+the ROS Jazzy protobuf include path is the wrong fix and causes Gazebo message
+headers to fail compilation.
+
+The plugin was loaded by Gazebo Sim 8.15.0 in the pinned CrazySim world after
+rendering the model SDF from its template. The model was accepted by
+`/world/crazysim_default/create`, and live `/cf_0/imu` and `/cf_0/odom` messages
+were observed. This validates plugin loading and sensor-topic production only;
+no firmware executable was running and no actuator-driven flight occurred.
+Gazebo's default DART plugin has a stale Homebrew dependency on
+`libdart-collision-bullet.6.19.dylib`, while 6.20.1 is installed. Launching
+with the installed `gz-physics-bullet-plugin` avoided that DART load error and
+allowed the model to fall and contact the ground, proving a physics backend
+was active for the later firmware probe.
+
+The reference plugin also has a shutdown/reconnect defect. Its destructor
+joins threads whose `recvfrom()` calls can block indefinitely, but does not
+close or shut down their sockets to wake them. One Ctrl-C test server exited
+only after a one-byte `0xF3` datagram was sent to port 19950; a later run had
+to be force-killed. Separately, after `socketInit` becomes true the receiver
+stores one firmware remote address and never accepts a new handshake until
+the plugin process restarts. Add bounded receives or explicit socket wakeup,
+reconnect handling, and regression tests before relying on repeated runs.
 
 ## What the source proves, and what it does not
 
@@ -76,18 +104,43 @@ firmware. This is the right causal architecture to test against the current
 Gazebo Sim vehicle; a ROS `/cmd_vel` controller is not equivalent.
 
 The source-level interface is promising for keeping Gazebo Harmonic on macOS
-and building the SITL firmware in a Linux environment, but cross-host UDP,
-plugin ABI compatibility, sensor units/clocks, and the one-drone closed loop
-remain untested. More importantly, the referenced firmware's app is upstream
+and building the SITL firmware in a Linux environment. The plugin build and
+load are now proven locally, while cross-host UDP, physics backend health,
+sensor units/clocks, actuator causality, and the one-drone closed loop remain
+untested. More importantly, the referenced firmware's app is upstream
 Crazyflie SITL firmware, not Nano-C-SLAM. Nano's own task graph and hardware
 seams still need to be ported behind explicit simulated-device adapters.
 
 ## Reproduction state
 
-**Not reproduced.** This record is an adversarial compatibility probe, not
-completion of bead `ncs-fea.5.2`. That bead remains open until a clean supported
-Linux build produces the SITL executable, the Gazebo plugin loads, a one-drone
-sensor/motor loop flies and lands, and logs/hash receipts are archived. The
-next bounded experiment is to provision or select a Linux build host without
-changing the native Gazebo installation, then use the pinned reference before
-porting any Nano app source.
+**Partially reproduced; reference flight failed.** A Lima Ubuntu 24.04.5
+ARM64 VM was created with 4 CPUs, 6 GiB RAM, and a 25 GiB disk using
+`--containerd=none`; only the firmware build/runtime uses Linux. Gazebo remains
+native on macOS. The pinned reference firmware was built there with:
+
+```sh
+cmake -S /tmp/ncs-crazysim/crazyflie-firmware/sitl_make \
+  -B /tmp/ncs-crazysim/build -DCMAKE_BUILD_TYPE=Release
+cmake --build /tmp/ncs-crazysim/build --target cf2 -j 4
+```
+
+This produced an ELF AArch64 `cf2` binary. The build exits successfully but
+emits upstream warnings, including implicit EEPROM declarations, a
+`CONTROLLER` macro redefinition, and `getMotorRatio()` reaching the end of a
+non-void function.
+
+With the Gazebo plugin and model running, the firmware logged `Connection
+established with gazebo`, `Software-in-the-Loop Simulator is up and running!`,
+and `Self test passed [OK]` after the plugin answered its UDP handshake. That
+proves a guest-to-host request and host-to-guest reply. A high-level takeoff
+CRTP packet sent through the plugin did not produce flight: all four
+`/cf_0/command/motor_speed` values remained zero and odometry showed the model
+fall from its 0.5 m spawn to about 0.015 m on the ground. This is a failed
+reference flight, not a partial success.
+
+Bead `ncs-fea.5.2` remains open until the reference itself flies and lands,
+with logs and hashes archived. First determine why it remains at
+`Wait for sensor calibration` and emits no motor output despite a successful
+handshake and live Gazebo sensor topics. Then port Nano's owned tasks and
+device seams; the reference app is upstream Crazyflie firmware, not
+Nano-C-SLAM.
