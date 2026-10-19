@@ -187,10 +187,100 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
         pose_error = report["pose_error"]
         self.assertEqual(pose_error["xy_rmse_m"], 0.0)
         self.assertAlmostEqual(pose_error["yaw_max_rad"], 0.0, places=8)
+        self.assertEqual(pose_error["per_pose"][0]["pose_id"], 0)
+        self.assertAlmostEqual(pose_error["per_pose"][1]["yaw_error_rad"], 0.0)
+        self.assertEqual(pose_error["source_xy_bounds"]["span_x_m"], 1.0)
+        self.assertEqual(pose_error["target_xy_bounds"]["span_x_m"], 1.0)
         map_metrics = report["target_map"]["sdf_surface_distance_m"]
         self.assertGreaterEqual(map_metrics["within_0_05m_fraction"], 0.0)
         self.assertLess(map_metrics["max"], 1e-6)
+        self.assertAlmostEqual(report["target_map"]["xy_bounds"]["min_x_m"], 1.4)
+        self.assertFalse(report["target_map"]["capacity_reached"])
         self.assertEqual(report["geometry"]["source_sdf_sha256"], self._sha_sdf())
+
+    def test_yaw_error_uses_shortest_arc_across_wrap_boundary(self) -> None:
+        log = _target_log().replace(
+            f"z_bits={_float_bits(0.1)}", f"z_bits={_float_bits(-6.0)}"
+        )
+        self.log_path.write_text(log, encoding="utf-8")
+        target = json.loads(self.target_path.read_text())
+        target["target_optimized_poses"][1]["z_m"] = -6.0
+        target["sha256"]["gvsoc_log"] = self._sha(self.log_path)
+        self.target_path.write_text(json.dumps(target), encoding="utf-8")
+
+        report = self._analyze()
+
+        self.assertAlmostEqual(
+            report["pose_error"]["per_pose"][1]["yaw_error_rad"],
+            0.183185307,
+            places=5,
+        )
+
+    def test_translation_is_reported_instead_of_fitted_away(self) -> None:
+        log = _target_log()
+        for original, translated in ((0.0, 0.25), (1.0, 1.25)):
+            log = log.replace(
+                f"x_bits={_float_bits(original)}",
+                f"x_bits={_float_bits(translated)}",
+                1,
+            )
+        self.log_path.write_text(log, encoding="utf-8")
+        target = json.loads(self.target_path.read_text())
+        for pose in target["target_optimized_poses"]:
+            pose["x_m"] += 0.25
+        target["sha256"]["gvsoc_log"] = self._sha(self.log_path)
+        self.target_path.write_text(json.dumps(target), encoding="utf-8")
+
+        report = self._analyze()
+
+        self.assertAlmostEqual(report["pose_error"]["xy_rmse_m"], 0.25, places=6)
+        self.assertAlmostEqual(report["pose_error"]["xy_max_m"], 0.25, places=6)
+        self.assertAlmostEqual(
+            report["pose_error"]["per_pose"][0]["xy_error_m"], 0.25, places=6
+        )
+        self.assertAlmostEqual(
+            report["pose_error"]["target_to_source_path_length_ratio"], 1.0
+        )
+
+    def test_target_map_at_firmware_capacity_is_not_claimed_complete(self) -> None:
+        lines = _target_log().splitlines()
+        points = [
+            f"NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id={index} "
+            f"x_bits={_float_bits(1.4)} y_bits={_float_bits(0.0)} finite=1"
+            for index in range(700)
+        ]
+        lines = [line for line in lines if ":map_point " not in line]
+        lines = [
+            line.replace("map_dump_start count=2", "map_dump_start count=700").replace(
+                "map_dump_done count=2 finite=2",
+                "map_dump_done count=700 finite=700",
+            )
+            for line in lines
+        ]
+        done_index = next(i for i, line in enumerate(lines) if ":map_dump_done" in line)
+        lines[done_index:done_index] = points
+        self.log_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        target = json.loads(self.target_path.read_text())
+        target["target_projected_map_points"] = [
+            {"point_id": index, "x_m": 1.399999976158142, "y_m": 0.0}
+            for index in range(700)
+        ]
+        target["sha256"]["gvsoc_log"] = self._sha(self.log_path)
+        self.target_path.write_text(json.dumps(target), encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "SIZE_POINTS capacity"):
+            self._analyze()
+
+    def test_nonfinite_source_pose_is_rejected_before_metric_calculation(self) -> None:
+        run = json.loads(self.run_path.read_text())
+        run["capture_report"]["input_samples"][1] = "1 2 nan 0 0.1 1000 1000 1000 1000"
+        self.run_path.write_text(json.dumps(run), encoding="utf-8")
+        target = json.loads(self.target_path.read_text())
+        target["gazebo_source"]["run_bundle_sha256"] = self._sha(self.run_path)
+        self.target_path.write_text(json.dumps(target), encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "nonfinite coordinates"):
+            self._analyze()
 
     def test_mixed_run_or_world_identity_is_rejected(self) -> None:
         session = json.loads(self.session_path.read_text())

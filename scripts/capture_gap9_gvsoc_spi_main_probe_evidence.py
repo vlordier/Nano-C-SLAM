@@ -32,6 +32,8 @@ TARGET_MARKER = (
     "NANO_C_SLAM_GVSOC_SPI_MAIN:run_ok packets=2 pose_decoded=1 "
     "pose_inserted=1 scans_decoded=1 scans_registered=1 poses=1 scan_origins=1"
 )
+# Keep synchronized with cslam-gap9-app/icp/icp.h:SIZE_POINTS.
+TARGET_MAP_CAPACITY = 700
 SPI_DIAGNOSTICS_PATTERN = re.compile(
     r"^NANO_C_SLAM_SPI:stats rx=(\d+) malformed=(\d+) unknown=(\d+) "
     r"frames=([0-9,]+) decode_ok=([0-9,]+) decode_error=([0-9,]+) "
@@ -174,7 +176,14 @@ def _parse_target_map_points(log: str) -> list[dict[str, float | int]]:
         raise ValueError("target map dump is missing or has an unexpected range gate")
     expected_count = int(start[0][0])
     expected_done = [(str(expected_count), str(expected_count))]
-    if not 0 < expected_count <= 512 or done != expected_done:
+    # pcl_extract_scan stores at most SIZE_POINTS (700). A full buffer is
+    # ambiguous because the C API does not report whether additional valid
+    # measurements were omitted after reaching capacity.
+    if expected_count >= TARGET_MAP_CAPACITY:
+        raise ValueError(
+            "target map reached SIZE_POINTS capacity; completeness is unknown"
+        )
+    if not 0 < expected_count < TARGET_MAP_CAPACITY or done != expected_done:
         raise ValueError("target map dump is incomplete or has an invalid count")
     if len(records) != expected_count:
         raise ValueError("target map dump does not contain every point")

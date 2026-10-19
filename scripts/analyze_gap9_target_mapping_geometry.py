@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import cast
 
 from scripts.capture_gap9_gvsoc_spi_main_probe_evidence import (
+    TARGET_MAP_CAPACITY,
     _parse_target_map_points,
     _parse_target_poses,
 )
@@ -46,6 +47,22 @@ def _point_to_segment_distance(
         min(1.0, ((point[0] - ax) * dx + (point[1] - ay) * dy) / denominator),
     )
     return math.hypot(point[0] - ax - fraction * dx, point[1] - ay - fraction * dy)
+
+
+def _axis_aligned_bounds(
+    points: list[tuple[float, float]],
+) -> dict[str, float]:
+    if not points:
+        raise ValueError("cannot measure bounds of an empty point set")
+    xs, ys = zip(*points, strict=True)
+    return {
+        "min_x_m": min(xs),
+        "max_x_m": max(xs),
+        "min_y_m": min(ys),
+        "max_y_m": max(ys),
+        "span_x_m": max(xs) - min(xs),
+        "span_y_m": max(ys) - min(ys),
+    }
 
 
 def _sdf_segments(path: Path) -> dict[str, tuple[tuple[float, float], ...]]:
@@ -242,6 +259,10 @@ def analyze_mapping(
         raise ValueError("target pose dump differs from the validated target report")
     if target.get("target_projected_map_points") != points:
         raise ValueError("target point dump differs from the validated target report")
+    if len(points) >= TARGET_MAP_CAPACITY:
+        raise ValueError(
+            "target map reached SIZE_POINTS capacity; completeness is unknown"
+        )
 
     pose_errors = [
         (
@@ -254,6 +275,14 @@ def analyze_mapping(
     yaw_errors = [error[1] for error in pose_errors]
     trajectory = [(float(p["x_m"]), float(p["y_m"])) for p in poses]
     source_path = [(pose[0], pose[1]) for pose in source_poses]
+    per_pose_errors = [
+        {
+            "pose_id": index,
+            "xy_error_m": xy_error,
+            "yaw_error_rad": yaw_error,
+        }
+        for index, (xy_error, yaw_error) in enumerate(pose_errors)
+    ]
 
     def path_length(path: list[tuple[float, float]]) -> float:
         return sum(
@@ -286,7 +315,8 @@ def analyze_mapping(
         "world_session_id": session["session_id"],
         "coordinate_convention": (
             "Gazebo world-frame XY meters and yaw radians; GAP9 z field is planar yaw. "
-            "Trajectory errors compare same-frame values without fitted alignment."
+            "Trajectory errors compare same-frame values without fitted alignment; "
+            "the live bridge initializes this frame from Gazebo odometry."
         ),
         "target_pose_count": len(poses),
         "pose_error": {
@@ -294,6 +324,9 @@ def analyze_mapping(
             "xy_max_m": max(distances_xy),
             "yaw_rmse_rad": math.sqrt(sum(v * v for v in yaw_errors) / len(poses)),
             "yaw_max_rad": max(yaw_errors),
+            "per_pose": per_pose_errors,
+            "source_xy_bounds": _axis_aligned_bounds(source_path),
+            "target_xy_bounds": _axis_aligned_bounds(trajectory),
             "source_path_length_m": source_length,
             "target_path_length_m": target_length,
             "target_to_source_path_length_ratio": target_length / source_length
@@ -302,6 +335,9 @@ def analyze_mapping(
         },
         "target_map": {
             "point_count": len(map_points),
+            "xy_bounds": _axis_aligned_bounds(map_points),
+            "capacity_points": TARGET_MAP_CAPACITY,
+            "capacity_reached": False,
             "sdf_surface_distance_m": {
                 "median": percentile(sorted_distances, 0.5),
                 "p95": percentile(sorted_distances, 0.95),

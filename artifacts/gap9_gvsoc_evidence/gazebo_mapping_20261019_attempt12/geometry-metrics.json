@@ -3,19 +3,347 @@
   "status": "measured-no-acceptance-threshold",
   "run_id": "8b86395f-d6cb-4b0c-b758-b7fb37e9550e",
   "world_session_id": "7817c1d5-ee98-4b09-84a2-bd80e2f067b1",
-  "coordinate_convention": "Gazebo world-frame XY meters and yaw radians; GAP9 z field is planar yaw. Trajectory errors compare same-frame values without fitted alignment.",
+  "coordinate_convention": "Gazebo world-frame XY meters and yaw radians; GAP9 z field is planar yaw. Trajectory errors compare same-frame values without fitted alignment; the live bridge initializes this frame from Gazebo odometry.",
   "target_pose_count": 60,
   "pose_error": {
     "xy_rmse_m": 0.02009006604827085,
     "xy_max_m": 0.03814866979173607,
     "yaw_rmse_rad": 0.032191328884025885,
     "yaw_max_rad": 0.04296291538716002,
+    "per_pose": [
+      {
+        "pose_id": 0,
+        "xy_error_m": 3.809221815888508e-05,
+        "yaw_error_rad": 4.292259109206498e-05
+      },
+      {
+        "pose_id": 1,
+        "xy_error_m": 0.0019056972206951575,
+        "yaw_error_rad": 0.00205047701546901
+      },
+      {
+        "pose_id": 2,
+        "xy_error_m": 0.003846671390396872,
+        "yaw_error_rad": 0.004146423188575277
+      },
+      {
+        "pose_id": 3,
+        "xy_error_m": 0.0057732128347380155,
+        "yaw_error_rad": 0.006250396235014222
+      },
+      {
+        "pose_id": 4,
+        "xy_error_m": 0.007692741381456171,
+        "yaw_error_rad": 0.008362020965344552
+      },
+      {
+        "pose_id": 5,
+        "xy_error_m": 0.009607799507199366,
+        "yaw_error_rad": 0.01048053420363848
+      },
+      {
+        "pose_id": 6,
+        "xy_error_m": 0.011517923253651708,
+        "yaw_error_rad": 0.012605566164329396
+      },
+      {
+        "pose_id": 7,
+        "xy_error_m": 0.013423848828372657,
+        "yaw_error_rad": 0.014736763219751925
+      },
+      {
+        "pose_id": 8,
+        "xy_error_m": 0.015326683984623843,
+        "yaw_error_rad": 0.016873728536168642
+      },
+      {
+        "pose_id": 9,
+        "xy_error_m": 0.017226781802179233,
+        "yaw_error_rad": 0.019016111382384793
+      },
+      {
+        "pose_id": 10,
+        "xy_error_m": 0.019124752951632618,
+        "yaw_error_rad": 0.02116357879945374
+      },
+      {
+        "pose_id": 11,
+        "xy_error_m": 0.02102096488634715,
+        "yaw_error_rad": 0.023315814892463926
+      },
+      {
+        "pose_id": 12,
+        "xy_error_m": 0.022915808214229238,
+        "yaw_error_rad": 0.025472526679398477
+      },
+      {
+        "pose_id": 13,
+        "xy_error_m": 0.024809379940878607,
+        "yaw_error_rad": 0.02763345669017392
+      },
+      {
+        "pose_id": 14,
+        "xy_error_m": 0.02670238837323138,
+        "yaw_error_rad": 0.029798348996930457
+      },
+      {
+        "pose_id": 15,
+        "xy_error_m": 0.028594960268872503,
+        "yaw_error_rad": 0.031966933458378755
+      },
+      {
+        "pose_id": 16,
+        "xy_error_m": 0.03048721755801979,
+        "yaw_error_rad": 0.03413900136163317
+      },
+      {
+        "pose_id": 17,
+        "xy_error_m": 0.03237905282992369,
+        "yaw_error_rad": 0.036314355127160525
+      },
+      {
+        "pose_id": 18,
+        "xy_error_m": 0.03427103047753977,
+        "yaw_error_rad": 0.03849279249598947
+      },
+      {
+        "pose_id": 19,
+        "xy_error_m": 0.03616311629613663,
+        "yaw_error_rad": 0.04067413179545554
+      },
+      {
+        "pose_id": 20,
+        "xy_error_m": 0.03814866979173607,
+        "yaw_error_rad": 0.04296291538716002
+      },
+      {
+        "pose_id": 21,
+        "xy_error_m": 0.03610930570378626,
+        "yaw_error_rad": 0.042297158014371394
+      },
+      {
+        "pose_id": 22,
+        "xy_error_m": 0.034087509150805426,
+        "yaw_error_rad": 0.04163246455358083
+      },
+      {
+        "pose_id": 23,
+        "xy_error_m": 0.032086485378929455,
+        "yaw_error_rad": 0.04096874311486287
+      },
+      {
+        "pose_id": 24,
+        "xy_error_m": 0.03011328072563562,
+        "yaw_error_rad": 0.040302669749670894
+      },
+      {
+        "pose_id": 25,
+        "xy_error_m": 0.028163610538296097,
+        "yaw_error_rad": 0.03963855654148407
+      },
+      {
+        "pose_id": 26,
+        "xy_error_m": 0.02622149920597178,
+        "yaw_error_rad": 0.03899814712091665
+      },
+      {
+        "pose_id": 27,
+        "xy_error_m": 0.024310742738218597,
+        "yaw_error_rad": 0.038387448526330914
+      },
+      {
+        "pose_id": 28,
+        "xy_error_m": 0.02245582551761196,
+        "yaw_error_rad": 0.03780424526216697
+      },
+      {
+        "pose_id": 29,
+        "xy_error_m": 0.02067323697571766,
+        "yaw_error_rad": 0.03724688959003908
+      },
+      {
+        "pose_id": 30,
+        "xy_error_m": 0.01898500171127947,
+        "yaw_error_rad": 0.03671397617319405
+      },
+      {
+        "pose_id": 31,
+        "xy_error_m": 0.017420361669726908,
+        "yaw_error_rad": 0.03620403836492647
+      },
+      {
+        "pose_id": 32,
+        "xy_error_m": 0.016016420162528057,
+        "yaw_error_rad": 0.035715810040503726
+      },
+      {
+        "pose_id": 33,
+        "xy_error_m": 0.01481968487690947,
+        "yaw_error_rad": 0.03524809784735217
+      },
+      {
+        "pose_id": 34,
+        "xy_error_m": 0.012562954709618206,
+        "yaw_error_rad": 0.035049539893585724
+      },
+      {
+        "pose_id": 35,
+        "xy_error_m": 0.012000668943382723,
+        "yaw_error_rad": 0.03485635234374396
+      },
+      {
+        "pose_id": 36,
+        "xy_error_m": 0.011848133461745465,
+        "yaw_error_rad": 0.034662217507471116
+      },
+      {
+        "pose_id": 37,
+        "xy_error_m": 0.012070712347605476,
+        "yaw_error_rad": 0.03444692717722431
+      },
+      {
+        "pose_id": 38,
+        "xy_error_m": 0.012629350749205192,
+        "yaw_error_rad": 0.03420471680419279
+      },
+      {
+        "pose_id": 39,
+        "xy_error_m": 0.0134883787650983,
+        "yaw_error_rad": 0.03393746846626611
+      },
+      {
+        "pose_id": 40,
+        "xy_error_m": 0.014661878994914853,
+        "yaw_error_rad": 0.03361341739266388
+      },
+      {
+        "pose_id": 41,
+        "xy_error_m": 0.014661875305828681,
+        "yaw_error_rad": 0.03361341786526495
+      },
+      {
+        "pose_id": 42,
+        "xy_error_m": 0.014661882793435216,
+        "yaw_error_rad": 0.03361341607552326
+      },
+      {
+        "pose_id": 43,
+        "xy_error_m": 0.01466188475599167,
+        "yaw_error_rad": 0.033613419618787166
+      },
+      {
+        "pose_id": 44,
+        "xy_error_m": 0.014661862619433518,
+        "yaw_error_rad": 0.0336134165411166
+      },
+      {
+        "pose_id": 45,
+        "xy_error_m": 0.014661901268700284,
+        "yaw_error_rad": 0.03361341893472325
+      },
+      {
+        "pose_id": 46,
+        "xy_error_m": 0.014661891529147781,
+        "yaw_error_rad": 0.03361341743925239
+      },
+      {
+        "pose_id": 47,
+        "xy_error_m": 0.014661878895202478,
+        "yaw_error_rad": 0.03361341896241932
+      },
+      {
+        "pose_id": 48,
+        "xy_error_m": 0.014661871338100783,
+        "yaw_error_rad": 0.03361341954559638
+      },
+      {
+        "pose_id": 49,
+        "xy_error_m": 0.014661878125339266,
+        "yaw_error_rad": 0.033613418356929436
+      },
+      {
+        "pose_id": 50,
+        "xy_error_m": 0.014661867844428429,
+        "yaw_error_rad": 0.03361341755534841
+      },
+      {
+        "pose_id": 51,
+        "xy_error_m": 0.014661874807572861,
+        "yaw_error_rad": 0.03361341467053247
+      },
+      {
+        "pose_id": 52,
+        "xy_error_m": 0.01466187405987265,
+        "yaw_error_rad": 0.03361341552706332
+      },
+      {
+        "pose_id": 53,
+        "xy_error_m": 0.014661876941460079,
+        "yaw_error_rad": 0.033613416632981785
+      },
+      {
+        "pose_id": 54,
+        "xy_error_m": 0.014661888243208755,
+        "yaw_error_rad": 0.033613416309270505
+      },
+      {
+        "pose_id": 55,
+        "xy_error_m": 0.014661886090145184,
+        "yaw_error_rad": 0.03361341704802445
+      },
+      {
+        "pose_id": 56,
+        "xy_error_m": 0.01466187163223664,
+        "yaw_error_rad": 0.033613417141153956
+      },
+      {
+        "pose_id": 57,
+        "xy_error_m": 0.014661880460949446,
+        "yaw_error_rad": 0.033613417936316115
+      },
+      {
+        "pose_id": 58,
+        "xy_error_m": 0.014661867730514009,
+        "yaw_error_rad": 0.033613417596663364
+      },
+      {
+        "pose_id": 59,
+        "xy_error_m": 0.014661886591220629,
+        "yaw_error_rad": 0.03361341451059152
+      }
+    ],
+    "source_xy_bounds": {
+      "min_x_m": -0.5017534163096938,
+      "max_x_m": -0.2972300715726959,
+      "min_y_m": -0.5005167801258923,
+      "max_y_m": -0.2724738607640949,
+      "span_x_m": 0.20452334473699796,
+      "span_y_m": 0.22804291936179738
+    },
+    "target_xy_bounds": {
+      "min_x_m": -0.5035613775253296,
+      "max_x_m": -0.30565664172172546,
+      "min_y_m": -0.5106294751167297,
+      "max_y_m": -0.28408733010292053,
+      "span_x_m": 0.19790473580360413,
+      "span_y_m": 0.2265421450138092
+    },
     "source_path_length_m": 0.633497816077085,
     "target_path_length_m": 0.6108349353630436,
     "target_to_source_path_length_ratio": 0.9642257950400198
   },
   "target_map": {
     "point_count": 191,
+    "xy_bounds": {
+      "min_x_m": -1.4194918870925903,
+      "max_x_m": 0.7758684754371643,
+      "min_y_m": -1.4324692487716675,
+      "max_y_m": 0.914908766746521,
+      "span_x_m": 2.1953603625297546,
+      "span_y_m": 2.3473780155181885
+    },
+    "capacity_points": 700,
+    "capacity_reached": false,
     "sdf_surface_distance_m": {
       "median": 0.015359139442443936,
       "p95": 0.049922823905944824,
