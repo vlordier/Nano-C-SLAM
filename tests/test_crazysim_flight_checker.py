@@ -79,6 +79,42 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
             1.1,
         )
 
+    def test_protobuf_text_timestamps_default_omitted_nanoseconds_to_zero(self) -> None:
+        odometry = """header {
+  stamp {
+    sec: 42
+  }
+}
+pose {
+  position {
+    z: 2.5
+  }
+}
+"""
+        imu = """header {
+  stamp {
+    sec: 42
+  }
+}
+linear_acceleration {
+  z: 9.81
+}
+"""
+        world_stats = """sim_time {
+  sec: 42
+}
+real_time {
+  sec: 42
+}
+iterations: 42000
+real_time_factor: 1.0
+"""
+
+        self.assertEqual(parse_odometry(odometry)[0].time_s, 42.0)
+        self.assertEqual(parse_imu_timestamps(imu), [42.0])
+        self.assertEqual(parse_world_stats(world_stats)[0].sim_time_s, 42.0)
+        self.assertEqual(parse_world_stats(world_stats)[0].real_time_s, 42.0)
+
     def test_realistic_takeoff_hover_land_and_disconnected_control_pass(self) -> None:
         capture = passing_capture()
         summary, errors = validate_capture(

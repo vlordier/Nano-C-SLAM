@@ -1,0 +1,18 @@
+# Isolated Gazebo 8.14 positive flight recapture, 2026-10-20.
+# Gazebo server and sampler must share both GZ_PARTITION and GZ_IP.
+# GZ_PARTITION=ncs-flight-debug-20261020
+# GZ_IP=127.0.0.1
+# Firmware: Lima ncs-sitl /home/vincent.guest/ncs-cf-build-final-diag/cf2
+
+DYLD_LIBRARY_PATH=/Users/vincent/Work/gz-macOS/ws/install/lib \
+GZ_PARTITION=ncs-flight-debug-20261020 GZ_IP=127.0.0.1 \
+  /tmp/ncs-crazysim-flight-sampler-diagnostic 14 capture
+
+uv run --locked python scripts/crazysim_bridge_command.py takeoff \
+  --target-height-m 2.615 --duration-s 5 --bridge-port 20850 --timeout 4
+uv run --locked python scripts/crazysim_bridge_command.py land \
+  --target-height-m 2.015 --duration-s 3 --bridge-port 20850 --timeout 4
+
+# Both bridge commands returned firmware_ack with firmware_result=0.
+# The firmware process was interrupted after the capture; exit status was 130.
+# This is diagnostic evidence only; no disconnected control was captured.

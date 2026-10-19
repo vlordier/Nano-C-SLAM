@@ -31,7 +31,7 @@ MIN_WORLD_STATS_COVERAGE = 0.95
 
 _NUMBER = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?|[-+]?(?:nan|inf)"
 _FIELD = re.compile(rf"\b([xyzw]):\s*({_NUMBER})", re.IGNORECASE)
-_STAMP = re.compile(r"stamp\s*\{\s*sec:\s*(-?\d+)\s+nsec:\s*(-?\d+)", re.DOTALL)
+_STAMP = re.compile(r"stamp\s*\{\s*sec:\s*(-?\d+)(?:\s+nsec:\s*(-?\d+))?", re.DOTALL)
 _HEADER_START = re.compile(r"(?m)^header\s*\{")
 
 
@@ -120,6 +120,12 @@ def _vector(message: str, field: str, axes: str) -> tuple[float, ...]:
     return tuple(values.get(axis, 0.0) for axis in axes)
 
 
+def _timestamp_seconds(match: re.Match[str]) -> float:
+    seconds = int(match.group(1))
+    nanoseconds = int(match.group(2) or 0)
+    return seconds + nanoseconds / 1_000_000_000
+
+
 def parse_odometry(text: str) -> list[OdometrySample]:
     """Read protobuf text or JSON output for gz.msgs.Odometry."""
     samples: list[OdometrySample] = []
@@ -154,14 +160,14 @@ def parse_odometry(text: str) -> list[OdometrySample]:
         stamp = _STAMP.search(message)
         if stamp is None:
             continue
-        sec, nsec = (int(value) for value in stamp.groups())
+        timestamp = _timestamp_seconds(stamp)
         position = _vector(message, "position", "xyz")
         orientation = _vector(message, "orientation", "xyzw")
         linear = _vector(message, "linear", "xyz")
         angular = _vector(message, "angular", "xyz")
         samples.append(
             OdometrySample(
-                time_s=sec + nsec / 1_000_000_000,
+                time_s=timestamp,
                 position=(position[0], position[1], position[2]),
                 orientation=(
                     orientation[0],
@@ -190,8 +196,7 @@ def parse_imu_timestamps(text: str) -> list[float]:
         stamp = _STAMP.search(message)
         if stamp is None:
             continue
-        sec, nsec = (int(value) for value in stamp.groups())
-        timestamps.append(sec + nsec / 1_000_000_000)
+        timestamps.append(_timestamp_seconds(stamp))
     return timestamps
 
 
@@ -267,15 +272,15 @@ def parse_world_stats(text: str) -> list[WorldStatsSample]:
         return samples
     number = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?|[-+]?(?:nan|inf)"
     pattern = re.compile(
-        rf"sim_time\s*\{{\s*sec:\s*(-?\d+)\s*nsec:\s*(-?\d+)\s*\}}\s*"
-        rf"real_time\s*\{{\s*sec:\s*(-?\d+)\s*nsec:\s*(-?\d+)\s*\}}\s*"
+        rf"sim_time\s*\{{\s*sec:\s*(-?\d+)(?:\s+nsec:\s*(-?\d+))?\s*\}}\s*"
+        rf"real_time\s*\{{\s*sec:\s*(-?\d+)(?:\s+nsec:\s*(-?\d+))?\s*\}}\s*"
         rf"iterations:\s*(\d+)\s*real_time_factor:\s*({number})",
         re.IGNORECASE,
     )
     samples: list[WorldStatsSample] = []
     for match in pattern.finditer(text):
         sim_sec, sim_nsec, real_sec, real_nsec = (
-            int(value) for value in match.groups()[:4]
+            int(value or 0) for value in match.groups()[:4]
         )
         samples.append(
             WorldStatsSample(

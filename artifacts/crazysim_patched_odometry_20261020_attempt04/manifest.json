@@ -1,0 +1,72 @@
+{
+  "attempt": "crazysim patched odometry positive flight capture attempt 04",
+  "date": "2026-10-20",
+  "sources": {
+    "firmware_commit": "f42b903610e8b4ea1796ba6eba4b1c92cde70766",
+    "firmware_binary_sha256": "8d0cc0505f72282eff5f2d57df4e5671cd92cd31354d71d79efc094a4d38dc9c",
+    "crazysim_commit": "1e6d1262bccf20beb90be1db524ac5151973b11b",
+    "gz_sim_patch_commit": "b25695048c8da5e9e185acdeb6b2f3e43c87bb22",
+    "sampler_source": "scripts/crazysim_flight_sampler.cc",
+    "sampler_source_sha256": "2f44d1fb62076bc262d90531cf7eacbd7a4760fb0b734152d1ed621cc6a4b948",
+    "sampler_binary_sha256": "02161bada836a93b8bf2ccc09078629775d60d6c191ffed48cf4b3d2ffa66368"
+  },
+  "runtime": {
+    "gazebo_sim_version": "8.14.0",
+    "gazebo_executable": "/Users/vincent/Work/gz-macOS/ws/install/bin/gz",
+    "physics_engine": "gz-physics-bullet-featherstone-plugin",
+    "partition": "ncs-flight-debug-20261020",
+    "gazebo_gz_ip": "127.0.0.1",
+    "sampler_gz_ip": "127.0.0.1",
+    "firmware_process_exit_code": 130,
+    "gazebo_process_exit_code": 0,
+    "firmware_and_plugin_logs_persisted": false
+  },
+  "capture": {
+    "duration_s": 14,
+    "format": "Gazebo Transport protobuf text",
+    "artifact_text_normalization": "Trailing whitespace was trimmed from the Protobuf DebugString separator marker; redundant blank lines at file ends were removed. Structured fields and values are unchanged.",
+    "sampler_callback_counts": {
+      "odometry": 1193,
+      "imu": 648,
+      "motor_messages": 670,
+      "world_stats": 27
+    },
+    "parsed_counts": {
+      "odometry": 1193,
+      "imu": 646,
+      "motor_components": 2680,
+      "world_stats": 27
+    },
+    "z_start_m": 2.014993906,
+    "z_min_m": 2.013708830,
+    "z_max_m": 3.070119619,
+    "z_end_m": 2.014994144,
+    "hover_target_m": 2.615,
+    "longest_stable_hover_s": 0.47,
+    "max_motor_speed_rad_s": 2774.984,
+    "aggregate_real_time_factor": 0.998
+  },
+  "commands": {
+    "takeoff": {
+      "event": "firmware_ack",
+      "firmware_result": 0,
+      "target_height_m": 2.615,
+      "duration_s": 5
+    },
+    "land": {
+      "event": "firmware_ack",
+      "firmware_result": 0,
+      "target_height_m": 2.015,
+      "duration_s": 3
+    }
+  },
+  "acceptance": {
+    "sampler_all_topics_received": true,
+    "odometry_finite_and_parsed": true,
+    "takeoff_rise_observed": true,
+    "returned_to_platform_height": true,
+    "stable_flight_gate_passed": false,
+    "strict_paired_checker_run": false,
+    "reason": "Hover lasted only 0.295 seconds, and this capture has no persisted firmware/plugin logs or paired disconnected-actuator control. The firmware session was stopped by interrupt (130)."
+  }
+}

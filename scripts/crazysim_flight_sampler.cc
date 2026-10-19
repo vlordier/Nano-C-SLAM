@@ -9,12 +9,15 @@
 #include <mutex>
 #include <string>
 #include <thread>
+#include <utility>
+#include <vector>
 
 #include <gz/msgs/actuators.pb.h>
 #include <gz/msgs/imu.pb.h>
 #include <gz/msgs/odometry.pb.h>
 #include <gz/msgs/world_stats.pb.h>
 #include <gz/transport/Node.hh>
+#include <gz/transport/Publisher.hh>
 #include <gz/transport/SubscribeOptions.hh>
 
 namespace {
@@ -50,6 +53,35 @@ bool prepareOutput(const std::filesystem::path &path, std::ofstream &output) {
         return false;
     }
     return true;
+}
+
+template <typename Message>
+bool subscribeAndReport(gz::transport::Node &node, const std::string &topic,
+                        const std::string &label,
+                        std::function<void(const Message &)> callback,
+                        const gz::transport::SubscribeOptions &options) {
+    const bool subscribed = node.Subscribe<Message>(topic, std::move(callback), options);
+    std::vector<gz::transport::MessagePublisher> publishers;
+    std::vector<gz::transport::MessagePublisher> subscribers;
+    const bool discovered = node.TopicInfo(topic, publishers, subscribers);
+    const auto messageType = Message().GetTypeName();
+    const std::string expectedType(messageType.data(), messageType.size());
+    std::size_t matchingPublishers = 0;
+    std::cerr << "topic=" << label << " name=" << topic
+              << " subscribed=" << (subscribed ? "yes" : "no")
+              << " discovered=" << (discovered ? "yes" : "no")
+              << " publishers=" << publishers.size();
+    for (const auto &publisher : publishers) {
+        std::cerr << " [type=" << publisher.MsgTypeName()
+                  << " addr=" << publisher.Addr() << ']';
+        if (publisher.MsgTypeName() == expectedType) {
+            ++matchingPublishers;
+        }
+    }
+    std::cerr << " expected_type=" << expectedType
+              << " matching_publishers=" << matchingPublishers;
+    std::cerr << '\n';
+    return subscribed;
 }
 } // namespace
 
@@ -93,6 +125,9 @@ int main(int argc, char **argv) {
     std::signal(SIGTERM, stop);
 
     gz::transport::Node node;
+    const char *gazeboIp = std::getenv("GZ_IP");
+    std::cerr << "transport partition=" << node.Options().Partition()
+              << " GZ_IP=" << (gazeboIp == nullptr ? "unset" : gazeboIp) << '\n';
     gz::transport::SubscribeOptions odometryOptions;
     odometryOptions.SetMsgsPerSec(100);
     gz::transport::SubscribeOptions imuOptions;
@@ -102,24 +137,25 @@ int main(int argc, char **argv) {
     gz::transport::SubscribeOptions worldStatsOptions;
     worldStatsOptions.SetMsgsPerSec(2);
 
-    const bool subscribed =
-        node.Subscribe<gz::msgs::Odometry>(
-            "/cf_0/odom",
-            textRecorder<gz::msgs::Odometry>(odometryOutput, odometryMutex,
-                                             odometryCount),
-            odometryOptions) &&
-        node.Subscribe<gz::msgs::IMU>(
-            "/cf_0/imu", textRecorder<gz::msgs::IMU>(imuOutput, imuMutex, imuCount),
-            imuOptions) &&
-        node.Subscribe<gz::msgs::Actuators>(
-            "/cf_0/command/motor_speed",
-            textRecorder<gz::msgs::Actuators>(motorOutput, motorMutex, motorCount),
-            motorOptions) &&
-        node.Subscribe<gz::msgs::WorldStatistics>(
-            "/world/crazysim_default/stats",
-            textRecorder<gz::msgs::WorldStatistics>(worldStatsOutput, worldStatsMutex,
-                                                    worldStatsCount),
-            worldStatsOptions);
+    const bool odometrySubscribed = subscribeAndReport<gz::msgs::Odometry>(
+        node, "/cf_0/odom", "odometry",
+        textRecorder<gz::msgs::Odometry>(odometryOutput, odometryMutex,
+                                         odometryCount),
+        odometryOptions);
+    const bool imuSubscribed = subscribeAndReport<gz::msgs::IMU>(
+        node, "/cf_0/imu", "imu",
+        textRecorder<gz::msgs::IMU>(imuOutput, imuMutex, imuCount), imuOptions);
+    const bool motorSubscribed = subscribeAndReport<gz::msgs::Actuators>(
+        node, "/cf_0/command/motor_speed", "motor",
+        textRecorder<gz::msgs::Actuators>(motorOutput, motorMutex, motorCount),
+        motorOptions);
+    const bool worldStatsSubscribed = subscribeAndReport<gz::msgs::WorldStatistics>(
+        node, "/world/crazysim_default/stats", "world_stats",
+        textRecorder<gz::msgs::WorldStatistics>(worldStatsOutput, worldStatsMutex,
+                                                worldStatsCount),
+        worldStatsOptions);
+    const bool subscribed = odometrySubscribed && imuSubscribed && motorSubscribed &&
+                            worldStatsSubscribed;
     if (!subscribed) {
         std::cerr << "failed to subscribe to one or more CrazySim topics\n";
         return 3;
@@ -158,6 +194,16 @@ int main(int argc, char **argv) {
     std::cerr << "captured odometry=" << odometryCount.load()
               << " imu=" << imuCount.load() << " motor=" << motorCount.load()
               << " world_stats=" << worldStatsCount.load() << '\n';
+    if (odometryCount.load() == 0 || imuCount.load() == 0 ||
+        motorCount.load() == 0 || worldStatsCount.load() == 0) {
+        std::cerr << "no callbacks for:";
+        if (odometryCount.load() == 0) std::cerr << " odometry";
+        if (imuCount.load() == 0) std::cerr << " imu";
+        if (motorCount.load() == 0) std::cerr << " motor";
+        if (worldStatsCount.load() == 0) std::cerr << " world_stats";
+        std::cerr << "; match both GZ_PARTITION and GZ_IP with Gazebo, then verify "
+                     "publisher type/address and transport reachability\n";
+    }
     return odometryUnsubscribed && imuUnsubscribed && motorUnsubscribed &&
                    worldStatsUnsubscribed && odometryCount.load() > 0 &&
                    imuCount.load() > 0 && motorCount.load() > 0 &&

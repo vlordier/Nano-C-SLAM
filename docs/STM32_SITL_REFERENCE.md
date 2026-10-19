@@ -921,9 +921,17 @@ same Gazebo Transport and Messages libraries as the installed Gazebo:
 clang++ -std=c++17 -O2 scripts/crazysim_flight_sampler.cc \
   -o /tmp/ncs-crazysim-flight-sampler \
   $(pkg-config --cflags --libs gz-transport13 gz-msgs10)
-GZ_PARTITION=ncs-flight /tmp/ncs-crazysim-flight-sampler 12 \
+GZ_PARTITION=ncs-flight GZ_IP=127.0.0.1 \
+  /tmp/ncs-crazysim-flight-sampler 12 \
   /tmp/ncs-flight-capture
 ```
+
+Set `GZ_IP` to the same value used by the Gazebo server. Matching only
+`GZ_PARTITION` is insufficient on this macOS setup: Transport discovery
+returned no publishers when the server used `GZ_IP=127.0.0.1` and the sampler
+left `GZ_IP` unset. The sampler now prints its effective partition, `GZ_IP`,
+each subscription result, publisher message type and address, and a per-topic
+zero-callback diagnostic.
 
 A synchronized run using the diagnostic `cf2` build and trace-enabled
 CrazySim plugin received TAKEOFF_2 and LAND_2 (both acknowledged with result
@@ -1108,11 +1116,31 @@ stability, firmware cadence, Nano firmware execution, or mapping validation.
 
 A follow-up 20-second run used the repository's typed C++ sampler. The patched
 odometry dylib and CrazySim bridge loaded, and the plugin traced four nonzero
-motor ratios originating from firmware. However, the sampler exited with zero
-callbacks for odometry, IMU, motors, and world statistics even though `gz topic
--l` showed all four published topics on the same partition. Do not use its
-empty output files as telemetry. The firmware again accepted takeoff and land,
-reported one stabilizer-rate warning, 130 Kalman-rate warnings, and one landing
-timeout without a supervisor crash. The reason this C++ subscriber receives no
-callbacks is unresolved. This diagnostic is archived separately in
-[`artifacts/crazysim_patched_odometry_20261020_attempt03`](../artifacts/crazysim_patched_odometry_20261020_attempt03/manifest.json).
+motor ratios originating from firmware. The sampler nevertheless received
+zero callbacks. The cause was an incomplete client environment: Gazebo had
+`GZ_IP=127.0.0.1`, while the sampler inherited only `GZ_PARTITION`. Repeating
+the test against one isolated server showed four publishers at the expected
+`gz.msgs.*` types and a shared `tcp://127.0.0.1:<port>` address when both
+variables matched; the sampler captured odometry, IMU, motor and world-stat
+messages and exited zero. With `GZ_IP` unset and the same partition, discovery
+returned zero publishers for all four topics, callbacks stayed at zero, and
+the sampler exited 4 with a diagnostic naming the required environment
+check. A five-second capture with the matched environment received 506
+odometry, 235 IMU, 242 motor and 10 world-stat messages. The diagnostic run is
+archived in
+[`artifacts/crazysim_patched_odometry_20261020_attempt03`](../artifacts/crazysim_patched_odometry_20261020_attempt03/manifest.json);
+the corrected positive firmware capture is in
+[`artifacts/crazysim_patched_odometry_20261020_attempt04`](../artifacts/crazysim_patched_odometry_20261020_attempt04/manifest.json).
+
+The corrected 14-second firmware capture received acknowledged TAKEOFF_2 and
+LAND_2 commands and shows the model rise from 2.015 m to 3.070 m before
+returning to 2.015 m. It contains 1,193 timestamped odometry samples, 648 IMU samples,
+2,680 motor components and 27 world-stat samples. The longest interval inside
+the registered hover band was 0.47 s, below the 5-second requirement; peak
+motor speed was 2,775 rad/s. This is an instrumented but failed flight. The
+strict paired checker remains unpassed because this run did not persist the
+firmware/plugin logs or a paired disconnected-actuator capture with process
+exit evidence. Fix hover stability and retain a complete positive/negative
+bundle before claiming firmware flight validation. Parsing also exposed and
+fixed a checker bug: Protobuf text omits zero-valued `nsec`, so five valid
+odometry messages at integer simulation seconds had previously been dropped.

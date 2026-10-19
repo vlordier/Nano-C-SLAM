@@ -30,7 +30,7 @@
       "/cf_0/command/motor_speed",
       "/world/crazysim_default/stats"
     ],
-    "diagnosis": "unresolved; do not treat the empty files as telemetry evidence"
+    "diagnosis": "reproduced: Gazebo server used GZ_IP=127.0.0.1 while sampler left GZ_IP unset; with the same GZ_PARTITION but no GZ_IP, Transport discovery returned zero publishers. An isolated retest with matching GZ_PARTITION and GZ_IP discovered all four expected publisher types at tcp://127.0.0.1:<port> and delivered callbacks. Do not treat this attempt's empty files as telemetry evidence."
   },
   "firmware": {
     "ready_to_fly": true,
