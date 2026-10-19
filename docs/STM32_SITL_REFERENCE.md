@@ -393,6 +393,32 @@ temporary trace edits were reverted and `cf2` rebuilt successfully. This
 localizes the next investigation to estimator initialization/prediction and
 measurement timing/conversion; it does not yet identify which is faulty.
 
+## Empty-subsample startup prediction fix (2026-10-19)
+
+Instrumentation in `kalmanCorePredict()` identified the immediate cause of the
+pre-takeoff reset. Its first call used `nowMs=1981`, `lastPredictionMs=12`
+(`dt=1.969 s`), zero acceleration and gyro subsamples, and `quadIsFlying=false`.
+The following predictions used gravity-consistent acceleration near
+`(0, 0, 9.8052) m/s^2`. `estimator_kalman.c` had its existing guard for nonempty
+acceleration and gyro subsamplers commented out, so the zero-initialized
+subsamples were integrated over the sensor calibration delay.
+
+The local Crazyflie firmware branch now restores the guard and explains why
+predictions must wait for both sensor streams. Commit `70eab0ba` rebuilt the
+`cf2` target successfully. A fresh single-process run reached `Ready to fly`
+without an estimator bounds reset; TAKEOFF_2 and LAND_2 reached firmware, and
+Gazebo recorded 85,000 motor values, 24,960 nonzero, with maximum
+`2056.69 rad/s`. Odometry recorded 4,250 poses and rose from `2.040 m` to
+`2.685 m`, confirming a firmware-driven initial climb. The final pose was
+`2.659 m` after the commanded landing, so this run did not prove landing or
+stable hover. It was timeout-terminated; stabilizer rate remained `546 Hz`
+against `500 Hz` configured and Kalman prediction remained `92–98 Hz` against
+`100 Hz`. The focused commit is local to the Lima Crazyflie firmware branch;
+it is not pushed to the configured upstream remote and does not change Nano's
+submodule pointer. Bead `ncs-fea.5.8.2.2` remains open for the rate and
+closed-loop flight failures. No Nano application or mapping validation is
+claimed.
+
 ## Reproducible flight-capture gate
 
 `scripts/check_crazysim_flight.py` checks paired positive-flight and
