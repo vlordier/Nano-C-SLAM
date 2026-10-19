@@ -396,7 +396,12 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
             encoding="utf-8",
         )
 
-    def _analyze(self) -> dict[str, object]:
+    def _analyze(
+        self,
+        *,
+        expected_route: str | None = None,
+        expected_sdf_sha256: str | None = None,
+    ) -> dict[str, object]:
         return analyze_mapping(
             target_report_path=self.target_path,
             target_log_path=self.log_path,
@@ -407,7 +412,24 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
             session_path=self.session_path,
             world_attestation_path=self.world_attestation_path,
             sdf_path=self.sdf_path,
+            expected_route=expected_route,
+            expected_sdf_sha256=expected_sdf_sha256,
         )
+
+    def test_expected_world_sdf_hash_is_enforced(self) -> None:
+        expected_hash = self._sha(self.sdf_path)
+        self.assertEqual(
+            self._analyze(expected_sdf_sha256=expected_hash)["geometry"][
+                "source_sdf_sha256"
+            ],
+            expected_hash,
+        )
+        with self.assertRaisesRegex(ValueError, "expected scenario hash"):
+            self._analyze(expected_sdf_sha256="0" * 64)
+
+    def test_heldout_analysis_rejects_baseline_route(self) -> None:
+        with self.assertRaisesRegex(ValueError, "expected 'heldout-asymmetric'"):
+            self._analyze(expected_route="heldout-asymmetric")
 
     def test_bound_target_outputs_produce_direct_pose_and_wall_metrics(self) -> None:
         report = self._analyze()
@@ -669,6 +691,20 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
         target["sha256"]["gvsoc_log"] = self._sha(self.log_path)
         self.target_path.write_text(json.dumps(target), encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "every point"):
+            self._analyze()
+
+    def test_nonzero_gazebo_child_exit_is_rejected(self) -> None:
+        run = json.loads(self.run_path.read_text(encoding="utf-8"))
+        run["process_exit_codes"]["collector"] = 1
+        self.run_path.write_text(json.dumps(run), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "incomplete or does not match"):
+            self._analyze()
+
+    def test_corrupted_target_map_point_is_rejected(self) -> None:
+        target = json.loads(self.target_path.read_text(encoding="utf-8"))
+        target["target_projected_map_points"][0]["x_m"] += 0.25
+        self.target_path.write_text(json.dumps(target), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "differs from the validated target"):
             self._analyze()
 
     def _sha_sdf(self) -> str:

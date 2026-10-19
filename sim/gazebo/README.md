@@ -297,10 +297,47 @@ The archive command fails if the launched SDF no longer matches the session
 hash, if the session does not identify exactly one live Gazebo server, or if
 the output directory already exists. Use the archived `world/world.sdf`,
 `world/world-session.json`, and `world/world-input-attestation.json` with the
-geometry analyzer and pass `--expected-route heldout-asymmetric`; the analyzer
-checks the route recorded in the mission argv. A successful capture still
-produces measurements only. Acceptance thresholds remain unset until the
-baseline repeatability work in bead `ncs-fea.4.8` is complete.
+geometry analyzer and pass both `--expected-route heldout-asymmetric` and the
+attested `--expected-sdf-sha256`. Retain the `target-evidence.json`, `gvsoc.log`,
+ELF, GVSOC config, and host transfer produced beside the live runner's work
+directory. The analyzer checks the route recorded in the mission argv and the
+exact held-out geometry:
+
+```sh
+sdf_hash="$(jq -r '.world_sdf_sha256' "$artifact_dir/world/world-input-attestation.json")"
+uv run --locked python -m scripts.analyze_gap9_target_mapping_geometry \
+  --target-report "$artifact_dir/target-evidence.json" \
+  --target-log "$artifact_dir/gvsoc.log" \
+  --target-elf "$artifact_dir/nano_c_slam_gvsoc_spi_main_probe" \
+  --gvsoc-config "$artifact_dir/gvsoc-config.json" \
+  --host-transfer "$artifact_dir/host-transfer.json" \
+  --run-bundle "$artifact_dir/gazebo-run.json" \
+  --world-session "$artifact_dir/world/world-session.json" \
+  --world-attestation "$artifact_dir/world/world-input-attestation.json" \
+  --world-sdf "$artifact_dir/world/world.sdf" \
+  --expected-route heldout-asymmetric \
+  --expected-sdf-sha256 "$sdf_hash" \
+  --output "$artifact_dir/geometry-metrics.json"
+```
+
+Evaluate its report against the pre-registered numeric limits without changing
+the baseline profile:
+
+```sh
+uv run --locked python scripts/validate_gap9_geometry.py \
+  --metrics "$artifact_dir/geometry-metrics.json" \
+  --run-bundle "$artifact_dir/gazebo-run.json" \
+  --profile artifacts/gap9_gvsoc_evidence/geometry_baseline_20261019/geometry-thresholds.json \
+  --independent-scenario
+```
+
+The validator verifies same-run/session identity, complete 60-sample mission,
+held-out route, and a distinct SDF, then reports every numeric gate and the
+profile hash. Exit status 1 means at least one frozen metric failed; preserve
+that result instead of tuning the profile to the held-out output. The thresholds
+are engineering regression gates derived from five repeated synthetic baseline
+runs, not confidence intervals. Neither a passing nor failing result validates
+physical ToF/UWB behavior or STM32 flight firmware.
 
 In a second terminal, run the single-drone example mission (takeoff to 0.5 m, hover for 3 seconds, then land). The mission continuously enables the simulated Crazyflie, sends vertical velocity commands through the Gazebo bridge, and requires fresh measured odometry. It holds a zero vertical command and reports failure if odometry becomes stale or inconsistent, or if takeoff or landing exceeds its timeout:
 

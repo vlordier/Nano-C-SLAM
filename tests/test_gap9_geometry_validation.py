@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import unittest
@@ -82,6 +83,77 @@ class GeometryValidationTests(unittest.TestCase):
             report["gates"]["pose_xy_rmse_m"]["observed"],
             metrics["pose_xy_rmse_m"],
         )
+
+    def test_heldout_run_uses_frozen_numeric_limits_and_reports_pose_regression(
+        self,
+    ) -> None:
+        artifact = (
+            ROOT / "artifacts/gap9_gvsoc_evidence/heldout_geometry_20261019_attempt03"
+        )
+        metrics = json.loads((artifact / "geometry-metrics.json").read_text())
+        run = json.loads((artifact / "gazebo-run.json").read_text())
+        profile_path = EVIDENCE / "geometry-thresholds.json"
+        profile = json.loads(profile_path.read_text())
+        report = gate_report(
+            metrics,
+            profile,
+            independent_scenario=True,
+            run_bundle=run,
+            profile_sha256=hashlib.sha256(profile_path.read_bytes()).hexdigest(),
+        )
+        self.assertEqual(report["status"], "FAIL")
+        self.assertEqual(
+            [
+                name
+                for name, gate in report["gates"].items()
+                if gate["status"] == "FAIL"
+            ],
+            ["pose_xy_rmse_m"],
+        )
+        self.assertEqual(report["scenario"]["route"], "heldout-asymmetric")
+        self.assertNotEqual(report["scenario"]["sdf_sha256"], profile["sdf_sha256"])
+        self.assertEqual(
+            report["profile_sha256"],
+            hashlib.sha256(profile_path.read_bytes()).hexdigest(),
+        )
+
+    def test_heldout_mode_rejects_baseline_world_and_mismatched_run_bundle(
+        self,
+    ) -> None:
+        profile = _profile()
+        summary = json.loads((EVIDENCE / "baseline-summary.json").read_text())
+        baseline = {**summary["runs"][0], "host_sample_count": 60}
+        baseline["mission_phase"] = "COMPLETE"
+        baseline_run = {
+            "run_id": baseline["run_id"],
+            "gazebo_world_session_id": baseline["world_session_id"],
+            "child_commands": {"mission": ["ros2", "run", "mapping_route:=square"]},
+            "capture_report": {"run_id": baseline["run_id"], "input_sample_count": 60},
+            "mission_terminal": {"run_id": baseline["run_id"], "phase": "COMPLETE"},
+            "process_exit_codes": {"collector": 0, "mission": 0},
+        }
+        failures = validate_geometry(
+            baseline,
+            profile,
+            independent_scenario=True,
+            run_bundle=baseline_run,
+        )
+        self.assertTrue(any("heldout-asymmetric" in failure for failure in failures))
+        self.assertTrue(any("not independent" in failure for failure in failures))
+
+        artifact = (
+            ROOT / "artifacts/gap9_gvsoc_evidence/heldout_geometry_20261019_attempt03"
+        )
+        metrics = json.loads((artifact / "geometry-metrics.json").read_text())
+        run = json.loads((artifact / "gazebo-run.json").read_text())
+        run["run_id"] = "00000000-0000-4000-8000-000000000000"
+        with self.assertRaisesRegex(ValueError, "not bound to one complete run"):
+            validate_geometry(
+                metrics,
+                profile,
+                independent_scenario=True,
+                run_bundle=run,
+            )
 
 
 if __name__ == "__main__":
