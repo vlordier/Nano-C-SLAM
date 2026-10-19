@@ -9,13 +9,15 @@ from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
 from threading import Lock
-from typing import Protocol
+from typing import NoReturn, Protocol
 
 POSE_STRUCT = struct.Struct("<hxxlfff32h")
 SCAN_STRUCT = struct.Struct("<h")
 POSE_PACKET = 0
 SCAN_PACKET = 1
 FINAL_FRAGMENT = 0x80
+OPERATOR_HEARTBEAT_INTERVAL_SECONDS = 0.25
+UINT32_MASK = 0xFFFFFFFF
 
 
 class PacketLike(Protocol):
@@ -49,6 +51,10 @@ class CrazyflieLike(Protocol):
 
 class SyncCrazyflieLike(Protocol):
     cf: CrazyflieLike
+
+
+class SwarmLike(Protocol):
+    def parallel_safe(self, function: Callable[[SyncCrazyflieLike], None]) -> None: ...
 
 
 @dataclass(frozen=True)
@@ -218,6 +224,23 @@ def set_initial_params(
     scf.cf.param.set_value("cmds.ready", "1")
 
 
+def set_operator_heartbeat(scf: SyncCrazyflieLike, *, sequence: int) -> None:
+    scf.cf.param.set_value("cmds.heartbeat", str(sequence))
+
+
+def run_operator_heartbeat_loop(
+    swarm: SwarmLike,
+    *,
+    sleep: Callable[[float], None] = time.sleep,
+    initial_sequence: int = 0,
+) -> NoReturn:
+    sequence = initial_sequence & UINT32_MASK
+    while True:
+        sequence = (sequence + 1) & UINT32_MASK
+        swarm.parallel_safe(partial(set_operator_heartbeat, sequence=sequence))
+        sleep(OPERATOR_HEARTBEAT_INTERVAL_SECONDS)
+
+
 def run_mission(configs: Sequence[DroneConfig], log_root: Path = Path("logs")) -> None:
     import cflib.crtp
     from cflib.crazyflie.swarm import CachedCfFactory, Swarm
@@ -234,8 +257,7 @@ def run_mission(configs: Sequence[DroneConfig], log_root: Path = Path("logs")) -
     with Swarm(set(by_uri), factory=factory) as swarm:
         swarm.parallel_safe(partial(wait_for_param_download, loggers=loggers))
         swarm.parallel_safe(partial(set_initial_params, configs=by_uri))
-        while True:
-            time.sleep(1)
+        run_operator_heartbeat_loop(swarm)
 
 
 def main(argv: Sequence[str] | None = None) -> int:

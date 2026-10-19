@@ -60,9 +60,11 @@ cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
     -Itests/stubs/flight_control -Icslam-stm32-app/src \
     -Icslam-stm32-app/src/exploration \
     tests/stm32_flight_control_test.c cslam-stm32-app/src/flight_commander.c \
+    cslam-stm32-app/src/operator_heartbeat.c \
     cslam-stm32-app/src/exploration/limit_actuation.c \
     -lm -o /tmp/stm32_flight_control_test
 for scenario in abort-before-takeoff ready-gate stale-before-takeoff \
+    heartbeat-before-takeoff heartbeat-loss \
     stale-during-takeoff stale-active takeoff-failure land-handoff land-retry; do
     /tmp/stm32_flight_control_test "$scenario"
 done
@@ -72,6 +74,12 @@ cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
     tests/tof_freshness_test.c cslam-stm32-app/src/tof_freshness.c \
     -o /tmp/tof_freshness_test
 /tmp/tof_freshness_test
+
+cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
+    -Itests/stubs/flight_control -Icslam-stm32-app/src \
+    tests/operator_heartbeat_test.c cslam-stm32-app/src/operator_heartbeat.c \
+    -o /tmp/operator_heartbeat_test
+/tmp/operator_heartbeat_test
 
 cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
     -Itests/stubs/flight_control -Icslam-stm32-app/src \

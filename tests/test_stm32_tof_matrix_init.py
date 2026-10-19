@@ -12,7 +12,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 
 
 class Stm32TofMatrixInitTests(unittest.TestCase):
-    def test_mission_task_waits_for_tof_and_estimator_before_commander_enable(
+    def test_mission_task_waits_for_tof_heartbeat_and_estimator_before_arm(
         self,
     ) -> None:
         source = (REPOSITORY_ROOT / "cslam-stm32-app/app_main.c").read_text(
@@ -20,7 +20,9 @@ class Stm32TofMatrixInitTests(unittest.TestCase):
         )
         mission_task = source.split("void mission_task(void *parameters) {", 1)[1]
         tof_gate = mission_task.index("while (!tof_is_init())")
-        command_gate = mission_task.index("while (!ready || !tof_is_fresh())")
+        command_gate = mission_task.index(
+            "if (ready && tof_is_fresh() && operator_alive)"
+        )
         estimator_init = mission_task.index("estimatorKalmanInitToPose")
         flight_task_create = mission_task.index('"fly"')
         commander_enable = mission_task.index("enable_commander()")

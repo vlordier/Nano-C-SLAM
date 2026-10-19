@@ -25,6 +25,7 @@
 #include "flight_commander.h"
 #include "limit_actuation.h"
 #include "line_detector.h"
+#include "operator_heartbeat.h"
 #include "tof_daq.h"
 #include "uwb_ranging_distance.h"
 
@@ -64,6 +65,22 @@ void flight_task(void *parameters) {
         vTaskDelete(NULL);
         return;
     }
+    operator_heartbeat_watch_t operator_watch = {0};
+    TickType_t heartbeat_wait_start = xTaskGetTickCount();
+    operator_heartbeat_watch_init(&operator_watch, heartbeat_counter,
+                                  heartbeat_wait_start);
+    while (!operator_heartbeat_watch_is_fresh(
+        &operator_watch, heartbeat_counter, xTaskGetTickCount(),
+        M2T(OPERATOR_HEARTBEAT_TIMEOUT_MS))) {
+        TickType_t now = xTaskGetTickCount();
+        if (land || (TickType_t)(now - heartbeat_wait_start) >=
+                        M2T(OPERATOR_HEARTBEAT_TIMEOUT_MS)) {
+            flight_status = FLIGHT_STATUS_ABORTED_BEFORE_TAKEOFF;
+            vTaskDelete(NULL);
+            return;
+        }
+        vTaskDelay(M2T(20));
+    }
     flight_status = FLIGHT_STATUS_TAKEOFF;
     if (crtpCommanderHighLevelTakeoffWithVelocity(EXP_HEIGHT, 0.3f, false) !=
         0) {
@@ -76,14 +93,20 @@ void flight_task(void *parameters) {
                 (double)logGetFloat(logGetVarId("kalman", "stateY")),
                 (double)logGetFloat(logGetVarId("stateEstimate", "yaw")));
     for (uint16_t elapsed_ms = 0; elapsed_ms < 2500; elapsed_ms += 20) {
-        if (!tof_is_fresh()) {
+        if (!tof_is_fresh() ||
+            !operator_heartbeat_watch_is_fresh(
+                &operator_watch, heartbeat_counter, xTaskGetTickCount(),
+                M2T(OPERATOR_HEARTBEAT_TIMEOUT_MS))) {
             land = 1;
             break;
         }
         vTaskDelay(M2T(20));
     }
     while (1) {
-        if (!tof_is_fresh())
+        if (!tof_is_fresh() ||
+            !operator_heartbeat_watch_is_fresh(
+                &operator_watch, heartbeat_counter, xTaskGetTickCount(),
+                M2T(OPERATOR_HEARTBEAT_TIMEOUT_MS)))
             land = 1;
         if (land) {
             // Low-level EXTRX setpoints outrank the high-level commander.

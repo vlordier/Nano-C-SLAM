@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from collections.abc import Callable
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -164,6 +165,62 @@ assert not Path("logs").exists()
                 ("cmds.ready", "1"),
             ],
         )
+
+    def test_operator_heartbeat_updates_the_radio_parameter(self) -> None:
+        writes = []
+        scf = SimpleNamespace(
+            cf=SimpleNamespace(
+                param=SimpleNamespace(
+                    set_value=lambda name, value: writes.append((name, value))
+                )
+            )
+        )
+        demo.set_operator_heartbeat(scf, sequence=42)
+        self.assertEqual(writes, [("cmds.heartbeat", "42")])
+
+    def test_heartbeat_loop_updates_all_drones_and_wraps_uint32(self) -> None:
+        writes = []
+
+        class FakeSwarm:
+            def parallel_safe(
+                self, function: Callable[[demo.SyncCrazyflieLike], None]
+            ) -> None:
+                for _ in range(2):
+                    scf = SimpleNamespace(
+                        cf=SimpleNamespace(
+                            param=SimpleNamespace(
+                                set_value=lambda name, value: writes.append(
+                                    (name, value)
+                                )
+                            )
+                        )
+                    )
+                    function(scf)
+
+        sleeps = []
+
+        def stop_after_two_updates(delay: float) -> None:
+            sleeps.append(delay)
+            if len(sleeps) == 2:
+                raise KeyboardInterrupt
+
+        max_uint32 = demo.UINT32_MASK
+        with self.assertRaises(KeyboardInterrupt):
+            demo.run_operator_heartbeat_loop(
+                FakeSwarm(),
+                sleep=stop_after_two_updates,
+                initial_sequence=max_uint32 - 1,
+            )
+        self.assertEqual(
+            writes,
+            [
+                ("cmds.heartbeat", str(max_uint32)),
+                ("cmds.heartbeat", str(max_uint32)),
+                ("cmds.heartbeat", "0"),
+                ("cmds.heartbeat", "0"),
+            ],
+        )
+        self.assertEqual(sleeps, [0.25, 0.25])
 
 
 if __name__ == "__main__":

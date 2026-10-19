@@ -2,6 +2,7 @@
 #include "commander.h"
 #include "crtp_commander_high_level.h"
 #include "flight_commander.h"
+#include "operator_heartbeat.h"
 #include "task.h"
 #include "tof_daq.h"
 
@@ -30,10 +31,15 @@ static bool reset_land_after_first_failed_landing;
 static bool enable_after_two_waits;
 static bool stale_during_takeoff;
 static bool stale_after_first_command;
+static bool drop_heartbeat_after_takeoff;
+static bool heartbeat_live = true;
+static bool takeoff_started;
 static uint8_t tof_fresh = 1;
 static int ready_waits;
 static int takeoff_waits;
+static TickType_t current_tick;
 volatile uint8_t land;
+volatile uint32_t heartbeat_counter;
 int16_t tof_data_buf[4][8][8];
 
 static void record_event(enum event event) {
@@ -47,6 +53,7 @@ int crtpCommanderHighLevelTakeoffWithVelocity(float height_m, float velocity_m_s
     assert(velocity_m_s == 0.3f);
     assert(!relative);
     record_event(EVENT_TAKEOFF);
+    takeoff_started = true;
     return takeoff_result;
 }
 
@@ -91,7 +98,10 @@ void commanderRelaxPriority(void) {
 }
 
 void vTaskDelay(TickType_t ticks) {
-    if (stale_during_takeoff && ticks == 20 && ++takeoff_waits == 3)
+    current_tick += ticks;
+    if (heartbeat_live && !(drop_heartbeat_after_takeoff && takeoff_started))
+        heartbeat_counter++;
+    if (stale_during_takeoff && takeoff_started && ticks == 20 && ++takeoff_waits == 3)
         tof_fresh = 0;
     if (stale_after_first_command && ticks == 20 && setpoint_calls == 1)
         tof_fresh = 0;
@@ -108,6 +118,10 @@ void vTaskDelay(TickType_t ticks) {
         land = 1;
     if (reset_land_after_first_failed_landing && ticks == 100 && land_calls == 1)
         land = 0;
+}
+
+TickType_t xTaskGetTickCount(void) {
+    return current_tick;
 }
 
 void vTaskDelete(void *task) {
@@ -171,6 +185,31 @@ static void test_stale_tof_before_takeoff_aborts(void) {
     assert(flight_status == FLIGHT_STATUS_ABORTED_BEFORE_TAKEOFF);
     assert(event_count == 1 && events[0] == EVENT_DELETE);
     assert(land_calls == 0 && setpoint_calls == 0);
+}
+
+static void test_missing_operator_heartbeat_prevents_takeoff(void) {
+    heartbeat_live = false;
+    enable_commander();
+    if (setjmp(task_exit) == 0)
+        flight_task(NULL);
+    assert(flight_status == FLIGHT_STATUS_ABORTED_BEFORE_TAKEOFF);
+    assert(event_count == 1 && events[0] == EVENT_DELETE);
+    assert(land_calls == 0 && setpoint_calls == 0);
+    assert(current_tick >= OPERATOR_HEARTBEAT_TIMEOUT_MS);
+}
+
+static void test_lost_operator_heartbeat_during_takeoff_lands(void) {
+    drop_heartbeat_after_takeoff = true;
+    enable_commander();
+    if (setjmp(task_exit) == 0)
+        flight_task(NULL);
+    assert(flight_status == FLIGHT_STATUS_COMPLETE);
+    assert(land_calls == 1 && setpoint_calls == 0);
+    assert(event_count == 4);
+    assert(events[0] == EVENT_TAKEOFF);
+    assert(events[1] == EVENT_RELAX_PRIORITY);
+    assert(events[2] == EVENT_LAND);
+    assert(events[3] == EVENT_DELETE);
 }
 
 static void test_stale_tof_during_takeoff_requests_landing(void) {
@@ -258,6 +297,10 @@ int main(int argc, char **argv) {
         test_ready_gate_prevents_early_commands();
     } else if (strcmp(argv[1], "stale-before-takeoff") == 0) {
         test_stale_tof_before_takeoff_aborts();
+    } else if (strcmp(argv[1], "heartbeat-before-takeoff") == 0) {
+        test_missing_operator_heartbeat_prevents_takeoff();
+    } else if (strcmp(argv[1], "heartbeat-loss") == 0) {
+        test_lost_operator_heartbeat_during_takeoff_lands();
     } else if (strcmp(argv[1], "stale-during-takeoff") == 0) {
         test_stale_tof_during_takeoff_requests_landing();
     } else if (strcmp(argv[1], "stale-active") == 0) {

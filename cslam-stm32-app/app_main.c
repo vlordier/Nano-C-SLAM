@@ -21,6 +21,7 @@
 #include "deck.h"
 #include "exploration.h"
 #include "mission_timeout.h"
+#include "operator_heartbeat.h"
 #include "scan.h"
 #include "tof_daq.h"
 #include "tof_matrix.h"
@@ -40,6 +41,7 @@ QueueHandle_t poseQueue;
 
 volatile uint8_t ready = 0;
 volatile uint8_t land = 0;
+volatile uint32_t heartbeat_counter = 0;
 
 float x_init = 0.0f;
 float y_init = 0.0f;
@@ -48,6 +50,7 @@ float yaw_init = 0.0f;
 PARAM_GROUP_START(cmds)
 PARAM_ADD(PARAM_UINT8, ready, &ready)
 PARAM_ADD(PARAM_UINT8, land, &land)
+PARAM_ADD(PARAM_UINT32, heartbeat, &heartbeat_counter)
 PARAM_GROUP_STOP(cmds)
 
 PARAM_GROUP_START(initial)
@@ -116,9 +119,19 @@ void mission_task(void *parameters) {
         vTaskDelay(M2T(1000));
 
     // Wait for ready command from client only after sensor initialization.
-    DEBUG_PRINT("ToF ready; waiting for ready command and fresh frames...\n");
-    while (!ready || !tof_is_fresh())
+    DEBUG_PRINT("ToF ready; waiting for ready command, fresh frames, and "
+                "heartbeat...\n");
+    operator_heartbeat_watch_t operator_watch = {0};
+    operator_heartbeat_watch_init(&operator_watch, heartbeat_counter,
+                                  xTaskGetTickCount());
+    for (;;) {
+        uint8_t operator_alive = operator_heartbeat_watch_is_fresh(
+            &operator_watch, heartbeat_counter, xTaskGetTickCount(),
+            M2T(OPERATOR_HEARTBEAT_TIMEOUT_MS));
+        if (ready && tof_is_fresh() && operator_alive)
+            break;
         vTaskDelay(M2T(100));
+    }
 
     DEBUG_PRINT("Start\n");
 

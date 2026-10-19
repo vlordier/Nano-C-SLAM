@@ -5,5 +5,6 @@
 
 void vTaskDelay(TickType_t ticks);
 void vTaskDelete(void *task);
+TickType_t xTaskGetTickCount(void);
 
 #endif
