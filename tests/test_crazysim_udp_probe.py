@@ -11,7 +11,9 @@ from pathlib import Path
 from scripts.crazysim_udp_probe import (
     CRTP_SETPOINT_HL,
     CRTP_SETPOINT_SIM,
+    _has_unsaturated_motor_output,
     _read_ready_marker,
+    _should_send_imu,
     decode_motor_packet,
     encode_imu_packet,
     encode_takeoff_packet,
@@ -19,6 +21,18 @@ from scripts.crazysim_udp_probe import (
 
 
 class CrazySimUdpProbeTests(unittest.TestCase):
+    def test_imu_feedback_continues_through_takeoff_window(self) -> None:
+        self.assertFalse(_should_send_imu(0.9, 1.0, 10.0))
+        self.assertTrue(_should_send_imu(1.0, 1.0, 10.0))
+        self.assertTrue(_should_send_imu(8.0, 1.0, 10.0))
+        self.assertFalse(_should_send_imu(10.0, 1.0, 10.0))
+
+    def test_motor_probe_rejects_missing_and_saturated_output(self) -> None:
+        self.assertFalse(_has_unsaturated_motor_output(0, 0, 0))
+        self.assertFalse(_has_unsaturated_motor_output(10, 0, 0))
+        self.assertFalse(_has_unsaturated_motor_output(10, 65535, 1))
+        self.assertTrue(_has_unsaturated_motor_output(10, 42000, 0))
+
     def test_ready_marker_reader_observes_only_appended_log_bytes(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             log_path = Path(temporary_directory) / "firmware.log"

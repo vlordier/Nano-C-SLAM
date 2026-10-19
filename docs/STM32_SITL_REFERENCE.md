@@ -184,13 +184,54 @@ received zero motor packets. Raising the socket task from
 not change that result. Guest packet capture proves datagrams reached the VM,
 but temporary first-packet logging in both `socketlinkTask` and `sensorsTask`
 did not appear in captured firmware output. Therefore this run does not prove
-that the socket task consumed the packets; calibration logic is not yet the
-confirmed root cause. The candidate patch in
-`sim/crazysim/patches/0001-sitl-socketlink-drain-after-eintr.patch` builds
-`cf2` but is still experimental and is not validated as a fix. The full
-CrazySim aggregate build also attempts to build the Gazebo plugin in the Linux
-guest and fails because `gz-plugin2` is unavailable there; this does not
-invalidate the separate `cf2` target build.
+that the socket task consumed the packets. The full CrazySim aggregate build
+also attempts to build the Gazebo plugin in the Linux guest and fails because
+`gz-plugin2` is unavailable there; this does not invalidate the separate
+`cf2` target build.
+
+## Sensor routing and actuator-output retest (2026-10-19)
+
+Further instrumentation isolated two scheduling boundaries. With the default
+priorities, `socketlinkTask` did not consume UDP datagrams. Raising that task
+alone made it receive valid 14-byte packets (`header=0x9c`, IMU type `0`), but
+the CRTP delivery queue filled while its priority-2 router and priority-4
+sensor task were starved. A diagnostic VM-only build that raised the socket,
+CRTP RX, and sensor tasks to priority 5 showed the complete path: the CRTP
+router received port-9 packets, the sensor task created its queue and consumed
+them, `GYro Bias found` appeared, and the stabilizer loop started. These
+priority edits and trace prints were confined to `/tmp/ncs-crazysim`; they are
+not a proposed production configuration.
+
+The UDP probe had a separate test defect: it stopped sending IMU immediately
+before takeoff. It now keeps sensor input active through the takeoff and
+post-flight interval, and treats motor output saturated at `65535` as a failed
+probe. Under the diagnostic priority configuration and constant synthetic
+1-g IMU, one run received 5,417 motor packets, but the maximum ratio was
+`65535`; firmware logs also reported estimator state reset and off-rate
+warnings. This proves actuator packets can be emitted, not a valid flight.
+The input does not include Gazebo's changing IMU, gravity orientation, or
+vehicle dynamics. No actuator-driven Gazebo rise/hover/landing has passed, and
+Nano-C-SLAM's STM32 application still has not run in this reference firmware.
+The earlier ineffective socket patch was removed rather than retained as a
+claimed fix.
+
+The native macOS model was then isolated from the firmware. Gazebo's own
+upstream `quadcopter.sdf` was launched with the same source-built Gazebo 8
+stack. `gz topic -i` reported four `gz.msgs.Actuators` subscribers on
+`/X3/gazebo/command/motor_speed`; a published `[700, 700, 700, 700]` command
+was echoed on that topic and the rotor link poses changed, confirming the
+motor command reached the motor systems. However, `/world/quadcopter/pose/info`
+kept the X3 root at `z=0.055 m` throughout the capture. The same no-rise result
+occurred with the Crazyflie model under direct `[3052, 3052, 3052, 3052]`
+commands (root `z` remained `0.015 m`). A separate run of the upstream X3
+world under default DART also stayed at `z=0.055 m`, although rotor response
+was not observed in that run. These results make the failure independent of
+firmware scheduling and point to the Gazebo motor-force/physics/model path.
+They do not establish that Gazebo upstream is broken: the source-built plugin,
+selected engine, and model-force application still need a controlled
+calibration test. Context7 documentation
+lookup was unavailable because its monthly quota was exhausted; local source
+inspection and the upstream Gazebo example were used for this diagnosis.
 
 The temporary debug edits live only in `/tmp/ncs-crazysim` in the Lima guest;
 they are not a maintained patch and were not copied into the submodule. Bead

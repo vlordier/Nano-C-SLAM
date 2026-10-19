@@ -74,6 +74,18 @@ def decode_motor_packet(packet: bytes) -> tuple[int, int, int, int] | None:
     return motors
 
 
+def _should_send_imu(elapsed: float, imu_start: float, run_end: float) -> bool:
+    """Keep sensor feedback active through takeoff and the post-flight window."""
+    return imu_start <= elapsed < run_end
+
+
+def _has_unsaturated_motor_output(
+    motor_packets: int, max_motor_value: int, saturated_values: int
+) -> bool:
+    """Reject empty output and output that only demonstrates actuator saturation."""
+    return motor_packets > 0 and max_motor_value > 0 and saturated_values == 0
+
+
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     # Lima's user-mode network reaches this host through its non-loopback path.
@@ -122,6 +134,7 @@ def run_probe(args: argparse.Namespace) -> int:
     imu_count = 0
     motor_count = 0
     max_motor = 0
+    saturated_motor_values = 0
     takeoff_sent = False
     started_at = 0.0
     firmware_ready = False
@@ -165,6 +178,9 @@ def run_probe(args: argparse.Namespace) -> int:
                 if motor_values is not None:
                     motor_count += 1
                     max_motor = max(max_motor, *motor_values)
+                    saturated_motor_values += sum(
+                        value == 0xFFFF for value in motor_values
+                    )
 
             if peer is None:
                 if now >= handshake_deadline:
@@ -177,15 +193,16 @@ def run_probe(args: argparse.Namespace) -> int:
 
             elapsed = now - started_at
             imu_start = args.imu_start_delay
-            imu_end = imu_start + args.imu_seconds
-            if imu_start <= elapsed < imu_end and now >= next_imu:
+            takeoff_at = imu_start + args.imu_seconds
+            run_end = takeoff_at + args.takeoff_duration + 2.0
+            if _should_send_imu(elapsed, imu_start, run_end) and now >= next_imu:
                 sock.sendto(imu_packet, peer)
                 imu_count += 1
                 next_imu += imu_interval
                 if now - next_imu > imu_interval * 4:
                     next_imu = now + imu_interval
 
-            if not takeoff_sent and elapsed >= imu_end:
+            if not takeoff_sent and elapsed >= takeoff_at:
                 sock.sendto(
                     encode_takeoff_packet(args.takeoff_height, args.takeoff_duration),
                     peer,
@@ -196,7 +213,7 @@ def run_probe(args: argparse.Namespace) -> int:
                     flush=True,
                 )
 
-            if elapsed >= imu_end + args.takeoff_duration + 2.0:
+            if elapsed >= run_end:
                 break
     finally:
         sock.close()
@@ -206,10 +223,15 @@ def run_probe(args: argparse.Namespace) -> int:
         "imu_packets_sent": imu_count,
         "motor_packets_received": motor_count,
         "max_motor_value": max_motor,
+        "saturated_motor_values": saturated_motor_values,
         "firmware_peer": peer,
     }
     print(json.dumps(result, sort_keys=True), flush=True)
-    return 0 if motor_count > 0 and max_motor > 0 else 1
+    return int(
+        not _has_unsaturated_motor_output(
+            motor_count, max_motor, saturated_motor_values
+        )
+    )
 
 
 def main() -> int:
