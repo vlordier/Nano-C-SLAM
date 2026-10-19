@@ -854,7 +854,7 @@ zero for both bounded commands. A 10.13-second Gazebo odometry capture
 contained 2,027 records. Altitude ranged from 2.0146 to 2.8317 m and ended at
 2.0150 m after commands for 2.615 m takeoff and 2.015 m landing. The longest
 continuous interval within 0.12 m of the takeoff target was 0.25 seconds.
-Firmware logs contained one 502-Hz stabilizer-rate warning and one landing
+Firmware logs contained one 484-Hz stabilizer-rate warning and one landing
 timeout, with no `SUP: Crashed` message. This proves the corrected setup can
 run the upstream reference firmware and produce motor-driven Gazebo motion;
 it does not pass the stable-flight gate and is not Nano-C-SLAM firmware.

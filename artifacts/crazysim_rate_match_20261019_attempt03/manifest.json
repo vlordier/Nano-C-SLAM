@@ -54,6 +54,7 @@
     "takeoff_received": true,
     "land_received": true,
     "stabilizer_rate_warnings": 1,
+    "stabilizer_rate_warning_hz": [484],
     "kalman_rate_warnings": 0,
     "landing_timeouts": 1,
     "supervisor_crash": false
