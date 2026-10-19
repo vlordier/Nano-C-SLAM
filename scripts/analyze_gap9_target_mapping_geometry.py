@@ -17,6 +17,7 @@ from scripts.capture_gap9_gvsoc_spi_main_probe_evidence import (
     SPI_DIAGNOSTICS_PATTERN,
     TARGET_MAP_CAPACITY,
     _decode_slam_job,
+    _parse_target_graph_constraints,
     _parse_target_map_points,
     _parse_target_poses,
     validate_config,
@@ -262,7 +263,7 @@ def _verify_target_capture(
     target_log: str,
     run: dict[str, object],
     samples: tuple[MappingSample, ...],
-) -> None:
+) -> dict[str, object]:
     """Cross-check target health fields against its raw log and source packets."""
     packets = encode_mapping_samples(samples)
     expected_frames = [packet.frame.hex() for packet in packets]
@@ -482,6 +483,14 @@ def _verify_target_capture(
             != (index, pose_id, duration)
         ):
             raise ValueError("target scan timing differs from log or source trace")
+    graph_constraints = _parse_target_graph_constraints(
+        target_log,
+        expected_pose_count=len(samples),
+        expected_stored_count=2,
+    )
+    if target.get("target_graph_constraints") != graph_constraints:
+        raise ValueError("target graph endpoint report differs from its raw log")
+    return graph_constraints
 
 
 def analyze_mapping(
@@ -567,7 +576,9 @@ def analyze_mapping(
         raise ValueError("target pose dump differs from the validated target report")
     if target.get("target_projected_map_points") != points:
         raise ValueError("target point dump differs from the validated target report")
-    _verify_target_capture(target, host_transfer, target_log, run, mapping_samples)
+    graph_constraints = _verify_target_capture(
+        target, host_transfer, target_log, run, mapping_samples
+    )
     if len(points) >= TARGET_MAP_CAPACITY:
         raise ValueError(
             "target map reached SIZE_POINTS capacity; completeness is unknown"
@@ -648,6 +659,7 @@ def analyze_mapping(
             "the live bridge initializes this frame from Gazebo odometry."
         ),
         "target_pose_count": len(poses),
+        "target_graph_constraints": graph_constraints,
         "pose_error": {
             "xy_rmse_m": math.sqrt(sum(v * v for v in distances_xy) / len(poses)),
             "xy_max_m": max(distances_xy),

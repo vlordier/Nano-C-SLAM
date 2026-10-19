@@ -177,6 +177,94 @@ def _parse_target_poses(
     return poses
 
 
+def _parse_target_graph_constraints(
+    log: str, *, expected_pose_count: int, expected_stored_count: int
+) -> dict[str, object]:
+    """Validate exact stored pose constraints and reduced optimizer edges."""
+    summary_pattern = re.compile(
+        r"^NANO_C_SLAM_GVSOC_SPI_MAIN:graph_summary "
+        r"stored=(\d+) optimizer_input=(\d+) unique_edges=(\d+)$",
+        re.MULTILINE,
+    )
+    stored_pattern = re.compile(
+        r"^NANO_C_SLAM_GVSOC_SPI_MAIN:stored_constraint "
+        r"index=(\d+) from=(-?\d+) to=(-?\d+) valid=(\d+)$",
+        re.MULTILINE,
+    )
+    edge_pattern = re.compile(
+        r"^NANO_C_SLAM_GVSOC_SPI_MAIN:optimizer_edge "
+        r"index=(\d+) from=(-?\d+) to=(-?\d+) valid=(\d+)$",
+        re.MULTILINE,
+    )
+    raw_prefixes = (
+        "NANO_C_SLAM_GVSOC_SPI_MAIN:graph_summary ",
+        "NANO_C_SLAM_GVSOC_SPI_MAIN:stored_constraint ",
+        "NANO_C_SLAM_GVSOC_SPI_MAIN:optimizer_edge ",
+    )
+    raw_lines = {
+        prefix: [line for line in log.splitlines() if line.startswith(prefix)]
+        for prefix in raw_prefixes
+    }
+    summaries = list(summary_pattern.finditer(log))
+    stored_matches = list(stored_pattern.finditer(log))
+    edge_matches = list(edge_pattern.finditer(log))
+    if (
+        len(summaries) != 1
+        or len(raw_lines[raw_prefixes[0]]) != 1
+        or len(stored_matches) != expected_stored_count
+        or len(raw_lines[raw_prefixes[1]]) != expected_stored_count
+    ):
+        raise ValueError("target graph constraint summary is missing or incomplete")
+    stored_count, optimizer_count, unique_edge_count = map(int, summaries[0].groups())
+    if (
+        stored_count != expected_stored_count
+        or optimizer_count != expected_stored_count
+        or unique_edge_count != optimizer_count
+        or len(edge_matches) != optimizer_count
+        or len(raw_lines[raw_prefixes[2]]) != optimizer_count
+    ):
+        raise ValueError("target graph constraint counts are inconsistent")
+
+    def parse_pairs(
+        matches: list[re.Match[str]], *, node_limit: int, label: str
+    ) -> list[list[int]]:
+        pairs: list[list[int]] = []
+        for expected_index, match in enumerate(matches):
+            index, from_node, to_node, valid = map(int, match.groups())
+            if (
+                index != expected_index
+                or valid != 1
+                or from_node < 0
+                or to_node < 0
+                or from_node >= node_limit
+                or to_node >= node_limit
+                or from_node == to_node
+            ):
+                raise ValueError(f"target {label} endpoints are invalid")
+            pairs.append([from_node, to_node])
+        if len({tuple(sorted(pair)) for pair in pairs}) != len(pairs):
+            raise ValueError(f"target {label} contain duplicate undirected pairs")
+        return pairs
+
+    stored_pairs = parse_pairs(
+        stored_matches, node_limit=expected_pose_count, label="stored constraints"
+    )
+    optimizer_edges = parse_pairs(edge_matches, node_limit=3, label="optimizer edges")
+    if len({tuple(sorted(pair)) for pair in optimizer_edges}) != unique_edge_count:
+        raise ValueError("target optimizer edge uniqueness count is inconsistent")
+    return {
+        "stored_constraint_count": stored_count,
+        "stored_pose_endpoint_pairs": stored_pairs,
+        "optimizer_input_constraint_count": optimizer_count,
+        "optimizer_input_unique_edge_count": unique_edge_count,
+        "optimizer_compact_node_edges": optimizer_edges,
+        "endpoint_semantics": (
+            "stored pairs use pose-table indices; optimizer edges use reduced "
+            "graph-node indices"
+        ),
+    }
+
+
 def _parse_target_map_points(log: str) -> list[dict[str, float | int]]:
     """Parse the finite map points extracted by the GAP9 production code."""
     start = re.findall(
@@ -600,6 +688,7 @@ def capture_evidence(
     slam_job_fields: dict[str, int] | None = None
     transaction_accounting: dict[str, object] | None = None
     marker_optimizer_fields: dict[str, int] = {}
+    target_graph_constraints: dict[str, object] | None = None
     target_poses: list[dict[str, float | int]] | None = None
     if sequence == "pose-scan":
         if log.count(TARGET_MARKER) != 1:
@@ -740,6 +829,11 @@ def capture_evidence(
                     log, expected_count=len(gazebo_samples)
                 )
                 target_map_points = _parse_target_map_points(log)
+                target_graph_constraints = _parse_target_graph_constraints(
+                    log,
+                    expected_pose_count=len(gazebo_samples),
+                    expected_stored_count=2,
+                )
             response_expected_hex = match.group(3)
             marker_graph = int(match.group(1))
             marker_calls = int(match.group(2))
@@ -1021,6 +1115,7 @@ def capture_evidence(
         "frames": [frame.hex() for frame in expected],
         "target_marker": target_marker,
         "target_optimized_poses": target_poses,
+        "target_graph_constraints": target_graph_constraints,
         "target_projected_map_points": target_map_points,
         "optimizer_response_expected_hex": response_expected_hex,
         "optimizer_time_ms": optimizer_time_ms,

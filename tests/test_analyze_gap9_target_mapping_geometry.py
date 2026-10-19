@@ -86,6 +86,12 @@ def _target_log(
     lines.extend(
         (
             "NANO_C_SLAM_GVSOC_SPI_MAIN:map_dump_done count=2 finite=2",
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:graph_summary "
+            "stored=2 optimizer_input=2 unique_edges=2",
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:stored_constraint index=0 from=1 to=0 valid=1",
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:stored_constraint index=1 from=2 to=0 valid=1",
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:optimizer_edge index=0 from=1 to=0 valid=1",
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:optimizer_edge index=1 from=2 to=0 valid=1",
             *(
                 "NANO_C_SLAM_GVSOC_SPI_MAIN:scan_busy "
                 f"index={index} pose_id={pose_id} duration_us={1000 + index}"
@@ -383,6 +389,17 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
                         for index, pose_id in enumerate(scan_ids)
                     ],
                     "target_optimized_poses": target_poses,
+                    "target_graph_constraints": {
+                        "stored_constraint_count": 2,
+                        "stored_pose_endpoint_pairs": [[1, 0], [2, 0]],
+                        "optimizer_input_constraint_count": 2,
+                        "optimizer_input_unique_edge_count": 2,
+                        "optimizer_compact_node_edges": [[1, 0], [2, 0]],
+                        "endpoint_semantics": (
+                            "stored pairs use pose-table indices; optimizer edges "
+                            "use reduced graph-node indices"
+                        ),
+                    },
                     "target_projected_map_points": [
                         {
                             "point_id": point_id,
@@ -445,6 +462,10 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
         self.assertEqual(pose_error["per_pose"][0]["pose_id"], 0)
         self.assertAlmostEqual(pose_error["per_pose"][1]["yaw_error_rad"], 0.0)
         self.assertEqual(pose_error["scan_anchor_ids"], [0])
+        self.assertEqual(
+            report["target_graph_constraints"]["stored_pose_endpoint_pairs"],
+            [[1, 0], [2, 0]],
+        )
         self.assertAlmostEqual(pose_error["scan_anchor_xy_rmse_m"], 0.0, places=6)
         self.assertAlmostEqual(pose_error["scan_anchor_xy_max_m"], 0.0, places=6)
         self.assertAlmostEqual(pose_error["source_xy_bounds"]["span_x_m"], 0.95)
@@ -504,6 +525,17 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
         self.assertEqual(pose_error["scan_anchor_ids"], [0])
         self.assertAlmostEqual(pose_error["scan_anchor_xy_rmse_m"], 0.125, places=6)
         self.assertAlmostEqual(pose_error["scan_anchor_xy_max_m"], 0.125, places=6)
+
+    def test_target_graph_report_cannot_disagree_with_raw_target_log(self) -> None:
+        target = json.loads(self.target_path.read_text(encoding="utf-8"))
+        target["target_graph_constraints"]["stored_pose_endpoint_pairs"] = [
+            [1, 0],
+            [3, 0],
+        ]
+        self.target_path.write_text(json.dumps(target), encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "differs from its raw log"):
+            self._analyze()
 
     def test_target_map_at_firmware_capacity_is_not_claimed_complete(self) -> None:
         lines = self.log_path.read_text(encoding="utf-8").splitlines()

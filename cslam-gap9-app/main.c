@@ -304,6 +304,38 @@ void slam_loop() {
                 printf("NANO_C_SLAM_GVSOC_SPI_MAIN:map_dump_done count=%d "
                        "finite=%d\n",
                        (int)target_map.num, finite_target_points);
+
+                // Preserve the exact graph sent to the target optimizer so
+                // the host geometry report can distinguish firmware output
+                // from the separate host replay's ICP constraints.
+                int32_t stored_constraints = pcl_get_constraint_count();
+                int32_t optimizer_constraints =
+                    pcl_get_optimizer_input_constraint_count();
+                printf("NANO_C_SLAM_GVSOC_SPI_MAIN:graph_summary "
+                       "stored=%ld optimizer_input=%ld unique_edges=%ld\n",
+                       (long)stored_constraints,
+                       (long)optimizer_constraints,
+                       (long)pcl_get_optimizer_input_unique_edge_count());
+                for (int32_t constraint_id = 0;
+                     constraint_id < stored_constraints; ++constraint_id) {
+                    int16_t from_pose = -1;
+                    int16_t to_pose = -1;
+                    int valid = pcl_get_constraint_endpoints(
+                        constraint_id, &from_pose, &to_pose);
+                    printf("NANO_C_SLAM_GVSOC_SPI_MAIN:stored_constraint "
+                           "index=%ld from=%d to=%d valid=%d\n",
+                           (long)constraint_id, from_pose, to_pose, valid);
+                }
+                for (int32_t edge_id = 0; edge_id < optimizer_constraints;
+                     ++edge_id) {
+                    int16_t from_node = -1;
+                    int16_t to_node = -1;
+                    int valid = pcl_get_optimizer_input_endpoints(
+                        edge_id, &from_node, &to_node);
+                    printf("NANO_C_SLAM_GVSOC_SPI_MAIN:optimizer_edge "
+                           "index=%ld from=%d to=%d valid=%d\n",
+                           (long)edge_id, from_node, to_node, valid);
+                }
             }
 #endif
             set_cf_gpio(0);          // GAP9 free

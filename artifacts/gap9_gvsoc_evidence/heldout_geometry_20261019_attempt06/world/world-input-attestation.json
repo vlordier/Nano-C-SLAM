@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "session_id": "4336e53b-db9b-42ad-8655-bb403ee34878",
+  "session_sha256": "7324d6f17e0b1d8b1ef2e7eac06cf8f2cc3defe2ee372860d1ad5ede30b4eaa6",
+  "gazebo_server_pid": 94960,
+  "gazebo_server_sdf_argument": "/var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T//nano-c-slam-ros2.TaTypX/nano_c_slam_nearfield_heldout.sdf",
+  "world_sdf_sha256": "20eb690d09ca1e2b2974a4adaf345bc308b0eba6be12cfeb70e4e27b554eda7b",
+  "archived_sdf_sha256": "20eb690d09ca1e2b2974a4adaf345bc308b0eba6be12cfeb70e4e27b554eda7b",
+  "verified_while_server_active": true,
+  "attested_at_utc": "2026-10-19T12:32:09.701897Z"
+}

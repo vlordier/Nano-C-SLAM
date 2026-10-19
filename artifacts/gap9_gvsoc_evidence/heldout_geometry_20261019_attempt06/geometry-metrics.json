@@ -1,0 +1,443 @@
+{
+  "schema_version": 1,
+  "status": "measured-no-acceptance-threshold",
+  "validation_claims": {
+    "pose_consistency": "diagnostic-no-acceptance-threshold",
+    "map_vs_world_geometry": "diagnostic-no-acceptance-threshold",
+    "target_optimizer_health": "validated",
+    "sensor_model_fidelity": "not-validated",
+    "stm32_flight_firmware": "not-validated",
+    "target_build_reproducibility": "artifact-hashes-verified-not-rebuilt"
+  },
+  "run_id": "acfe3bf3-897b-41bf-8e4b-a0c3934ba8cc",
+  "mapping_route": "heldout-asymmetric",
+  "world_session_id": "4336e53b-db9b-42ad-8655-bb403ee34878",
+  "coordinate_convention": "Gazebo world-frame XY meters and yaw radians; GAP9 z field is planar yaw. Trajectory errors compare same-frame values without fitted alignment; the live bridge initializes this frame from Gazebo odometry.",
+  "target_pose_count": 60,
+  "target_graph_constraints": {
+    "stored_constraint_count": 2,
+    "stored_pose_endpoint_pairs": [
+      [
+        20,
+        0
+      ],
+      [
+        40,
+        0
+      ]
+    ],
+    "optimizer_input_constraint_count": 2,
+    "optimizer_input_unique_edge_count": 2,
+    "optimizer_compact_node_edges": [
+      [
+        1,
+        0
+      ],
+      [
+        2,
+        0
+      ]
+    ],
+    "endpoint_semantics": "stored pairs use pose-table indices; optimizer edges use reduced graph-node indices"
+  },
+  "pose_error": {
+    "xy_rmse_m": 0.041535186047166946,
+    "xy_max_m": 0.058513739650977545,
+    "yaw_rmse_rad": 0.009858252999942358,
+    "yaw_max_rad": 0.019721127349896506,
+    "per_pose": [
+      {
+        "pose_id": 0,
+        "xy_error_m": 5.847437418855102e-05,
+        "yaw_error_rad": 1.9706927560037002e-05
+      },
+      {
+        "pose_id": 1,
+        "xy_error_m": 0.002900031550718843,
+        "yaw_error_rad": 0.0008027449477814308
+      },
+      {
+        "pose_id": 2,
+        "xy_error_m": 0.005852852836543972,
+        "yaw_error_rad": 0.0016454475721703332
+      },
+      {
+        "pose_id": 3,
+        "xy_error_m": 0.008798207509361602,
+        "yaw_error_rad": 0.0025115486894717876
+      },
+      {
+        "pose_id": 4,
+        "xy_error_m": 0.011738638682372982,
+        "yaw_error_rad": 0.003398710698930163
+      },
+      {
+        "pose_id": 5,
+        "xy_error_m": 0.014674466027188951,
+        "yaw_error_rad": 0.004305582247107864
+      },
+      {
+        "pose_id": 6,
+        "xy_error_m": 0.017605587355699188,
+        "yaw_error_rad": 0.005231159558112264
+      },
+      {
+        "pose_id": 7,
+        "xy_error_m": 0.020532436387235592,
+        "yaw_error_rad": 0.006174533444957664
+      },
+      {
+        "pose_id": 8,
+        "xy_error_m": 0.023455331586394276,
+        "yaw_error_rad": 0.007134926492070814
+      },
+      {
+        "pose_id": 9,
+        "xy_error_m": 0.026375161060329732,
+        "yaw_error_rad": 0.00811132329838582
+      },
+      {
+        "pose_id": 10,
+        "xy_error_m": 0.02929227756354048,
+        "yaw_error_rad": 0.009102747649650134
+      },
+      {
+        "pose_id": 11,
+        "xy_error_m": 0.03220709666814625,
+        "yaw_error_rad": 0.010108344875370268
+      },
+      {
+        "pose_id": 12,
+        "xy_error_m": 0.035119570349202,
+        "yaw_error_rad": 0.0111273866331274
+      },
+      {
+        "pose_id": 13,
+        "xy_error_m": 0.038030146183755935,
+        "yaw_error_rad": 0.012159135417598943
+      },
+      {
+        "pose_id": 14,
+        "xy_error_m": 0.040938937223763475,
+        "yaw_error_rad": 0.013202937041602247
+      },
+      {
+        "pose_id": 15,
+        "xy_error_m": 0.04384673813218077,
+        "yaw_error_rad": 0.014258074792691922
+      },
+      {
+        "pose_id": 16,
+        "xy_error_m": 0.04675353512889361,
+        "yaw_error_rad": 0.015323913089062557
+      },
+      {
+        "pose_id": 17,
+        "xy_error_m": 0.04965030733787953,
+        "yaw_error_rad": 0.016401648851862127
+      },
+      {
+        "pose_id": 18,
+        "xy_error_m": 0.052577424489587056,
+        "yaw_error_rad": 0.01748499305640916
+      },
+      {
+        "pose_id": 19,
+        "xy_error_m": 0.0554898271385336,
+        "yaw_error_rad": 0.018576132206323148
+      },
+      {
+        "pose_id": 20,
+        "xy_error_m": 0.058513739650977545,
+        "yaw_error_rad": 0.019721127349896506
+      },
+      {
+        "pose_id": 21,
+        "xy_error_m": 0.05712256053739736,
+        "yaw_error_rad": 0.018022103273738654
+      },
+      {
+        "pose_id": 22,
+        "xy_error_m": 0.05578349811769646,
+        "yaw_error_rad": 0.01633838082824335
+      },
+      {
+        "pose_id": 23,
+        "xy_error_m": 0.05450087168191677,
+        "yaw_error_rad": 0.014669157726542092
+      },
+      {
+        "pose_id": 24,
+        "xy_error_m": 0.05327912261316476,
+        "yaw_error_rad": 0.013013686785287693
+      },
+      {
+        "pose_id": 25,
+        "xy_error_m": 0.05212281534250218,
+        "yaw_error_rad": 0.011371249579834153
+      },
+      {
+        "pose_id": 26,
+        "xy_error_m": 0.051036196311961546,
+        "yaw_error_rad": 0.009741074068158273
+      },
+      {
+        "pose_id": 27,
+        "xy_error_m": 0.050023998060777154,
+        "yaw_error_rad": 0.008122469021637269
+      },
+      {
+        "pose_id": 28,
+        "xy_error_m": 0.049091108132107986,
+        "yaw_error_rad": 0.006514849069811923
+      },
+      {
+        "pose_id": 29,
+        "xy_error_m": 0.04824211088966411,
+        "yaw_error_rad": 0.004917631808901035
+      },
+      {
+        "pose_id": 30,
+        "xy_error_m": 0.047480968442238085,
+        "yaw_error_rad": 0.0033302333813010065
+      },
+      {
+        "pose_id": 31,
+        "xy_error_m": 0.04681198966555877,
+        "yaw_error_rad": 0.0017521171032393035
+      },
+      {
+        "pose_id": 32,
+        "xy_error_m": 0.04623909993909943,
+        "yaw_error_rad": 0.00018278482334688206
+      },
+      {
+        "pose_id": 33,
+        "xy_error_m": 0.04576575426942292,
+        "yaw_error_rad": 0.0013782331629674793
+      },
+      {
+        "pose_id": 34,
+        "xy_error_m": 0.042913338805664634,
+        "yaw_error_rad": 0.0024688909609182907
+      },
+      {
+        "pose_id": 35,
+        "xy_error_m": 0.04274900475409386,
+        "yaw_error_rad": 0.0035515904784375607
+      },
+      {
+        "pose_id": 36,
+        "xy_error_m": 0.04255656783046697,
+        "yaw_error_rad": 0.004639679377772321
+      },
+      {
+        "pose_id": 37,
+        "xy_error_m": 0.04224298517087126,
+        "yaw_error_rad": 0.005741922394368881
+      },
+      {
+        "pose_id": 38,
+        "xy_error_m": 0.04197062102705798,
+        "yaw_error_rad": 0.0068578913582175716
+      },
+      {
+        "pose_id": 39,
+        "xy_error_m": 0.041784790928896566,
+        "yaw_error_rad": 0.007986781354262895
+      },
+      {
+        "pose_id": 40,
+        "xy_error_m": 0.04169678768504293,
+        "yaw_error_rad": 0.009214411655389387
+      },
+      {
+        "pose_id": 41,
+        "xy_error_m": 0.04169678341546615,
+        "yaw_error_rad": 0.009214412952328388
+      },
+      {
+        "pose_id": 42,
+        "xy_error_m": 0.04169678037937776,
+        "yaw_error_rad": 0.00921441315109739
+      },
+      {
+        "pose_id": 43,
+        "xy_error_m": 0.041696788774570843,
+        "yaw_error_rad": 0.009214411237991715
+      },
+      {
+        "pose_id": 44,
+        "xy_error_m": 0.04169681692982708,
+        "yaw_error_rad": 0.009214412838211228
+      },
+      {
+        "pose_id": 45,
+        "xy_error_m": 0.041696807023447954,
+        "yaw_error_rad": 0.009214412714946274
+      },
+      {
+        "pose_id": 46,
+        "xy_error_m": 0.04169679959794714,
+        "yaw_error_rad": 0.009214412160271301
+      },
+      {
+        "pose_id": 47,
+        "xy_error_m": 0.041696823343466666,
+        "yaw_error_rad": 0.009214411777263454
+      },
+      {
+        "pose_id": 48,
+        "xy_error_m": 0.04169679552730964,
+        "yaw_error_rad": 0.009214413065961935
+      },
+      {
+        "pose_id": 49,
+        "xy_error_m": 0.04169679433300627,
+        "yaw_error_rad": 0.00921441277978774
+      },
+      {
+        "pose_id": 50,
+        "xy_error_m": 0.04169678042954736,
+        "yaw_error_rad": 0.009214411975840608
+      },
+      {
+        "pose_id": 51,
+        "xy_error_m": 0.04169678943569723,
+        "yaw_error_rad": 0.009214412514456871
+      },
+      {
+        "pose_id": 52,
+        "xy_error_m": 0.04169676776076493,
+        "yaw_error_rad": 0.00921441169990267
+      },
+      {
+        "pose_id": 53,
+        "xy_error_m": 0.04169680334872816,
+        "yaw_error_rad": 0.009214411516600851
+      },
+      {
+        "pose_id": 54,
+        "xy_error_m": 0.04169679193101931,
+        "yaw_error_rad": 0.009214413333183735
+      },
+      {
+        "pose_id": 55,
+        "xy_error_m": 0.041696784436119044,
+        "yaw_error_rad": 0.009214413010371736
+      },
+      {
+        "pose_id": 56,
+        "xy_error_m": 0.04169676344133521,
+        "yaw_error_rad": 0.009214412060119859
+      },
+      {
+        "pose_id": 57,
+        "xy_error_m": 0.04169678257201609,
+        "yaw_error_rad": 0.009214412653103299
+      },
+      {
+        "pose_id": 58,
+        "xy_error_m": 0.041696801288750696,
+        "yaw_error_rad": 0.009214412769452451
+      },
+      {
+        "pose_id": 59,
+        "xy_error_m": 0.04169680770417896,
+        "yaw_error_rad": 0.009214412624419577
+      }
+    ],
+    "scan_anchor_ids": [
+      0,
+      20,
+      40
+    ],
+    "scan_anchor_xy_rmse_m": 0.041482860920490874,
+    "scan_anchor_xy_max_m": 0.058513739650977545,
+    "scan_anchor_yaw_rmse_rad": 0.01256753269962997,
+    "scan_anchor_yaw_max_rad": 0.019721127349896506,
+    "scan_anchor_note": "Diagnostic only: scan-start pose IDs correspond to the graph's scan anchors; the frozen acceptance profile still evaluates all same-frame pose samples.",
+    "source_xy_bounds": {
+      "min_x_m": -0.5419585439301023,
+      "max_x_m": -0.27411579499035704,
+      "min_y_m": -0.500177059376865,
+      "max_y_m": -0.17057099696840597,
+      "span_x_m": 0.2678427489397453,
+      "span_y_m": 0.329606062408459
+    },
+    "target_xy_bounds": {
+      "min_x_m": -0.5261863470077515,
+      "max_x_m": -0.2761147916316986,
+      "min_y_m": -0.5352785587310791,
+      "max_y_m": -0.21282927691936493,
+      "span_x_m": 0.25007155537605286,
+      "span_y_m": 0.3224492818117142
+    },
+    "source_path_length_m": 0.8423318265411424,
+    "target_path_length_m": 0.8373108024676009,
+    "target_to_source_path_length_ratio": 0.9940391376470253
+  },
+  "target_map": {
+    "point_count": 224,
+    "xy_bounds": {
+      "min_x_m": -1.6428539752960205,
+      "max_x_m": 0.7475613355636597,
+      "min_y_m": -1.6632955074310303,
+      "max_y_m": 0.6710516214370728,
+      "span_x_m": 2.39041531085968,
+      "span_y_m": 2.334347128868103
+    },
+    "capacity_points": 700,
+    "capacity_reached": false,
+    "sdf_surface_distance_m": {
+      "median": 0.018582373077517193,
+      "p95": 0.04483937084675553,
+      "max": 0.06344473154343823,
+      "within_0_05m_fraction": 0.96875
+    },
+    "point_fraction_within_0_05m_of_model_surface": {
+      "obstacle1": 0.0,
+      "obstacle2": 0.0,
+      "obstacle3": 0.022321428571428572,
+      "wall1": 0.23214285714285715,
+      "wall2": 0.26785714285714285,
+      "wall3": 0.26785714285714285,
+      "wall4": 0.20089285714285715
+    }
+  },
+  "geometry": {
+    "source_sdf_sha256": "20eb690d09ca1e2b2974a4adaf345bc308b0eba6be12cfeb70e4e27b554eda7b",
+    "source_sdf_bytes": 32600,
+    "surface_models": [
+      "obstacle1",
+      "obstacle2",
+      "obstacle3",
+      "wall1",
+      "wall2",
+      "wall3",
+      "wall4"
+    ],
+    "point_distance_tolerance_m": 0.05,
+    "tolerance_note": "Diagnostic bucket only; not an acceptance threshold. The sensor bridge uses idealized simulator-derived four-ray ranges."
+  },
+  "sha256": {
+    "target_report": "e6166a35ce583fcbcbf5ab465fac17668c0f17db29393b8d5c54565ba6541064",
+    "target_elf": "47d1a7d1626117d2fbd1dd92fc4c75e36382558e4912a023f7b867cb632e736a",
+    "gvsoc_config": "536b13b6107d46063ed056cf791402c7150c2fab2d84dab1a65fe3071697a2da",
+    "host_transfer": "7e0e1c81767db06ce1a38d58795b6bdb0e46bc865571b747afb6fa5616714db5",
+    "target_sources": {
+      "cslam-gap9-app/main.c": "2354217dfafc8f0474750cd6c137e77433e272cb17a0742e27ad005dd270743a"
+    },
+    "run_bundle": "6fbb558179bfbb552757278f7357ce840f21a05e9224fa2defb1289eb7401f7d",
+    "world_session": "7324d6f17e0b1d8b1ef2e7eac06cf8f2cc3defe2ee372860d1ad5ede30b4eaa6",
+    "world_input_attestation": "900bdeb5350f1b78474fc9519c93cbf792696ba26bcb58e183fe92ccc23e36cf",
+    "source_sdf": "20eb690d09ca1e2b2974a4adaf345bc308b0eba6be12cfeb70e4e27b554eda7b",
+    "target_log": "7f566241919969f843d014d3f8c8f44377899f8f6d7588a7b7c7080950435dbf"
+  },
+  "limitations": [
+    "Metrics characterize one synthetic near-field run; no acceptance thresholds are declared.",
+    "The report cross-checks target frames, optimizer response, and SPI diagnostics against the same-run log and source packets, but does not independently rebuild the target firmware. ELF, configuration, and transfer hashes are checked; source hashes are recorded from capture because source snapshots are not archived.",
+    "The Gazebo sensor bridge uses idealized four-ray ranges from the simulator, not physical ToF behavior.",
+    "This does not validate UWB effects or Crazyflie STM32 flight firmware in Gazebo."
+  ]
+}
