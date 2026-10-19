@@ -832,3 +832,39 @@ five-second hover, finite-state, no-warning, commanded-landing, and
 disconnected-actuator checks unchanged. Nano STM32 task execution, ToF/UWB
 adapters, and map-to-Gazebo geometry comparison remain separate, unpassed
 gates.
+
+## Rate-window boundary fix and retest (2026-10-19)
+
+The prior 502/500 stabilizer warning prompted a trace of
+`rateSupervisorValidate()`. It incremented the event count, then evaluated
+only when `osTimeMs` was strictly greater than the window deadline. If the
+supervisor starts with an already-queued sensor event, an exact 500-Hz stream
+can therefore include its event at the start and the first event after the
+1,000-ms deadline, producing 502 counts for just over one second. Crazyflie
+fork commit `8bf5167f` changes this comparison to `>=` and updates the
+existing rate tests to cover an immediate first sample, both consecutive
+500-Hz windows (501 then 500), 1,000-Hz events, and rejected 460-Hz input. All
+11 `test_rateSupervisor` Unity tests pass with GCC and the pinned Unity source.
+The full `cf2` default and diagnostics-enabled builds pass after this change;
+their hashes are recorded in bead `ncs-fea.5.8.2.1`.
+
+A new run with that firmware still failed the rate/flight checks. Two verbose
+Gazebo subscriptions plus sampled firmware diagnostics produced 3,206
+odometry samples over 15.998 simulation seconds and 19.481 wall seconds
+(aggregate RTF 0.821); altitude ranged from 2.0150 to 2.9995 m for the 2.615-m
+takeoff target. Firmware now reported `485/500` rather than the previous
+502/500, and later logged `Landing timeout, disarming`. Its estimator state
+returned to the 2.015-m platform with thrust at zero; this does not meet the
+five-second hover or no-timeout criteria. The changed comparison addresses
+the exact-boundary counting error, while the new 485 count shows a remaining
+runtime cadence failure under this loaded run. No warning threshold was
+expanded. This capture still lacks the synchronized plugin motor-attribution
+trace and disconnected-actuator negative control, so the strict checker was
+not run and the rate/flight bead remains open.
+
+Next isolate runtime cadence with a low-overhead shared-clock capture, then
+measure the relationship between Gazebo RTF, IMU delivery timestamps,
+stabilizer iterations and the rate supervisor. The altitude response also
+needs a bounded planner/controller trace from setpoint through motor output;
+the current 0.38-m overshoot and landing timeout are independent failure
+signals. Keep the registered acceptance limits unchanged.
