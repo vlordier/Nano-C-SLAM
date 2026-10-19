@@ -252,29 +252,33 @@ A temporary raised platform was added to the pinned CrazySim world so the
 firmware would remain upright during gyro calibration. With a diagnostic
 `cf2` build and the Gazebo sensor/plugin path active, the plugin logged
 stationary IMU input (`acc=(0,0,9.80665)`, `gyro=(0,0,0)`). A CRTP high-level
-takeoff datagram was also observed by the plugin (`8c 07 ...`) and the custom
-firmware logged that it had received the bytes. These observations prove the
-wire command reached the firmware boundary, but the current capture lacks a
-correlated finite pose trace, commander acceptance marker, and motor trace
-attributed specifically to the stabilizer/controller output. The takeoff
-packet was sent with an absolute target height below the platform's current
-world height, so it was not a valid climb test.
+takeoff datagram was observed by the plugin and diagnostic firmware. Decoding
+the captured bytes
+`8c 07 00 33 33 13 40 00 00 00 00 01 00 00 40 40` with the CrazySim
+`<BBBff?f` layout gives `TAKEOFF_2`, target altitude `2.3 m`, current-yaw mode,
+and duration `3.0 s`. This target is above the platform's starting pose
+(approximately `2.04 m`). The plugin's `TRACE_MOTOR_NONZERO` is emitted only
+inside `handleMotorsMessage()`, which is called for a firmware UDP datagram
+whose CRTP port is 9 and whose payload is the four-motor response. Therefore
+the observed `36000` values are firmware-originated actuator packets, not a
+direct-motor command from the cflib socket. The separate one-byte `ff` packet
+is a cflib ping echo and does not call the motor handler.
 
-Do not treat the same run's repeated `36000` motor values as flight evidence:
-they followed a one-byte `ff` plugin probe and may represent the plugin's
-direct-motor test path, not the firmware controller. Earlier temporary runs
-reported estimator resets, off-rate warnings, non-finite angular odometry,
-and a crash on landing. Together these make the reference flight **failed / not
-qualified**. The platform, custom instrumentation, and firmware priority
-changes exist only under `/tmp`; no vendor/submodule changes are maintained.
+This establishes an initial firmware-commanded rise in the diagnostic
+CrazySim build, but does **not** pass the flight acceptance criteria. The
+captured trajectory lacks a stable finite hover; earlier attempts reported
+estimator resets, stabilizer-rate warnings, non-finite angular odometry, and
+a crash during landing. Thus the reference flight is **partial and unstable**,
+not a successful takeoff/hover/land. The platform, custom instrumentation,
+and firmware priority changes exist only under `/tmp`; no vendor/submodule
+changes are maintained.
 
 The next valid test must start from a clean server with a unique Gazebo
 partition, record synchronized `/cf_1/odom`, `/cf_1/imu`, plugin motor topic,
-firmware controller/setpoint output, and packet source; omit all `ff` direct
-motor probes during the flight window; issue a takeoff target above the
-measured starting pose; reject any non-finite odometry or motor value; and
-demonstrate hold plus bounded landing. This still qualifies only upstream
-CrazySim firmware. Nano-owned STM32 tasks and mapping remain unexecuted.
+firmware controller/setpoint output, and packet source; reject any non-finite
+odometry or motor value; and demonstrate stable hold plus bounded landing.
+This still qualifies only upstream CrazySim firmware. Nano-owned STM32 tasks
+and mapping remain unexecuted.
 
 The temporary debug edits live only in `/tmp/ncs-crazysim` in the Lima guest;
 they are not a maintained patch and were not copied into the submodule. Bead
