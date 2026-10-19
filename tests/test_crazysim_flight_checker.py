@@ -19,6 +19,10 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
             negative_control_odometry_text=capture.negative_odometry,
             negative_control_motor_text=capture.negative_motors,
             negative_control_log=capture.negative_log,
+            firmware_process_count=capture.firmware_process_count,
+            negative_control_firmware_process_count=(
+                capture.negative_firmware_process_count
+            ),
         )
         return errors
 
@@ -33,6 +37,10 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
             negative_control_odometry_text=capture.negative_odometry,
             negative_control_motor_text=capture.negative_motors,
             negative_control_log=capture.negative_log,
+            firmware_process_count=capture.firmware_process_count,
+            negative_control_firmware_process_count=(
+                capture.negative_firmware_process_count
+            ),
         )
 
         self.assertEqual(errors, [])
@@ -69,6 +77,10 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
             negative_control_motor_text=capture.negative_motors,
             negative_control_log=capture.negative_log,
             firmware_exit_code=1,
+            firmware_process_count=capture.firmware_process_count,
+            negative_control_firmware_process_count=(
+                capture.negative_firmware_process_count
+            ),
         )
 
         self.assertIn("firmware reported estimator/rate/crash failure", errors)
@@ -116,6 +128,41 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
         )
 
         self.assertIn("positive run has no nonzero actuator command", errors)
+
+    def test_zero_or_multiple_firmware_instances_are_rejected(self) -> None:
+        capture = passing_capture()
+        errors_without_firmware = self._validate(
+            firmware_log=capture.firmware_log.replace(
+                "TRACE_CRTP_RX_STARTED link=0x1234\n", ""
+            )
+        )
+        errors_with_duplicate_firmware = self._validate(
+            firmware_log=capture.firmware_log + "\nTRACE_CRTP_RX_STARTED link=0x5678"
+        )
+
+        self.assertIn(
+            "positive run log must contain exactly one firmware startup marker; "
+            "found 0",
+            errors_without_firmware,
+        )
+        self.assertIn(
+            "positive run log must contain exactly one firmware startup marker; "
+            "found 2",
+            errors_with_duplicate_firmware,
+        )
+
+    def test_duplicate_firmware_processes_are_rejected_for_both_runs(self) -> None:
+        positive_errors = self._validate(firmware_process_count=2)
+        negative_errors = self._validate(negative_firmware_process_count=2)
+
+        self.assertIn(
+            "positive run must have exactly one firmware process; observed 2",
+            positive_errors,
+        )
+        self.assertIn(
+            "negative control must have exactly one firmware process; observed 2",
+            negative_errors,
+        )
 
 
 if __name__ == "__main__":

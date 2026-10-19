@@ -313,6 +313,46 @@ The temporary debug edits live only in `/tmp/ncs-crazysim` in the Lima guest;
 they are not a maintained patch and were not copied into the submodule. Bead
 `ncs-fea.5.8.1` now isolates readiness gating and bounded-queue diagnosis.
 
+## Isolated 500-Hz retest and invalidated duplicate-process run (2026-10-19)
+
+A later 500-Hz experiment was first treated as a single-firmware run, but a
+process audit found two simultaneous guest processes (`cf2` PIDs 25248 and
+26477) using the same UDP endpoint. Its trajectory is invalid evidence and
+must not be combined with the earlier single-process run. The flight gate now
+requires an explicit process count for both positive and negative captures,
+and exactly one `TRACE_CRTP_RX_STARTED` marker in each combined firmware log.
+The process-count argument is necessary because multiple `cf2` processes may
+write to separate outputs.
+
+The test was restarted with a fresh Gazebo plugin/world and exactly one
+instrumented `cf2`. The model was loaded from the world SDF because the
+cross-process `/world/.../create` request timed out; the `/cf_1/imu`,
+`/cf_1/odom`, and `/cf_1/command/motor_speed` topics were then observed. The
+firmware reported successful self-test, live sensor queue delivery, gyro bias
+calibration, stabilizer start, and `SUP: Ready to fly`. A TAKEOFF_2 and a
+LAND_2 command were sent through the plugin's cflib UDP port. Gazebo captured
+5,750 odometry samples over 28.89 simulation seconds, 14,428 IMU samples, and
+115,576 motor velocity values. Motor output was nonzero and finite, with a
+maximum of 2,774.98 rad/s. The model rose from 2.040 m but reached 10.099 m,
+and ended at 9.352 m. Finite angular speed peaked at 606.94 rad/s and was
+31.39 rad/s at the final sample. Only 5,135 of 5,750 odometry samples were
+fully finite; the first non-finite angular velocity appeared at 26.17 s. The
+longest interval meeting the configured
+2.40-m/upright/low-angular-rate hover envelope was 0.69 s. This is a failed
+flight, not a takeoff/hover/landing result. The bounded run used `timeout`, so
+its process exit status also fails the gate.
+
+The same build changed `RATE_MAIN_LOOP` to 500 Hz, but the upstream
+`stabilizer.c` rate supervisor still checks a fixed 997–1003 events per
+second. The log reported 542 events; that warning cannot be interpreted as a
+500-Hz pass/fail until the check is derived from the compiled loop rate and
+the measurement clock is aligned. Kalman prediction counts of 86–98 against
+the configured 100 Hz target also remain unexplained. Do not clear these
+warnings by simply widening limits. Bead `ncs-fea.5.8.2.1` tracks the explicit
+rate-measurement fix and its negative test. Temporary CrazySim source edits
+and the 500-Hz binary remain only in the Lima guest; no vendor source or
+submodule pin changed in this repository.
+
 ## Reproducible flight-capture gate
 
 `scripts/check_crazysim_flight.py` checks paired positive-flight and
@@ -322,12 +362,22 @@ height within 0.10 m of the raised platform, at least 0.30 m of climb, five
 continuous seconds within 0.12 m of the requested hover altitude while upright
 and below 0.5 rad/s angular speed, and a landing within 0.10 m of platform
 height. It also requires the firmware readiness markers, captured TAKEOFF_2
-and LAND_2 commands, a plugin trace attributing motor output to the firmware,
-no estimator/rate/crash messages, and successful process exit codes. The
+and LAND_2 commands, exactly one `TRACE_CRTP_RX_STARTED` marker, a plugin trace
+attributing motor output to the firmware, no estimator/rate/crash messages,
+and successful process exit codes. The
 negative capture must explicitly identify a disconnected actuator bridge,
 stay within 0.10 m of its starting height, and contain only zero motor output.
 
 Run it against saved `gz topic -e` captures and complete firmware/plugin logs:
+while the firmware is running, count the processes whose executable is `cf2`
+and whose first argument is the firmware UDP port (19951 in this setup):
+
+```sh
+ssh -F ~/.lima/ncs-sitl/ssh.config lima-ncs-sitl \
+  'ps -eo args= | awk '\''$1 ~ /(^|\/)cf2$/ && $2 == "19951" { n++ } END { print n+0 }'\'''
+```
+
+Record that count for each run and pass it to the gate:
 
 ```sh
 uv run --locked python scripts/check_crazysim_flight.py \
@@ -336,7 +386,9 @@ uv run --locked python scripts/check_crazysim_flight.py \
   --plugin-log flight-gazebo.log \
   --negative-control-odometry disconnected-odometry.txt \
   --negative-control-motors disconnected-motors.txt \
-  --negative-control-log disconnected-run.log
+  --negative-control-log disconnected-run.log \
+  --firmware-process-count 1 \
+  --negative-control-firmware-process-count 1
 ```
 
 The checker is tested with synthetic fixtures, not represented as a passed

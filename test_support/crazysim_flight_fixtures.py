@@ -19,6 +19,8 @@ class FlightCapture:
     negative_odometry: str
     negative_motors: str
     negative_log: str
+    firmware_process_count: int = 1
+    negative_firmware_process_count: int = 1
 
 
 def _header(time_s: float) -> str:
@@ -81,6 +83,7 @@ def passing_capture() -> FlightCapture:
             "SYS: Self test passed!",
             "SENSORS: GYro Bias found",
             "STAB: Starting stabilizer loop",
+            "TRACE_CRTP_RX_STARTED link=0x1234",
             "TRACE_HL_RX header=8c size=15 data=07 00 00 00",
             "TRACE_HL_RX header=8c size=15 data=08 00 00 00",
         )
@@ -93,5 +96,7 @@ def passing_capture() -> FlightCapture:
         plugin_log="TRACE_MOTOR_NONZERO 20000,20000,20000,20000",
         negative_odometry=negative_odometry,
         negative_motors=negative_motors,
-        negative_log="actuator_bridge=disconnected",
+        negative_log=(
+            "TRACE_CRTP_RX_STARTED link=0x5678\nactuator_bridge=disconnected"
+        ),
     )

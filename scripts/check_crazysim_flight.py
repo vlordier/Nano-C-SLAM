@@ -201,6 +201,8 @@ def validate_capture(
     gazebo_exit_code: int = 0,
     negative_control_firmware_exit_code: int = 0,
     negative_control_gazebo_exit_code: int = 0,
+    firmware_process_count: int | None = None,
+    negative_control_firmware_process_count: int | None = None,
     hover_target_z_m: float = HOVER_TARGET_Z_M,
 ) -> tuple[CaptureSummary | None, list[str]]:
     """Apply the pre-registered flight gate to one positive and one negative run."""
@@ -257,6 +259,20 @@ def validate_capture(
     ):
         errors.append("Gazebo plugin log does not attribute motor output to firmware")
 
+    firmware_instances = firmware_log.count("TRACE_CRTP_RX_STARTED")
+    if firmware_instances != 1:
+        errors.append(
+            "positive run log must contain exactly one firmware startup marker; "
+            f"found {firmware_instances}"
+        )
+    if firmware_process_count is None:
+        errors.append("positive run is missing firmware process-count evidence")
+    elif firmware_process_count != 1:
+        errors.append(
+            "positive run must have exactly one firmware process; "
+            f"observed {firmware_process_count}"
+        )
+
     required_markers = (
         "Self test passed!",
         "GYro Bias found",
@@ -287,6 +303,17 @@ def validate_capture(
         errors.append(
             "negative-control firmware exited with status "
             f"{negative_control_firmware_exit_code}"
+        )
+    if negative_control_firmware_process_count is None:
+        errors.append("negative control is missing firmware process-count evidence")
+    elif negative_control_firmware_process_count != 1:
+        errors.append(
+            "negative control must have exactly one firmware process; "
+            f"observed {negative_control_firmware_process_count}"
+        )
+    if negative_control_log.count("TRACE_CRTP_RX_STARTED") != 1:
+        errors.append(
+            "negative control log must contain exactly one firmware startup marker"
         )
     if negative_control_gazebo_exit_code != 0:
         errors.append(
@@ -371,6 +398,10 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--negative-control-odometry", required=True, type=Path)
     parser.add_argument("--negative-control-motors", required=True, type=Path)
     parser.add_argument("--negative-control-log", required=True, type=Path)
+    parser.add_argument("--firmware-process-count", required=True, type=int)
+    parser.add_argument(
+        "--negative-control-firmware-process-count", required=True, type=int
+    )
     parser.add_argument("--firmware-exit-code", type=int, default=0)
     parser.add_argument("--gazebo-exit-code", type=int, default=0)
     parser.add_argument("--negative-control-firmware-exit-code", type=int, default=0)
@@ -394,6 +425,10 @@ def main() -> int:
             encoding="utf-8"
         ),
         negative_control_log=args.negative_control_log.read_text(encoding="utf-8"),
+        firmware_process_count=args.firmware_process_count,
+        negative_control_firmware_process_count=(
+            args.negative_control_firmware_process_count
+        ),
         firmware_exit_code=args.firmware_exit_code,
         gazebo_exit_code=args.gazebo_exit_code,
         negative_control_firmware_exit_code=args.negative_control_firmware_exit_code,
