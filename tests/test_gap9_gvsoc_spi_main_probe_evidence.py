@@ -181,6 +181,65 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
             )
         )
 
+    def test_accepts_max_capacity_optimizer_marker_and_records_runtime(self) -> None:
+        frames = make_mapping_trace(260)
+        commands = [
+            "POSE_BAD_CHECKSUM"
+            if index == 0
+            else {0: "POSE", 1: "SCAN", 2: "OPTIMIZE"}[frame[1]]
+            for index, frame in enumerate(frames)
+        ]
+        self.host_transfer_path.write_text(
+            json.dumps(
+                {
+                    "sequence": "max-mapping",
+                    "pre_cs_dummy_clock_cycles": 8,
+                    "frames": [
+                        {
+                            "command": command,
+                            "frame_tx_hex": frame.hex(),
+                            "length": len(frame),
+                        }
+                        for command, frame in zip(commands, frames, strict=True)
+                    ],
+                    "control_phase": "optimizer_completed_response_not_clocked",
+                }
+            ),
+            encoding="utf-8",
+        )
+        marker = (
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:max_mapping_ok packets=276 "
+            "pose_decoded=260 pose_inserted=260 bad_pose_checksum=1 "
+            "scans_decoded=14 scans_registered=13 constraints=30 "
+            "optimizer_edges=30 optimize=1 poses=260 graph=13 "
+            "solver_calls=3 time_ms=4321 has_nan=0 completed=1 "
+            "response_expected_hex=010002000300040005000600070008000900"
+        )
+        stats = (
+            "NANO_C_SLAM_SPI:stats rx=276 malformed=0 unknown=0 "
+            "frames=261,14,1,0,0,0,0 decode_ok=260,14,0,0,0,0,0 "
+            "decode_error=1,0,0,0,0,0,0 pose_id_missing=0 "
+            "pose_id_nonadvancing=0 optimize_responses=0"
+        )
+        self.log_path.write_text(
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:response_phase=skipped\n"
+            + stats
+            + "\n"
+            + marker
+            + "\n",
+            encoding="utf-8",
+        )
+
+        report = self._capture()
+
+        self.assertEqual(report["sequence"], "max-mapping")
+        self.assertEqual(report["frame_count"], 276)
+        self.assertEqual(report["optimizer_time_ms"], 4321)
+        self.assertEqual(
+            report["evidence_class"],
+            "gvsoc-production-max-capacity-mapping-spi2-ingress",
+        )
+
     def test_rejects_claimed_response_bytes_when_target_skips_slave_tx(self) -> None:
         self._write_mapping_evidence("00" * 18)
 

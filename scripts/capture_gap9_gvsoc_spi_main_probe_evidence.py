@@ -63,8 +63,8 @@ def capture_evidence(
         raise ValueError("host transfer record must be a JSON object")
     frames = host_transfer.get("frames")
     sequence = host_transfer.get("sequence", "pose-scan")
-    if sequence == "mapping":
-        expected = list(make_mapping_trace())
+    if sequence in {"mapping", "max-mapping"}:
+        expected = list(make_mapping_trace(260 if sequence == "max-mapping" else 60))
         expected_commands = [
             "POSE_BAD_CHECKSUM"
             if index == 0
@@ -93,6 +93,7 @@ def capture_evidence(
         raise ValueError(f"cannot read GVSOC log: {error}") from error
     response_status: str | None = None
     spi_diagnostics: dict[str, object] | None = None
+    optimizer_time_ms: int | None = None
     if sequence == "pose-scan":
         if TARGET_MARKER not in log:
             raise ValueError(
@@ -112,18 +113,45 @@ def capture_evidence(
             "optimizer_response_captured",
         }:
             raise ValueError("host controller did not complete the mapping phase")
-        mapping_pattern = re.compile(
-            r"NANO_C_SLAM_GVSOC_SPI_MAIN:mapping_ok packets=66 "
-            r"pose_decoded=60 pose_inserted=60 bad_pose_checksum=1 "
-            r"scans_decoded=4 scans_registered=3 constraints=2 "
-            r"optimizer_edges=2 optimize=1 graph=3 solver_calls=\d+ "
-            r"response_expected_hex=([0-9a-f]{36})"
-        )
+        if sequence == "mapping":
+            mapping_pattern = re.compile(
+                r"NANO_C_SLAM_GVSOC_SPI_MAIN:mapping_ok packets=66 "
+                r"pose_decoded=60 pose_inserted=60 bad_pose_checksum=1 "
+                r"scans_decoded=4 scans_registered=3 constraints=2 "
+                r"optimizer_edges=2 optimize=1 graph=3 solver_calls=\d+ "
+                r"response_expected_hex=([0-9a-f]{36})"
+            )
+            expected_diagnostics = {
+                "received_frames": 66,
+                "malformed_frames": 0,
+                "unknown_commands": 0,
+                "command_frames": [61, 4, 1, 0, 0, 0, 0],
+                "decode_success": [60, 4, 0, 0, 0, 0, 0],
+                "decode_failure": [1, 0, 0, 0, 0, 0, 0],
+            }
+        else:
+            mapping_pattern = re.compile(
+                r"NANO_C_SLAM_GVSOC_SPI_MAIN:max_mapping_ok packets=276 "
+                r"pose_decoded=260 pose_inserted=260 bad_pose_checksum=1 "
+                r"scans_decoded=14 scans_registered=13 constraints=\d+ "
+                r"optimizer_edges=\d+ optimize=1 poses=260 graph=13 "
+                r"solver_calls=\d+ time_ms=(\d+) has_nan=0 completed=1 "
+                r"response_expected_hex=([0-9a-f]{36})"
+            )
+            expected_diagnostics = {
+                "received_frames": 276,
+                "malformed_frames": 0,
+                "unknown_commands": 0,
+                "command_frames": [261, 14, 1, 0, 0, 0, 0],
+                "decode_success": [260, 14, 0, 0, 0, 0, 0],
+                "decode_failure": [1, 0, 0, 0, 0, 0, 0],
+            }
         match = mapping_pattern.search(log)
         if match is None:
             raise ValueError("GVSOC log lacks the validated full-mapping marker")
         target_marker = match.group(0)
-        response_expected_hex = match.group(1)
+        optimizer_time_ms = int(match.group(1)) if sequence == "max-mapping" else None
+        response_expected_hex = match.group(2 if sequence == "max-mapping" else 1)
         diagnostics_match = SPI_DIAGNOSTICS_PATTERN.search(log)
         if diagnostics_match is None:
             raise ValueError("GVSOC log lacks production SPI receive diagnostics")
@@ -148,17 +176,13 @@ def capture_evidence(
         ):
             raise ValueError("GVSOC SPI diagnostics have an invalid command vector")
         target_response_was_skipped = "response_phase=skipped" in log
-        expected_diagnostics = {
-            "received_frames": 66,
-            "malformed_frames": 0,
-            "unknown_commands": 0,
-            "command_frames": [61, 4, 1, 0, 0, 0, 0],
-            "decode_success": [60, 4, 0, 0, 0, 0, 0],
-            "decode_failure": [1, 0, 0, 0, 0, 0, 0],
-            "missing_pose_ids": 0,
-            "nonadvancing_pose_ids": 0,
-            "completed_optimize_responses": int(not target_response_was_skipped),
-        }
+        expected_diagnostics.update(
+            {
+                "missing_pose_ids": 0,
+                "nonadvancing_pose_ids": 0,
+                "completed_optimize_responses": int(not target_response_was_skipped),
+            }
+        )
         spi_diagnostics = {
             "received_frames": int(received_frames),
             "malformed_frames": int(malformed_frames),
@@ -187,7 +211,8 @@ def capture_evidence(
         }
         if actual_diagnostics != expected_diagnostics:
             raise ValueError(
-                "production SPI diagnostics differ from the injected 66-frame "
+                "production SPI diagnostics differ from the injected "
+                f"{len(expected)}-frame "
                 f"sequence: {actual_diagnostics!r}"
             )
         response_rx_hex = host_transfer.get("response_rx_hex")
@@ -205,8 +230,8 @@ def capture_evidence(
             limitations = []
         limitations.extend(
             [
-                "Proves the 66-command production mapping path over GVSOC SPI2 "
-                "ingress.",
+                "Proves the production mapping path over GVSOC SPI2 ingress "
+                f"with {260 if sequence == 'max-mapping' else 60} poses.",
                 "Does not validate map accuracy, physical SPI, or flight behavior.",
                 "Receive counters cannot detect frames for which no clocks were "
                 "observed, and sequence-less identical commands cannot be "
@@ -220,7 +245,11 @@ def capture_evidence(
         "evidence_class": (
             "gvsoc-production-main-spi2-pose-scan"
             if sequence == "pose-scan"
-            else "gvsoc-production-mapping-spi2-ingress"
+            else (
+                "gvsoc-production-max-capacity-mapping-spi2-ingress"
+                if sequence == "max-mapping"
+                else "gvsoc-production-mapping-spi2-ingress"
+            )
         ),
         "sdk_release": "5.20.4",
         "interface": "SPI2/CS0, mode 0, 8-bit words",
@@ -229,9 +258,10 @@ def capture_evidence(
         "frames": [frame.hex() for frame in expected],
         "target_marker": target_marker,
         "optimizer_response_expected_hex": response_expected_hex,
-        "optimizer_response_rx_hex": (
-            host_transfer.get("response_rx_hex") if sequence == "mapping" else None
-        ),
+        "optimizer_time_ms": optimizer_time_ms,
+        "optimizer_response_rx_hex": host_transfer.get("response_rx_hex")
+        if sequence in {"mapping", "max-mapping"}
+        else None,
         "optimizer_response_status": response_status,
         "spi_diagnostics": spi_diagnostics,
         "sha256": {

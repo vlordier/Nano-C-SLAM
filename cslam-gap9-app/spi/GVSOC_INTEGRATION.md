@@ -336,6 +336,57 @@ validates the mapping path and feedback transfer on synthetic packet data in
 the virtual target. It does not establish map accuracy, physical SPI behavior,
 or flight readiness.
 
+### Maximum-capacity optimizer timing probe
+
+The bounded production-main probe also accepts packet count `276`, which
+injects one rejected bad-checksum pose, all 260 supported poses, 13 scan
+anchors, a duplicate final scan, and one OPTIMIZE command. It checks that all
+260 poses and 13 scan anchors were retained and that the optimizer returned a
+finite completed result. The success marker includes `slam_job.time_ms`; this
+is the firmware-reported optimizer duration, not wall-clock GVSOC duration.
+
+Run the probe three times with distinct work roots and retain each report/log
+before selecting a timeout. A single deterministic trajectory is only
+evidence for that workload; it does not prove a mathematical upper bound for
+all sensor data or graphs. Apply an explicit safety margin and verify the
+selected threshold against the observed maximum before removing the existing
+unbounded STM32 waits.
+
+The test controller uses a longer virtual delay after SCAN commands because
+the production target performs synchronous ICP before posting its next SPI
+receive. This is diagnostic pacing for the virtual testbench; it is not a
+busy-pin timeout or evidence that the physical SPI link has the same behavior.
+
+```sh
+DOCKER_HOST=ssh://colima-act-ci \
+  GAP9_BUILD_GVSOC_SPI_MAIN_PROBE=1 \
+  GAP9_BUILD_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT=276 \
+  bash scripts/build_gap9_firmware.sh
+for run in 1 2 3; do
+  work_root="${TMPDIR:-/tmp}/nano-c-slam-gvsoc-spi-main-max-${run}"
+  GAP9_GVSOC_ENABLE_TESTBENCH=1 \
+    GAP9_GVSOC_SPI_SEQUENCE=max-mapping \
+    GAP9_GVSOC_SPI_CAPTURE_RESPONSE=1 \
+    GAP9_GVSOC_CONTROL_SCRIPT="$PWD/scripts/gvsoc_spi_slave_probe_control.py" \
+    GAP9_GVSOC_ELF="$PWD/cslam-gap9-app/BUILD-gvsoc-spi-main-probe/nano_c_slam_gvsoc_spi_main_probe" \
+    GAP9_GVSOC_EXPECTED_MARKER='NANO_C_SLAM_GVSOC_SPI_MAIN:max_mapping_ok' \
+    GAP9_GVSOC_WORK_ROOT="$work_root" \
+    bash scripts/run_gap9_gvsoc_smoke.sh
+  uv run --locked python -m scripts.capture_gap9_gvsoc_spi_main_probe_evidence \
+    --config "$work_root/gvsoc_config.json" \
+    --elf cslam-gap9-app/BUILD-gvsoc-spi-main-probe/nano_c_slam_gvsoc_spi_main_probe \
+    --host-transfer "$work_root/spi_slave_probe_host.json" \
+    --log "$work_root/gvsoc.log" \
+    --source cslam-gap9-app/main.c \
+    --source cslam-gap9-app/CMakeLists.txt \
+    --source cslam-gap9-app/point-cloud/point_cloud.c \
+    --source scripts/gvsoc_spi_slave_probe_control.py \
+    --source scripts/gap9_gvsoc_spi_probe_protocol.py \
+    --source scripts/capture_gap9_gvsoc_spi_main_probe_evidence.py \
+    --output "artifacts/gap9_gvsoc_evidence/max_mapping_${run}.json"
+done
+```
+
 With `NANO_C_SLAM_SPI_DIAGNOSTICS` enabled, each completed OPTIMIZE command
 prints one `NANO_C_SLAM_SPI:stats` line. `rx` counts received fixed-size
 transactions; `malformed` counts transactions without the `S...E` delimiters;

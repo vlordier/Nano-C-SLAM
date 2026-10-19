@@ -311,6 +311,10 @@ void slam_loop() {
 #endif
 #ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
         processed_packets++;
+        // OPTIMIZE is the final command in this bounded probe. If an ingress
+        // frame was lost, exit with a failure marker instead of blocking
+        // forever waiting for the nominal packet count.
+        if (cmd == OPTIMIZE_CMD) break;
 #endif
     }
 
@@ -353,8 +357,36 @@ void slam_loop() {
     for (size_t index = 0; index < sizeof(slam_job); ++index)
         printf("%02x", response_bytes[index]);
     printf("\n");
+#elif NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT == 276
+    passed = processed_packets == 276 && pose_packets_decoded == 260 &&
+             poses_inserted == 260 && bad_pose_checksums == 1 &&
+             scan_packets_decoded == 14 && scans_registered == 13 &&
+             optimize_packets == 1 && pcl_get_pose_count() == 260 &&
+             pcl_get_scan_pose_count() == 13 &&
+             slam_job.number_of_poses == 260 &&
+             slam_job.main_graph_size == 13 && slam_job.has_nan == 0 &&
+             slam_job.main_solver_returned == 1 &&
+             slam_job.successful_solver_call_count >= 1 &&
+             slam_job.optimization_completed == 1;
+    printf("NANO_C_SLAM_GVSOC_SPI_MAIN:max_mapping_%s packets=%u "
+           "pose_decoded=%d pose_inserted=%d bad_pose_checksum=%d "
+           "scans_decoded=%d scans_registered=%d constraints=%ld "
+           "optimizer_edges=%ld optimize=%d poses=%d graph=%d "
+           "solver_calls=%d time_ms=%d has_nan=%d completed=%d "
+           "response_expected_hex=",
+           passed ? "ok" : "fail", processed_packets, pose_packets_decoded,
+           poses_inserted, bad_pose_checksums, scan_packets_decoded,
+           scans_registered, (long)pcl_get_constraint_count(),
+           (long)pcl_get_optimizer_input_unique_edge_count(), optimize_packets,
+           slam_job.number_of_poses, slam_job.main_graph_size,
+           slam_job.successful_solver_call_count, slam_job.time_ms,
+           slam_job.has_nan, slam_job.optimization_completed);
+    const uint8_t *response_bytes = (const uint8_t *)&slam_job;
+    for (size_t index = 0; index < sizeof(slam_job); ++index)
+        printf("%02x", response_bytes[index]);
+    printf("\n");
 #else
-#error "SPI main probe packet count must be 2 or 66"
+#error "Unsupported SPI main probe packet count"
 #endif
     // Keep the simulated target alive long enough for the host control script
     // to drain its asynchronous SPI RX callback and persist the transfer.

@@ -44,13 +44,15 @@ def make_pose_frame(
     return bytes(frame)
 
 
-def make_mapping_trace() -> tuple[bytes, ...]:
-    """Reproduce the 66-frame owned C trace for real-SPI mapping coverage."""
+def make_mapping_trace(pose_count: int = 60) -> tuple[bytes, ...]:
+    """Build a bounded production-layout trace with periodic scan anchors."""
+    if not 1 <= pose_count <= 260:
+        raise ValueError("pose_count must fit the GAP9 graph capacity (1..260)")
     invalid_pose = bytearray(make_pose_frame())
     invalid_pose[POSE_PAYLOAD.size + 2] ^= 1
     frames = [bytes(invalid_pose)]
 
-    for pose_id in range(60):
+    for pose_id in range(pose_count):
         angle = _float32(_float32(pose_id) * _float32(0.02))
         x = _float32(_float32(0.15) * _float32(math.cos(angle)))
         y = _float32(_float32(0.15) * _float32(math.sin(angle)))
@@ -65,7 +67,11 @@ def make_mapping_trace() -> tuple[bytes, ...]:
         if (pose_id + 1) % 20 == 0:
             frames.append(make_scan_frame(pose_id - 19))
 
-    frames.extend((make_scan_frame(40), _make_command_frame(OPTIMIZE_CMD)))
+    if pose_count % 20:
+        frames.append(make_scan_frame(pose_count - (pose_count % 20)))
+    if pose_count >= 40:
+        frames.append(make_scan_frame(((pose_count - 1) // 20) * 20))
+    frames.append(_make_command_frame(OPTIMIZE_CMD))
     return tuple(bytes(frame) for frame in frames)
 
 
