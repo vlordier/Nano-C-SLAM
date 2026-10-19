@@ -106,13 +106,21 @@ class WorldSessionTests(unittest.TestCase):
             session_id = publish_world_session(path, scene="nearfield-mapping")
             server = SimpleNamespace(
                 pid=1234,
-                cmd=["/opt/gz-macos/bin/gz", "sim", "world.sdf", "-s"],
+                cmd=["ruby /opt/gz-macos/bin/gz sim", "world.sdf -r -s"],
             )
             gui = SimpleNamespace(pid=1235, cmd=["/opt/gz/bin/gz", "sim", "-g"])
             other = SimpleNamespace(pid=1236, cmd=["/usr/bin/python", "unrelated.py"])
-            with patch(
-                "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model.shutil.which",
-                return_value=None,
+            with (
+                patch(
+                    "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model.shutil.which",
+                    side_effect=lambda name: "/bin/ps" if name == "ps" else None,
+                ),
+                patch(
+                    "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model.subprocess.run",
+                    return_value=SimpleNamespace(
+                        returncode=0, stdout="gz sim world.sdf -r -s\n"
+                    ),
+                ) as observe_process,
             ):
                 self.assertEqual(
                     record_world_process_event(path, pid=server.pid, argv=server.cmd),
@@ -134,13 +142,20 @@ class WorldSessionTests(unittest.TestCase):
                         "role": "gazebo-server",
                         "pid": 1234,
                         "launch_pid": manifest["launch_pid"],
-                        "argv": server.cmd,
+                        "argv": ["gz", "sim", "world.sdf", "-r", "-s"],
                         "executable_path": None,
                         "observed_at_utc": manifest["processes"][0]["observed_at_utc"],
                     }
                 ],
             )
             self.assertTrue(manifest["processes"][0]["observed_at_utc"].endswith("Z"))
+            observe_process.assert_called_once_with(
+                ["/bin/ps", "-p", "1234", "-o", "command="],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=2.0,
+            )
 
     def test_process_recording_is_idempotent_and_preserves_run_claim(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -152,9 +167,17 @@ class WorldSessionTests(unittest.TestCase):
                 run_id="aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
             )
             command = ["gz", "sim", "world.sdf", "-s"]
-            with patch(
-                "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model.shutil.which",
-                return_value=None,
+            with (
+                patch(
+                    "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model.shutil.which",
+                    side_effect=lambda name: "/bin/ps" if name == "ps" else None,
+                ),
+                patch(
+                    "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model.subprocess.run",
+                    return_value=SimpleNamespace(
+                        returncode=0, stdout="gz sim world.sdf -s\n"
+                    ),
+                ),
             ):
                 record_world_process_event(path, pid=4321, argv=command)
                 record_world_process_event(path, pid=4321, argv=command)
@@ -185,6 +208,10 @@ class WorldSessionTests(unittest.TestCase):
             ),
             "gazebo-server",
         )
+        self.assertEqual(
+            world_process_role(["ruby /opt/gz-macos/bin/gz sim", "world.sdf -r -s"]),
+            "gazebo-server",
+        )
         self.assertIsNone(
             world_process_role(["/usr/bin/ruby", "/opt/gz-macos/bin/gz", "sim", "-g"])
         )
@@ -199,14 +226,45 @@ class WorldSessionTests(unittest.TestCase):
             "nano-sensor-bridge",
         )
 
+    def test_server_process_observation_failure_is_rejected(self) -> None:
+        with (
+            tempfile.TemporaryDirectory() as temporary_directory,
+            patch(
+                "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model.subprocess.run",
+                return_value=SimpleNamespace(returncode=1, stdout=""),
+            ),
+            patch(
+                "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model.shutil.which",
+                return_value="/bin/ps",
+            ),
+        ):
+            path = Path(temporary_directory) / "session.json"
+            publish_world_session(path, scene="nearfield-mapping")
+            with self.assertRaisesRegex(RuntimeError, "cannot observe started"):
+                record_world_process_event(
+                    path,
+                    pid=4321,
+                    argv=["ruby /opt/gz/bin/gz sim", "world.sdf -s"],
+                )
+            self.assertEqual(json.loads(path.read_text()).get("processes", []), [])
+
     def test_conflicting_process_identity_and_invalid_pid_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             path = Path(temporary_directory) / "session.json"
             publish_world_session(path, scene="default")
             command = ["gz", "sim", "world.sdf", "-s"]
-            with patch(
-                "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model.shutil.which",
-                return_value=None,
+            with (
+                patch(
+                    "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model.shutil.which",
+                    side_effect=lambda name: "/bin/ps" if name == "ps" else None,
+                ),
+                patch(
+                    "sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model.subprocess.run",
+                    side_effect=[
+                        SimpleNamespace(returncode=0, stdout="gz sim world.sdf -s\n"),
+                        SimpleNamespace(returncode=0, stdout="gz sim other.sdf -s\n"),
+                    ],
+                ),
             ):
                 record_world_process_event(path, pid=99, argv=command)
                 with self.assertRaisesRegex(RuntimeError, "conflicting data"):

@@ -6,7 +6,9 @@ import fcntl
 import hashlib
 import json
 import os
+import shlex
 import shutil
+import subprocess
 import tempfile
 import uuid
 from collections.abc import Sequence
@@ -67,15 +69,27 @@ def publish_world_session(path: Path, *, scene: str) -> str:
 
 def world_process_role(argv: Sequence[str]) -> str | None:
     """Classify only known Gazebo server and ROS bridge process commands."""
-    executable_names = {Path(argument).name for argument in argv}
-    # On macOS the installed `gz` command may be a Ruby launcher whose argv is
-    # `ruby /path/to/gz sim ...`; Linux builds commonly exec `gz` directly.
+    command = list(argv)
+    if command:
+        shell_prefix = shlex.split(command[0])
+        if len(shell_prefix) > 1 and any(
+            Path(argument).name == "gz" for argument in shell_prefix
+        ):
+            command = shlex.split(" ".join(command))
+    executable_names = {Path(argument).name for argument in command}
     gazebo_command_index = next(
-        (index for index, argument in enumerate(argv) if Path(argument).name == "gz"),
+        (
+            index
+            for index, argument in enumerate(command)
+            if Path(argument).name == "gz"
+        ),
         None,
     )
-    if gazebo_command_index is not None and "sim" in argv[gazebo_command_index + 1 :]:
-        if "-s" in argv or "--server" in argv:
+    if (
+        gazebo_command_index is not None
+        and "sim" in command[gazebo_command_index + 1 :]
+    ):
+        if "-s" in command or "--server" in command:
             return "gazebo-server"
         return None
     if "parameter_bridge" in executable_names:
@@ -165,10 +179,35 @@ def record_world_process_event(
     path: Path, *, pid: int, argv: Sequence[str]
 ) -> str | None:
     """Filter a launch process event and record it when its role is known."""
+    if isinstance(pid, bool) or not isinstance(pid, int) or pid <= 0:
+        raise ValueError("world-session process PID must be positive")
     role = world_process_role(argv)
     if role is None:
         return None
-    record_world_process(path, role=role, pid=pid, argv=argv)
+    command = list(argv)
+    if role == "gazebo-server":
+        ps_executable = shutil.which("ps")
+        if ps_executable is None:
+            raise RuntimeError("cannot observe started Gazebo server command")
+        try:
+            observed = subprocess.run(  # noqa: S603 -- fixed ps query for one PID
+                [ps_executable, "-p", str(pid), "-o", "command="],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=2.0,
+            )
+        except (OSError, subprocess.TimeoutExpired) as error:
+            raise RuntimeError(
+                "cannot observe started Gazebo server command"
+            ) from error
+        if observed.returncode != 0 or not observed.stdout.strip():
+            raise RuntimeError("cannot observe started Gazebo server command")
+        try:
+            command = shlex.split(observed.stdout.strip())
+        except ValueError as error:
+            raise RuntimeError("started Gazebo server command is malformed") from error
+    record_world_process(path, role=role, pid=pid, argv=command)
     return role
 
 
