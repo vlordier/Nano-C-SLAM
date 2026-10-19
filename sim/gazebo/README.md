@@ -455,9 +455,18 @@ export GZ_PARTITION="nano_c_slam_$(id -u)"
 export ROS_DOMAIN_ID=42
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
   -m scripts.gazebo_mapping_run --drone cf1 --samples 60 \
-  --scene nearfield-mapping --timeout 120 \
+  --scene nearfield-mapping --timeout 120 --preflight-timeout 10 \
   --output /tmp/nano-c-slam-gazebo-run.json
 ```
+
+Before it starts either child process, the coordinator requires three distinct
+`/cf1/odom` callbacks from the live simulation clock. Each source stamp must be
+fresh and increasing, callback and source-stamp gaps must stay at or below
+0.2 seconds, and every altitude must be finite and at or below 0.15 m. The
+wall-clock `--preflight-timeout` bounds startup when the world is paused, the
+clock is unavailable, or odometry is absent. The exact accepted stamps,
+altitudes, and simulation/receipt times are stored in `odometry_preflight` in
+the combined report; the offline bundle verifier rechecks them.
 
 The command generates one UUID for both processes, requires a completed bounded
 square path and stable odometry altitude at or below 0.1 m, and writes the combined

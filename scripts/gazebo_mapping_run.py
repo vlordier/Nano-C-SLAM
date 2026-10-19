@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import importlib
 import json
+import math
 import os
 import sys
 import tempfile
@@ -39,6 +40,11 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     MissionStatusEvent,
     validate_mission_status_events,
 )
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.odometry_preflight import (
+    GroundedOdometryPreflight,
+    OdometrySample,
+    wait_for_grounded_preflight,
+)
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.run_provenance import (
     collect_run_provenance,
     require_provenance_unchanged,
@@ -57,10 +63,33 @@ class _StringMessage(Protocol):
     data: str
 
 
-class _StatusListener(Protocol):
-    events: list[MissionStatusEvent]
-    error: str | None
+class _OdometryMessage(Protocol):
+    header: _OdometryHeader
+    pose: _OdometryPose
 
+
+class _OdometryHeader(Protocol):
+    stamp: _OdometryStamp
+
+
+class _OdometryStamp(Protocol):
+    sec: int
+    nanosec: int
+
+
+class _OdometryPose(Protocol):
+    pose: _OdometryPoseValue
+
+
+class _OdometryPoseValue(Protocol):
+    position: _OdometryPosition
+
+
+class _OdometryPosition(Protocol):
+    z: float
+
+
+class _TopicListener(Protocol):
     def count_subscribers(self, topic_name: str) -> int: ...
 
     def count_publishers(self, topic_name: str) -> int: ...
@@ -70,7 +99,13 @@ class _StatusListener(Protocol):
     def destroy_node(self) -> None: ...
 
 
-def _mapping_topics_ready(node: _StatusListener, drone_name: str) -> bool:
+class _StatusListener(_TopicListener, Protocol):
+    events: list[MissionStatusEvent]
+    error: str | None
+    preflight: GroundedOdometryPreflight
+
+
+def _mapping_topics_ready(node: _TopicListener, drone_name: str) -> bool:
     """Wait until telemetry publishers and the collector subscriptions exist."""
     validate_discovered_topic_types(node.get_topic_names_and_types(), drone_name)
     subscriptions = (
@@ -126,6 +161,7 @@ def _parse_args(
     parser.add_argument("--drone", default="cf1")
     parser.add_argument("--samples", type=int, default=60)
     parser.add_argument("--timeout", type=float, default=120.0)
+    parser.add_argument("--preflight-timeout", type=float, default=10.0)
     parser.add_argument(
         "--scene",
         choices=("default", "nearfield-mapping"),
@@ -143,6 +179,8 @@ def _parse_args(
     )
     parser.add_argument("--ros2", default="ros2", help="ROS 2 CLI executable")
     options = parser.parse_args(args)
+    if not math.isfinite(options.preflight_timeout) or options.preflight_timeout <= 0:
+        parser.error("preflight timeout must be finite and positive")
     try:
         config = MappingRunConfig(
             output_path=options.output,
@@ -161,13 +199,19 @@ def _create_status_listener(run_id: str, drone_name: str) -> _StatusListener:
     """Create a ROS status node without importing ROS in hardware-free tests."""
     node_base = importlib.import_module("rclpy.node").Node
     string_type = importlib.import_module("std_msgs.msg").String
+    odometry_type = importlib.import_module("nav_msgs.msg").Odometry
     qos_module = importlib.import_module("rclpy.qos")
+    parameter_type = importlib.import_module("rclpy.parameter").Parameter
 
     class MissionStatusNode(node_base):  # type: ignore[valid-type,misc]
         def __init__(self) -> None:
-            super().__init__("nano_c_slam_run_status")
+            super().__init__(
+                "nano_c_slam_run_status",
+                parameter_overrides=[parameter_type("use_sim_time", value=True)],
+            )
             self.events: list[MissionStatusEvent] = []
             self.error: str | None = None
+            self.preflight = GroundedOdometryPreflight()
             self._run_id = run_id
             self._drone_name = drone_name
             status_qos = qos_module.QoSProfile(
@@ -181,6 +225,12 @@ def _create_status_listener(run_id: str, drone_name: str) -> _StatusListener:
                 self._on_status,
                 status_qos,
             )
+            self._odometry_subscription = self.create_subscription(
+                odometry_type,
+                f"/{drone_name}/odom",
+                self._on_odometry,
+                qos_module.qos_profile_sensor_data,
+            )
 
         def _on_status(self, message: _StringMessage) -> None:
             try:
@@ -190,6 +240,22 @@ def _create_status_listener(run_id: str, drone_name: str) -> _StatusListener:
                 return
             if event.run_id == self._run_id and event.drone_name == self._drone_name:
                 self.events.append(event)
+
+        def _on_odometry(self, message: _OdometryMessage) -> None:
+            header = message.header
+            pose = message.pose
+            stamp = header.stamp
+            position = pose.pose.position
+            stamp_s = float(stamp.sec) + float(stamp.nanosec) / 1e9
+            sim_time_s = self.get_clock().now().nanoseconds / 1e9
+            self.preflight.observe(
+                OdometrySample(
+                    stamp_s=stamp_s,
+                    altitude_m=float(position.z),
+                    sim_time_s=sim_time_s,
+                    received_monotonic_s=time.monotonic(),
+                )
+            )
 
     return cast(_StatusListener, MissionStatusNode())
 
@@ -276,7 +342,9 @@ def _publish_report_bundle_atomically(
             temporary.unlink(missing_ok=True)
 
 
-def _run(config: MappingRunConfig, ros2_executable: str) -> Path:
+def _run(
+    config: MappingRunConfig, ros2_executable: str, *, preflight_timeout_s: float = 10.0
+) -> Path:
     python_executable = sys.executable
     config.validate_runtime(
         python_executable=python_executable,
@@ -310,6 +378,13 @@ def _run(config: MappingRunConfig, ros2_executable: str) -> Path:
 
         def subscriptions_ready() -> bool:
             return _mapping_topics_ready(node, config.drone_name)
+
+        odometry_preflight = wait_for_grounded_preflight(
+            node.preflight,
+            pump_status,
+            timeout_s=preflight_timeout_s,
+            monotonic=time.monotonic,
+        )
 
         execution_started = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         process_result = supervise_mapping_processes(
@@ -422,6 +497,7 @@ def _run(config: MappingRunConfig, ros2_executable: str) -> Path:
             },
             "mission_events": [json.loads(event.to_json()) for event in events],
             "mission_terminal": json.loads(terminal.to_json()),
+            "odometry_preflight": odometry_preflight,
             "capture_report": capture,
             "raw_logs": {
                 "collector": collector_log,
@@ -462,7 +538,11 @@ def _run(config: MappingRunConfig, ros2_executable: str) -> Path:
 def main(args: list[str] | None = None) -> int:
     options, config = _parse_args(args)
     try:
-        output_path = _run(config, options.ros2)
+        output_path = _run(
+            config,
+            options.ros2,
+            preflight_timeout_s=options.preflight_timeout,
+        )
     except KeyboardInterrupt:
         print("Gazebo mapping run interrupted; raw logs are retained", file=sys.stderr)
         return 130

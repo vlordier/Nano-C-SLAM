@@ -25,6 +25,7 @@ from .mission_model import (
     MissionStatusEvent,
     validate_mission_status_events,
 )
+from .odometry_preflight import validate_odometry_preflight
 
 PROVENANCE_SCHEMA_VERSION = 1
 _OWNED_INPUT_PATHS = (
@@ -545,6 +546,12 @@ def validate_combined_run_report(value: object) -> dict[str, object]:
         raise ValueError("combined Gazebo run report is missing run identity/capture")
     if capture.get("run_id") != run_id:
         raise ValueError("combined Gazebo report and capture run IDs do not match")
+    try:
+        validate_odometry_preflight(value.get("odometry_preflight"))
+    except ValueError as error:
+        raise ValueError(
+            f"combined Gazebo report has invalid odometry preflight: {error}"
+        ) from error
     drone = value.get("drone")
     raw_events = value.get("mission_events")
     raw_terminal = value.get("mission_terminal")

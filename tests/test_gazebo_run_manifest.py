@@ -94,6 +94,25 @@ def _report() -> dict[str, object]:
             "mapping_replay_provenance": {"binary_sha256": BINARY_HASH},
             "input_sim_time_ms": {"start": 200, "end": 1400},
         },
+        "odometry_preflight": {
+            "schema_version": 1,
+            "passed": True,
+            "failure_reason": None,
+            "required_samples": 3,
+            "max_grounded_altitude_m": 0.15,
+            "max_sample_age_s": 0.2,
+            "max_sample_gap_s": 0.2,
+            "max_future_skew_s": 0.1,
+            "samples": [
+                {
+                    "stamp_s": 10.0 + index * 0.05,
+                    "altitude_m": 0.05,
+                    "sim_time_s": 10.01 + index * 0.05,
+                    "received_monotonic_s": 100.0 + index * 0.05,
+                }
+                for index in range(3)
+            ],
+        },
         "run_provenance": {
             "schema_version": 1,
             "source": {

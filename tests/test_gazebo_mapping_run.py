@@ -17,12 +17,16 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     MissionPhase,
     MissionStatusEvent,
 )
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.odometry_preflight import (
+    GroundedOdometryPreflight,
+)
 
 
 class _TopicGraph:
     def __init__(self, *, mission_status_subscribers: int = 1) -> None:
         self.events: list[MissionStatusEvent] = []
         self.error: str | None = None
+        self.preflight = GroundedOdometryPreflight()
         self._subscribers = {
             "/cf1/odom": 1,
             "/nano_c_slam/sim/cf1/ranges_mm": 1,
