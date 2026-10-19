@@ -100,6 +100,20 @@ cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
 /tmp/uwb_token_lease_test
 
 cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
+    -Itests/stubs/stm32 -Icslam-stm32-app/src/spi_comm \
+    tests/spi_wait_test.c cslam-stm32-app/src/spi_comm/spi_wait.c \
+    -o /tmp/spi_wait_test
+/tmp/spi_wait_test
+
+cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
+    -Itests/stubs/stm32 -Icslam-stm32-app/src \
+    -Icslam-stm32-app/src/spi_comm -ffunction-sections -fdata-sections \
+    tests/spi_comm_test.c cslam-stm32-app/src/spi_comm/spi_comm.c \
+    cslam-stm32-app/src/spi_comm/spi_wait.c "$linker_gc" \
+    -o /tmp/spi_comm_test
+/tmp/spi_comm_test
+
+cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
     -ffunction-sections -fdata-sections \
     -Itests/stubs -Icslam-gap9-app/slam -Icslam-gap9-app/slam/rcm \
     tests/pose_graph_validation_test.c \

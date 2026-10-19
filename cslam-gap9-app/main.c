@@ -293,8 +293,10 @@ void slam_loop() {
                     !pcl_to_poses(requested_poses, from_id, nr_of_poses))
                     break;
 
+                set_cf_gpio(1); // Pose response is ready; STM32 may clock it.
                 spi_send_blocking((uint8_t *)requested_poses,
                                   3 * sizeof(float) * nr_of_poses);
+                set_cf_gpio(0); // Response clocks completed.
             }
             break;
         }

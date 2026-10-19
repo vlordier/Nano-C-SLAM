@@ -29,6 +29,12 @@ typedef struct scan_poses_t {
     int16_t poses[30];
 } scan_poses_t;
 
+typedef enum {
+    UWB_POSE_UPDATE_COMPLETE = 0,
+    UWB_POSE_UPDATE_SEND_FAILED,
+    UWB_POSE_UPDATE_SPI_FAILED,
+} uwb_pose_update_result_t;
+
 void uwb_ranging_task(void *parameters);
 
 /**
@@ -73,7 +79,7 @@ void uwb_send_scan_to_drone(uint8_t dest_id);
  *
  * @param dest_id ID of the target UWB node.
  */
-void uwb_send_updated_poses(uint8_t dest_id);
+uwb_pose_update_result_t uwb_send_updated_poses(uint8_t dest_id);
 
 /**
  * @brief Add the id of the scan pose to the scan pose buffer.

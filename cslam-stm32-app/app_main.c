@@ -105,7 +105,10 @@ void show_optimized_poses() {
     int16_t pose_count = get_last_pose_id();
     for (int16_t i = 0; i < pose_count; i++) {
         float poses[3];
-        spi_rcv_poses(poses, i, 1);
+        if (!spi_rcv_poses(poses, i, 1)) {
+            DEBUG_PRINT("Failed to read pose %d from GAP9\n", i);
+            break;
+        }
         DEBUG_PRINT("Pose %d is: %.3f, %.3f, %.3f\n", i, (double)poses[0],
                     (double)poses[1], (double)poses[2]);
         vTaskDelay(M2T(2));

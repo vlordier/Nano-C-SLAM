@@ -1,1 +1,2 @@
 obj-y += spi_comm.o
+obj-y += spi_wait.o

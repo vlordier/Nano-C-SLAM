@@ -339,7 +339,7 @@ void uwb_send_scan_to_drone(uint8_t dest_id) {
     }
 }
 
-void uwb_send_updated_poses(uint8_t dest_id) {
+uwb_pose_update_result_t uwb_send_updated_poses(uint8_t dest_id) {
     uint8_t buffer[POSE_UPDATE_PACKET_SIZE] = {0};
     uint8_t index = 1;
     DEBUG_PRINT("Scan pose count %d\n", scan_poses.count);
@@ -347,7 +347,10 @@ void uwb_send_updated_poses(uint8_t dest_id) {
         int16_t pose_id = scan_poses.poses[i];
 
         float poses[3];
-        spi_rcv_poses(poses, pose_id, 1);
+        if (!spi_rcv_poses(poses, pose_id, 1)) {
+            DEBUG_PRINT("Failed to fetch optimized pose %d\n", pose_id);
+            return UWB_POSE_UPDATE_SPI_FAILED;
+        }
         memcpy(&buffer[index], &pose_id, sizeof(int16_t));
         index += sizeof(int16_t);
 
@@ -360,7 +363,7 @@ void uwb_send_updated_poses(uint8_t dest_id) {
                                                     sizeof(buffer), dest_id, 3);
             if (e != UWB_SUCCESS) {
                 DEBUG_PRINT("Updated pose packet failed!\n");
-                return;
+                return UWB_POSE_UPDATE_SEND_FAILED;
             } else {
                 DEBUG_PRINT("UWB: Sent %d pose upd!\n", buffer[0]);
             }
@@ -370,6 +373,7 @@ void uwb_send_updated_poses(uint8_t dest_id) {
 
         vTaskDelay(M2T(2));
     }
+    return UWB_POSE_UPDATE_COMPLETE;
 }
 
 void add_scan_pose(int16_t pose_id) {
@@ -382,7 +386,7 @@ void add_scan_pose(int16_t pose_id) {
     scan_poses.count++;
 }
 
-void ekf_correct_position(float *pose_unopt) {
+static uint8_t ekf_correct_position(float *pose_unopt) {
     float x_cur = logGetFloat(logGetVarId("stateEstimate", "x"));
     float y_cur = logGetFloat(logGetVarId("stateEstimate", "y"));
     float z_cur = logGetFloat(logGetVarId("stateEstimate", "z"));
@@ -391,7 +395,8 @@ void ekf_correct_position(float *pose_unopt) {
 
     int16_t pose_id = get_last_pose_id();
     float pose_opt[3];
-    spi_rcv_poses(pose_opt, pose_id, 1);
+    if (!spi_rcv_poses(pose_opt, pose_id, 1))
+        return 0;
 
     float dx = pose_opt[0] - pose_unopt[0];
     float dy = pose_opt[1] - pose_unopt[1];
@@ -401,7 +406,15 @@ void ekf_correct_position(float *pose_unopt) {
     if (!estimatorKalmanInitToPose(x_cur + dx, y_cur + dy, z_cur,
                                    yaw_cur + dyaw)) {
         DEBUG_PRINT("Failed to queue optimized estimator pose\n");
+        return 0;
     }
+    return 1;
+}
+
+static void stop_after_gap9_failure(const char *operation) {
+    DEBUG_PRINT("GAP9 SPI %s failed; requesting landing\n", operation);
+    land = 1;
+    vTaskDelete(NULL);
 }
 
 void uwb_ranging_task(void *parameters) {
@@ -462,7 +475,11 @@ void uwb_ranging_task(void *parameters) {
 
                     // Notify GAP9 about the scan
                     aug_pose_t *aug_pose = get_pose_from_scan_buffer(0);
-                    spi_send_scan_info(aug_pose->id);
+                    if (!spi_send_scan_info(aug_pose->id)) {
+                        unlock_scan_acquisition();
+                        stop_after_gap9_failure("scan handshake");
+                        return;
+                    }
                     DEBUG_PRINT("GAP9: Scan ID %d sent\n", aug_pose->id);
 
                     // Decide if to perform graph optimization this round
@@ -489,20 +506,35 @@ void uwb_ranging_task(void *parameters) {
                 // Get the value of the last unoptimize pose
                 int16_t pose_id = get_last_pose_id();
                 float pose_unopt[3];
-                spi_rcv_poses(pose_unopt, pose_id, 1);
+                if (!spi_rcv_poses(pose_unopt, pose_id, 1)) {
+                    stop_after_gap9_failure("unoptimized pose read");
+                    return;
+                }
 
                 // Optimize
                 slam_job_t slam_job = {0};
-                spi_send_opt_cmd(&slam_job);
+                if (!spi_send_opt_cmd(&slam_job)) {
+                    stop_after_gap9_failure("optimizer response");
+                    return;
+                }
 
                 // Broadcast updated scan poses to other higher ID drones
                 for (uint8_t i = NODE_ID + 1; i < NR_OF_NODES; i++) {
-                    uwb_send_updated_poses(i);
-                    DEBUG_PRINT("UWB: Sent upd poses to drone %d\n", i);
+                    uwb_pose_update_result_t update_result =
+                        uwb_send_updated_poses(i);
+                    if (update_result == UWB_POSE_UPDATE_SPI_FAILED) {
+                        stop_after_gap9_failure("updated pose read");
+                        return;
+                    }
+                    if (update_result == UWB_POSE_UPDATE_COMPLETE)
+                        DEBUG_PRINT("UWB: Sent upd poses to drone %d\n", i);
                 }
 
                 // Correct the drone's state estimate
-                ekf_correct_position(pose_unopt);
+                if (!ekf_correct_position(pose_unopt)) {
+                    stop_after_gap9_failure("optimized pose correction");
+                    return;
+                }
 
                 optimize = 0;
 

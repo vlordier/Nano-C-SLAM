@@ -11,6 +11,7 @@
 #ifndef SPI_COMM_H
 #define SPI_COMM_H
 
+#include <stdbool.h>
 #include "scan.h"
 
 typedef struct {
@@ -56,7 +57,7 @@ void spi_send_ext_pose_upd(float *pose, int16_t id, int16_t drone_id);
  *
  * @param scan_pose_id The ID of the scan pose.
  */
-void spi_send_scan_info(int16_t scan_pose_id);
+bool spi_send_scan_info(int16_t scan_pose_id);
 
 /**
  * @brief Sends a command to fetch poses from the GAP9.
@@ -65,7 +66,7 @@ void spi_send_scan_info(int16_t scan_pose_id);
  * @param nr_of_poses Number of poses to receive, starting from the ID
  * "from_id".
  */
-void spi_rcv_poses(float *poses, int16_t from_id, int16_t nr_of_poses);
+bool spi_rcv_poses(float *poses, int16_t from_id, int16_t nr_of_poses);
 
 /**
  * @brief Inform GAP9 to perform graph optimization.
@@ -73,6 +74,6 @@ void spi_rcv_poses(float *poses, int16_t from_id, int16_t nr_of_poses);
  * @param job Pointer to the job structure. Contains the infromation about the
  * optimization job
  */
-void spi_send_opt_cmd(slam_job_t *job);
+bool spi_send_opt_cmd(slam_job_t *job);
 
 #endif

@@ -32,9 +32,14 @@ builders are in `cslam-stm32-app/src/spi_comm/spi_comm.c`.
 The STM32 builders issue a separate one-byte dummy-clock transaction before
 each command transaction. OPTIMIZE then waits for the GAP9 busy GPIO and makes
 a second dummy-clock transaction before reading the raw `slam_job_t`. POSE_REQ
-also reads its pose array in a separate transaction. These transfer boundaries
-are part of the behavior; concatenating all bytes into one SPI CS assertion
-would not reproduce the STM32 exchange sequence.
+also reads its pose array in a separate transaction. The GAP9 asserts its busy
+GPIO before blocking on the pose-array send; the STM32 waits for that ready
+level before generating response clocks and waits for busy-low before using the
+received floats. Busy waits are deadline-bounded, and failed pose reads leave
+the caller's output buffer unchanged. These transfer boundaries are part of
+the behavior; concatenating all bytes into one SPI CS assertion would not
+reproduce the STM32 exchange sequence. Host tests validate the state and
+timeout paths, but this does not establish the physical GPIO wiring or timing.
 
 ## Deterministic mapping trace
 
