@@ -868,3 +868,57 @@ stabilizer iterations and the rate supervisor. The altitude response also
 needs a bounded planner/controller trace from setpoint through motor output;
 the current 0.38-m overshoot and landing timeout are independent failure
 signals. Keep the registered acceptance limits unchanged.
+
+## Low-overhead sampler and firmware-output attribution (2026-10-19)
+
+`scripts/crazysim_flight_sampler.cc` provides a bounded observer for the
+existing strict flight gate. It subscribes to `/cf_0/odom` at 100 Hz,
+`/cf_0/imu` and `/cf_0/command/motor_speed` at 50 Hz, and world statistics at
+2 Hz. It writes protobuf text into four new files under the requested output
+directory and refuses to overwrite an existing capture. Build it against the
+same Gazebo Transport and Messages libraries as the installed Gazebo:
+
+```sh
+clang++ -std=c++17 -O2 scripts/crazysim_flight_sampler.cc \
+  -o /tmp/ncs-crazysim-flight-sampler \
+  $(pkg-config --cflags --libs gz-transport13 gz-msgs10)
+GZ_PARTITION=ncs-flight /tmp/ncs-crazysim-flight-sampler 12 \
+  /tmp/ncs-flight-capture
+```
+
+A synchronized run using the diagnostic `cf2` build and trace-enabled
+CrazySim plugin received TAKEOFF_2 and LAND_2 (both acknowledged with result
+0). Exactly one firmware process was connected. Firmware logs included one
+`TRACE_CRTP_RX_STARTED` marker and both high-level command traces; the plugin
+reported `TRACE_MOTOR_NONZERO` with all four firmware ratios at 35999 and
+resulting rotor commands at 2056.69 rad/s. This directly attributes a
+nonzero Gazebo actuator command to the firmware path.
+
+The 12-second low-overhead capture contained 857 timestamped odometry samples,
+536 IMU samples, 2,228 motor components and 24 world-stat samples. Aggregate
+RTF was 0.875. Altitude ranged from 2.0150 to 2.8337 m, but the longest stable
+interval around the 2.615-m target was only 0.23 s. Firmware reported
+stabilizer rate 495 Hz against 500 Hz and `Landing timeout, disarming`. This
+proves firmware-to-rotor actuation and an initial rise; the strict flight gate
+still fails for hover duration, rate and landing.
+
+A paired disconnected-actuator capture then used one `cf2` process, the same
+world and sampler, and a plugin built from CrazySim commit `051d36e`. Both
+TAKEOFF_2 and LAND_2 were acknowledged; firmware logged exactly one startup
+marker and both command traces. The plugin log explicitly said
+`NCS_SITL actuator_bridge=disconnected` and also traced nonzero firmware motor
+ratios (36,000 each, 2,056.72 rad/s requested). Gazebo's captured actuator
+topic nevertheless contained 1,512 components, all exactly zero. Across 597
+odometry samples the model stayed at z=2.014994 m (zero measured drift); 376
+IMU samples and 16 world-stat samples were captured, with aggregate RTF 0.984.
+This confirms the negative-control mechanism: firmware motor output cannot
+move the model when the actuator bridge is disconnected. That firmware log
+still contains an estimator reset, a loop-rate warning and a landing timeout;
+these are not masked by the negative test. The strict paired checker reports
+no negative-control failure, while the positive capture fails on odometry and
+IMU gaps, RTF 0.875, estimator/rate diagnostics, 0.24 s hover and failure to
+land within 0.10 m. Process exit status was not part of this live capture's
+evidence, so do not call the combined gate passed.
+
+These captures use the upstream Crazyflie SITL reference application; they do
+not execute Nano-C-SLAM's STM32 app and do not validate mapping.
