@@ -11,8 +11,8 @@
 #ifndef SPI_COMM_H
 #define SPI_COMM_H
 
-#include <stdbool.h>
 #include "scan.h"
+#include <stdbool.h>
 
 typedef struct {
     float error;
@@ -34,14 +34,14 @@ typedef struct {
  *
  * @param pose Pointer to the augmented pose to send.
  */
-void spi_send_aug_pose(aug_pose_t *pose);
+bool spi_send_aug_pose(aug_pose_t *pose);
 
 /**
  * @brief Sends external augmented pose via SPI to the GAP9.
  *
  * @param pose Pointer to the external augmented pose to send.
  */
-void spi_send_ext_aug_pose(ext_aug_pose_t *pose);
+bool spi_send_ext_aug_pose(ext_aug_pose_t *pose);
 
 /**
  * @brief Sends pose update via SPI to the GAP9.
@@ -50,7 +50,7 @@ void spi_send_ext_aug_pose(ext_aug_pose_t *pose);
  * @param if The ID of the pose.
  * @param drone_id The ID of the drone that sent the psoe update.
  */
-void spi_send_ext_pose_upd(float *pose, int16_t id, int16_t drone_id);
+bool spi_send_ext_pose_upd(float *pose, int16_t id, int16_t drone_id);
 
 /**
  * @brief Sends the ID of the new internal scan pose.

@@ -100,6 +100,12 @@ cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
 /tmp/uwb_token_lease_test
 
 cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
+    -Icrazyflie-firmware/src/deck/api \
+    tests/deck_spi_wait_test.c crazyflie-firmware/src/deck/api/deck_spi_wait.c \
+    -o /tmp/deck_spi_wait_test
+/tmp/deck_spi_wait_test
+
+cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
     -Itests/stubs/stm32 -Icslam-stm32-app/src/spi_comm \
     tests/spi_wait_test.c cslam-stm32-app/src/spi_comm/spi_wait.c \
     -o /tmp/spi_wait_test

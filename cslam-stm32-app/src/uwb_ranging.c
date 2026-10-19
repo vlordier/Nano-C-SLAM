@@ -444,7 +444,10 @@ void uwb_ranging_task(void *parameters) {
             // the GAP9
             aug_pose_t aug_pose0 = {0};
             while (get_aug_pose_from_queue(&aug_pose0, 0)) {
-                spi_send_aug_pose(&aug_pose0);
+                if (!spi_send_aug_pose(&aug_pose0)) {
+                    stop_after_gap9_failure("pose send");
+                    return;
+                }
                 vTaskDelay(M2T(1));
             }
 
@@ -498,7 +501,10 @@ void uwb_ranging_task(void *parameters) {
             }
 
             // 3. Check for received augmented poses and send them to GAP9
-            send_ext_aug_poses_to_gap9();
+            if (!send_ext_aug_poses_to_gap9()) {
+                stop_after_gap9_failure("external pose send");
+                return;
+            }
 
             // 4. Perform pose-graph optimization
             if (optimize) {

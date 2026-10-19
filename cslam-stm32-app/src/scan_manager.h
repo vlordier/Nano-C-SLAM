@@ -104,7 +104,7 @@ uint8_t is_new_scan_available();
  * @brief Checks if there are buffered external augmented poses received from
  *        other drones and sends them to the GAP9.
  */
-void send_ext_aug_poses_to_gap9();
+bool send_ext_aug_poses_to_gap9(void);
 
 /**
  * @brief After receiving a new external augmented pose via UWB, store it in

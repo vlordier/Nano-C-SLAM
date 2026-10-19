@@ -139,12 +139,13 @@ void add_pose_upd_to_gap9_buffer(float *pose, int16_t id, int16_t drone_id) {
            3 * sizeof(float));
 }
 
-void send_ext_aug_poses_to_gap9() {
+bool send_ext_aug_poses_to_gap9(void) {
     // Send scans
     for (int16_t i = 0; i < gap9_ext_aug_pose_buf.count; i++) {
         // DEBUG_PRINT("GAP: Sent ext pose %d\n",
         //             gap9_ext_aug_pose_buf.poses[i].id);
-        spi_send_ext_aug_pose(&gap9_ext_aug_pose_buf.poses[i]);
+        if (!spi_send_ext_aug_pose(&gap9_ext_aug_pose_buf.poses[i]))
+            return false;
         vTaskDelay(M2T(2));
     }
     gap9_ext_aug_pose_buf.count = 0;
@@ -152,9 +153,12 @@ void send_ext_aug_poses_to_gap9() {
     // Send updated poses
     for (int16_t i = 0; i < gap9_pose_buf.count; i++) {
         DEBUG_PRINT("GAP: Sent pose upd %d\n", gap9_pose_buf.ids[i]);
-        spi_send_ext_pose_upd(&gap9_pose_buf.poses[i][0], gap9_pose_buf.ids[i],
-                              gap9_pose_buf.drone_ids[i]);
+        if (!spi_send_ext_pose_upd(&gap9_pose_buf.poses[i][0],
+                                   gap9_pose_buf.ids[i],
+                                   gap9_pose_buf.drone_ids[i]))
+            return false;
         vTaskDelay(M2T(2));
     }
     gap9_pose_buf.count = 0;
+    return true;
 }

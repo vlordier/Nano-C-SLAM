@@ -20,6 +20,7 @@
 
 #define MAX_PKT_SIZE (97)
 #define POSE_RESPONSE_CAPACITY 50
+#define SPI_TRANSFER_TIMEOUT_TICKS M2T(100)
 #define GAP9_RESPONSE_READY_TIMEOUT_TICKS M2T(100)
 #define GAP9_BUSY_TIMEOUT_TICKS M2T(10000)
 #define GPIO_POLL_TICKS M2T(1)
@@ -36,6 +37,22 @@ typedef enum {
 
 static uint8_t to_send[2 * MAX_PKT_SIZE];
 static uint8_t to_recv[601];
+
+static bool spi_exchange_transaction(size_t length, const uint8_t *tx,
+                                     uint8_t *rx, bool select_gap9) {
+    if (!spiBeginTransactionTimeout(SPI_BAUDRATE_2MHZ,
+                                    SPI_TRANSFER_TIMEOUT_TICKS))
+        return false;
+
+    if (select_gap9)
+        digitalWrite(DECK_GPIO_IO1, 0);
+    bool exchanged =
+        spiExchangeTimeout(length, tx, rx, SPI_TRANSFER_TIMEOUT_TICKS);
+    if (select_gap9)
+        digitalWrite(DECK_GPIO_IO1, 1);
+    spiEndTransaction();
+    return exchanged;
+}
 
 static int read_gap9_busy(void *context) {
     (void)context;
@@ -63,14 +80,14 @@ static bool wait_gap9_busy_level(int expected_level, uint32_t timeout_ticks) {
                               GPIO_POLL_TICKS);
 }
 
-void spi_dummy_clk_cycles() {
+static bool spi_dummy_clk_cycles(void) {
     uint8_t spi_dummy_rev = 0, spi_dummy_tr = 0;
-    spiBeginTransaction(SPI_BAUDRATE_2MHZ);
-    spiExchange(1, &spi_dummy_tr, &spi_dummy_rev);
-    spiEndTransaction();
+    return spi_exchange_transaction(1, &spi_dummy_tr, &spi_dummy_rev, false);
 }
 
-void spi_send_aug_pose(aug_pose_t *pose) {
+bool spi_send_aug_pose(aug_pose_t *pose) {
+    if (pose == NULL)
+        return false;
     to_send[0] = 'S';
     to_send[1] = POSE_CMD;
     size_t buf_idx = 2;
@@ -86,15 +103,13 @@ void spi_send_aug_pose(aug_pose_t *pose) {
     buf_idx += sizeof(uint32_t);
     to_send[MAX_PKT_SIZE - 1] = 'E';
 
-    spi_dummy_clk_cycles();
-    spiBeginTransaction(SPI_BAUDRATE_2MHZ);
-    digitalWrite(DECK_GPIO_IO1, 0);
-    spiExchange(MAX_PKT_SIZE, to_send, to_recv);
-    digitalWrite(DECK_GPIO_IO1, 1);
-    spiEndTransaction();
+    return spi_dummy_clk_cycles() &&
+           spi_exchange_transaction(MAX_PKT_SIZE, to_send, to_recv, true);
 }
 
-void spi_send_ext_aug_pose(ext_aug_pose_t *pose) {
+bool spi_send_ext_aug_pose(ext_aug_pose_t *pose) {
+    if (pose == NULL)
+        return false;
     to_send[0] = 'S';
     to_send[1] = EXT_AUG_POSE_CMD;
     size_t buf_idx = 2;
@@ -110,15 +125,13 @@ void spi_send_ext_aug_pose(ext_aug_pose_t *pose) {
     buf_idx += sizeof(uint32_t);
     to_send[MAX_PKT_SIZE - 1] = 'E';
 
-    spi_dummy_clk_cycles();
-    spiBeginTransaction(SPI_BAUDRATE_2MHZ);
-    digitalWrite(DECK_GPIO_IO1, 0);
-    spiExchange(MAX_PKT_SIZE, to_send, to_recv);
-    digitalWrite(DECK_GPIO_IO1, 1);
-    spiEndTransaction();
+    return spi_dummy_clk_cycles() &&
+           spi_exchange_transaction(MAX_PKT_SIZE, to_send, to_recv, true);
 }
 
-void spi_send_ext_pose_upd(float *pose, int16_t id, int16_t drone_id) {
+bool spi_send_ext_pose_upd(float *pose, int16_t id, int16_t drone_id) {
+    if (pose == NULL)
+        return false;
     to_send[0] = 'S';
     to_send[1] = UPD_POSE_CMD;
     size_t buf_idx = 2;
@@ -142,12 +155,8 @@ void spi_send_ext_pose_upd(float *pose, int16_t id, int16_t drone_id) {
 
     to_send[MAX_PKT_SIZE - 1] = 'E';
 
-    spi_dummy_clk_cycles();
-    spiBeginTransaction(SPI_BAUDRATE_2MHZ);
-    digitalWrite(DECK_GPIO_IO1, 0);
-    spiExchange(MAX_PKT_SIZE, to_send, to_recv);
-    digitalWrite(DECK_GPIO_IO1, 1);
-    spiEndTransaction();
+    return spi_dummy_clk_cycles() &&
+           spi_exchange_transaction(MAX_PKT_SIZE, to_send, to_recv, true);
 }
 
 bool spi_send_scan_info(int16_t scan_pose_id) {
@@ -163,12 +172,9 @@ bool spi_send_scan_info(int16_t scan_pose_id) {
 
     to_send[MAX_PKT_SIZE - 1] = 'E';
 
-    spi_dummy_clk_cycles();
-    spiBeginTransaction(SPI_BAUDRATE_2MHZ);
-    digitalWrite(DECK_GPIO_IO1, 0);
-    spiExchange(MAX_PKT_SIZE, to_send, to_recv);
-    digitalWrite(DECK_GPIO_IO1, 1);
-    spiEndTransaction();
+    if (!spi_dummy_clk_cycles() ||
+        !spi_exchange_transaction(MAX_PKT_SIZE, to_send, to_recv, true))
+        return false;
 
     vTaskDelay(M2T(5));
     DEBUG_PRINT("SPI sent scan info!\n");
@@ -189,12 +195,9 @@ bool spi_send_opt_cmd(slam_job_t *job) {
     to_send[1] = OPTIMIZE_CMD;
     to_send[MAX_PKT_SIZE - 1] = 'E';
 
-    spi_dummy_clk_cycles();
-    spiBeginTransaction(SPI_BAUDRATE_2MHZ);
-    digitalWrite(DECK_GPIO_IO1, 0);
-    spiExchange(MAX_PKT_SIZE, to_send, to_recv);
-    digitalWrite(DECK_GPIO_IO1, 1);
-    spiEndTransaction();
+    if (!spi_dummy_clk_cycles() ||
+        !spi_exchange_transaction(MAX_PKT_SIZE, to_send, to_recv, true))
+        return false;
 
     vTaskDelay(M2T(5));
     if (!wait_gap9_busy_level(0, GAP9_BUSY_TIMEOUT_TICKS)) {
@@ -204,18 +207,15 @@ bool spi_send_opt_cmd(slam_job_t *job) {
     vTaskDelay(M2T(3));
 
     // Wait feedback
-    spi_dummy_clk_cycles();
-    spiBeginTransaction(SPI_BAUDRATE_2MHZ);
-    digitalWrite(DECK_GPIO_IO1, 0);
-    spiExchange(sizeof(slam_job_t), to_send, to_recv);
-    digitalWrite(DECK_GPIO_IO1, 1);
-    spiEndTransaction();
+    if (!spi_dummy_clk_cycles() ||
+        !spi_exchange_transaction(sizeof(slam_job_t), to_send, to_recv, true))
+        return false;
 
     memcpy(job, to_recv, sizeof(slam_job_t));
     return true;
 }
 
-void spi_send_aug_pose_req(int16_t from_id, int16_t nr_of_poses) {
+static bool spi_send_aug_pose_req(int16_t from_id, int16_t nr_of_poses) {
     to_send[0] = 'S';
     to_send[1] = POSE_REQ_CMD;
     memcpy(&to_send[2], &from_id, sizeof(int16_t));
@@ -229,12 +229,8 @@ void spi_send_aug_pose_req(int16_t from_id, int16_t nr_of_poses) {
 
     to_send[MAX_PKT_SIZE - 1] = 'E';
 
-    spi_dummy_clk_cycles();
-    spiBeginTransaction(SPI_BAUDRATE_2MHZ);
-    digitalWrite(DECK_GPIO_IO1, 0);
-    spiExchange(MAX_PKT_SIZE, to_send, to_recv);
-    digitalWrite(DECK_GPIO_IO1, 1);
-    spiEndTransaction();
+    return spi_dummy_clk_cycles() &&
+           spi_exchange_transaction(MAX_PKT_SIZE, to_send, to_recv, true);
 }
 
 bool spi_rcv_poses(float *poses, int16_t from_id, int16_t nr_of_poses) {
@@ -242,18 +238,17 @@ bool spi_rcv_poses(float *poses, int16_t from_id, int16_t nr_of_poses) {
         nr_of_poses > POSE_RESPONSE_CAPACITY) {
         return false;
     }
-    spi_send_aug_pose_req(from_id, nr_of_poses);
+    if (!spi_send_aug_pose_req(from_id, nr_of_poses))
+        return false;
 
     if (!wait_gap9_busy_level(1, GAP9_RESPONSE_READY_TIMEOUT_TICKS)) {
         DEBUG_PRINT("GAP9 pose response was not ready\n");
         return false;
     }
-    spi_dummy_clk_cycles();
-    spiBeginTransaction(SPI_BAUDRATE_2MHZ);
-    digitalWrite(DECK_GPIO_IO1, 0);
-    spiExchange(3 * 4 * nr_of_poses, to_send, to_recv);
-    digitalWrite(DECK_GPIO_IO1, 1);
-    spiEndTransaction();
+    if (!spi_dummy_clk_cycles() ||
+        !spi_exchange_transaction(3 * 4 * (size_t)nr_of_poses, to_send, to_recv,
+                                  true))
+        return false;
 
     if (!wait_gap9_busy_level(0, GAP9_RESPONSE_READY_TIMEOUT_TICKS)) {
         DEBUG_PRINT("GAP9 pose response did not complete\n");
