@@ -552,14 +552,14 @@ void uwb_ranging_task(void *parameters) {
                                        NULL, &target_id)) {
                 DEBUG_PRINT(
                     "UWB token handoff exhausted; requesting landing\n");
-                land = 1;
+                uwb_token_request_land(&token_lease, &agent_has_token, &land);
                 vTaskDelete(NULL);
                 return;
             }
             send_token_with_opt = 0;
 
-            agent_has_token = 0;
-            uwb_token_lease_arm(&token_lease, (uint32_t)xTaskGetTickCount());
+            uwb_token_lease_passed(&token_lease, (uint32_t)xTaskGetTickCount(),
+                                   &agent_has_token);
             uwb_responder_on();
         } else { // Listening mode: Execute while not having the token
             // Perform ranging with other drones that request it
@@ -574,13 +574,13 @@ void uwb_ranging_task(void *parameters) {
             // Check new UWB messages
             if (get_msg_from_queue(&uwb_msg, 1) == UWB_SUCCESS) {
                 bool token_requests_optimization = false;
-                if (uwb_token_message_valid(
+                if (uwb_token_lease_receive(
+                        &token_lease, (uint32_t)xTaskGetTickCount(),
                         uwb_msg.code, UWB_ACK_MSG, uwb_msg.src, uwb_msg.dest,
                         NODE_ID, NR_OF_NODES, uwb_msg.data, uwb_msg.data_len,
                         &token_requests_optimization)) {
                     if (token_requests_optimization)
                         optimize = 1;
-                    uwb_token_lease_disarm(&token_lease);
                     token_received_tick = (uint32_t)xTaskGetTickCount();
                     token_pending = 1;
                 } else if (uwb_msg.code == UWB_ACK2_MSG &&
@@ -620,19 +620,16 @@ void uwb_ranging_task(void *parameters) {
                                             token_received_tick) >
                                      M2T(UWB_TOKEN_TAKEOVER_SETTLE_MS)) {
                 token_pending = 0;
-                agent_has_token = 1;
+                uwb_token_lease_take(&token_lease, &agent_has_token);
                 uwb_responder_off();
                 vTaskDelay(M2T(1));
             }
 
-            if (uwb_token_lease_expired(&token_lease,
-                                        (uint32_t)xTaskGetTickCount(),
-                                        M2T(UWB_TOKEN_LEASE_TIMEOUT_MS))) {
-                uwb_token_lease_disarm(&token_lease);
-                agent_has_token = 0;
+            if (uwb_token_lease_request_land_if_expired(
+                    &token_lease, (uint32_t)xTaskGetTickCount(),
+                    M2T(UWB_TOKEN_LEASE_TIMEOUT_MS), &agent_has_token, &land)) {
                 uwb_token_lease_expirations++;
                 DEBUG_PRINT("UWB token lease expired; requesting landing\n");
-                land = 1;
                 vTaskDelete(NULL);
                 return;
             }

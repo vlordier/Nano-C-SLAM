@@ -96,6 +96,7 @@ cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
 cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
     -Icslam-stm32-app/src \
     tests/uwb_token_lease_test.c cslam-stm32-app/src/uwb_token_lease.c \
+    cslam-stm32-app/src/uwb_token_handoff.c \
     -o /tmp/uwb_token_lease_test
 /tmp/uwb_token_lease_test
 
