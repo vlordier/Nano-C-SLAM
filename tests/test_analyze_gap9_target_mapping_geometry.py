@@ -8,6 +8,8 @@ import shutil
 import struct
 import tempfile
 import unittest
+import xml.etree.ElementTree as ET
+from copy import deepcopy
 from pathlib import Path
 
 from scripts.analyze_gap9_target_mapping_geometry import analyze_mapping
@@ -49,7 +51,8 @@ def _write_nearfield_fixture(path: Path) -> None:
         "obstacle3": (-1.0, -0.55, 0.6, 0.3, 0),
     }
     models = "".join(
-        f'<model name="{name}"><pose>{x} {y} 0 0 0 {yaw}</pose>'
+        f'<model name="{name}"><static>true</static>'
+        f"<pose>{x} {y} 0 0 0 {yaw}</pose>"
         f'<link name="link"><collision name="collision"><geometry>'
         f"<box><size>{width} {height} 1</size></box></geometry></collision>"
         f"</link></model>"
@@ -322,6 +325,55 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "stale or mismatched"):
             self._analyze()
+
+    def test_duplicate_sdf_surface_model_is_rejected(self) -> None:
+        tree = ET.parse(self.sdf_path)  # noqa: S314 - locally generated test fixture
+        world = tree.getroot().find("world")
+        assert world is not None
+        wall = world.find("model[@name='wall1']")
+        assert wall is not None
+        world.append(deepcopy(wall))
+        tree.write(self.sdf_path, encoding="utf-8")
+        self._refresh_sdf_attestation()
+
+        with self.assertRaisesRegex(ValueError, "duplicate surface model wall1"):
+            self._analyze()
+
+    def test_moving_or_offset_sdf_surface_model_is_rejected(self) -> None:
+        tree = ET.parse(self.sdf_path)  # noqa: S314 - locally generated test fixture
+        wall = tree.getroot().find("world/model[@name='wall1']")
+        assert wall is not None
+        wall.find("static").text = "false"
+        tree.write(self.sdf_path, encoding="utf-8")
+        self._refresh_sdf_attestation()
+
+        with self.assertRaisesRegex(ValueError, "must be static"):
+            self._analyze()
+
+        wall.find("static").text = "true"
+        link = wall.find("link")
+        assert link is not None
+        ET.SubElement(link, "pose").text = "0.25 0 0 0 0 0"
+        tree.write(self.sdf_path, encoding="utf-8")
+        self._refresh_sdf_attestation()
+
+        with self.assertRaisesRegex(ValueError, "unsupported relative link geometry"):
+            self._analyze()
+
+    def _refresh_sdf_attestation(self) -> None:
+        shutil.copyfile(self.sdf_path, self.launched_sdf_path)
+        session = json.loads(self.session_path.read_text())
+        session["world_sdf_path"] = str(self.launched_sdf_path.resolve())
+        session["world_sdf_sha256"] = self._sha(self.sdf_path)
+        session["world_sdf_bytes"] = self.sdf_path.stat().st_size
+        self.session_path.write_text(json.dumps(session), encoding="utf-8")
+        attestation = json.loads(self.world_attestation_path.read_text())
+        attestation["session_sha256"] = self._sha(self.session_path)
+        attestation["world_sdf_sha256"] = self._sha(self.sdf_path)
+        attestation["archived_sdf_sha256"] = self._sha(self.sdf_path)
+        self.world_attestation_path.write_text(
+            json.dumps(attestation), encoding="utf-8"
+        )
 
     def test_mixed_run_or_world_identity_is_rejected(self) -> None:
         session = json.loads(self.session_path.read_text())

@@ -84,10 +84,38 @@ def _sdf_segments(path: Path) -> dict[str, tuple[tuple[float, float], ...]]:
         name = model.get("name")
         if name not in EXPECTED_MODELS:
             continue
+        if name in segments:
+            raise ValueError(f"SDF contains duplicate surface model {name}")
+        if model.findtext("static") != "true":
+            raise ValueError(f"SDF surface model {name} must be static")
         pose = model.findtext("pose")
-        size = model.findtext("link/collision/geometry/box/size")
-        if pose is None or size is None:
-            raise ValueError(f"SDF model {name} lacks a pose or collision box")
+        box_sizes = model.findall("link/collision/geometry/box/size")
+        if pose is None or len(box_sizes) != 1:
+            raise ValueError(
+                f"SDF model {name} must have one model pose and one collision box"
+            )
+        for relative_pose in (
+            model.find("link/pose"),
+            model.find("link/collision/pose"),
+        ):
+            if relative_pose is not None:
+                try:
+                    relative_values = tuple(
+                        float(v) for v in relative_pose.text.split()
+                    )
+                except (AttributeError, ValueError) as error:
+                    raise ValueError(
+                        f"SDF model {name} has an invalid link or collision pose"
+                    ) from error
+                if len(relative_values) != 6 or any(
+                    value != 0 for value in relative_values
+                ):
+                    raise ValueError(
+                        f"SDF model {name} uses unsupported relative link geometry"
+                    )
+        if model.find("pose").get("relative_to") not in (None, "world"):
+            raise ValueError(f"SDF model {name} pose is not in the world frame")
+        size = box_sizes[0].text
         try:
             x, y, _z, _roll, _pitch, yaw = (float(v) for v in pose.split())
             width, height, _depth = (float(v) for v in size.split())
