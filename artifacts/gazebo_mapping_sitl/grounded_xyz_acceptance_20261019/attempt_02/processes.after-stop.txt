@@ -1,0 +1,8 @@
+Post-stop PID check for the captured session:
+  54346 launch: absent
+  54631 Gazebo server: absent
+  54641 ROS-Gazebo bridge: absent
+  54642 Nano-C-SLAM sensor bridge: absent
+  57946 GUI: absent
+
+No process for GZ_PARTITION=nano_c_slam_xyz_preflight_20261019 or the session world remained. Unrelated Gazebo processes were left untouched.

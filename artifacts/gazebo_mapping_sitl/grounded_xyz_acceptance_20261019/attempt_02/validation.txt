@@ -1,0 +1,1 @@
+uv run --locked python -: PASS validate_odometry_preflight(v2), three finite XYZ samples, strictly advancing stamps, grounded z, zero cmd_vel/enable publishers; session UUID matches launch manifest; mission_started=false.

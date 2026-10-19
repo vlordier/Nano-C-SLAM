@@ -1,0 +1,40 @@
+{
+  "command": [
+    "uv",
+    "run",
+    "--no-project",
+    "--python",
+    "/Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11",
+    "ros2",
+    "launch",
+    "nano_c_slam_gazebo",
+    "crazyswarm2_gazebo.launch.py"
+  ],
+  "exit_code": 1,
+  "gazebo_partition": "nano_c_slam_xyz_preflight_20261019",
+  "ros_domain_id": "53",
+  "second_gazebo_server_pid_started": false,
+  "second_world_started": false,
+  "session_uuid_after_attempt": "b77178e0-c3d2-41dd-ac3f-4cf184995a28",
+  "session_uuid_unchanged": true,
+  "stderr": "",
+  "stdout": "[INFO] [launch]: All log files can be found below /Users/vincent/.ros/log/2026-10-19-08-05-33-176563-macadam2-2.home-66187\n[INFO] [launch]: Default logging verbosity is set to INFO\n[ERROR] [launch]: Caught exception in launch (see debug for traceback): another Nano-C-SLAM Gazebo launch already owns this partition; stop it or choose a different GZ_PARTITION\n",
+  "test_session_pids_after_attempt": [
+    {
+      "alive": true,
+      "pid": 54346
+    },
+    {
+      "alive": true,
+      "pid": 54631
+    },
+    {
+      "alive": true,
+      "pid": 54641
+    },
+    {
+      "alive": true,
+      "pid": 54642
+    }
+  ]
+}

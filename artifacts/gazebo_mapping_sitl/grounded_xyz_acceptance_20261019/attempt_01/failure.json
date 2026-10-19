@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "result": "FAIL",
+  "failure": "mapping coordinator timed out waiting for three grounded odometry samples",
+  "diagnosis": "undetermined; later passive subscriber on the same still-running session collected three fresh samples successfully",
+  "source_revision": "222ebdcc8d9cfcc54725a7f81eb14019f232a1ff",
+  "ros_domain_id": 53,
+  "gazebo_partition": "nano_c_slam_xyz_preflight_20261019",
+  "session_uuid": "b77178e0-c3d2-41dd-ac3f-4cf184995a28",
+  "overlay_prefix": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.ZxGDQ3/install",
+  "exit_code": 1,
+  "report_written": false,
+  "mission_process_started": false,
+  "raw_stdout": "",
+  "raw_stderr": "Gazebo mapping run failed: odometry preflight timed out: no grounded samples arrived\n"
+}

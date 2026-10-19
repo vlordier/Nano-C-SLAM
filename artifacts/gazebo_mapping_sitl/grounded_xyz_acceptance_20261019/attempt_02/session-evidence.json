@@ -1,0 +1,136 @@
+{
+  "build_receipt_sha256": "861023e20cc4902697c07ea41a0aa5e0ca3b2c79ecef117684714e19cb51b43b",
+  "clock_now_ns": 118021000000,
+  "commands": {
+    "capture": "uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 - (read-only ROS subscriber using _create_status_listener; 15 s deadline)",
+    "launch": "NANO_C_SLAM_NEARFIELD_MAPPING=1 NANO_C_SLAM_GZ_PARTITION=nano_c_slam_xyz_preflight_20261019 NANO_C_SLAM_ROS_DOMAIN_ID=53 NANO_C_SLAM_OVERLAY_SETUP=\"$PWD/build/gazebo-ros-overlay.ZxGDQ3/install/local_setup.bash\" scripts/run_gazebo_macos.sh"
+  },
+  "control_preflight": {
+    "checked_before_mission_process": true,
+    "no_command_publishers": true,
+    "publisher_counts": {
+      "/cf1/cmd_vel": 0,
+      "/cf1/enable": 0
+    }
+  },
+  "gazebo_partition": "nano_c_slam_xyz_preflight_20261019",
+  "launch_pid": 54346,
+  "mission_started": false,
+  "node_inventory": [
+    [
+      "_ros2cli_daemon_53_4dba778c8e6a42d8a5fe8f925f3f893a",
+      "/"
+    ],
+    [
+      "ros_gz_bridge",
+      "/"
+    ],
+    [
+      "nano_c_slam_sensor_bridge",
+      "/"
+    ],
+    [
+      "nano_c_slam_run_status",
+      "/"
+    ]
+  ],
+  "overlay_prefix": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.ZxGDQ3/install",
+  "owned_processes": [
+    {
+      "argv": [
+        "ruby",
+        "/Users/vincent/Work/gz-macOS/ws/install/bin/gz",
+        "sim",
+        "/var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T//nano-c-slam-ros2.56uBku/nano_c_slam_nearfield.sdf",
+        "-r",
+        "-s",
+        "--headless-rendering",
+        "--render-engine-server=ogre2",
+        "--render-engine-server-api-backend=metal",
+        "--force-version",
+        "8"
+      ],
+      "executable_path": "/usr/bin/ruby",
+      "launch_pid": 54346,
+      "observed_at_utc": "2026-10-19T06:02:40.992391Z",
+      "pid": 54631,
+      "role": "gazebo-server"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/ros2-jazzy/lib/ros_gz_bridge/parameter_bridge",
+        "--ros-args",
+        "--params-file",
+        "/var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T/launch_params_xjgo2um1"
+      ],
+      "executable_path": "/opt/homebrew/Cellar/ros2-jazzy/26.07.31.106/lib/ros_gz_bridge/parameter_bridge",
+      "launch_pid": 54346,
+      "observed_at_utc": "2026-10-19T06:02:41.029227Z",
+      "pid": 54641,
+      "role": "ros-gazebo-bridge"
+    },
+    {
+      "argv": [
+        "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.ZxGDQ3/install/nano_c_slam_gazebo/lib/nano_c_slam_gazebo/sensor_bridge",
+        "--ros-args",
+        "-r",
+        "__node:=nano_c_slam_sensor_bridge",
+        "--params-file",
+        "/var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T/launch_params_udzq3lgx"
+      ],
+      "executable_path": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.ZxGDQ3/install/nano_c_slam_gazebo/lib/nano_c_slam_gazebo/sensor_bridge",
+      "launch_pid": 54346,
+      "observed_at_utc": "2026-10-19T06:02:41.030526Z",
+      "pid": 54642,
+      "role": "nano-sensor-bridge"
+    }
+  ],
+  "package_prefixes": {
+    "nano_c_slam_gazebo": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.ZxGDQ3/install/nano_c_slam_gazebo",
+    "nano_c_slam_interfaces": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.ZxGDQ3/install/nano_c_slam_interfaces",
+    "ros_gz_crazyflie_gazebo": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.ZxGDQ3/install/ros_gz_crazyflie_gazebo"
+  },
+  "preflight": {
+    "failure_reason": null,
+    "max_future_skew_s": 0.1,
+    "max_grounded_altitude_m": 0.15,
+    "max_sample_age_s": 0.2,
+    "max_sample_gap_s": 0.2,
+    "passed": true,
+    "required_samples": 3,
+    "samples": [
+      {
+        "received_monotonic_s": 171249.210084958,
+        "sim_time_s": 117.984,
+        "stamp_s": 117.98,
+        "x_m": -0.5,
+        "y_m": -0.5,
+        "z_m": -8.466971613205199e-07
+      },
+      {
+        "received_monotonic_s": 171249.229228208,
+        "sim_time_s": 118.003,
+        "stamp_s": 118.0,
+        "x_m": -0.5,
+        "y_m": -0.5,
+        "z_m": -8.466971613205199e-07
+      },
+      {
+        "received_monotonic_s": 171249.247344625,
+        "sim_time_s": 118.021,
+        "stamp_s": 118.02,
+        "x_m": -0.5,
+        "y_m": -0.5,
+        "z_m": -8.466971613205199e-07
+      }
+    ],
+    "schema_version": 2
+  },
+  "result": "PASS",
+  "ros_domain_id": 53,
+  "scene": "nearfield-mapping",
+  "schema_version": 1,
+  "session_uuid": "b77178e0-c3d2-41dd-ac3f-4cf184995a28",
+  "source_clean_at_launch": true,
+  "source_revision": "222ebdcc8d9cfcc54725a7f81eb14019f232a1ff"
+}

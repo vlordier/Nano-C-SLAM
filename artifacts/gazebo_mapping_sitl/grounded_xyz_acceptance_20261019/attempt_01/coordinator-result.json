@@ -1,0 +1,28 @@
+{
+  "command": [
+    "uv",
+    "run",
+    "--no-project",
+    "--python",
+    "/Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11",
+    "-m",
+    "scripts.gazebo_mapping_run",
+    "--drone",
+    "cf1",
+    "--samples",
+    "60",
+    "--timeout",
+    "120",
+    "--preflight-timeout",
+    "10",
+    "--scene",
+    "nearfield-mapping",
+    "--output",
+    "/Users/vincent/Work/Nano-C-SLAM/artifacts/gazebo_mapping_sitl/grounded_xyz_acceptance_20261019/mapping-run.json",
+    "--binary",
+    "/Users/vincent/Work/Nano-C-SLAM/cslam-gap9-app/BUILD-host/mapping_replay"
+  ],
+  "outer_timeout_s": 145,
+  "exit_code": 1,
+  "report_exists": false
+}
