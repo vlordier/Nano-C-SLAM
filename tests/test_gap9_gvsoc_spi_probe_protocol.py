@@ -101,6 +101,24 @@ class Gap9GvsocSpiProbeProtocolTests(unittest.TestCase):
             [*range(0, 260, 20), 240],
         )
 
+    def test_capacity_trace_exercises_scan_anchor_storage_limit(self) -> None:
+        frames = make_mapping_trace(260, scan_interval=2, stationary=True)
+        scans = [frame for frame in frames if frame[1] == SCAN_CMD]
+        poses = [frame for frame in frames if frame[1] == 0][1:]
+
+        self.assertEqual(len(frames), 393)
+        self.assertEqual(len(scans), 131)
+        self.assertEqual(
+            [int.from_bytes(frame[2:4], "little") for frame in scans],
+            [*range(0, 260, 2), 258],
+        )
+        observations = [
+            POSE_PAYLOAD.unpack(frame[2 : 2 + POSE_PAYLOAD.size])[2:] for frame in poses
+        ]
+        self.assertTrue(
+            all(observation == observations[0] for observation in observations)
+        )
+
     def test_mapping_trace_rejects_pose_count_outside_firmware_capacity(self) -> None:
         for pose_count in (0, 261):
             with self.subTest(pose_count=pose_count), self.assertRaises(ValueError):

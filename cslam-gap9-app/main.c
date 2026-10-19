@@ -17,6 +17,7 @@
 struct pi_device cluster_dev;
 struct pi_cluster_conf cl_conf;
 
+#include "config_size.h"
 #include "external_point_cloud.h"
 #include "gpio_config.h"
 #include "icp/icp.h"
@@ -196,8 +197,19 @@ void slam_loop() {
                 uint16_t scans_before = pcl_get_scan_pose_count();
 #endif
                 set_cf_gpio(1); // GAP9 busy
+#ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
+                uint64_t scan_busy_started_us = pi_time_get_us();
+#endif
                 int16_t scan_pose_id = scan_info[0];
                 add_scan_pose_id(scan_pose_id);
+#ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
+                uint64_t scan_busy_duration_us =
+                    pi_time_get_us() - scan_busy_started_us;
+                printf("NANO_C_SLAM_GVSOC_SPI_MAIN:scan_busy index=%d "
+                       "pose_id=%d duration_us=%llu\n",
+                       scan_packets_decoded - 1, scan_pose_id,
+                       (unsigned long long)scan_busy_duration_us);
+#endif
 #ifdef NANO_C_SLAM_GVSOC_HAS_PACKET_COUNTERS
                 if (pcl_get_scan_pose_count() > scans_before)
                     scans_registered++;
@@ -381,6 +393,42 @@ void slam_loop() {
            scans_registered, (long)pcl_get_constraint_count(),
            (long)pcl_get_optimizer_input_unique_edge_count(), optimize_packets,
            slam_job.number_of_poses, slam_job.main_graph_size,
+           slam_job.successful_solver_call_count, slam_job.time_ms,
+           slam_job.has_nan, slam_job.optimization_completed);
+    const uint8_t *response_bytes = (const uint8_t *)&slam_job;
+    for (size_t index = 0; index < sizeof(slam_job); ++index)
+        printf("%02x", response_bytes[index]);
+    printf("\n");
+#elif NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT == 393
+    const int32_t accepted_constraints = pcl_get_constraint_count();
+    const int32_t optimizer_edges = pcl_get_optimizer_input_unique_edge_count();
+    passed =
+        processed_packets == 393 && pose_packets_decoded == 260 &&
+        poses_inserted == 260 && bad_pose_checksums == 1 &&
+        scan_packets_decoded == 131 && scans_registered == 100 &&
+        optimize_packets == 1 && pcl_get_pose_count() == 260 &&
+        pcl_get_scan_pose_count() == 100 && accepted_constraints >= 0 &&
+        accepted_constraints <= MAX_CONSTRAINTS && optimizer_edges >= 0 &&
+        optimizer_edges <= MAX_CONSTRAINTS &&
+        optimizer_edges <= accepted_constraints && slam_job.has_nan == 0 &&
+        ((accepted_constraints == 0 && slam_job.number_of_poses == 0 &&
+          slam_job.main_graph_size == 0 &&
+          slam_job.optimization_completed == 0) ||
+         (accepted_constraints > 0 && slam_job.number_of_poses == 260 &&
+          slam_job.main_graph_size >= 2 && slam_job.main_graph_size <= 100 &&
+          slam_job.main_solver_returned == 1 &&
+          slam_job.successful_solver_call_count >= 1 &&
+          slam_job.optimization_completed == 1));
+    printf("NANO_C_SLAM_GVSOC_SPI_MAIN:capacity_ingress_%s packets=%u "
+           "pose_decoded=%d pose_inserted=%d bad_pose_checksum=%d "
+           "scans_decoded=%d scans_registered=%d constraints=%ld "
+           "optimizer_edges=%ld optimize=%d poses=%d graph=%d "
+           "solver_calls=%d time_ms=%d has_nan=%d completed=%d "
+           "response_expected_hex=",
+           passed ? "ok" : "fail", processed_packets, pose_packets_decoded,
+           poses_inserted, bad_pose_checksums, scan_packets_decoded,
+           scans_registered, (long)accepted_constraints, (long)optimizer_edges,
+           optimize_packets, slam_job.number_of_poses, slam_job.main_graph_size,
            slam_job.successful_solver_call_count, slam_job.time_ms,
            slam_job.has_nan, slam_job.optimization_completed);
     const uint8_t *response_bytes = (const uint8_t *)&slam_job;

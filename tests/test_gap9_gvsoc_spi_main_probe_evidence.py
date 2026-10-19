@@ -57,6 +57,19 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
         }
         self.host_transfer_path.write_text(json.dumps(transfer), encoding="utf-8")
 
+    @staticmethod
+    def _scan_busy_lines(frames: tuple[bytes, ...]) -> str:
+        scan_ids = [
+            int.from_bytes(frame[2:4], "little", signed=True)
+            for frame in frames
+            if frame[1] == 1
+        ]
+        return "".join(
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:scan_busy "
+            f"index={index} pose_id={pose_id} duration_us={1000 + index}\n"
+            for index, pose_id in enumerate(scan_ids)
+        )
+
     def _capture(self) -> dict[str, object]:
         return capture_evidence(
             config_path=self.config_path,
@@ -119,7 +132,13 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
             else ""
         )
         self.log_path.write_text(
-            skipped_marker + stats + "\n" + marker + "\n", encoding="utf-8"
+            self._scan_busy_lines(frames)
+            + skipped_marker
+            + stats
+            + "\n"
+            + marker
+            + "\n",
+            encoding="utf-8",
         )
         return expected_response
 
@@ -223,6 +242,7 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
         )
         self.log_path.write_text(
             "NANO_C_SLAM_GVSOC_SPI_MAIN:response_phase=skipped\n"
+            + self._scan_busy_lines(frames)
             + stats
             + "\n"
             + marker
@@ -235,9 +255,82 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
         self.assertEqual(report["sequence"], "max-mapping")
         self.assertEqual(report["frame_count"], 276)
         self.assertEqual(report["optimizer_time_ms"], 4321)
+        scan_durations = cast(list[dict[str, int]], report["scan_busy_durations_us"])
+        self.assertEqual(len(scan_durations), 14)
+        self.assertEqual(scan_durations[0]["duration_us"], 1000)
         self.assertEqual(
             report["evidence_class"],
             "gvsoc-production-max-capacity-mapping-spi2-ingress",
+        )
+
+    def test_accepts_scan_anchor_capacity_without_claiming_optimizer_coverage(
+        self,
+    ) -> None:
+        frames = make_mapping_trace(260, scan_interval=2, stationary=True)
+        commands = [
+            "POSE_BAD_CHECKSUM"
+            if index == 0
+            else {0: "POSE", 1: "SCAN", 2: "OPTIMIZE"}[frame[1]]
+            for index, frame in enumerate(frames)
+        ]
+        self.host_transfer_path.write_text(
+            json.dumps(
+                {
+                    "sequence": "capacity-mapping",
+                    "pre_cs_dummy_clock_cycles": 8,
+                    "frames": [
+                        {
+                            "command": command,
+                            "frame_tx_hex": frame.hex(),
+                            "length": len(frame),
+                        }
+                        for command, frame in zip(commands, frames, strict=True)
+                    ],
+                    "control_phase": "optimizer_response_captured",
+                    "response_rx_hex": "00" * 18,
+                }
+            ),
+            encoding="utf-8",
+        )
+        response = "00" * 18
+        marker = (
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:capacity_ingress_ok packets=393 "
+            "pose_decoded=260 pose_inserted=260 bad_pose_checksum=1 "
+            "scans_decoded=131 scans_registered=100 constraints=0 "
+            "optimizer_edges=0 optimize=1 poses=0 graph=0 "
+            f"solver_calls=0 time_ms=0 has_nan=0 completed=0 "
+            f"response_expected_hex={response}"
+        )
+        stats = (
+            "NANO_C_SLAM_SPI:stats rx=393 malformed=0 unknown=0 "
+            "frames=261,131,1,0,0,0,0 decode_ok=260,131,0,0,0,0,0 "
+            "decode_error=1,0,0,0,0,0,0 pose_id_missing=0 "
+            "pose_id_nonadvancing=0 optimize_responses=1"
+        )
+        self.log_path.write_text(
+            self._scan_busy_lines(frames) + stats + "\n" + marker + "\n",
+            encoding="utf-8",
+        )
+
+        report = self._capture()
+
+        self.assertEqual(report["sequence"], "capacity-mapping")
+        self.assertEqual(report["frame_count"], 393)
+        self.assertIsNone(report["optimizer_time_ms"])
+        self.assertIsNone(report["optimizer_graph_size"])
+        self.assertEqual(
+            report["mapping_outcome"], "no_loop_closures; optimizer_not_started"
+        )
+        self.assertEqual(
+            report["evidence_class"],
+            "gvsoc-production-scan-anchor-capacity-ingress-spi2",
+        )
+        self.assertEqual(report["scan_busy_max_us"], 1130)
+        self.assertTrue(
+            any(
+                "100-scan anchor" in limitation
+                for limitation in cast(list[str], report["limitations"])
+            )
         )
 
     def test_rejects_claimed_response_bytes_when_target_skips_slave_tx(self) -> None:
@@ -273,6 +366,30 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
         self.log_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
         with self.assertRaisesRegex(ValueError, "lacks production SPI receive"):
+            self._capture()
+
+    def test_rejects_missing_scan_busy_measurement(self) -> None:
+        self._write_mapping_evidence()
+        log = self.log_path.read_text(encoding="utf-8")
+        lines = [
+            line
+            for line in log.splitlines()
+            if not line.startswith("NANO_C_SLAM_GVSOC_SPI_MAIN:scan_busy ")
+        ]
+        self.log_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "one SCAN busy duration"):
+            self._capture()
+
+    def test_rejects_scan_busy_measurement_for_wrong_pose_id(self) -> None:
+        self._write_mapping_evidence()
+        log = self.log_path.read_text(encoding="utf-8")
+        self.log_path.write_text(
+            log.replace("index=0 pose_id=0", "index=0 pose_id=1"),
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(ValueError, "pose IDs differ"):
             self._capture()
 
     def test_rejects_inconsistent_production_receive_counts(self) -> None:

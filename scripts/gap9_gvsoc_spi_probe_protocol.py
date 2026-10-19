@@ -44,19 +44,27 @@ def make_pose_frame(
     return bytes(frame)
 
 
-def make_mapping_trace(pose_count: int = 60) -> tuple[bytes, ...]:
-    """Build a bounded production-layout trace with periodic scan anchors."""
+def make_mapping_trace(
+    pose_count: int = 60, scan_interval: int = 20, *, stationary: bool = False
+) -> tuple[bytes, ...]:
+    """Build a bounded production-layout trace with periodic scan anchors.
+
+    ``stationary`` repeats an identical pose and sensor observation to stress
+    loop-closure and optimizer capacity independently of trajectory accuracy.
+    """
     if not 1 <= pose_count <= 260:
         raise ValueError("pose_count must fit the GAP9 graph capacity (1..260)")
+    if not 1 <= scan_interval <= pose_count:
+        raise ValueError("scan_interval must be between 1 and pose_count")
     invalid_pose = bytearray(make_pose_frame())
     invalid_pose[POSE_PAYLOAD.size + 2] ^= 1
     frames = [bytes(invalid_pose)]
 
     for pose_id in range(pose_count):
-        angle = _float32(_float32(pose_id) * _float32(0.02))
-        x = _float32(_float32(0.15) * _float32(math.cos(angle)))
-        y = _float32(_float32(0.15) * _float32(math.sin(angle)))
-        yaw = _float32(angle + _float32(math.pi / 2))
+        angle = 0.0 if stationary else _float32(_float32(pose_id) * _float32(0.02))
+        x = 0.0 if stationary else _float32(_float32(0.15) * _float32(math.cos(angle)))
+        y = 0.0 if stationary else _float32(_float32(0.15) * _float32(math.sin(angle)))
+        yaw = 0.0 if stationary else _float32(angle + _float32(math.pi / 2))
         frames.append(
             make_pose_frame(
                 pose_id,
@@ -64,13 +72,15 @@ def make_mapping_trace(pose_count: int = 60) -> tuple[bytes, ...]:
                 position=(x, y, yaw),
             )
         )
-        if (pose_id + 1) % 20 == 0:
-            frames.append(make_scan_frame(pose_id - 19))
+        if (pose_id + 1) % scan_interval == 0:
+            frames.append(make_scan_frame(pose_id - scan_interval + 1))
 
-    if pose_count % 20:
-        frames.append(make_scan_frame(pose_count - (pose_count % 20)))
-    if pose_count >= 40:
-        frames.append(make_scan_frame(((pose_count - 1) // 20) * 20))
+    if pose_count % scan_interval:
+        frames.append(make_scan_frame(pose_count - (pose_count % scan_interval)))
+    if pose_count >= 2 * scan_interval:
+        frames.append(
+            make_scan_frame(((pose_count - 1) // scan_interval) * scan_interval)
+        )
     frames.append(_make_command_frame(OPTIMIZE_CMD))
     return tuple(bytes(frame) for frame in frames)
 

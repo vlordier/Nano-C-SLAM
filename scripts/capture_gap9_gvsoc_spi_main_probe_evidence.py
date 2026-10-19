@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 
 from scripts.gap9_gvsoc_spi_probe_protocol import (
+    SCAN_CMD,
     make_mapping_trace,
     make_pose_frame,
     make_scan_frame,
@@ -25,6 +26,11 @@ SPI_DIAGNOSTICS_PATTERN = re.compile(
     r"frames=([0-9,]+) decode_ok=([0-9,]+) decode_error=([0-9,]+) "
     r"pose_id_missing=(\d+) pose_id_nonadvancing=(\d+) "
     r"optimize_responses=(\d+)$",
+    re.MULTILINE,
+)
+SCAN_BUSY_PATTERN = re.compile(
+    r"^NANO_C_SLAM_GVSOC_SPI_MAIN:scan_busy index=(\d+) "
+    r"pose_id=(-?\d+) duration_us=(\d+)$",
     re.MULTILINE,
 )
 COMMAND_NAMES = (
@@ -63,8 +69,14 @@ def capture_evidence(
         raise ValueError("host transfer record must be a JSON object")
     frames = host_transfer.get("frames")
     sequence = host_transfer.get("sequence", "pose-scan")
-    if sequence in {"mapping", "max-mapping"}:
-        expected = list(make_mapping_trace(260 if sequence == "max-mapping" else 60))
+    if sequence in {"mapping", "max-mapping", "capacity-mapping"}:
+        expected = list(
+            make_mapping_trace(
+                260 if sequence != "mapping" else 60,
+                scan_interval=2 if sequence == "capacity-mapping" else 20,
+                stationary=sequence == "capacity-mapping",
+            )
+        )
         expected_commands = [
             "POSE_BAD_CHECKSUM"
             if index == 0
@@ -93,7 +105,10 @@ def capture_evidence(
         raise ValueError(f"cannot read GVSOC log: {error}") from error
     response_status: str | None = None
     spi_diagnostics: dict[str, object] | None = None
+    scan_busy_durations_us: list[dict[str, int]] | None = None
     optimizer_time_ms: int | None = None
+    optimizer_graph_size: int | None = None
+    mapping_outcome: str | None = None
     if sequence == "pose-scan":
         if TARGET_MARKER not in log:
             raise ValueError(
@@ -129,7 +144,7 @@ def capture_evidence(
                 "decode_success": [60, 4, 0, 0, 0, 0, 0],
                 "decode_failure": [1, 0, 0, 0, 0, 0, 0],
             }
-        else:
+        elif sequence == "max-mapping":
             mapping_pattern = re.compile(
                 r"NANO_C_SLAM_GVSOC_SPI_MAIN:max_mapping_ok packets=276 "
                 r"pose_decoded=260 pose_inserted=260 bad_pose_checksum=1 "
@@ -146,12 +161,91 @@ def capture_evidence(
                 "decode_success": [260, 14, 0, 0, 0, 0, 0],
                 "decode_failure": [1, 0, 0, 0, 0, 0, 0],
             }
+        else:
+            mapping_pattern = re.compile(
+                r"NANO_C_SLAM_GVSOC_SPI_MAIN:capacity_ingress_ok packets=393 "
+                r"pose_decoded=260 pose_inserted=260 bad_pose_checksum=1 "
+                r"scans_decoded=131 scans_registered=100 constraints=(\d+) "
+                r"optimizer_edges=(\d+) optimize=1 poses=(\d+) graph=(\d+) "
+                r"solver_calls=(\d+) time_ms=(\d+) has_nan=0 completed=(\d+) "
+                r"response_expected_hex=([0-9a-f]{36})"
+            )
+            expected_diagnostics = {
+                "received_frames": 393,
+                "malformed_frames": 0,
+                "unknown_commands": 0,
+                "command_frames": [261, 131, 1, 0, 0, 0, 0],
+                "decode_success": [260, 131, 0, 0, 0, 0, 0],
+                "decode_failure": [1, 0, 0, 0, 0, 0, 0],
+            }
+        expected_scan_count = {
+            "mapping": 4,
+            "max-mapping": 14,
+            "capacity-mapping": 131,
+        }[sequence]
+        expected_scan_pose_ids = [
+            int.from_bytes(frame[2:4], "little", signed=True)
+            for frame in expected
+            if frame[1] == SCAN_CMD
+        ]
+        scan_busy_matches = SCAN_BUSY_PATTERN.findall(log)
+        if (
+            len(scan_busy_matches) != expected_scan_count
+            or len(expected_scan_pose_ids) != expected_scan_count
+        ):
+            raise ValueError(
+                "GVSOC log must contain one SCAN busy duration per decoded "
+                f"SCAN ({expected_scan_count} expected, got "
+                f"{len(scan_busy_matches)})"
+            )
+        scan_busy_durations_us = []
+        for expected_index, (index_text, pose_id_text, duration_text) in enumerate(
+            scan_busy_matches
+        ):
+            index = int(index_text)
+            pose_id = int(pose_id_text)
+            if index != expected_index:
+                raise ValueError("GVSOC SCAN busy duration indices are not contiguous")
+            expected_pose_id = expected_scan_pose_ids[expected_index]
+            if pose_id != expected_pose_id:
+                raise ValueError("GVSOC SCAN busy pose IDs differ from injected trace")
+            scan_busy_durations_us.append(
+                {
+                    "index": index,
+                    "pose_id": pose_id,
+                    "duration_us": int(duration_text),
+                }
+            )
         match = mapping_pattern.search(log)
         if match is None:
             raise ValueError("GVSOC log lacks the validated full-mapping marker")
         target_marker = match.group(0)
-        optimizer_time_ms = int(match.group(1)) if sequence == "max-mapping" else None
-        response_expected_hex = match.group(2 if sequence == "max-mapping" else 1)
+        if sequence == "capacity-mapping":
+            constraints, edges, poses, graph, calls, duration, completed = (
+                int(value) for value in match.groups()[:7]
+            )
+            response_expected_hex = match.group(8)
+            if not 0 <= edges <= constraints <= 50:
+                raise ValueError("capacity ingress constraint counts exceed limits")
+            if constraints == 0:
+                if (poses, graph, calls, duration, completed) != (0, 0, 0, 0, 0):
+                    raise ValueError(
+                        "zero-constraint trace unexpectedly reports a solve"
+                    )
+                mapping_outcome = "no_loop_closures; optimizer_not_started"
+            else:
+                if not 2 <= graph <= 100 or poses != 260 or calls < 1 or completed != 1:
+                    raise ValueError(
+                        "accepted constraints lack a completed optimizer result"
+                    )
+                mapping_outcome = "optimizer_completed"
+                optimizer_graph_size = graph
+                optimizer_time_ms = duration
+        elif sequence == "max-mapping":
+            optimizer_time_ms = int(match.group(1))
+            response_expected_hex = match.group(2)
+        else:
+            response_expected_hex = match.group(1)
         diagnostics_match = SPI_DIAGNOSTICS_PATTERN.search(log)
         if diagnostics_match is None:
             raise ValueError("GVSOC log lacks production SPI receive diagnostics")
@@ -230,14 +324,20 @@ def capture_evidence(
             limitations = []
         limitations.extend(
             [
-                "Proves the production mapping path over GVSOC SPI2 ingress "
-                f"with {260 if sequence == 'max-mapping' else 60} poses.",
+                "Exercises the production command path over GVSOC SPI2 ingress "
+                f"with {260 if sequence != 'mapping' else 60} poses.",
                 "Does not validate map accuracy, physical SPI, or flight behavior.",
                 "Receive counters cannot detect frames for which no clocks were "
                 "observed, and sequence-less identical commands cannot be "
                 "distinguished as dropped or duplicated.",
             ]
         )
+        if sequence == "capacity-mapping":
+            limitations.append(
+                "Fills the point-cloud 100-scan anchor storage limit. The "
+                "stationary synthetic trace accepted no loop closures, so it "
+                "does not exercise the 50-constraint limit or validate mapping."
+            )
 
     return {
         "schema_version": 1,
@@ -248,7 +348,11 @@ def capture_evidence(
             else (
                 "gvsoc-production-max-capacity-mapping-spi2-ingress"
                 if sequence == "max-mapping"
-                else "gvsoc-production-mapping-spi2-ingress"
+                else (
+                    "gvsoc-production-mapping-spi2-ingress"
+                    if sequence == "mapping"
+                    else "gvsoc-production-scan-anchor-capacity-ingress-spi2"
+                )
             )
         ),
         "sdk_release": "5.20.4",
@@ -259,8 +363,16 @@ def capture_evidence(
         "target_marker": target_marker,
         "optimizer_response_expected_hex": response_expected_hex,
         "optimizer_time_ms": optimizer_time_ms,
+        "optimizer_graph_size": optimizer_graph_size,
+        "mapping_outcome": mapping_outcome if sequence == "capacity-mapping" else None,
+        "scan_busy_durations_us": scan_busy_durations_us,
+        "scan_busy_max_us": (
+            max(item["duration_us"] for item in scan_busy_durations_us)
+            if scan_busy_durations_us
+            else None
+        ),
         "optimizer_response_rx_hex": host_transfer.get("response_rx_hex")
-        if sequence in {"mapping", "max-mapping"}
+        if sequence in {"mapping", "max-mapping", "capacity-mapping"}
         else None,
         "optimizer_response_status": response_status,
         "spi_diagnostics": spi_diagnostics,

@@ -134,9 +134,28 @@ def target_control(gvsoc: GvsocProxy) -> int:
                 for index, frame in enumerate(frames)
             ],
         }
+    elif sequence == "capacity-mapping":
+        frames = list(make_mapping_trace(260, scan_interval=2, stationary=True))
+        result = {
+            "sequence": sequence,
+            "pre_cs_dummy_clock_cycles": 8,
+            "frames": [
+                {
+                    "command": (
+                        "POSE_BAD_CHECKSUM"
+                        if index == 0
+                        else {0: "POSE", 1: "SCAN", 2: "OPTIMIZE"}[frame[1]]
+                    ),
+                    "frame_tx_hex": frame.hex(),
+                    "length": len(frame),
+                }
+                for index, frame in enumerate(frames)
+            ],
+        }
     else:
         raise ValueError(
-            "GAP9_GVSOC_SPI_SEQUENCE must be scan, pose-scan, mapping, or max-mapping"
+            "GAP9_GVSOC_SPI_SEQUENCE must be scan, pose-scan, mapping, "
+            "max-mapping, or capacity-mapping"
         )
     output_root = Path(os.environ.get("GAP9_GVSOC_WORK_ROOT", "."))
     output_root.mkdir(parents=True, exist_ok=True)
@@ -148,18 +167,21 @@ def target_control(gvsoc: GvsocProxy) -> int:
         # SCAN dispatch runs synchronous ICP before the production target
         # arms its next receive. Give that command a longer virtual gap so
         # this diagnostic does not race target-side scan processing.
-        settle_time_ps = (
-            1_000_000_000_000
-            if sequence in {"mapping", "max-mapping"} and frame[1] == SCAN_CMD
-            else 100_000_000_000
-        )
+        settle_time_ps = 100_000_000_000
+        if frame[1] == SCAN_CMD and sequence in {"mapping", "max-mapping"}:
+            settle_time_ps = 1_000_000_000_000
+        elif frame[1] == SCAN_CMD and sequence == "capacity-mapping":
+            # The measured worst scan at 200 poses is below 100 ms; 250 ms
+            # retains 2.5x virtual-time margin without making 131 scans take
+            # more wall time than the bounded 600 s GVSOC test invocation.
+            settle_time_ps = 250_000_000_000
         gvsoc.run(settle_time_ps)
-        if sequence in {"mapping", "max-mapping"}:
+        if sequence in {"mapping", "max-mapping", "capacity-mapping"}:
             rx_data = spi.get_received_bytes(len(frame))
             if rx_data is None or len(rx_data) != len(frame):
                 raise RuntimeError("GVSOC did not return the command transfer RX bytes")
 
-    if sequence in {"mapping", "max-mapping"}:
+    if sequence in {"mapping", "max-mapping", "capacity-mapping"}:
         # Let production ICP/graph optimization finish and block in the real
         # slave send before queuing master-side response clocks.
         result["control_phase"] = "waiting_for_optimizer_and_slave_tx"

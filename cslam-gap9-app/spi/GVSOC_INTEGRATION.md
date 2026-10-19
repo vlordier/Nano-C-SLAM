@@ -392,6 +392,46 @@ for run in 1 2 3; do
 done
 ```
 
+### Scan-anchor capacity timing probe
+
+The `393`-command production-main probe sends 260 valid poses, 131 SCAN
+commands, and OPTIMIZE. Its stationary synthetic observations exercise 100
+unique scan anchors and then the full-anchor lookup path. This trace accepts no
+ICP loop closures, so it does not exercise the configured 50-constraint limit
+or produce a map; the separate maximum-pose trace exercises a completed solve
+with 12 constraints. A test-only `scan_busy` record uses PMSIS `pi_time_get_us()`
+around `add_scan_pose_id()`, covering anchor lookup, constraint search, and any
+synchronous ICP. Evidence checks all 131 indices and pose IDs against the
+injected trace and records each duration plus the maximum. This tests firmware
+computational timing in GVSOC; it does not validate STM32 electrical
+observation of the busy pin.
+
+```sh
+DOCKER_HOST=ssh://colima-act-ci \
+  GAP9_BUILD_GVSOC_SPI_MAIN_PROBE=1 \
+  GAP9_BUILD_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT=393 \
+  bash scripts/build_gap9_firmware.sh
+GAP9_GVSOC_ENABLE_TESTBENCH=1 \
+  GAP9_GVSOC_SPI_SEQUENCE=capacity-mapping \
+  GAP9_GVSOC_SPI_CAPTURE_RESPONSE=1 \
+  GAP9_GVSOC_CONTROL_SCRIPT="$PWD/scripts/gvsoc_spi_slave_probe_control.py" \
+  GAP9_GVSOC_ELF="$PWD/cslam-gap9-app/BUILD-gvsoc-spi-main-probe/nano_c_slam_gvsoc_spi_main_probe" \
+  GAP9_GVSOC_EXPECTED_MARKER='NANO_C_SLAM_GVSOC_SPI_MAIN:capacity_ingress_ok' \
+  GAP9_GVSOC_WORK_ROOT="${TMPDIR:-/tmp}/nano-c-slam-gvsoc-capacity-map" \
+  bash scripts/run_gap9_gvsoc_smoke.sh
+uv run --locked python -m scripts.capture_gap9_gvsoc_spi_main_probe_evidence \
+  --config "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-capacity-map/gvsoc_config.json" \
+  --elf cslam-gap9-app/BUILD-gvsoc-spi-main-probe/nano_c_slam_gvsoc_spi_main_probe \
+  --host-transfer "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-capacity-map/spi_slave_probe_host.json" \
+  --log "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-capacity-map/gvsoc.log" \
+  --source cslam-gap9-app/main.c \
+  --source cslam-gap9-app/point-cloud/point_cloud.c \
+  --source scripts/gvsoc_spi_slave_probe_control.py \
+  --source scripts/gap9_gvsoc_spi_probe_protocol.py \
+  --source scripts/capture_gap9_gvsoc_spi_main_probe_evidence.py \
+  --output artifacts/gap9_gvsoc_evidence/capacity_ingress.json
+```
+
 With `NANO_C_SLAM_SPI_DIAGNOSTICS` enabled, each completed OPTIMIZE command
 prints one `NANO_C_SLAM_SPI:stats` line. `rx` counts received fixed-size
 transactions; `malformed` counts transactions without the `S...E` delimiters;
