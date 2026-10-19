@@ -129,6 +129,23 @@ uv run --locked python -m unittest tests.test_gazebo_sensor_model tests.test_gaz
 
 The Linux instructions above are the supported upstream path. On macOS, use the Gazebo Harmonic build already installed at `~/Work/gz-macOS/ws/install`; it provides the working native Gazebo server and desktop GUI. ROS 2 Jazzy still comes from the Homebrew tap and needs Python 3.11. The helper temporarily exposes the older Abseil ABI required by the prebuilt ROS bridge, then restores Homebrew when Gazebo exits. Do not run Homebrew upgrades while the helper is running.
 
+If Gazebo reports that its DART engine cannot load a versioned DART library
+after Homebrew updates `dartsim`, rebuild only the Gazebo DART wrapper against
+the installed DART version in this repository's ignored `build/` directory:
+
+```sh
+cd ~/Work/Nano-C-SLAM
+source "$HOME/Work/gz-macOS/ws/install/setup.zsh"
+./scripts/build_gz_physics_dartsim_plugin.sh
+```
+
+The script reads `~/Work/gz-macOS/gz-physics` and writes no files there. It
+prints an engine path containing the rebuilt plugin and the existing Gazebo
+plugins; pass that value through `NANO_C_SLAM_GZ_PHYSICS_ENGINE_PATH` when
+running `scripts/run_gazebo_macos.sh`. The default engine path remains the
+installed Gazebo plugins. Retain the build receipt with any test evidence that
+uses the rebuilt wrapper, since its hash and DART version identify that runtime.
+
 Only one `run_gazebo_macos.sh` launch may be active at a time because the
 Abseil compatibility link is shared through Homebrew's global `opt` directory.
 The launcher rejects a second invocation while that link points into another

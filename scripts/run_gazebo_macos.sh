@@ -106,7 +106,7 @@ fi
 export PYTHONPATH="$firmware_build${PYTHONPATH:+:$PYTHONPATH}"
 export GZ_CONFIG_PATH="$gz_install/share/gz"
 export GZ_SIM_SYSTEM_PLUGIN_PATH="$gz_install/lib:$ros_prefix/lib/gz-sim-8/plugins:$ros_prefix/lib"
-export GZ_SIM_PHYSICS_ENGINE_PATH="$gz_install/lib/gz-physics-7/engine-plugins"
+export GZ_SIM_PHYSICS_ENGINE_PATH="${NANO_C_SLAM_GZ_PHYSICS_ENGINE_PATH:-$gz_install/lib/gz-physics-7/engine-plugins}"
 gazebo_models="$(uv run --no-project --python "$python311" ros2 pkg prefix ros_gz_crazyflie_gazebo)/share/ros_gz_crazyflie_gazebo/models"
 nearfield_world=""
 if [[ "${NANO_C_SLAM_NEARFIELD_MAPPING:-0}" == "1" ]]; then
