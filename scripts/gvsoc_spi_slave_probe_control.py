@@ -16,6 +16,10 @@ from scripts.gap9_gvsoc_spi_probe_protocol import (
     make_pose_request_frame,
     make_scan_frame,
 )
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_packets import (
+    encode_mapping_samples,
+    samples_from_run_bundle,
+)
 
 
 class GvsocProxy(Protocol):
@@ -217,13 +221,48 @@ def target_control(gvsoc: GvsocProxy) -> int:
                 for index, frame in enumerate(frames)
             ],
         }
+    elif sequence == "gazebo-capture":
+        capture_path = os.environ.get("GAP9_GVSOC_CAPTURE_RUN_JSON")
+        if not capture_path:
+            raise ValueError(
+                "GAP9_GVSOC_CAPTURE_RUN_JSON is required for gazebo-capture"
+            )
+        bundle = json.loads(Path(capture_path).read_text(encoding="utf-8"))
+        run_id, samples = samples_from_run_bundle(bundle)
+        packets = encode_mapping_samples(samples)
+        frames = [packet.frame for packet in packets]
+        result = {
+            "sequence": sequence,
+            "run_id": run_id,
+            "source_run_json": str(Path(capture_path).resolve()),
+            "input_pose_count": len(samples),
+            "pre_cs_dummy_clock_cycles": 8,
+            "frames": [
+                {
+                    "sequence": packet.sequence,
+                    "command": packet.command,
+                    "pose_id": packet.pose_id,
+                    "source_stamp_ns": packet.source_stamp_ns,
+                    "frame_tx_hex": packet.frame.hex(),
+                    "length": len(packet.frame),
+                }
+                for packet in packets
+            ],
+            "command_transfer_lengths": [],
+        }
     else:
         raise ValueError(
             "GAP9_GVSOC_SPI_SEQUENCE must be scan, pose-scan, pose-request, "
             "pose-request-boundaries, mapping, "
-            "max-mapping, or capacity-mapping"
+            "max-mapping, capacity-mapping, or gazebo-capture"
         )
-    if sequence in {"mapping", "max-mapping", "capacity-mapping"}:
+    mapping_sequences = {
+        "mapping",
+        "max-mapping",
+        "capacity-mapping",
+        "gazebo-capture",
+    }
+    if sequence in mapping_sequences:
         result["command_transfer_lengths"] = []
     output_root = Path(os.environ.get("GAP9_GVSOC_WORK_ROOT", "."))
     output_root.mkdir(parents=True, exist_ok=True)
@@ -236,7 +275,11 @@ def target_control(gvsoc: GvsocProxy) -> int:
         # arms its next receive. Give that command a longer virtual gap so
         # this diagnostic does not race target-side scan processing.
         settle_time_ps = 100_000_000_000
-        if frame[1] == SCAN_CMD and sequence in {"mapping", "max-mapping"}:
+        if frame[1] == SCAN_CMD and sequence in {
+            "mapping",
+            "max-mapping",
+            "gazebo-capture",
+        }:
             settle_time_ps = 1_000_000_000_000
         elif frame[1] == SCAN_CMD and sequence == "capacity-mapping":
             # The measured worst scan at 200 poses is below 100 ms; 250 ms
@@ -254,6 +297,7 @@ def target_control(gvsoc: GvsocProxy) -> int:
             "mapping",
             "max-mapping",
             "capacity-mapping",
+            "gazebo-capture",
             "pose-request",
             "pose-request-boundaries",
         }:
@@ -262,7 +306,7 @@ def target_control(gvsoc: GvsocProxy) -> int:
                 raise RuntimeError(
                     "GVSOC did not return the complete command transfer RX bytes"
                 )
-            if sequence in {"mapping", "max-mapping", "capacity-mapping"}:
+            if sequence in mapping_sequences:
                 transfer_lengths = cast(
                     list[dict[str, int]], result["command_transfer_lengths"]
                 )
@@ -296,7 +340,7 @@ def target_control(gvsoc: GvsocProxy) -> int:
             json.dumps(result, indent=2) + "\n", encoding="utf-8"
         )
 
-    if sequence in {"mapping", "max-mapping", "capacity-mapping"}:
+    if sequence in mapping_sequences:
         # Let production ICP/graph optimization finish and block in the real
         # slave send before queuing master-side response clocks.
         result["control_phase"] = "waiting_for_optimizer_and_slave_tx"

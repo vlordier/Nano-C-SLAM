@@ -4,6 +4,7 @@
 
 #include <assert.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 static uint32_t fake_ticks;
@@ -15,6 +16,8 @@ static uint32_t exchange_calls;
 static uint32_t exchange_fail_at;
 static uint32_t begin_calls;
 static uint32_t begin_fail_at;
+static uint8_t captured_frames[8][97];
+static size_t captured_frame_count;
 
 void test_debug_print(const char *format, ...) {
     (void)format;
@@ -51,9 +54,13 @@ bool spiBeginTransactionTimeout(uint32_t baudrate, uint32_t timeout_ticks) {
 
 bool spiExchangeTimeout(size_t length, const uint8_t *tx, uint8_t *rx,
                         uint32_t timeout_ticks) {
-    (void)tx;
     (void)timeout_ticks;
     exchange_calls++;
+    if (length == sizeof(captured_frames[0]) && tx != NULL &&
+        captured_frame_count < sizeof(captured_frames) / sizeof(captured_frames[0])) {
+        memcpy(captured_frames[captured_frame_count], tx, length);
+        captured_frame_count++;
+    }
     if (length != 1 && length != 97 && length != 3 * sizeof(float))
         other_exchanges++;
     if (length == 3 * sizeof(float)) {
@@ -190,7 +197,85 @@ static void test_optimizer_response_dma_failure_does_not_copy_partial_job(void) 
         assert(bytes[i] == 0);
 }
 
-int main(void) {
+static uint8_t hex_nibble(char value) {
+    if (value >= '0' && value <= '9')
+        return (uint8_t)(value - '0');
+    if (value >= 'a' && value <= 'f')
+        return (uint8_t)(value - 'a' + 10);
+    if (value >= 'A' && value <= 'F')
+        return (uint8_t)(value - 'A' + 10);
+    assert(false);
+    return 0;
+}
+
+static void assert_frame_matches_hex_file(const uint8_t *frame,
+                                          const char *path) {
+    char line[2 * 97 + 2];
+    FILE *file = fopen(path, "r");
+    assert(file != NULL);
+    assert(fgets(line, sizeof(line), file) != NULL);
+    assert(fclose(file) == 0);
+    assert(strlen(line) == 2 * 97 || strlen(line) == 2 * 97 + 1);
+    for (size_t index = 0; index < 97; index++) {
+        uint8_t expected = (uint8_t)((hex_nibble(line[index * 2]) << 4) |
+                                     hex_nibble(line[index * 2 + 1]));
+        assert(frame[index] == expected);
+    }
+}
+
+static void build_gazebo_pose_scan_frames(void) {
+    aug_pose_t pose = {0};
+    pose.id = 0;
+    pose.timestamp = 66100;
+    pose.pos[0] = -0.5f;
+    pose.pos[1] = -0.5f;
+    pose.pos[2] = -3.09641285e-17f;
+    for (size_t direction = 0; direction < 4; direction++)
+        for (size_t row = 0; row < 8; row++)
+            pose.tof[direction][row] = -1;
+    pose.tof[0][3] = 1900;
+    pose.tof[1][3] = 900;
+    pose.tof[2][3] = 1350;
+    pose.tof[3][3] = 900;
+
+    gpio_mode = 0;
+    gpio_reads = 0;
+    fake_ticks = 0;
+    exchange_calls = 0;
+    exchange_fail_at = 0;
+    begin_calls = 0;
+    begin_fail_at = 0;
+    captured_frame_count = 0;
+    assert(spi_send_aug_pose(&pose));
+    assert(spi_send_scan_info(0));
+    assert(captured_frame_count == 2);
+}
+
+static void test_actual_stm32_builders_match_gazebo_golden(
+    const char *pose_path, const char *scan_path) {
+    build_gazebo_pose_scan_frames();
+    assert_frame_matches_hex_file(captured_frames[0], pose_path);
+    assert_frame_matches_hex_file(captured_frames[1], scan_path);
+}
+
+static void print_hex_frame(const uint8_t *frame) {
+    for (size_t index = 0; index < 97; index++)
+        printf("%02x", frame[index]);
+    putchar('\n');
+}
+
+int main(int argc, char **argv) {
+    if (argc == 2 && strcmp(argv[1], "--dump-gazebo-golden") == 0) {
+        build_gazebo_pose_scan_frames();
+        print_hex_frame(captured_frames[0]);
+        print_hex_frame(captured_frames[1]);
+        return 0;
+    }
+    if (argc == 3) {
+        test_actual_stm32_builders_match_gazebo_golden(argv[1], argv[2]);
+        return 0;
+    }
+    assert(argc == 1);
     test_timeout_preserves_pose_output();
     test_ready_pose_response_is_copied();
     test_pose_response_length_is_bounded();

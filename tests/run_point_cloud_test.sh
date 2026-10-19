@@ -124,6 +124,9 @@ cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
     cslam-stm32-app/src/spi_comm/spi_wait.c "$linker_gc" \
     -o /tmp/spi_comm_test
 /tmp/spi_comm_test
+/tmp/spi_comm_test \
+    tests/fixtures/gazebo_firmware_packets/pose_cf1_sample0.hex \
+    tests/fixtures/gazebo_firmware_packets/scan_cf1_pose0.hex
 
 cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
     -ffunction-sections -fdata-sections \

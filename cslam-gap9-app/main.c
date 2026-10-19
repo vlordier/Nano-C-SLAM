@@ -407,6 +407,33 @@ void slam_loop() {
            passed ? "ok" : "fail", processed_packets, pose_packets_decoded,
            poses_inserted, scan_packets_decoded, scans_registered,
            pcl_get_pose_count(), pcl_get_scan_pose_count());
+#elif NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT == 64
+    passed = processed_packets == 64 && pose_packets_decoded == 60 &&
+             poses_inserted == 60 && bad_pose_checksums == 0 &&
+             scan_packets_decoded == 3 && scans_registered == 3 &&
+             optimize_packets == 1 && pcl_get_pose_count() == 60 &&
+             pcl_get_scan_pose_count() == 3 &&
+             pcl_get_constraint_count() == 2 &&
+             pcl_get_optimizer_input_unique_edge_count() == 2 &&
+             slam_job.number_of_poses == 60 && slam_job.main_graph_size == 3 &&
+             slam_job.has_nan == 0 && slam_job.main_solver_returned == 1 &&
+             slam_job.successful_solver_call_count >= 1 &&
+             slam_job.optimization_completed == 1;
+    printf("NANO_C_SLAM_GVSOC_SPI_MAIN:gazebo_capture_%s packets=%u "
+           "pose_decoded=%d pose_inserted=%d scans_decoded=%d "
+           "scans_registered=%d constraints=%ld optimize=%d poses=%d "
+           "graph=%d solver_calls=%d has_nan=%d completed=%d "
+           "response_expected_hex=",
+           passed ? "ok" : "fail", processed_packets, pose_packets_decoded,
+           poses_inserted, scan_packets_decoded, scans_registered,
+           (long)pcl_get_constraint_count(), optimize_packets,
+           slam_job.number_of_poses, slam_job.main_graph_size,
+           slam_job.successful_solver_call_count, slam_job.has_nan,
+           slam_job.optimization_completed);
+    const uint8_t *response_bytes = (const uint8_t *)&slam_job;
+    for (size_t index = 0; index < sizeof(slam_job); ++index)
+        printf("%02x", response_bytes[index]);
+    printf("\n");
 #elif NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT == 66
     passed = processed_packets == 66 && pose_packets_decoded == 60 &&
              poses_inserted == 60 && bad_pose_checksums == 1 &&

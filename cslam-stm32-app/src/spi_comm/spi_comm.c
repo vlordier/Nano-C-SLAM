@@ -85,9 +85,14 @@ static bool spi_dummy_clk_cycles(void) {
     return spi_exchange_transaction(1, &spi_dummy_tr, &spi_dummy_rev, false);
 }
 
+static void clear_command_frame(void) {
+    memset(to_send, 0, MAX_PKT_SIZE);
+}
+
 bool spi_send_aug_pose(aug_pose_t *pose) {
     if (pose == NULL)
         return false;
+    clear_command_frame();
     to_send[0] = 'S';
     to_send[1] = POSE_CMD;
     size_t buf_idx = 2;
@@ -110,6 +115,7 @@ bool spi_send_aug_pose(aug_pose_t *pose) {
 bool spi_send_ext_aug_pose(ext_aug_pose_t *pose) {
     if (pose == NULL)
         return false;
+    clear_command_frame();
     to_send[0] = 'S';
     to_send[1] = EXT_AUG_POSE_CMD;
     size_t buf_idx = 2;
@@ -132,6 +138,7 @@ bool spi_send_ext_aug_pose(ext_aug_pose_t *pose) {
 bool spi_send_ext_pose_upd(float *pose, int16_t id, int16_t drone_id) {
     if (pose == NULL)
         return false;
+    clear_command_frame();
     to_send[0] = 'S';
     to_send[1] = UPD_POSE_CMD;
     size_t buf_idx = 2;
@@ -160,6 +167,7 @@ bool spi_send_ext_pose_upd(float *pose, int16_t id, int16_t drone_id) {
 }
 
 bool spi_send_scan_info(int16_t scan_pose_id) {
+    clear_command_frame();
     to_send[0] = 'S';
     to_send[1] = SCAN_CMD;
     memcpy(&to_send[2], &scan_pose_id, sizeof(int16_t));
@@ -190,6 +198,7 @@ bool spi_send_scan_info(int16_t scan_pose_id) {
 bool spi_send_opt_cmd(slam_job_t *job) {
     if (job == NULL)
         return false;
+    clear_command_frame();
     memset(job, 0, sizeof(slam_job_t));
     to_send[0] = 'S';
     to_send[1] = OPTIMIZE_CMD;
@@ -216,6 +225,7 @@ bool spi_send_opt_cmd(slam_job_t *job) {
 }
 
 static bool spi_send_aug_pose_req(int16_t from_id, int16_t nr_of_poses) {
+    clear_command_frame();
     to_send[0] = 'S';
     to_send[1] = POSE_REQ_CMD;
     memcpy(&to_send[2], &from_id, sizeof(int16_t));

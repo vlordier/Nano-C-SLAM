@@ -24,14 +24,14 @@ option(NANO_C_SLAM_SPI_DIAGNOSTICS
 set(NANO_C_SLAM_POSE_GRAPH_FC_THRESHOLD "64" CACHE STRING
     "Largest pose-graph dimension solved serially on the FC")
 set(NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT "2" CACHE STRING
-    "Finite command count for the test-only production SPI probe (2, 3, 7, 66, 276, or 393)")
+    "Finite command count for the test-only production SPI probe (2, 3, 7, 64, 66, 276, or 393)")
 option(NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_SKIP_SPI_TX
     "Skip optimizer SPI TX only for an isolated GVSOC ingress run" OFF)
 if(NOT NANO_C_SLAM_POSE_GRAPH_FC_THRESHOLD MATCHES "^[0-9]+$")
     message(FATAL_ERROR "NANO_C_SLAM_POSE_GRAPH_FC_THRESHOLD must be a nonnegative integer")
 endif()
-if(NOT NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT MATCHES "^(2|3|7|66|276|393)$")
-    message(FATAL_ERROR "SPI main probe packet count must be 2, 3, 7, 66, 276, or 393")
+if(NOT NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT MATCHES "^(2|3|7|64|66|276|393)$")
+    message(FATAL_ERROR "SPI main probe packet count must be 2, 3, 7, 64, 66, 276, or 393")
 endif()
 
 set_source_files_properties(

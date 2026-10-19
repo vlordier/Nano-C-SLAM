@@ -521,3 +521,62 @@ A logic analyzer and correlated STM32/GAP9 observations remain necessary for
 physical loss claims. To build the normal firmware without the counters, set
 `GAP9_BUILD_SPI_DIAGNOSTICS=OFF`; the SPI protocol and mission behavior are
 unchanged.
+
+### Replay an accepted Gazebo capture through GAP9 firmware
+
+The `gazebo-capture` test sequence reads a completed, run-bound Gazebo
+`run.json`, validates its mission/capture identity and per-sample age/skew
+provenance, then encodes its four simulated range rays and odometry into the
+same 97-byte production SPI frames. For the retained 60-pose acceptance run,
+the bounded production-main target expects 64 commands: 60 POSE, three
+20-pose SCAN windows, and OPTIMIZE. The controller clocks the real 18-byte
+optimizer response and the evidence validator compares every transmitted
+frame and returned response with the source run and target counters.
+The STM32-owned command builders now clear unused frame padding before each
+command; hardware-free C and Python tests compare the actual STM32 POSE/SCAN
+builders and the Gazebo encoder against golden frames from the first captured
+Gazebo sample.
+
+```sh
+GAP9_BUILD_GVSOC_SPI_MAIN_PROBE=1 \
+  GAP9_BUILD_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT=64 \
+  bash scripts/build_gap9_firmware.sh
+GAP9_GVSOC_ENABLE_TESTBENCH=1 \
+  GAP9_GVSOC_SPI_SEQUENCE=gazebo-capture \
+  GAP9_GVSOC_SPI_CAPTURE_RESPONSE=1 \
+  GAP9_GVSOC_CAPTURE_RUN_JSON="$PWD/artifacts/gazebo_mapping_sitl/strict_host_mapping_acceptance_20261019/attempt_01/run.json" \
+  GAP9_GVSOC_CONTROL_SCRIPT="$PWD/scripts/gvsoc_spi_slave_probe_control.py" \
+  GAP9_GVSOC_ELF="$PWD/cslam-gap9-app/BUILD-gvsoc-spi-main-probe/nano_c_slam_gvsoc_spi_main_probe" \
+  GAP9_GVSOC_EXPECTED_MARKER='NANO_C_SLAM_GVSOC_SPI_MAIN:gazebo_capture_ok packets=64' \
+  GAP9_GVSOC_WORK_ROOT="${TMPDIR:-/tmp}/nano-c-slam-gvsoc-gazebo-capture" \
+  bash scripts/run_gap9_gvsoc_smoke.sh
+uv run --locked python -m scripts.capture_gap9_gvsoc_spi_main_probe_evidence \
+  --config "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-gazebo-capture/gvsoc_config.json" \
+  --elf cslam-gap9-app/BUILD-gvsoc-spi-main-probe/nano_c_slam_gvsoc_spi_main_probe \
+  --host-transfer "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-gazebo-capture/spi_slave_probe_host.json" \
+  --log "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-gazebo-capture/gvsoc.log" \
+  --gazebo-run-bundle artifacts/gazebo_mapping_sitl/strict_host_mapping_acceptance_20261019/attempt_01/run.json \
+  --source cslam-gap9-app/main.c \
+  --source cslam-gap9-app/CMakeLists.txt \
+  --source scripts/gvsoc_spi_slave_probe_control.py \
+  --source scripts/capture_gap9_gvsoc_spi_main_probe_evidence.py \
+  --source scripts/gap9_gvsoc_spi_probe_protocol.py \
+  --source cslam-stm32-app/src/spi_comm/spi_comm.c \
+  --source cslam-stm32-app/src/spi_comm/spi_comm.h \
+  --source cslam-stm32-app/src/scan.h \
+  --source tests/spi_comm_test.c \
+  --source tests/run_point_cloud_test.sh \
+  --source tests/fixtures/gazebo_firmware_packets/README.md \
+  --source tests/fixtures/gazebo_firmware_packets/pose_cf1_sample0.hex \
+  --source tests/fixtures/gazebo_firmware_packets/scan_cf1_pose0.hex \
+  --source sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/mapping_packets.py \
+  --source sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/firmware_protocol.py \
+  --output artifacts/gap9_gvsoc_evidence/gazebo_capture_replay_20261019.json
+```
+
+This establishes that the bounded GAP9 production command path consumed a
+recorded Gazebo trajectory and completed its firmware-side optimizer in
+GVSOC. Gazebo and GVSOC ran sequentially: it is telemetry replay, not live
+co-simulation, flight-controller firmware in Gazebo, or physical/hardware
+validation. The STM32 Crazyflie control firmware is still not executed in this
+simulation path.

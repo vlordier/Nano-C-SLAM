@@ -19,6 +19,13 @@ from scripts.gap9_gvsoc_spi_probe_protocol import (
     make_scan_frame,
 )
 from scripts.validate_gap9_gvsoc_testbench import validate_config
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
+    MappingSample,
+)
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_packets import (
+    encode_mapping_samples,
+    samples_from_run_bundle,
+)
 
 TARGET_MARKER = (
     "NANO_C_SLAM_GVSOC_SPI_MAIN:run_ok packets=2 pose_decoded=1 "
@@ -264,6 +271,7 @@ def capture_evidence(
     host_transfer_path: Path,
     log_path: Path,
     source_paths: tuple[Path, ...] = (),
+    gazebo_run_bundle_path: Path | None = None,
 ) -> dict[str, object]:
     """Reject incomplete production-main evidence and return bound metadata."""
     defects = validate_config(config_path)
@@ -278,6 +286,12 @@ def capture_evidence(
         raise ValueError("host transfer record must be a JSON object")
     frames = host_transfer.get("frames")
     sequence = host_transfer.get("sequence", "pose-scan")
+    gazebo_run_bundle: dict[str, object] | None = None
+    gazebo_run_id: str | None = None
+    gazebo_samples: tuple[MappingSample, ...] = ()
+    expected: list[bytes] = []
+    expected_commands: list[str] = []
+    expected_records: list[dict[str, object]] = []
     if sequence in {"mapping", "max-mapping", "capacity-mapping"}:
         expected = list(
             make_mapping_trace(
@@ -292,6 +306,45 @@ def capture_evidence(
             if index == 0
             else {0: "POSE", 1: "SCAN", 2: "OPTIMIZE"}[frame[1]]
             for index, frame in enumerate(expected)
+        ]
+    elif sequence == "gazebo-capture":
+        if gazebo_run_bundle_path is None:
+            raise ValueError("gazebo-capture evidence requires the source run bundle")
+        try:
+            loaded_bundle = json.loads(
+                gazebo_run_bundle_path.read_text(encoding="utf-8")
+            )
+        except (OSError, json.JSONDecodeError) as error:
+            raise ValueError(
+                f"cannot read source Gazebo run bundle: {error}"
+            ) from error
+        host_run_id = host_transfer.get("run_id")
+        if not isinstance(host_run_id, str) or not host_run_id:
+            raise ValueError("host transfer must identify its Gazebo source run")
+        gazebo_run_id, gazebo_samples = samples_from_run_bundle(
+            loaded_bundle, expected_run_id=host_run_id
+        )
+        if host_transfer.get("source_run_json") != str(
+            gazebo_run_bundle_path.resolve()
+        ):
+            raise ValueError(
+                "host transfer source path differs from the evidence input"
+            )
+        if host_transfer.get("input_pose_count") != len(gazebo_samples):
+            raise ValueError("host transfer pose count differs from the source run")
+        gazebo_run_bundle = cast(dict[str, object], loaded_bundle)
+        gazebo_packets = encode_mapping_samples(gazebo_samples)
+        expected = [packet.frame for packet in gazebo_packets]
+        expected_records = [
+            {
+                "sequence": packet.sequence,
+                "command": packet.command,
+                "pose_id": packet.pose_id,
+                "source_stamp_ns": packet.source_stamp_ns,
+                "frame_tx_hex": packet.frame.hex(),
+                "length": len(packet.frame),
+            }
+            for packet in gazebo_packets
         ]
     elif sequence == "pose-scan":
         expected = [make_pose_frame(), make_scan_frame()]
@@ -325,14 +378,15 @@ def capture_evidence(
         frames, list
     ):
         raise ValueError("host transfer must contain the 8 pre-CS clocks and frames")
-    expected_records = [
-        {"command": command, "frame_tx_hex": frame.hex(), "length": len(frame)}
-        for command, frame in zip(expected_commands, expected, strict=True)
-    ]
+    if sequence != "gazebo-capture":
+        expected_records = [
+            {"command": command, "frame_tx_hex": frame.hex(), "length": len(frame)}
+            for command, frame in zip(expected_commands, expected, strict=True)
+        ]
     if frames != expected_records:
         raise ValueError("host transfer bytes/order differ from expected sequence")
     command_transfer_lengths = host_transfer.get("command_transfer_lengths")
-    if sequence in {"mapping", "max-mapping", "capacity-mapping"}:
+    if sequence in {"mapping", "max-mapping", "capacity-mapping", "gazebo-capture"}:
         expected_transfer_lengths = [
             {"master_tx_bytes": len(frame), "master_rx_bytes": len(frame)}
             for frame in expected
@@ -384,7 +438,25 @@ def capture_evidence(
             "optimizer_response_captured",
         }:
             raise ValueError("host controller did not complete the mapping phase")
-        if sequence == "mapping":
+        if sequence == "gazebo-capture":
+            if host_transfer.get("control_phase") != "optimizer_response_captured":
+                raise ValueError("Gazebo replay did not capture the optimizer response")
+            mapping_pattern = re.compile(
+                r"NANO_C_SLAM_GVSOC_SPI_MAIN:gazebo_capture_ok packets=64 "
+                r"pose_decoded=60 pose_inserted=60 scans_decoded=3 "
+                r"scans_registered=3 constraints=2 optimize=1 poses=60 "
+                r"graph=(\d+) solver_calls=(\d+) has_nan=0 completed=1 "
+                r"response_expected_hex=([0-9a-f]{36})"
+            )
+            expected_diagnostics = {
+                "received_frames": 64,
+                "malformed_frames": 0,
+                "unknown_commands": 0,
+                "command_frames": [60, 3, 1, 0, 0, 0, 0],
+                "decode_success": [60, 3, 0, 0, 0, 0, 0],
+                "decode_failure": [0, 0, 0, 0, 0, 0, 0],
+            }
+        elif sequence == "mapping":
             mapping_pattern = re.compile(
                 r"NANO_C_SLAM_GVSOC_SPI_MAIN:mapping_ok packets=66 "
                 r"pose_decoded=60 pose_inserted=60 bad_pose_checksum=1 "
@@ -438,6 +510,7 @@ def capture_evidence(
             "mapping": 4,
             "max-mapping": 14,
             "capacity-mapping": 131,
+            "gazebo-capture": 3,
         }[sequence]
         expected_scan_pose_ids = [
             int.from_bytes(frame[2:4], "little", signed=True)
@@ -476,7 +549,25 @@ def capture_evidence(
         if match is None:
             raise ValueError("GVSOC log lacks the validated full-mapping marker")
         target_marker = match.group(0)
-        if sequence == "capacity-mapping":
+        if sequence == "gazebo-capture":
+            response_expected_hex = match.group(3)
+            marker_graph = int(match.group(1))
+            marker_calls = int(match.group(2))
+            marker_optimizer_fields = {
+                "number_of_poses": 60,
+                "main_graph_size": marker_graph,
+                "has_nan": 0,
+                "main_solver_returned": 1,
+                "successful_solver_call_count": marker_calls,
+                "optimization_completed": 1,
+            }
+            if marker_graph != 3 or marker_calls < 1:
+                raise ValueError(
+                    "Gazebo replay marker reports an invalid optimizer result"
+                )
+            optimizer_graph_size = marker_graph
+            mapping_outcome = "gazebo_capture_replayed; optimizer_completed"
+        elif sequence == "capacity-mapping":
             constraints, edges, poses, graph, calls, duration, completed = (
                 int(value) for value in match.groups()[:7]
             )
@@ -646,10 +737,15 @@ def capture_evidence(
         else:
             response_status = "captured and matched target slam_job_t"
             limitations = []
+        pose_count = (
+            len(gazebo_samples)
+            if sequence == "gazebo-capture"
+            else (260 if sequence != "mapping" else 60)
+        )
         limitations.extend(
             [
                 "Exercises the production command path over GVSOC SPI2 ingress "
-                f"with {260 if sequence != 'mapping' else 60} poses.",
+                f"with {pose_count} poses.",
                 "Does not validate map accuracy, physical SPI, or flight behavior.",
                 "Receive counters cannot detect frames for which no clocks were "
                 "observed, and sequence-less identical commands cannot be "
@@ -662,6 +758,11 @@ def capture_evidence(
                 "limits with a repeated synthetic two-pose pattern. This "
                 "proves capacity-path execution, not map accuracy or a "
                 "representative flight trajectory."
+            )
+        if sequence == "gazebo-capture":
+            limitations.append(
+                "Replays completed Gazebo telemetry after the Gazebo run; it is "
+                "not live co-simulation or simulated flight control."
             )
 
     return {
@@ -676,7 +777,11 @@ def capture_evidence(
                 else (
                     "gvsoc-production-mapping-spi2-ingress"
                     if sequence == "mapping"
-                    else "gvsoc-production-scan-and-constraint-capacity-spi2"
+                    else (
+                        "gvsoc-firmware-replay-of-gazebo-telemetry"
+                        if sequence == "gazebo-capture"
+                        else "gvsoc-production-scan-and-constraint-capacity-spi2"
+                    )
                 )
             )
         ),
@@ -691,7 +796,9 @@ def capture_evidence(
         "optimizer_graph_size": optimizer_graph_size,
         "slam_job_fields": slam_job_fields,
         "transaction_accounting": transaction_accounting,
-        "mapping_outcome": mapping_outcome if sequence == "capacity-mapping" else None,
+        "mapping_outcome": mapping_outcome
+        if sequence in {"capacity-mapping", "gazebo-capture"}
+        else None,
         "scan_busy_durations_us": scan_busy_durations_us,
         "scan_busy_max_us": (
             max(item["duration_us"] for item in scan_busy_durations_us)
@@ -699,7 +806,7 @@ def capture_evidence(
             else None
         ),
         "optimizer_response_rx_hex": host_transfer.get("response_rx_hex")
-        if sequence in {"mapping", "max-mapping", "capacity-mapping"}
+        if sequence in {"mapping", "max-mapping", "capacity-mapping", "gazebo-capture"}
         else None,
         "optimizer_response_status": response_status,
         "spi_diagnostics": spi_diagnostics,
@@ -710,6 +817,23 @@ def capture_evidence(
             "gvsoc_log": _sha256(log_path),
             "sources": {str(path): _sha256(path) for path in source_paths},
         },
+        "gazebo_source": (
+            {
+                "run_id": gazebo_run_id,
+                "drone": gazebo_run_bundle.get("drone") if gazebo_run_bundle else None,
+                "sample_count": len(gazebo_samples),
+                "run_bundle_sha256": _sha256(gazebo_run_bundle_path)
+                if gazebo_run_bundle_path is not None
+                else None,
+                "claim_boundary": (
+                    "Recorded Gazebo telemetry was replayed into GAP9 production "
+                    "firmware under GVSOC after the Gazebo run completed. This "
+                    "is not live co-simulation or flight control."
+                ),
+            }
+            if sequence == "gazebo-capture"
+            else None
+        ),
         "limitations": limitations,
     }
 
@@ -720,6 +844,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--elf", type=Path, required=True)
     parser.add_argument("--host-transfer", type=Path, required=True)
     parser.add_argument("--log", type=Path, required=True)
+    parser.add_argument("--gazebo-run-bundle", type=Path)
     parser.add_argument("--source", type=Path, action="append", default=[])
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
@@ -731,6 +856,7 @@ def main(argv: list[str] | None = None) -> int:
             host_transfer_path=args.host_transfer,
             log_path=args.log,
             source_paths=tuple(args.source),
+            gazebo_run_bundle_path=args.gazebo_run_bundle,
         )
     except (OSError, ValueError, json.JSONDecodeError) as error:
         print(f"GAP9 GVSOC SPI main probe evidence error: {error}", file=sys.stderr)

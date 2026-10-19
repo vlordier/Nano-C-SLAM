@@ -23,6 +23,7 @@ class MappingSample:
     y_m: float
     yaw_rad: float
     ranges_mm: tuple[int, int, int, int]
+    source_stamp_ns: int | None = None
 
     def to_record(self) -> str:
         """Serialize the sample for the native Nano-C-SLAM replay executable."""
@@ -30,6 +31,15 @@ class MappingSample:
             raise ValueError("sample_id must fit a nonnegative int16")
         if not 0 <= self.timestamp_ms <= 2147483647:
             raise ValueError("timestamp_ms must fit a nonnegative int32")
+        if self.source_stamp_ns is not None and (
+            isinstance(self.source_stamp_ns, bool)
+            or not isinstance(self.source_stamp_ns, int)
+            or self.source_stamp_ns < 0
+            or self.source_stamp_ns // 1_000_000 != self.timestamp_ms
+        ):
+            raise ValueError(
+                "source_stamp_ns must match timestamp_ms millisecond floor"
+            )
         if len(self.ranges_mm) != 4:
             raise ValueError("a Gazebo sample must contain four range values")
         if not all(
