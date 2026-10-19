@@ -580,6 +580,17 @@ def analyze_mapping(
         )
         for pose, source in zip(poses, source_poses, strict=True)
     ]
+    scan_pose_ids = [
+        packet.pose_id
+        for packet in encode_mapping_samples(mapping_samples)
+        if packet.command == SCAN_CMD
+    ]
+    if not scan_pose_ids or any(
+        pose_id < 0 or pose_id >= len(pose_errors) for pose_id in scan_pose_ids
+    ):
+        raise ValueError("source scan anchors do not identify measured target poses")
+    anchor_xy_errors = [pose_errors[pose_id][0] for pose_id in scan_pose_ids]
+    anchor_yaw_errors = [pose_errors[pose_id][1] for pose_id in scan_pose_ids]
     distances_xy = [error[0] for error in pose_errors]
     yaw_errors = [error[1] for error in pose_errors]
     trajectory = [(float(p["x_m"]), float(p["y_m"])) for p in poses]
@@ -643,6 +654,21 @@ def analyze_mapping(
             "yaw_rmse_rad": math.sqrt(sum(v * v for v in yaw_errors) / len(poses)),
             "yaw_max_rad": max(yaw_errors),
             "per_pose": per_pose_errors,
+            "scan_anchor_ids": scan_pose_ids,
+            "scan_anchor_xy_rmse_m": math.sqrt(
+                sum(value * value for value in anchor_xy_errors) / len(anchor_xy_errors)
+            ),
+            "scan_anchor_xy_max_m": max(anchor_xy_errors),
+            "scan_anchor_yaw_rmse_rad": math.sqrt(
+                sum(value * value for value in anchor_yaw_errors)
+                / len(anchor_yaw_errors)
+            ),
+            "scan_anchor_yaw_max_rad": max(anchor_yaw_errors),
+            "scan_anchor_note": (
+                "Diagnostic only: scan-start pose IDs correspond to the graph's "
+                "scan anchors; the frozen acceptance profile still evaluates "
+                "all same-frame pose samples."
+            ),
             "source_xy_bounds": _axis_aligned_bounds(source_path),
             "target_xy_bounds": _axis_aligned_bounds(trajectory),
             "source_path_length_m": source_length,

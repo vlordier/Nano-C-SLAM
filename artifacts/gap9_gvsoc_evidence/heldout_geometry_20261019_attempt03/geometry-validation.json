@@ -1,0 +1,70 @@
+{
+  "profile_id": "gap9-nearfield-square-synthetic-v1",
+  "profile_sha256": "1cbbadcf784e9e212507147a09e5e31e7d57f179a2982d176f2d137eed54b4a3",
+  "status": "FAIL",
+  "scenario": {
+    "independent": true,
+    "route": "heldout-asymmetric",
+    "sdf_sha256": "20eb690d09ca1e2b2974a4adaf345bc308b0eba6be12cfeb70e4e27b554eda7b",
+    "run_id": "cff3a6d7-bde8-4d3c-8c8c-06ebf9fe5335"
+  },
+  "gates": {
+    "target_map_point_count": {
+      "observed": 225,
+      "direction": "min",
+      "threshold": 180,
+      "status": "PASS"
+    },
+    "pose_xy_rmse_m": {
+      "observed": 0.03481850041897453,
+      "direction": "max",
+      "threshold": 0.03,
+      "status": "FAIL"
+    },
+    "pose_xy_max_m": {
+      "observed": 0.04871061255054678,
+      "direction": "max",
+      "threshold": 0.06,
+      "status": "PASS"
+    },
+    "pose_yaw_rmse_rad": {
+      "observed": 0.01158792425116928,
+      "direction": "max",
+      "threshold": 0.05,
+      "status": "PASS"
+    },
+    "pose_yaw_max_rad": {
+      "observed": 0.019082603378645757,
+      "direction": "max",
+      "threshold": 0.07,
+      "status": "PASS"
+    },
+    "map_surface_median_m": {
+      "observed": 0.012380743026733532,
+      "direction": "max",
+      "threshold": 0.025,
+      "status": "PASS"
+    },
+    "map_surface_p95_m": {
+      "observed": 0.04237799644470208,
+      "direction": "max",
+      "threshold": 0.06,
+      "status": "PASS"
+    },
+    "map_surface_max_m": {
+      "observed": 0.048573541641235285,
+      "direction": "max",
+      "threshold": 0.17,
+      "status": "PASS"
+    },
+    "map_fraction_within_0_05m": {
+      "observed": 1.0,
+      "direction": "min",
+      "threshold": 0.9,
+      "status": "PASS"
+    }
+  },
+  "failures": [
+    "pose_xy_rmse_m: 0.03481850041897453 exceeds 0.03"
+  ]
+}

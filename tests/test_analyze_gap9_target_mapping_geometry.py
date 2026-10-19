@@ -444,6 +444,9 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
         self.assertAlmostEqual(pose_error["yaw_max_rad"], 0.0, places=8)
         self.assertEqual(pose_error["per_pose"][0]["pose_id"], 0)
         self.assertAlmostEqual(pose_error["per_pose"][1]["yaw_error_rad"], 0.0)
+        self.assertEqual(pose_error["scan_anchor_ids"], [0])
+        self.assertAlmostEqual(pose_error["scan_anchor_xy_rmse_m"], 0.0, places=6)
+        self.assertAlmostEqual(pose_error["scan_anchor_xy_max_m"], 0.0, places=6)
         self.assertAlmostEqual(pose_error["source_xy_bounds"]["span_x_m"], 0.95)
         self.assertAlmostEqual(pose_error["target_xy_bounds"]["span_x_m"], 0.95)
         map_metrics = report["target_map"]["sdf_surface_distance_m"]
@@ -491,6 +494,16 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
             1.0,
             places=6,
         )
+
+    def test_scan_anchor_metrics_use_scan_start_pose_ids(self) -> None:
+        self._write_run_and_target(pose_x_offset=0.125)
+
+        report = self._analyze()
+
+        pose_error = report["pose_error"]
+        self.assertEqual(pose_error["scan_anchor_ids"], [0])
+        self.assertAlmostEqual(pose_error["scan_anchor_xy_rmse_m"], 0.125, places=6)
+        self.assertAlmostEqual(pose_error["scan_anchor_xy_max_m"], 0.125, places=6)
 
     def test_target_map_at_firmware_capacity_is_not_claimed_complete(self) -> None:
         lines = self.log_path.read_text(encoding="utf-8").splitlines()
