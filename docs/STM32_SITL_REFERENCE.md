@@ -947,11 +947,12 @@ signals. Keep the registered acceptance limits unchanged.
 
 `scripts/crazysim_flight_sampler.cc` provides a bounded observer for the
 existing strict flight gate. For the current 200-Hz odometry and 500-Hz IMU
-world, it subscribes to `/cf_0/odom` at 200 Hz,
-`/cf_0/imu` and `/cf_0/command/motor_speed` at 500 Hz, and world statistics at
-10 Hz. Earlier sampler versions capped these streams at 100/50/50/2 Hz, which
-made their timestamp gaps unsuitable for diagnosing full source cadence. The
-current capture records compact protobuf JSONL in four new files and refuses
+world, it subscribes without callback throttling to `/cf_0/odom`, `/cf_0/imu`,
+and `/cf_0/command/motor_speed`, while world statistics remain capped at 10 Hz.
+Earlier sampler versions throttled state streams, which could alias transport
+scheduling and create artificial timestamp gaps; retain source callback cadence
+for rate and freshness diagnosis. The sampler records compact protobuf JSONL
+in four files and refuses
 to overwrite an existing capture. It waits up to 15 seconds for correctly
 typed publishers, so the sampler can start before Gazebo without losing the
 world's initial statistics. The checker accepts the protobuf JSON camelCase
@@ -1205,3 +1206,34 @@ exit evidence. Fix hover stability and retain a complete positive/negative
 bundle before claiming firmware flight validation. Parsing also exposed and
 fixed a checker bug: Protobuf text omits zero-valued `nsec`, so five valid
 odometry messages at integer simulation seconds had previously been dropped.
+
+## Fresh-plugin flight with uncapped telemetry (2026-10-20)
+
+I rebuilt the CrazySim plugin from fork commit
+`da1e3d8b0c2c7ad3879a69176c7e67da909aca6e` and verified the loaded library by
+its hash. With the same upstream Crazyflie SITL binary and world, the firmware
+completed its self-test and calibration, received acknowledged TAKEOFF_2 and
+LAND_2 commands, and produced motor output explicitly attributed to firmware
+by the plugin. Gazebo odometry measured a rise from 2.014 m to 3.015 m and a
+return to 2.015 m. This is direct evidence that a firmware process drives the
+Gazebo rotors and the model can take off and land; it remains a failed stable
+flight, and it is not the Nano-C-SLAM application.
+
+The sampler no longer throttles IMU or motor callbacks. The 25-second capture
+contains 4,994 odometry samples at 200 Hz (maximum gap 5 ms), 12,448 IMU samples
+at 500 Hz (maximum gap 2 ms), 24,896 motor messages, and 187 world-stat samples.
+The strict paired gate reports only 0.38 s in the hover envelope rather than
+the required 5 s, and rejects stabilizer/Kalman rate warnings (485/500 Hz and
+98/100 Hz). Firmware shutdown was SIGTERM (143); the reused attempt03 negative
+control has SIGTERM/130 exits. The checker therefore exits 1. Raw captures,
+logs, the unchanged-gate result, hashes, model, and run configuration are in
+[`artifacts/crazysim_motor_mapping_20261020_attempt08`](../artifacts/crazysim_motor_mapping_20261020_attempt08/manifest.json).
+The same flight interval exposes another sensor question: Gazebo IMU
+sensor-frame Z acceleration stayed within 9.80608–9.80665 m/s² while
+acceleration finite-differenced from odometry's vertical velocity ranged from
+-2.017 to 9.379 m/s². This is evidence to inspect the model sensor and
+coordinate conversion; it does not yet establish which side is wrong. The next
+firmware investigation should address the measured 15/500-Hz stabilizer loop
+deficit, the position-controller oscillation, and this IMU/odometry disagreement before
+another acceptance run. Mapping, swarm, and Nano application validation remain
+open.

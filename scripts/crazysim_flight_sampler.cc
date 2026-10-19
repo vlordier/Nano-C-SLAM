@@ -155,13 +155,11 @@ int main(int argc, char **argv) {
     std::cerr << "transport partition=" << node.Options().Partition()
               << " GZ_IP=" << (gazeboIp == nullptr ? "unset" : gazeboIp) << '\n';
     gz::transport::SubscribeOptions odometryOptions;
-    // The publisher emits 200 Hz. Do not throttle at the subscriber boundary:
-    // transport scheduling can otherwise turn a nominal 200-Hz cap into
-    // periodic 50-ms holes that look like stale firmware feedback.
+    // Do not throttle state or actuator topics at the subscriber boundary:
+    // transport scheduling can alias a nominal rate cap and create artificial
+    // timestamp gaps. This sampler is intended to preserve source cadence.
     gz::transport::SubscribeOptions imuOptions;
-    imuOptions.SetMsgsPerSec(500);
     gz::transport::SubscribeOptions motorOptions;
-    motorOptions.SetMsgsPerSec(500);
     gz::transport::SubscribeOptions worldStatsOptions;
     worldStatsOptions.SetMsgsPerSec(10);
     const auto publisherDiscoveryDeadline =
@@ -193,7 +191,7 @@ int main(int argc, char **argv) {
     }
 
     std::cerr << "sampling CrazySim odometry (publisher 200 Hz, uncapped), IMU "
-                 "(500 Hz), motors (500 Hz), and world stats (10 Hz) as "
+                 "(uncapped), motors (uncapped), and world stats (10 Hz) as "
                  "compact JSONL for "
               << durationSeconds << " seconds\n";
     const auto deadline =

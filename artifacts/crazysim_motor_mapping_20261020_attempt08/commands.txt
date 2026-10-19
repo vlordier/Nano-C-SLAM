@@ -1,0 +1,38 @@
+Run: one upstream Crazyflie SITL firmware process with CrazySim motor bridge
+and Gazebo Harmonic; this is not Nano-C-SLAM firmware.
+
+World: /tmp/ncs-flight-positive-world/world.sdf, Crazyflie model at
+z=2.015 m, Bullet Featherstone. Plugin was rebuilt from the fork at commit
+da1e3d8b0c2c7ad3879a69176c7e67da909aca6e and loaded from
+/tmp/ncs-crazysim-plugin-install-current/lib/libgz_crazysim_plugin.dylib.
+
+Sampler started before Gazebo in GZ_PARTITION=ncs-uncap-20261020,
+GZ_IP=127.0.0.1. It observed /cf_0/odom, /cf_0/imu, and
+/cf_0/command/motor_speed without subscriber throttling; world stats were
+throttled to 10 Hz. Capture duration was 25 s.
+
+Firmware binary: /home/vincent.guest/ncs-cf-build-final-diag/cf2 in Lima VM
+ncs-sitl; binary SHA-256 is recorded in manifest.json. Exactly one process ran.
+Firmware reached `Self test passed!`, calibrated, and logged
+`SUP: Ready to fly` and `TRACE_CRTP_RX_STARTED`.
+
+Commands sent to bridge; both returned firmware result 0:
+
+```text
+uv run --locked python scripts/crazysim_bridge_command.py takeoff \
+  --target-height-m 2.615 --duration-s 5 --timeout 4
+{"command":"takeoff","duration_s":5.0,"event":"firmware_ack","firmware_result":0,"target_height_m":2.615}
+uv run --locked python scripts/crazysim_bridge_command.py land \
+  --target-height-m 2.015 --duration-s 3 --timeout 4
+{"command":"land","duration_s":3.0,"event":"firmware_ack","firmware_result":0,"target_height_m":2.015}
+```
+
+Plugin log contains `TRACE_MOTOR_NONZERO ... source=firmware`. Gazebo
+odometry shows takeoff from 2.014 m to 3.015 m and return to 2.015 m.
+The unchanged paired acceptance checker result is `paired-check.json` (exit 1).
+It rejects the 0.38-s stable-hover interval and firmware rate/estimator warning;
+the firmware and negative-control processes were intentionally SIGTERM'd, and
+their reported nonzero exits also fail the strict gate. Negative capture is
+referenced from attempt03 and is not a same-run control.
+
+No mapping, swarm, Nano application, or hardware validation is claimed.

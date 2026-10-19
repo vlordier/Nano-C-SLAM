@@ -1,0 +1,67 @@
+{
+  "attempt": "Fresh-plugin, uncapped-observer firmware-driven CrazySim flight",
+  "date": "2026-10-20",
+  "valid_for_flight_acceptance": false,
+  "scope": "One upstream Crazyflie SITL firmware process under Gazebo Harmonic; not Nano-C-SLAM, mapping, swarm, or hardware validation.",
+  "sources": {
+    "firmware_commit": "f42b903610e8b4ea1796ba6eba4b1c92cde70766",
+    "firmware_binary_sha256": "8d0cc0505f72282eff5f2d57df4e5671cd92cd31354d71d79efc094a4d38dc9c",
+    "crazysim_plugin_commit": "da1e3d8b0c2c7ad3879a69176c7e67da909aca6e",
+    "plugin_binary_sha256": "46d3cf52107f2dfb41a75e1df69a0f60a6374eec6cb6836a94d90be7430e7af7",
+    "sampler_source": "scripts/crazysim_flight_sampler.cc",
+    "sampler_binary_sha256": "cad17dd8d6233b8ad511a94a8aae48b79893149bb1e6a565aba8ee6db675f3cf",
+    "checker_source": "scripts/check_crazysim_flight.py"
+  },
+  "runtime": {
+    "gazebo_sim_version": "8.14.0",
+    "physics_engine": "gz-physics-bullet-featherstone-plugin",
+    "partition": "ncs-uncap-20261020",
+    "GZ_IP": "127.0.0.1",
+    "capture_duration_s": 25,
+    "firmware_process_count": 1,
+    "firmware_exit_code": 143,
+    "gazebo_exit_code": 0,
+    "firmware_shutdown": "SIGTERM after capture; nonzero exit is a strict-gate failure"
+  },
+  "model": {
+    "spawn_z_m": 2.015,
+    "mass_kg": 0.0282,
+    "motor_constant": 1.7965e-8,
+    "max_rot_velocity_rad_s": 3052
+  },
+  "capture": {
+    "odometry_samples": 4994,
+    "imu_samples": 12448,
+    "motor_messages": 24896,
+    "world_stats_samples": 187,
+    "odometry_rate_hz": 200,
+    "imu_rate_hz": 500,
+    "max_odometry_gap_s": 0.005,
+    "max_imu_gap_s": 0.002,
+    "aggregate_real_time_factor": 0.99491,
+    "min_altitude_m": 2.0143,
+    "max_altitude_m": 3.0150,
+    "end_altitude_m": 2.0150,
+    "max_motor_speed_rad_s": 2907.61,
+    "imu_sensor_z_acceleration_during_flight_m_s2": [
+      9.80608,
+      9.80665
+    ],
+    "odometry_vertical_acceleration_during_flight_m_s2": [
+      -2.017,
+      9.379
+    ],
+    "firmware_motor_attribution": true,
+    "takeoff_ack": true,
+    "landing_ack": true,
+    "strict_checker_exit_code": 1,
+    "strict_checker_failures": [
+      "stable hover lasted 0.38s; requires 5.00s",
+      "firmware reported estimator/rate/crash failure",
+      "firmware exited with status 143",
+      "negative-control firmware exited with status 143",
+      "negative-control Gazebo exited with status 130"
+    ],
+    "negative_control_artifacts": "../crazysim_motor_mapping_20261020_attempt03 (separate run; not a same-run control)"
+  }
+}

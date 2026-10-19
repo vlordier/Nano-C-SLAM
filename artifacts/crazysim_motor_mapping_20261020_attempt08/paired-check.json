@@ -1,0 +1,10 @@
+{
+  "passed": false,
+  "errors": [
+    "firmware reported estimator/rate/crash failure",
+    "firmware exited with status 143",
+    "negative-control firmware exited with status 143",
+    "negative-control Gazebo exited with status 130",
+    "stable hover lasted 0.38s; requires 5.00s"
+  ]
+}
