@@ -8,7 +8,10 @@ import unittest
 import uuid
 from pathlib import Path
 
-from scripts.gazebo_mapping_run import _mapping_topics_ready
+from scripts.gazebo_mapping_run import (
+    _capture_control_publisher_preflight,
+    _mapping_topics_ready,
+)
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_run_model import (
     MappingRunConfig,
     MissionCaptureGate,
@@ -65,6 +68,16 @@ class MappingTopicReadinessTests(unittest.TestCase):
         self.assertFalse(
             _mapping_topics_ready(_TopicGraph(mission_status_subscribers=0), "cf1")
         )
+
+    def test_control_preflight_requires_zero_command_publishers(self) -> None:
+        node = _TopicGraph()
+        result = _capture_control_publisher_preflight(node, "cf1")
+        self.assertEqual(
+            result["publisher_counts"], {"/cf1/cmd_vel": 0, "/cf1/enable": 0}
+        )
+        node._publishers["/cf1/cmd_vel"] = 1
+        with self.assertRaisesRegex(RuntimeError, "command publishers"):
+            _capture_control_publisher_preflight(node, "cf1")
 
 
 class MappingRunConfigTests(unittest.TestCase):

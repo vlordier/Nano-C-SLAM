@@ -547,11 +547,31 @@ def validate_combined_run_report(value: object) -> dict[str, object]:
     if capture.get("run_id") != run_id:
         raise ValueError("combined Gazebo report and capture run IDs do not match")
     try:
-        validate_odometry_preflight(value.get("odometry_preflight"))
+        preflight = validate_odometry_preflight(value.get("odometry_preflight"))
     except ValueError as error:
         raise ValueError(
             f"combined Gazebo report has invalid odometry preflight: {error}"
         ) from error
+    if preflight.get("schema_version") == 2:
+        control_preflight = value.get("control_preflight")
+        expected_topics = {
+            f"/{value.get('drone')}/cmd_vel",
+            f"/{value.get('drone')}/enable",
+        }
+        if not isinstance(control_preflight, dict):
+            raise ValueError("combined Gazebo report is missing control preflight")
+        counts = control_preflight.get("publisher_counts")
+        if (
+            control_preflight.get("checked_before_mission_process") is not True
+            or control_preflight.get("no_command_publishers") is not True
+            or not isinstance(counts, dict)
+            or set(counts) != expected_topics
+            or any(
+                isinstance(count, bool) or not isinstance(count, int) or count != 0
+                for count in counts.values()
+            )
+        ):
+            raise ValueError("combined Gazebo report has unsafe control preflight")
     drone = value.get("drone")
     raw_events = value.get("mission_events")
     raw_terminal = value.get("mission_terminal")

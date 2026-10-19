@@ -177,6 +177,29 @@ def _valid_report() -> dict[str, object]:
 
 
 class GazeboRunProvenanceTests(unittest.TestCase):
+    def test_xyz_preflight_schema_requires_zero_control_publishers(self) -> None:
+        report = _valid_report()
+        preflight = report["odometry_preflight"]
+        assert isinstance(preflight, dict)
+        preflight["schema_version"] = 2
+        samples = preflight["samples"]
+        assert isinstance(samples, list)
+        for index, sample in enumerate(samples):
+            assert isinstance(sample, dict)
+            sample["x_m"] = float(index)
+            sample["y_m"] = float(-index)
+            sample["z_m"] = sample.pop("altitude_m")
+        report["control_preflight"] = {
+            "checked_before_mission_process": True,
+            "publisher_counts": {"/cf1/cmd_vel": 0, "/cf1/enable": 0},
+            "no_command_publishers": True,
+        }
+        self.assertEqual(validate_combined_run_report(report), report)
+
+        report["control_preflight"]["publisher_counts"]["/cf1/enable"] = 1
+        with self.assertRaisesRegex(ValueError, "unsafe control preflight"):
+            validate_combined_run_report(report)
+
     def test_direct_library_hashes_and_unresolved_names_are_explicit(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             directory = Path(temporary_directory)

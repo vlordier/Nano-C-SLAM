@@ -18,17 +18,25 @@ class OdometrySample:
     """One odometry callback compared with the live ROS simulation clock."""
 
     stamp_s: float
-    altitude_m: float
+    x_m: float | None
+    y_m: float | None
+    z_m: float
     sim_time_s: float
     received_monotonic_s: float
+
+    @property
+    def altitude_m(self) -> float:
+        """The world-frame vertical coordinate used by the grounded gate."""
+        return self.z_m
 
 
 class GroundedOdometryPreflight:
     """Accept only fresh, ordered odometry proving the vehicle is grounded."""
 
-    def __init__(self) -> None:
+    def __init__(self, *, require_position: bool = True) -> None:
         self.samples: list[OdometrySample] = []
         self.failure_reason: str | None = None
+        self.require_position = require_position
 
     @property
     def passed(self) -> bool:
@@ -41,12 +49,19 @@ class GroundedOdometryPreflight:
         """Add one sample, permanently failing closed on invalid evidence."""
         if self.failure_reason is not None or self.passed:
             return self.passed
-        values = (
+        values = [
             sample.stamp_s,
-            sample.altitude_m,
+            sample.z_m,
             sample.sim_time_s,
             sample.received_monotonic_s,
-        )
+        ]
+        if sample.x_m is not None:
+            values.append(sample.x_m)
+        if sample.y_m is not None:
+            values.append(sample.y_m)
+        if self.require_position and (sample.x_m is None or sample.y_m is None):
+            self.failure_reason = "odometry preflight is missing x/y position"
+            return False
         if not all(math.isfinite(value) for value in values):
             self.failure_reason = "odometry preflight received a non-finite value"
             return False
@@ -57,9 +72,9 @@ class GroundedOdometryPreflight:
         if age_s < -MAX_FUTURE_SKEW_S or age_s > MAX_SAMPLE_AGE_S:
             self.failure_reason = f"odometry sample age is invalid ({age_s:.3f} s)"
             return False
-        if sample.altitude_m > MAX_GROUNDED_ALTITUDE_M:
+        if sample.z_m > MAX_GROUNDED_ALTITUDE_M:
             self.failure_reason = (
-                f"mapping run refused airborne start ({sample.altitude_m:.3f} m > "
+                f"mapping run refused airborne start ({sample.z_m:.3f} m > "
                 f"{MAX_GROUNDED_ALTITUDE_M:.3f} m)"
             )
             return False
@@ -83,7 +98,7 @@ class GroundedOdometryPreflight:
     def to_report(self) -> dict[str, object]:
         """Serialize gate thresholds and the exact accepted sample evidence."""
         return {
-            "schema_version": 1,
+            "schema_version": 2,
             "passed": self.passed,
             "failure_reason": self.failure_reason,
             "required_samples": REQUIRED_GROUNDED_SAMPLES,
@@ -94,7 +109,9 @@ class GroundedOdometryPreflight:
             "samples": [
                 {
                     "stamp_s": sample.stamp_s,
-                    "altitude_m": sample.altitude_m,
+                    "x_m": sample.x_m,
+                    "y_m": sample.y_m,
+                    "z_m": sample.z_m,
                     "sim_time_s": sample.sim_time_s,
                     "received_monotonic_s": sample.received_monotonic_s,
                 }
@@ -127,7 +144,13 @@ def wait_for_grounded_preflight(
 
 def validate_odometry_preflight(value: object) -> dict[str, object]:
     """Validate successful preflight evidence in a persisted run bundle."""
-    if not isinstance(value, dict) or value.get("schema_version") != 1:
+    schema_version = value.get("schema_version") if isinstance(value, dict) else None
+    if (
+        not isinstance(value, dict)
+        or isinstance(schema_version, bool)
+        or not isinstance(schema_version, int)
+        or schema_version not in (1, 2)
+    ):
         raise ValueError("odometry preflight report has unsupported schema")
     if value.get("passed") is not True or value.get("failure_reason") is not None:
         raise ValueError("odometry preflight did not pass")
@@ -149,31 +172,45 @@ def validate_odometry_preflight(value: object) -> dict[str, object]:
         or len(raw_samples) != REQUIRED_GROUNDED_SAMPLES
     ):
         raise ValueError("odometry preflight must contain exactly three samples")
-    gate = GroundedOdometryPreflight()
+    gate = GroundedOdometryPreflight(require_position=schema_version >= 2)
     for raw in raw_samples:
         if not isinstance(raw, dict):
             raise ValueError("odometry preflight sample is invalid")
-        raw_values = tuple(
+        coordinate_keys = ("x_m", "y_m", "z_m") if schema_version >= 2 else ()
+        raw_values = tuple(raw.get(key) for key in coordinate_keys) + tuple(
             raw.get(key)
             for key in (
                 "stamp_s",
-                "altitude_m",
                 "sim_time_s",
                 "received_monotonic_s",
             )
         )
+        if schema_version == 1:
+            raw_values = (raw.get("altitude_m"), *raw_values)
         if any(
             isinstance(item, bool) or not isinstance(item, (int, float))
             for item in raw_values
         ):
             raise ValueError("odometry preflight sample contains non-numeric values")
         try:
-            sample = OdometrySample(
-                stamp_s=float(raw_values[0]),
-                altitude_m=float(raw_values[1]),
-                sim_time_s=float(raw_values[2]),
-                received_monotonic_s=float(raw_values[3]),
-            )
+            if schema_version == 1:
+                sample = OdometrySample(
+                    stamp_s=float(raw["stamp_s"]),
+                    x_m=None,
+                    y_m=None,
+                    z_m=float(raw["altitude_m"]),
+                    sim_time_s=float(raw["sim_time_s"]),
+                    received_monotonic_s=float(raw["received_monotonic_s"]),
+                )
+            else:
+                sample = OdometrySample(
+                    stamp_s=float(raw["stamp_s"]),
+                    x_m=float(raw["x_m"]),
+                    y_m=float(raw["y_m"]),
+                    z_m=float(raw["z_m"]),
+                    sim_time_s=float(raw["sim_time_s"]),
+                    received_monotonic_s=float(raw["received_monotonic_s"]),
+                )
         except (KeyError, TypeError, ValueError, OverflowError) as error:
             raise ValueError("odometry preflight sample is incomplete") from error
         gate.observe(sample)

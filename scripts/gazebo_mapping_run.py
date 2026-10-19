@@ -86,6 +86,8 @@ class _OdometryPoseValue(Protocol):
 
 
 class _OdometryPosition(Protocol):
+    x: float
+    y: float
     z: float
 
 
@@ -118,6 +120,26 @@ def _mapping_topics_ready(node: _TopicListener, drone_name: str) -> bool:
         node.count_publishers(f"/nano_c_slam/sim/{drone_name}/ranges_mm"),
     )
     return all(count >= 1 for count in subscriptions + publishers)
+
+
+def _capture_control_publisher_preflight(
+    node: _TopicListener, drone_name: str
+) -> dict[str, object]:
+    """Require an idle ROS command graph before launching the mission process."""
+    publisher_counts = {
+        f"/{drone_name}/cmd_vel": node.count_publishers(f"/{drone_name}/cmd_vel"),
+        f"/{drone_name}/enable": node.count_publishers(f"/{drone_name}/enable"),
+    }
+    active = {topic: count for topic, count in publisher_counts.items() if count != 0}
+    if active:
+        raise RuntimeError(
+            f"grounded preflight refused existing command publishers: {active}"
+        )
+    return {
+        "checked_before_mission_process": True,
+        "publisher_counts": publisher_counts,
+        "no_command_publishers": True,
+    }
 
 
 def _events_from_mission_log(
@@ -251,7 +273,9 @@ def _create_status_listener(run_id: str, drone_name: str) -> _StatusListener:
             self.preflight.observe(
                 OdometrySample(
                     stamp_s=stamp_s,
-                    altitude_m=float(position.z),
+                    x_m=float(position.x),
+                    y_m=float(position.y),
+                    z_m=float(position.z),
                     sim_time_s=sim_time_s,
                     received_monotonic_s=time.monotonic(),
                 )
@@ -385,6 +409,9 @@ def _run(
             timeout_s=preflight_timeout_s,
             monotonic=time.monotonic,
         )
+        control_preflight = _capture_control_publisher_preflight(
+            node, config.drone_name
+        )
 
         execution_started = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         process_result = supervise_mapping_processes(
@@ -498,6 +525,7 @@ def _run(
             "mission_events": [json.loads(event.to_json()) for event in events],
             "mission_terminal": json.loads(terminal.to_json()),
             "odometry_preflight": odometry_preflight,
+            "control_preflight": control_preflight,
             "capture_report": capture,
             "raw_logs": {
                 "collector": collector_log,
