@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "capture_id": "crazysim-rate-match-20261019-attempt01",
+  "result": "failed_flight_gate",
+  "environment": {
+    "gazebo": "Gazebo Sim 8.15.0 Harmonic on macOS arm64",
+    "physics_engine": "gz-physics-bullet-featherstone-plugin",
+    "partition": "ncs-flight"
+  },
+  "source": {
+    "firmware_repository": "https://github.com/vlordier/crazyflie-firmware",
+    "firmware_branch": "codex/sitl-imu-wakeup",
+    "firmware_source_at_binary_build": "d3ec77c2f5cb92aa55460206be7124de94fdb4c2",
+    "firmware_branch_after_plugin_pin": "f42b903610e8b4ea1796ba6eba4b1c92cde70766",
+    "firmware_binary_sha256": "8d0cc0505f72282eff5f2d57df4e5671cd92cd31354d71d79efc094a4d38dc9c",
+    "firmware_build_rate_hz": 500,
+    "gazebo_plugin_repository": "https://github.com/vlordier/crazyflie-simulation",
+    "gazebo_plugin_commit": "1e6d1262bccf20beb90be1db524ac5151973b11b",
+    "world_sdf_sha256": "895ee627912e7cce92f8bc7e9b09551f7a7235853f62ac938ccf34f90ab772b8",
+    "world_imu_rate_hz": 500,
+    "world_rate_note": "This capture used the existing manually matched-rate SDF. A separate Lima test used the new launcher resolver and Jinja generator against the 500-Hz CMake cache and parsed a generated update_rate of 500."
+  },
+  "commands": {
+    "firmware_process_count": 1,
+    "takeoff_ack_result": 0,
+    "land_ack_result": 0,
+    "sampler_duration_wall_s": 20,
+    "sampler_sim_time_start_s": 31.575,
+    "sampler_sim_time_end_s": 49.775,
+    "firmware_startup_marker_count": 1,
+    "firmware_exit_status_recorded": false,
+    "gazebo_exit_status_recorded": false,
+    "synchronized_plugin_log_captured": false,
+    "strict_checker_run": false
+  },
+  "measurements": {
+    "odometry_samples": 1458,
+    "finite_odometry_samples": 1253,
+    "first_nonfinite_odometry_time_s": 37.925,
+    "maximum_odometry_gap_s": 0.065,
+    "imu_samples": 909,
+    "maximum_imu_gap_s": 0.122,
+    "motor_components": 3760,
+    "maximum_motor_speed_rad_s": 2774.98,
+    "world_statistics_samples": 39,
+    "aggregate_real_time_factor": 0.911,
+    "altitude_start_m": 2.014994,
+    "altitude_min_m": 2.014814,
+    "altitude_max_m": 2.923774,
+    "altitude_end_m": 2.037885,
+    "maximum_contiguous_hover_s_within_0_12m_of_2_615m": 0.27,
+    "stabilizer_rate_warning_hz": 502,
+    "kalman_prediction_rate_warnings_hz": [97, 98],
+    "landing_timeout": true
+  },
+  "files": {
+    "capture/odometry.txt": "2f59a4c02f2d3e119137fca20987cfbfba90c88d6511d315988c869b4d119e2b",
+    "capture/imu.txt": "7eeb169518d44360c50e9fbc190223dfdf563b278cc5c89cfe7635bf019dbb59",
+    "capture/motors.txt": "26f91abf069ac1ba494f598998daebd9a95cde5ea51e4c518928bc05014a6ada",
+    "capture/world-stats.txt": "08fda8dd811d955e6fc77017f099b0b141b27f23c91aa821b14f446e358ec4c8",
+    "firmware.log": "5bb0d96014c3032f3dbfee5557c9fd7dfa8096a3d0aa91b447c10abd8387426f",
+    "world.sdf": "895ee627912e7cce92f8bc7e9b09551f7a7235853f62ac938ccf34f90ab772b8"
+  },
+  "conclusion": "Matching the configured IMU rate to the 500-Hz firmware loop did not produce stable flight. The capture has non-finite odometry, low aggregate real-time factor, measured rate warnings, short hover and a landing timeout. It does not satisfy the strict paired checker because the synchronized plugin log and process exit statuses were not captured."
+}

@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "capture_id": "crazysim-rate-match-20261019-attempt02",
+  "result": "failed_flight_gate",
+  "environment": {
+    "gazebo": "Gazebo Sim 8.15.0 Harmonic on macOS arm64",
+    "physics_engine": "gz-physics-bullet-featherstone-plugin",
+    "partition": "ncs-flight"
+  },
+  "source": {
+    "firmware_source_at_binary_build": "d3ec77c2f5cb92aa55460206be7124de94fdb4c2",
+    "firmware_binary_sha256": "95ab9a2f778063fb757273d88a1fe04f1eab566ce42130d21e313670344b6651",
+    "firmware_diagnostics": false,
+    "firmware_build_rate_hz": 500,
+    "gazebo_plugin_commit": "1e6d1262bccf20beb90be1db524ac5151973b11b",
+    "world_sdf_sha256": "895ee627912e7cce92f8bc7e9b09551f7a7235853f62ac938ccf34f90ab772b8",
+    "world_imu_rate_hz": 500,
+    "world_rate_note": "The capture reused the manually matched 500-Hz world from attempt01, rather than launching a model through the new launcher."
+  },
+  "commands": {
+    "cf2_processes_observed": 1,
+    "takeoff_ack_result": 0,
+    "land_ack_result": 0,
+    "sampler_duration_wall_s": 20,
+    "sampler_sim_time_s": 18.2,
+    "firmware_stdout_log_bytes_during_run": 0,
+    "synchronized_plugin_log_captured": false,
+    "firmware_exit_status_recorded": false,
+    "gazebo_exit_status_recorded": false,
+    "strict_checker_run": false
+  },
+  "measurements": {
+    "parsed_odometry_samples": 1434,
+    "finite_odometry_samples": 1211,
+    "first_nonfinite_odometry_time_s": 78.62,
+    "maximum_odometry_gap_s": 0.04,
+    "imu_samples": 881,
+    "maximum_imu_gap_s": 0.048,
+    "motor_components": 3648,
+    "maximum_motor_speed_rad_s": 2774.9839,
+    "world_statistics_samples": 38,
+    "aggregate_real_time_factor": 0.945,
+    "altitude_start_m": 2.014994,
+    "altitude_max_m": 2.935993,
+    "altitude_end_m": 2.014994,
+    "maximum_contiguous_hover_s_within_0_12m_of_2_615m": 0.315,
+    "stabilizer_rate_warning_observed": null,
+    "kalman_rate_warning_observed": null,
+    "landing_timeout_observed": null
+  },
+  "files": {
+    "capture/odometry.txt": "7210ccff56878a5c0c9a9ad244b6d8c3a137a84bbf4574dc0d23189a2499d5c0",
+    "capture/imu.txt": "b081d08fb7d8fde34109ff68ce3afdeafd0ce51e4f787f3939b628841531235d",
+    "capture/motors.txt": "755a844c9f905535da31b7581f8ea51b23176577e6b53bebaf1a6baa530ab077",
+    "capture/world-stats.txt": "a8c5cbaa4368cd0e544b5d1f798076cb0a69e867141ccd98963ad52a99e49457",
+    "world.sdf": "895ee627912e7cce92f8bc7e9b09551f7a7235853f62ac938ccf34f90ab772b8"
+  },
+  "conclusion": "Disabling sampled firmware diagnostics raised observed aggregate RTF from attempt01's 0.911 to 0.945, still below the 0.95 gate. This paired comparison is suggestive only: it used separate runs and the latter had no synchronized plugin/firmware logs. The latter still contained non-finite odometry, a short hover and unsatisfied timing; it is not a flight pass."
+}

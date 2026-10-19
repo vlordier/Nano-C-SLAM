@@ -944,5 +944,59 @@ ShellCheck on the new resolver, Ruff check/format for the test, and
 `git diff --check` passed. This removes a configuration footgun. It does not
 show that Gazebo delivered 500 IMU callbacks per wall-clock second, that the
 firmware supervisor met its timing bound, or that flight is stable. The latest
-flight evidence above remains a failed gate; the first retest should use the
-new pinned launcher path and synchronized low-overhead capture.
+flight evidence below remains a failed gate; future runs should use the new
+pinned launcher path and synchronized low-overhead capture.
+
+## Matched 500-Hz flight retest (2026-10-19)
+
+A fresh 20-second low-overhead capture used one diagnostic `cf2` process
+(binary SHA-256
+`8d0cc0505f72282eff5f2d57df4e5671cd92cd31354d71d79efc094a4d38dc9c`), a
+500-Hz firmware build, and the manually matched 500-Hz IMU world. TAKEOFF_2
+and LAND_2 both received firmware ACK result 0. The firmware reported one
+startup marker and `SUP: Ready to fly`, then warned that the stabilizer rate
+was 502 Hz, the Kalman prediction rate was 97–98 Hz, and landing timed out.
+
+The sampler captured 1,458 odometry samples, 909 IMU samples, 3,760 motor
+components and 39 world-stat samples over 18.2 simulation seconds. Only
+1,253 odometry samples were finite; the first non-finite state occurred at
+37.925 s. Maximum odometry and IMU gaps were 0.065 s and 0.122 s. Altitude
+rose from 2.014994 m to 2.923774 m and ended at 2.037885 m, but the longest
+continuous interval within 0.12 m of the 2.615-m target was 0.27 s. Aggregate
+RTF was 0.911. These fail the registered timing, finite-state, hover and
+landing criteria. The estimator and cadence problem is not explained solely
+by pairing a 500-Hz loop with a 1-kHz IMU.
+
+The raw data, firmware log, world SDF and SHA-256 manifest are preserved in
+[`artifacts/crazysim_rate_match_20261019_attempt01`](../artifacts/crazysim_rate_match_20261019_attempt01/manifest.json).
+This run did not capture a synchronized plugin log or record process exit
+statuses, so the strict paired checker was not run. It also used the previous
+manually matched world rather than spawning through the new launcher; the
+separate CMake-cache-to-generated-SDF test proves the launcher configuration,
+not a new flight. Continue by capturing plugin attribution and improving
+observer RTF, then trace the first non-finite estimator state and 502-Hz
+measurement from raw sensor arrival through stabilizer scheduling. Do not
+relax the registered gate.
+
+A second run reused the same manually matched world with the 500-Hz
+diagnostics-disabled firmware (binary SHA-256
+`95ab9a2f778063fb757273d88a1fe04f1eab566ce42130d21e313670344b6651`). The
+two commands again received ACK result 0 and one `cf2` process was observed.
+The parsed capture contained 1,434 odometry samples, of which 1,211 were
+finite, 881 IMU samples, 3,648 motor components and 38 world-stat samples.
+Altitude rose from 2.014994 m to 2.935993 m and returned to 2.014994 m; the
+longest target-envelope interval was 0.315 s. Aggregate RTF was 0.945, just
+below the required 0.95 floor. Maximum odometry gap was 0.040 s; IMU gap was
+0.048 s. The first non-finite odometry sample was at simulation time 78.62 s.
+
+The RTF difference from the diagnostics-enabled attempt01 (0.911) is
+consistent with trace volume affecting simulation throughput, but these are
+separate runs and do not isolate that cause. The diagnostics-disabled run's
+firmware output remained buffered and no synchronized plugin log was captured;
+therefore it cannot establish warning absence or pass the paired checker. Its
+raw topic data and manifest are in
+[`artifacts/crazysim_rate_match_20261019_attempt02`](../artifacts/crazysim_rate_match_20261019_attempt02/manifest.json).
+Both matched-rate attempts still fail stable-flight acceptance. The next
+capture needs line-buffered firmware logs, plugin motor attribution, exact
+process/exit evidence, and lower observer overhead while retaining the same
+finite-state, timing, hover and landing thresholds.

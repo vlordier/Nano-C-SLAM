@@ -1,0 +1,5640 @@
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 0
+velocity: 0
+velocity: 0
+velocity: 0
+
+goo.gle/debugproto    
+velocity: 2056.69091796875
+velocity: 2056.69091796875
+velocity: 2056.69091796875
+velocity: 2056.69091796875
+
+goo.gle/debugproto    
+velocity: 2056.69091796875
+velocity: 2056.69091796875
+velocity: 2056.69091796875
+velocity: 2056.69091796875
+
+goo.gle/debugproto    
+velocity: 2056.69091796875
+velocity: 2056.69091796875
+velocity: 2056.69091796875
+velocity: 2056.69091796875
+
+goo.gle/debugproto    
+velocity: 2056.69091796875
+velocity: 2056.69091796875
+velocity: 2056.69091796875
+velocity: 2056.69091796875
+
+goo.gle/debugproto    
+velocity: 2056.69091796875
+velocity: 2056.69091796875
+velocity: 2056.69091796875
+velocity: 2056.69091796875
+
+goo.gle/debugproto    
+velocity: 2056.69091796875
+velocity: 2056.69091796875
+velocity: 2056.69091796875
+velocity: 2056.69091796875
+
+goo.gle/debugproto    
+velocity: 2056.605224609375
+velocity: 2056.605224609375
+velocity: 2056.605224609375
+velocity: 2056.605224609375
+
+goo.gle/debugproto    
+velocity: 2055.9765625
+velocity: 2055.9765625
+velocity: 2055.9765625
+velocity: 2055.9765625
+
+goo.gle/debugproto    
+velocity: 2054.489990234375
+velocity: 2054.489990234375
+velocity: 2054.489990234375
+velocity: 2054.489990234375
+
+goo.gle/debugproto    
+velocity: 2051.80029296875
+velocity: 2051.80029296875
+velocity: 2051.80029296875
+velocity: 2051.80029296875
+
+goo.gle/debugproto    
+velocity: 2050.024169921875
+velocity: 2050.024169921875
+velocity: 2050.024169921875
+velocity: 2050.024169921875
+
+goo.gle/debugproto    
+velocity: 2045.26123046875
+velocity: 2045.26123046875
+velocity: 2045.26123046875
+velocity: 2045.26123046875
+
+goo.gle/debugproto    
+velocity: 2039.392822265625
+velocity: 2039.392822265625
+velocity: 2039.392822265625
+velocity: 2039.392822265625
+
+goo.gle/debugproto    
+velocity: 2035.6732177734375
+velocity: 2035.6732177734375
+velocity: 2035.6732177734375
+velocity: 2035.6732177734375
+
+goo.gle/debugproto    
+velocity: 2031.628662109375
+velocity: 2031.628662109375
+velocity: 2031.628662109375
+velocity: 2031.628662109375
+
+goo.gle/debugproto    
+velocity: 2026.61962890625
+velocity: 2026.61962890625
+velocity: 2026.61962890625
+velocity: 2026.61962890625
+
+goo.gle/debugproto    
+velocity: 2026.61962890625
+velocity: 2026.61962890625
+velocity: 2026.61962890625
+velocity: 2026.61962890625
+
+goo.gle/debugproto    
+velocity: 2020.7843017578125
+velocity: 2020.7843017578125
+velocity: 2020.7843017578125
+velocity: 2020.7843017578125
+
+goo.gle/debugproto    
+velocity: 2007.7171630859375
+velocity: 2007.7171630859375
+velocity: 2007.7171630859375
+velocity: 2007.7171630859375
+
+goo.gle/debugproto    
+velocity: 2007.7171630859375
+velocity: 2007.7171630859375
+velocity: 2007.7171630859375
+velocity: 2007.7171630859375
+
+goo.gle/debugproto    
+velocity: 1994.475830078125
+velocity: 1994.475830078125
+velocity: 1994.475830078125
+velocity: 1994.475830078125
+
+goo.gle/debugproto    
+velocity: 1994.475830078125
+velocity: 1994.475830078125
+velocity: 1994.475830078125
+velocity: 1994.475830078125
+
+goo.gle/debugproto    
+velocity: 1958.1785888671875
+velocity: 1958.1785888671875
+velocity: 1958.1785888671875
+velocity: 1958.1785888671875
+
+goo.gle/debugproto    
+velocity: 1958.1785888671875
+velocity: 1958.1785888671875
+velocity: 1958.1785888671875
+velocity: 1958.1785888671875
+
+goo.gle/debugproto    
+velocity: 1958.1785888671875
+velocity: 1958.1785888671875
+velocity: 1958.1785888671875
+velocity: 1958.1785888671875
+
+goo.gle/debugproto    
+velocity: 1931.5042724609375
+velocity: 1931.5042724609375
+velocity: 1931.5042724609375
+velocity: 1931.5042724609375
+
+goo.gle/debugproto    
+velocity: 1922.693603515625
+velocity: 1922.693603515625
+velocity: 1922.693603515625
+velocity: 1922.693603515625
+
+goo.gle/debugproto    
+velocity: 1913.903564453125
+velocity: 1913.903564453125
+velocity: 1913.903564453125
+velocity: 1913.903564453125
+
+goo.gle/debugproto    
+velocity: 1904.3946533203125
+velocity: 1904.3946533203125
+velocity: 1904.3946533203125
+velocity: 1904.3946533203125
+
+goo.gle/debugproto    
+velocity: 1887.8175048828125
+velocity: 1887.8175048828125
+velocity: 1887.8175048828125
+velocity: 1887.8175048828125
+
+goo.gle/debugproto    
+velocity: 1877.456787109375
+velocity: 1877.456787109375
+velocity: 1877.456787109375
+velocity: 1877.456787109375
+
+goo.gle/debugproto    
+velocity: 1877.456787109375
+velocity: 1877.456787109375
+velocity: 1877.456787109375
+velocity: 1877.456787109375
+
+goo.gle/debugproto    
+velocity: 1877.456787109375
+velocity: 1877.456787109375
+velocity: 1877.456787109375
+velocity: 1877.456787109375
+
+goo.gle/debugproto    
+velocity: 1859.913330078125
+velocity: 1859.913330078125
+velocity: 1859.913330078125
+velocity: 1859.913330078125
+
+goo.gle/debugproto    
+velocity: 1840.0648193359375
+velocity: 1840.0648193359375
+velocity: 1840.0648193359375
+velocity: 1840.0648193359375
+
+goo.gle/debugproto    
+velocity: 1834.9169921875
+velocity: 1834.9169921875
+velocity: 1834.9169921875
+velocity: 1834.9169921875
+
+goo.gle/debugproto    
+velocity: 1829.1766357421875
+velocity: 1829.1766357421875
+velocity: 1829.1766357421875
+velocity: 1829.1766357421875
+
+goo.gle/debugproto    
+velocity: 1829.1766357421875
+velocity: 1829.1766357421875
+velocity: 1829.1766357421875
+velocity: 1829.1766357421875
+
+goo.gle/debugproto    
+velocity: 1824.1593017578125
+velocity: 1824.1593017578125
+velocity: 1824.1593017578125
+velocity: 1824.1593017578125
+
+goo.gle/debugproto    
+velocity: 1824.1593017578125
+velocity: 1824.1593017578125
+velocity: 1824.1593017578125
+velocity: 1824.1593017578125
+
+goo.gle/debugproto    
+velocity: 1824.1593017578125
+velocity: 1824.1593017578125
+velocity: 1824.1593017578125
+velocity: 1824.1593017578125
+
+goo.gle/debugproto    
+velocity: 1824.1593017578125
+velocity: 1824.1593017578125
+velocity: 1824.1593017578125
+velocity: 1824.1593017578125
+
+goo.gle/debugproto    
+velocity: 1824.1593017578125
+velocity: 1824.1593017578125
+velocity: 1824.1593017578125
+velocity: 1824.1593017578125
+
+goo.gle/debugproto    
+velocity: 1819.2572021484375
+velocity: 1819.2572021484375
+velocity: 1819.2572021484375
+velocity: 1819.2572021484375
+
+goo.gle/debugproto    
+velocity: 1812.3006591796875
+velocity: 1812.3006591796875
+velocity: 1812.3006591796875
+velocity: 1812.3006591796875
+
+goo.gle/debugproto    
+velocity: 1809.640380859375
+velocity: 1809.640380859375
+velocity: 1809.640380859375
+velocity: 1809.640380859375
+
+goo.gle/debugproto    
+velocity: 1809.640380859375
+velocity: 1809.640380859375
+velocity: 1809.640380859375
+velocity: 1809.640380859375
+
+goo.gle/debugproto    
+velocity: 1802.97265625
+velocity: 1802.97265625
+velocity: 1802.97265625
+velocity: 1802.97265625
+
+goo.gle/debugproto    
+velocity: 1802.97265625
+velocity: 1802.97265625
+velocity: 1802.97265625
+velocity: 1802.97265625
+
+goo.gle/debugproto    
+velocity: 1803.4940185546875
+velocity: 1803.4940185546875
+velocity: 1803.4940185546875
+velocity: 1803.4940185546875
+
+goo.gle/debugproto    
+velocity: 1814.0504150390625
+velocity: 1814.0504150390625
+velocity: 1814.0504150390625
+velocity: 1814.0504150390625
+
+goo.gle/debugproto    
+velocity: 1820.8388671875
+velocity: 1820.8388671875
+velocity: 1820.8388671875
+velocity: 1820.8388671875
+
+goo.gle/debugproto    
+velocity: 1837.18896484375
+velocity: 1837.18896484375
+velocity: 1837.18896484375
+velocity: 1837.18896484375
+
+goo.gle/debugproto    
+velocity: 1851.3013916015625
+velocity: 1851.3013916015625
+velocity: 1851.3013916015625
+velocity: 1851.3013916015625
+
+goo.gle/debugproto    
+velocity: 1858.1119384765625
+velocity: 1858.1119384765625
+velocity: 1858.1119384765625
+velocity: 1858.1119384765625
+
+goo.gle/debugproto    
+velocity: 1873.6351318359375
+velocity: 1873.6351318359375
+velocity: 1873.6351318359375
+velocity: 1873.6351318359375
+
+goo.gle/debugproto    
+velocity: 1880.73974609375
+velocity: 1880.73974609375
+velocity: 1880.73974609375
+velocity: 1880.73974609375
+
+goo.gle/debugproto    
+velocity: 1888.1597900390625
+velocity: 1888.1597900390625
+velocity: 1888.1597900390625
+velocity: 1888.1597900390625
+
+goo.gle/debugproto    
+velocity: 1894.65185546875
+velocity: 1894.65185546875
+velocity: 1894.65185546875
+velocity: 1894.65185546875
+
+goo.gle/debugproto    
+velocity: 1894.65185546875
+velocity: 1894.65185546875
+velocity: 1894.65185546875
+velocity: 1894.65185546875
+
+goo.gle/debugproto    
+velocity: 1901.0289306640625
+velocity: 1901.0289306640625
+velocity: 1901.0289306640625
+velocity: 1901.0289306640625
+
+goo.gle/debugproto    
+velocity: 1901.0289306640625
+velocity: 1901.0289306640625
+velocity: 1901.0289306640625
+velocity: 1901.0289306640625
+
+goo.gle/debugproto    
+velocity: 1908.30859375
+velocity: 1908.30859375
+velocity: 1908.30859375
+velocity: 1908.30859375
+
+goo.gle/debugproto    
+velocity: 1908.30859375
+velocity: 1908.30859375
+velocity: 1908.30859375
+velocity: 1908.30859375
+
+goo.gle/debugproto    
+velocity: 1915.652587890625
+velocity: 1915.652587890625
+velocity: 1915.652587890625
+velocity: 1915.652587890625
+
+goo.gle/debugproto    
+velocity: 1923.9765625
+velocity: 1923.9765625
+velocity: 1923.9765625
+velocity: 1923.9765625
+
+goo.gle/debugproto    
+velocity: 1923.9765625
+velocity: 1923.9765625
+velocity: 1923.9765625
+velocity: 1923.9765625
+
+goo.gle/debugproto    
+velocity: 1923.9765625
+velocity: 1923.9765625
+velocity: 1923.9765625
+velocity: 1923.9765625
+
+goo.gle/debugproto    
+velocity: 1932.5989990234375
+velocity: 1932.5989990234375
+velocity: 1932.5989990234375
+velocity: 1932.5989990234375
+
+goo.gle/debugproto    
+velocity: 1932.5989990234375
+velocity: 1932.5989990234375
+velocity: 1932.5989990234375
+velocity: 1932.5989990234375
+
+goo.gle/debugproto    
+velocity: 1932.5989990234375
+velocity: 1932.5989990234375
+velocity: 1932.5989990234375
+velocity: 1932.5989990234375
+
+goo.gle/debugproto    
+velocity: 1955.8970947265625
+velocity: 1955.8970947265625
+velocity: 1955.8970947265625
+velocity: 1955.8970947265625
+
+goo.gle/debugproto    
+velocity: 1962.045166015625
+velocity: 1962.045166015625
+velocity: 1962.045166015625
+velocity: 1962.045166015625
+
+goo.gle/debugproto    
+velocity: 1973.3909912109375
+velocity: 1973.3909912109375
+velocity: 1973.3909912109375
+velocity: 1973.3909912109375
+
+goo.gle/debugproto    
+velocity: 1984.31689453125
+velocity: 1984.31689453125
+velocity: 1984.31689453125
+velocity: 1984.31689453125
+
+goo.gle/debugproto    
+velocity: 1995.0943603515625
+velocity: 1995.0943603515625
+velocity: 1995.0943603515625
+velocity: 1995.0943603515625
+
+goo.gle/debugproto    
+velocity: 2010.4658203125
+velocity: 2010.4658203125
+velocity: 2010.4658203125
+velocity: 2010.4658203125
+
+goo.gle/debugproto    
+velocity: 2015.5150146484375
+velocity: 2015.5150146484375
+velocity: 2015.5150146484375
+velocity: 2015.5150146484375
+
+goo.gle/debugproto    
+velocity: 2024.502197265625
+velocity: 2024.502197265625
+velocity: 2024.502197265625
+velocity: 2024.502197265625
+
+goo.gle/debugproto    
+velocity: 2032.95849609375
+velocity: 2032.95849609375
+velocity: 2032.95849609375
+velocity: 2032.95849609375
+
+goo.gle/debugproto    
+velocity: 2039.709716796875
+velocity: 2039.709716796875
+velocity: 2039.709716796875
+velocity: 2039.709716796875
+
+goo.gle/debugproto    
+velocity: 2043.364501953125
+velocity: 2043.364501953125
+velocity: 2043.364501953125
+velocity: 2043.364501953125
+
+goo.gle/debugproto    
+velocity: 2050.33935546875
+velocity: 2050.33935546875
+velocity: 2050.33935546875
+velocity: 2050.33935546875
+
+goo.gle/debugproto    
+velocity: 2052.143798828125
+velocity: 2052.143798828125
+velocity: 2052.143798828125
+velocity: 2052.143798828125
+
+goo.gle/debugproto    
+velocity: 2054.9189453125
+velocity: 2054.9189453125
+velocity: 2054.9189453125
+velocity: 2054.9189453125
+
+goo.gle/debugproto    
+velocity: 2055.29052734375
+velocity: 2055.29052734375
+velocity: 2055.29052734375
+velocity: 2055.29052734375
+
+goo.gle/debugproto    
+velocity: 2054.06103515625
+velocity: 2054.06103515625
+velocity: 2054.06103515625
+velocity: 2054.06103515625
+
+goo.gle/debugproto    
+velocity: 2052.80224609375
+velocity: 2052.80224609375
+velocity: 2052.80224609375
+velocity: 2052.80224609375
+
+goo.gle/debugproto    
+velocity: 2049.049560546875
+velocity: 2049.049560546875
+velocity: 2049.049560546875
+velocity: 2049.049560546875
+
+goo.gle/debugproto    
+velocity: 2043.4796142578125
+velocity: 2043.4796142578125
+velocity: 2043.4796142578125
+velocity: 2043.4796142578125
+
+goo.gle/debugproto    
+velocity: 2036.3369140625
+velocity: 2036.3369140625
+velocity: 2036.3369140625
+velocity: 2036.3369140625
+
+goo.gle/debugproto    
+velocity: 2027.6051025390625
+velocity: 2027.6051025390625
+velocity: 2027.6051025390625
+velocity: 2027.6051025390625
+
+goo.gle/debugproto    
+velocity: 2022.5860595703125
+velocity: 2022.5860595703125
+velocity: 2022.5860595703125
+velocity: 2022.5860595703125
+
+goo.gle/debugproto    
+velocity: 2004.52490234375
+velocity: 2004.52490234375
+velocity: 2004.52490234375
+velocity: 2004.52490234375
+
+goo.gle/debugproto    
+velocity: 1991.262451171875
+velocity: 1991.262451171875
+velocity: 1991.262451171875
+velocity: 1991.262451171875
+
+goo.gle/debugproto    
+velocity: 1991.262451171875
+velocity: 1991.262451171875
+velocity: 1991.262451171875
+velocity: 1991.262451171875
+
+goo.gle/debugproto    
+velocity: 1959.348388671875
+velocity: 1959.348388671875
+velocity: 1959.348388671875
+velocity: 1959.348388671875
+
+goo.gle/debugproto    
+velocity: 1950.904296875
+velocity: 1950.904296875
+velocity: 1950.904296875
+velocity: 1950.904296875
+
+goo.gle/debugproto    
+velocity: 1931.7171630859375
+velocity: 1931.7171630859375
+velocity: 1931.7171630859375
+velocity: 1931.7171630859375
+
+goo.gle/debugproto    
+velocity: 1909.6627197265625
+velocity: 1909.6627197265625
+velocity: 1909.6627197265625
+velocity: 1909.6627197265625
+
+goo.gle/debugproto    
+velocity: 1887.47509765625
+velocity: 1887.47509765625
+velocity: 1887.47509765625
+velocity: 1887.47509765625
+
+goo.gle/debugproto    
+velocity: 1866.62939453125
+velocity: 1866.62939453125
+velocity: 1866.62939453125
+velocity: 1866.62939453125
+
+goo.gle/debugproto    
+velocity: 1847.9661865234375
+velocity: 1847.9661865234375
+velocity: 1847.9661865234375
+velocity: 1847.9661865234375
+
+goo.gle/debugproto    
+velocity: 1831.648193359375
+velocity: 1831.648193359375
+velocity: 1831.648193359375
+velocity: 1831.648193359375
+
+goo.gle/debugproto    
+velocity: 1825.1895751953125
+velocity: 1825.1895751953125
+velocity: 1825.1895751953125
+velocity: 1825.1895751953125
+
+goo.gle/debugproto    
+velocity: 1814.277099609375
+velocity: 1814.277099609375
+velocity: 1814.277099609375
+velocity: 1814.277099609375
+
+goo.gle/debugproto    
+velocity: 1804.5687255859375
+velocity: 1804.5687255859375
+velocity: 1804.5687255859375
+velocity: 1804.5687255859375
+
+goo.gle/debugproto    
+velocity: 1800.2659912109375
+velocity: 1800.2659912109375
+velocity: 1800.2659912109375
+velocity: 1800.2659912109375
+
+goo.gle/debugproto    
+velocity: 1799.4825439453125
+velocity: 1799.4825439453125
+velocity: 1799.4825439453125
+velocity: 1799.4825439453125
+
+goo.gle/debugproto    
+velocity: 1800.951171875
+velocity: 1800.951171875
+velocity: 1800.951171875
+velocity: 1800.951171875
+
+goo.gle/debugproto    
+velocity: 1807.2037353515625
+velocity: 1807.2037353515625
+velocity: 1807.2037353515625
+velocity: 1807.2037353515625
+
+goo.gle/debugproto    
+velocity: 1816.5101318359375
+velocity: 1816.5101318359375
+velocity: 1816.5101318359375
+velocity: 1816.5101318359375
+
+goo.gle/debugproto    
+velocity: 1830.300537109375
+velocity: 1830.300537109375
+velocity: 1830.300537109375
+velocity: 1830.300537109375
+
+goo.gle/debugproto    
+velocity: 1846.121337890625
+velocity: 1846.121337890625
+velocity: 1846.121337890625
+velocity: 1846.121337890625
+
+goo.gle/debugproto    
+velocity: 1863.826171875
+velocity: 1863.826171875
+velocity: 1863.826171875
+velocity: 1863.826171875
+
+goo.gle/debugproto    
+velocity: 1883.4866943359375
+velocity: 1883.4866943359375
+velocity: 1883.4866943359375
+velocity: 1883.4866943359375
+
+goo.gle/debugproto    
+velocity: 1894.1556396484375
+velocity: 1894.1556396484375
+velocity: 1894.1556396484375
+velocity: 1894.1556396484375
+
+goo.gle/debugproto    
+velocity: 1918.3189697265625
+velocity: 1918.3189697265625
+velocity: 1918.3189697265625
+velocity: 1918.3189697265625
+
+goo.gle/debugproto    
+velocity: 1943.7237548828125
+velocity: 1943.7237548828125
+velocity: 1943.7237548828125
+velocity: 1943.7237548828125
+
+goo.gle/debugproto    
+velocity: 1969.755615234375
+velocity: 1969.755615234375
+velocity: 1969.755615234375
+velocity: 1969.755615234375
+
+goo.gle/debugproto    
+velocity: 1995.918701171875
+velocity: 1995.918701171875
+velocity: 1995.918701171875
+velocity: 1995.918701171875
+
+goo.gle/debugproto    
+velocity: 2034.1719970703125
+velocity: 2034.1719970703125
+velocity: 2034.1719970703125
+velocity: 2034.1719970703125
+
+goo.gle/debugproto    
+velocity: 2058.88916015625
+velocity: 2058.88916015625
+velocity: 2058.88916015625
+velocity: 2058.88916015625
+
+goo.gle/debugproto    
+velocity: 2082.382568359375
+velocity: 2082.382568359375
+velocity: 2082.382568359375
+velocity: 2082.382568359375
+
+goo.gle/debugproto    
+velocity: 2104.27392578125
+velocity: 2104.27392578125
+velocity: 2104.27392578125
+velocity: 2104.27392578125
+
+goo.gle/debugproto    
+velocity: 2124.1982421875
+velocity: 2124.1982421875
+velocity: 2124.1982421875
+velocity: 2124.1982421875
+
+goo.gle/debugproto    
+velocity: 2141.826416015625
+velocity: 2141.826416015625
+velocity: 2141.826416015625
+velocity: 2141.826416015625
+
+goo.gle/debugproto    
+velocity: 2156.77880859375
+velocity: 2156.77880859375
+velocity: 2156.77880859375
+velocity: 2156.77880859375
+
+goo.gle/debugproto    
+velocity: 2168.8125
+velocity: 2168.8125
+velocity: 2168.8125
+velocity: 2168.8125
+
+goo.gle/debugproto    
+velocity: 2177.65283203125
+velocity: 2177.598876953125
+velocity: 2177.598876953125
+velocity: 2177.65283203125
+
+goo.gle/debugproto    
+velocity: 2182.988037109375
+velocity: 2182.934326171875
+velocity: 2182.934326171875
+velocity: 2182.988037109375
+
+goo.gle/debugproto    
+velocity: 2184.629150390625
+velocity: 2184.575439453125
+velocity: 2184.575439453125
+velocity: 2184.629150390625
+
+goo.gle/debugproto    
+velocity: 2182.395751953125
+velocity: 2182.342041015625
+velocity: 2182.342041015625
+velocity: 2182.395751953125
+
+goo.gle/debugproto    
+velocity: 2175.8173828125
+velocity: 2176.357177734375
+velocity: 2176.357177734375
+velocity: 2175.8173828125
+
+goo.gle/debugproto    
+velocity: 2165.7763671875
+velocity: 2165.559326171875
+velocity: 2165.559326171875
+velocity: 2165.7763671875
+
+goo.gle/debugproto    
+velocity: 2151.050537109375
+velocity: 2151.050537109375
+velocity: 2151.050537109375
+velocity: 2151.050537109375
+
+goo.gle/debugproto    
+velocity: 2121.320068359375
+velocity: 2121.320068359375
+velocity: 2121.320068359375
+velocity: 2121.320068359375
+
+goo.gle/debugproto    
+velocity: 2096.44189453125
+velocity: 2096.44189453125
+velocity: 2096.44189453125
+velocity: 2096.44189453125
+
+goo.gle/debugproto    
+velocity: 2067.545654296875
+velocity: 2067.545654296875
+velocity: 2067.545654296875
+velocity: 2067.545654296875
+
+goo.gle/debugproto    
+velocity: 2034.9515380859375
+velocity: 2034.9515380859375
+velocity: 2034.9515380859375
+velocity: 2034.9515380859375
+
+goo.gle/debugproto    
+velocity: 1999.0953369140625
+velocity: 1999.0953369140625
+velocity: 1999.0953369140625
+velocity: 1999.0953369140625
+
+goo.gle/debugproto    
+velocity: 1960.187744140625
+velocity: 1960.2476806640625
+velocity: 1960.2476806640625
+velocity: 1960.187744140625
+
+goo.gle/debugproto    
+velocity: 1918.44140625
+velocity: 1918.502685546875
+velocity: 1918.502685546875
+velocity: 1918.44140625
+
+goo.gle/debugproto    
+velocity: 1874.763671875
+velocity: 1874.8890380859375
+velocity: 1874.8890380859375
+velocity: 1874.763671875
+
+goo.gle/debugproto    
+velocity: 1826.31591796875
+velocity: 1826.444580078125
+velocity: 1826.444580078125
+velocity: 1826.31591796875
+
+goo.gle/debugproto    
+velocity: 1782.4571533203125
+velocity: 1782.655029296875
+velocity: 1782.655029296875
+velocity: 1782.4571533203125
+
+goo.gle/debugproto    
+velocity: 1736.240234375
+velocity: 1735.8341064453125
+velocity: 1735.8341064453125
+velocity: 1736.240234375
+
+goo.gle/debugproto    
+velocity: 1666.6973876953125
+velocity: 1666.4857177734375
+velocity: 1666.4857177734375
+velocity: 1666.6973876953125
+
+goo.gle/debugproto    
+velocity: 1620.8043212890625
+velocity: 1621.021728515625
+velocity: 1621.021728515625
+velocity: 1620.8043212890625
+
+goo.gle/debugproto    
+velocity: 1582.9541015625
+velocity: 1582.360107421875
+velocity: 1582.360107421875
+velocity: 1582.9541015625
+
+goo.gle/debugproto    
+velocity: 1549.34228515625
+velocity: 1549.2664794921875
+velocity: 1549.2664794921875
+velocity: 1549.34228515625
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1533.1031494140625
+velocity: 1533.1031494140625
+velocity: 1532.8731689453125
+
+goo.gle/debugproto    
+velocity: 1533.141357421875
+velocity: 1532.8348388671875
+velocity: 1532.8348388671875
+velocity: 1533.141357421875
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1533.1031494140625
+velocity: 1533.1031494140625
+velocity: 1532.8731689453125
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1533.1031494140625
+velocity: 1533.1031494140625
+velocity: 1532.8731689453125
+
+goo.gle/debugproto    
+velocity: 1533.1798095703125
+velocity: 1532.7965087890625
+velocity: 1532.7965087890625
+velocity: 1533.1798095703125
+
+goo.gle/debugproto    
+velocity: 1550.8582763671875
+velocity: 1550.706787109375
+velocity: 1550.706787109375
+velocity: 1550.8582763671875
+
+goo.gle/debugproto    
+velocity: 1582.8798828125
+velocity: 1582.285888671875
+velocity: 1582.285888671875
+velocity: 1582.8798828125
+
+goo.gle/debugproto    
+velocity: 1624.6419677734375
+velocity: 1625.075927734375
+velocity: 1625.075927734375
+velocity: 1624.6419677734375
+
+goo.gle/debugproto    
+velocity: 1675.2762451171875
+velocity: 1675.41650390625
+velocity: 1675.4866943359375
+velocity: 1675.346435546875
+
+goo.gle/debugproto    
+velocity: 1732.68359375
+velocity: 1732.75146484375
+velocity: 1732.8192138671875
+velocity: 1732.75146484375
+
+goo.gle/debugproto    
+velocity: 1795.2987060546875
+velocity: 1795.3641357421875
+velocity: 1795.429443359375
+velocity: 1795.3641357421875
+
+goo.gle/debugproto    
+velocity: 1861.4288330078125
+velocity: 1861.4920654296875
+velocity: 1861.55517578125
+velocity: 1861.4920654296875
+
+goo.gle/debugproto    
+velocity: 1963.9605712890625
+velocity: 1964.319580078125
+velocity: 1963.7811279296875
+velocity: 1963.422119140625
+
+goo.gle/debugproto    
+velocity: 2032.2069091796875
+velocity: 2032.2069091796875
+velocity: 2032.322509765625
+velocity: 2032.322509765625
+
+goo.gle/debugproto    
+velocity: 2099.3544921875
+velocity: 2099.3544921875
+velocity: 2099.410400390625
+velocity: 2099.410400390625
+
+goo.gle/debugproto    
+velocity: 2164.31103515625
+velocity: 2164.31103515625
+velocity: 2163.822509765625
+velocity: 2163.822509765625
+
+goo.gle/debugproto    
+velocity: 2225.975830078125
+velocity: 2225.975830078125
+velocity: 2226.02880859375
+velocity: 2226.02880859375
+
+goo.gle/debugproto    
+velocity: 2284.0751953125
+velocity: 2284.023681640625
+velocity: 2284.023681640625
+velocity: 2284.0751953125
+
+goo.gle/debugproto    
+velocity: 2337.090576171875
+velocity: 2337.04052734375
+velocity: 2337.342041015625
+velocity: 2337.392333984375
+
+goo.gle/debugproto    
+velocity: 2384.69580078125
+velocity: 2384.597412109375
+velocity: 2384.597412109375
+velocity: 2384.69580078125
+
+goo.gle/debugproto    
+velocity: 2425.684326171875
+velocity: 2425.5390625
+velocity: 2425.5390625
+velocity: 2425.684326171875
+
+goo.gle/debugproto    
+velocity: 2457.56689453125
+velocity: 2458.283935546875
+velocity: 2458.714111328125
+velocity: 2457.997314453125
+
+goo.gle/debugproto    
+velocity: 2480.008056640625
+velocity: 2479.58154296875
+velocity: 2479.676513671875
+velocity: 2480.102783203125
+
+goo.gle/debugproto    
+velocity: 2490.45703125
+velocity: 2490.45703125
+velocity: 2490.032470703125
+velocity: 2490.032470703125
+
+goo.gle/debugproto    
+velocity: 2488.710693359375
+velocity: 2488.66357421875
+velocity: 2488.758056640625
+velocity: 2488.80517578125
+
+goo.gle/debugproto    
+velocity: 2474.07861328125
+velocity: 2473.983642578125
+velocity: 2474.031005859375
+velocity: 2474.1259765625
+
+goo.gle/debugproto    
+velocity: 2445.728759765625
+velocity: 2445.584716796875
+velocity: 2445.632568359375
+velocity: 2445.77685546875
+
+goo.gle/debugproto    
+velocity: 2406.64501953125
+velocity: 2406.59619140625
+velocity: 2406.59619140625
+velocity: 2406.64501953125
+
+goo.gle/debugproto    
+velocity: 2355.644775390625
+velocity: 2355.79443359375
+velocity: 2355.79443359375
+velocity: 2355.644775390625
+
+goo.gle/debugproto    
+velocity: 2258.12841796875
+velocity: 2257.76416015625
+velocity: 2257.76416015625
+velocity: 2258.12841796875
+
+goo.gle/debugproto    
+velocity: 2219.791259765625
+velocity: 2219.73828125
+velocity: 2219.73828125
+velocity: 2219.791259765625
+
+goo.gle/debugproto    
+velocity: 2088.130126953125
+velocity: 2088.298828125
+velocity: 2088.242919921875
+velocity: 2088.073974609375
+
+goo.gle/debugproto    
+velocity: 1987.77783203125
+velocity: 1987.8370361328125
+velocity: 1987.71875
+velocity: 1987.65966796875
+
+goo.gle/debugproto    
+velocity: 1876.298583984375
+velocity: 1876.17333984375
+velocity: 1875.9854736328125
+velocity: 1876.1107177734375
+
+goo.gle/debugproto    
+velocity: 1753.6138916015625
+velocity: 1753.8148193359375
+velocity: 1753.5467529296875
+velocity: 1753.3458251953125
+
+goo.gle/debugproto    
+velocity: 1620.2967529296875
+velocity: 1619.6439208984375
+velocity: 1620.006591796875
+velocity: 1620.6593017578125
+
+goo.gle/debugproto    
+velocity: 1532.6815185546875
+velocity: 1533.294677734375
+velocity: 1533.294677734375
+velocity: 1532.6815185546875
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1533.1031494140625
+velocity: 1533.1031494140625
+velocity: 1532.8731689453125
+
+goo.gle/debugproto    
+velocity: 1533.141357421875
+velocity: 1532.8348388671875
+velocity: 1532.8348388671875
+velocity: 1533.141357421875
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1533.1031494140625
+velocity: 1533.1031494140625
+velocity: 1532.8731689453125
+
+goo.gle/debugproto    
+velocity: 1533.294677734375
+velocity: 1532.6815185546875
+velocity: 1532.6815185546875
+velocity: 1533.294677734375
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1533.1031494140625
+velocity: 1533.1031494140625
+velocity: 1532.8731689453125
+
+goo.gle/debugproto    
+velocity: 1532.4130859375
+velocity: 1532.6431884765625
+velocity: 1533.5628662109375
+velocity: 1533.3330078125
+
+goo.gle/debugproto    
+velocity: 1533.1031494140625
+velocity: 1532.8731689453125
+velocity: 1532.8731689453125
+velocity: 1533.1031494140625
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.7965087890625
+velocity: 1532.9498291015625
+velocity: 1533.1798095703125
+
+goo.gle/debugproto    
+velocity: 1532.7198486328125
+velocity: 1533.0264892578125
+velocity: 1533.25634765625
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1533.2181396484375
+velocity: 1533.0648193359375
+velocity: 1532.7581787109375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1532.451416015625
+velocity: 1533.294677734375
+velocity: 1533.5245361328125
+velocity: 1532.6815185546875
+
+goo.gle/debugproto    
+velocity: 1533.5245361328125
+velocity: 1533.0648193359375
+velocity: 1532.451416015625
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1532.6048583984375
+velocity: 1532.6048583984375
+velocity: 1533.371337890625
+velocity: 1533.371337890625
+
+goo.gle/debugproto    
+velocity: 1532.8348388671875
+velocity: 1532.8348388671875
+velocity: 1533.141357421875
+velocity: 1533.141357421875
+
+goo.gle/debugproto    
+velocity: 1532.7581787109375
+velocity: 1533.294677734375
+velocity: 1533.2181396484375
+velocity: 1532.6815185546875
+
+goo.gle/debugproto    
+velocity: 1533.1031494140625
+velocity: 1532.9498291015625
+velocity: 1532.8731689453125
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1533.0648193359375
+velocity: 1532.988037109375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1533.1031494140625
+velocity: 1533.1031494140625
+velocity: 1532.8731689453125
+
+goo.gle/debugproto    
+velocity: 1533.141357421875
+velocity: 1532.8348388671875
+velocity: 1532.8348388671875
+velocity: 1533.141357421875
+
+goo.gle/debugproto    
+velocity: 1532.8348388671875
+velocity: 1533.141357421875
+velocity: 1533.141357421875
+velocity: 1532.8348388671875
+
+goo.gle/debugproto    
+velocity: 1533.1798095703125
+velocity: 1532.7198486328125
+velocity: 1532.7965087890625
+velocity: 1533.25634765625
+
+goo.gle/debugproto    
+velocity: 1532.6048583984375
+velocity: 1533.294677734375
+velocity: 1533.371337890625
+velocity: 1532.6815185546875
+
+goo.gle/debugproto    
+velocity: 1539.794921875
+velocity: 1539.184326171875
+velocity: 1539.3369140625
+velocity: 1539.947509765625
+
+goo.gle/debugproto    
+velocity: 1647.0528564453125
+velocity: 1647.0528564453125
+velocity: 1647.266845703125
+velocity: 1647.266845703125
+
+goo.gle/debugproto    
+velocity: 1751.635986328125
+velocity: 1751.5018310546875
+velocity: 1751.770263671875
+velocity: 1751.904296875
+
+goo.gle/debugproto    
+velocity: 1853.5849609375
+velocity: 1853.4581298828125
+velocity: 1853.2679443359375
+velocity: 1853.3946533203125
+
+goo.gle/debugproto    
+velocity: 1952.259033203125
+velocity: 1952.0784912109375
+velocity: 1952.5599365234375
+velocity: 1952.7406005859375
+
+goo.gle/debugproto    
+velocity: 2049.164306640625
+velocity: 2049.049560546875
+velocity: 2048.877685546875
+velocity: 2048.9921875
+
+goo.gle/debugproto    
+velocity: 2142.265380859375
+velocity: 2142.155517578125
+velocity: 2142.0458984375
+velocity: 2142.155517578125
+
+goo.gle/debugproto    
+velocity: 2230.58984375
+velocity: 2231.01123046875
+velocity: 2231.01123046875
+velocity: 2230.58984375
+
+goo.gle/debugproto    
+velocity: 2312.450439453125
+velocity: 2312.0947265625
+velocity: 2312.0439453125
+velocity: 2312.399658203125
+
+goo.gle/debugproto    
+velocity: 2390.7490234375
+velocity: 2390.6015625
+velocity: 2390.55224609375
+velocity: 2390.69970703125
+
+goo.gle/debugproto    
+velocity: 2491.117431640625
+velocity: 2490.787109375
+velocity: 2490.69287109375
+velocity: 2491.023193359375
+
+goo.gle/debugproto    
+velocity: 2546.168212890625
+velocity: 2546.02978515625
+velocity: 2545.9375
+velocity: 2546.075927734375
+
+goo.gle/debugproto    
+velocity: 2593.8095703125
+velocity: 2593.85498046875
+velocity: 2593.764404296875
+velocity: 2593.718994140625
+
+goo.gle/debugproto    
+velocity: 2634.287353515625
+velocity: 2634.153564453125
+velocity: 2634.064453125
+velocity: 2634.1982421875
+
+goo.gle/debugproto    
+velocity: 2660.82763671875
+velocity: 2661.13671875
+velocity: 2661.13671875
+velocity: 2660.82763671875
+
+goo.gle/debugproto    
+velocity: 2680.2314453125
+velocity: 2679.9248046875
+velocity: 2679.880859375
+velocity: 2680.187744140625
+
+goo.gle/debugproto    
+velocity: 2684.06494140625
+velocity: 2684.371337890625
+velocity: 2684.32763671875
+velocity: 2684.02099609375
+
+goo.gle/debugproto    
+velocity: 2674.28466796875
+velocity: 2674.064697265625
+velocity: 2674.02099609375
+velocity: 2674.24072265625
+
+goo.gle/debugproto    
+velocity: 2652.60107421875
+velocity: 2652.379638671875
+velocity: 2652.335205078125
+velocity: 2652.556884765625
+
+goo.gle/debugproto    
+velocity: 2637.1630859375
+velocity: 2636.8955078125
+velocity: 2636.85107421875
+velocity: 2637.118408203125
+
+goo.gle/debugproto    
+velocity: 2528.5478515625
+velocity: 2528.501220703125
+velocity: 2528.59423828125
+velocity: 2528.640625
+
+goo.gle/debugproto    
+velocity: 2460.720458984375
+velocity: 2460.625
+velocity: 2460.481689453125
+velocity: 2460.5771484375
+
+goo.gle/debugproto    
+velocity: 2366.270263671875
+velocity: 2366.5185546875
+velocity: 2366.915771484375
+velocity: 2366.66748046875
+
+goo.gle/debugproto    
+velocity: 2258.726806640625
+velocity: 2258.57080078125
+velocity: 2258.36279296875
+velocity: 2258.518798828125
+
+goo.gle/debugproto    
+velocity: 2127.708251953125
+velocity: 2127.59765625
+velocity: 2127.321533203125
+velocity: 2127.431884765625
+
+goo.gle/debugproto    
+velocity: 1984.435302734375
+velocity: 1984.4945068359375
+velocity: 1984.5537109375
+velocity: 1984.4945068359375
+
+goo.gle/debugproto    
+velocity: 1823.966064453125
+velocity: 1823.966064453125
+velocity: 1823.966064453125
+velocity: 1823.966064453125
+
+goo.gle/debugproto    
+velocity: 1651.576904296875
+velocity: 1651.576904296875
+velocity: 1651.576904296875
+velocity: 1651.576904296875
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1533.1798095703125
+velocity: 1533.1798095703125
+velocity: 1532.7965087890625
+velocity: 1532.7965087890625
+
+goo.gle/debugproto    
+velocity: 1532.7965087890625
+velocity: 1532.7965087890625
+velocity: 1533.1798095703125
+velocity: 1533.1798095703125
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1533.1031494140625
+velocity: 1533.1031494140625
+velocity: 1532.8731689453125
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1533.2181396484375
+velocity: 1532.7581787109375
+velocity: 1532.7581787109375
+velocity: 1533.2181396484375
+
+goo.gle/debugproto    
+velocity: 1532.7198486328125
+velocity: 1533.25634765625
+velocity: 1533.25634765625
+velocity: 1532.7198486328125
+
+goo.gle/debugproto    
+velocity: 1532.8348388671875
+velocity: 1533.141357421875
+velocity: 1533.141357421875
+velocity: 1532.8348388671875
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.9114990234375
+velocity: 1532.988037109375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1532.6048583984375
+velocity: 1533.294677734375
+velocity: 1533.371337890625
+velocity: 1532.6815185546875
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1532.8731689453125
+velocity: 1533.1031494140625
+velocity: 1533.1031494140625
+
+goo.gle/debugproto    
+velocity: 1533.2181396484375
+velocity: 1533.294677734375
+velocity: 1532.7581787109375
+velocity: 1532.6815185546875
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1533.1031494140625
+velocity: 1532.9498291015625
+velocity: 1532.8731689453125
+
+goo.gle/debugproto    
+velocity: 1532.7581787109375
+velocity: 1532.9114990234375
+velocity: 1533.2181396484375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1533.2181396484375
+velocity: 1532.988037109375
+velocity: 1532.7581787109375
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1533.1798095703125
+velocity: 1533.0264892578125
+velocity: 1532.7965087890625
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1532.5665283203125
+velocity: 1533.0264892578125
+velocity: 1533.4095458984375
+
+goo.gle/debugproto    
+velocity: 1533.1031494140625
+velocity: 1532.9498291015625
+velocity: 1532.8731689453125
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1532.7965087890625
+velocity: 1533.25634765625
+velocity: 1533.1798095703125
+velocity: 1532.7198486328125
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1532.6048583984375
+velocity: 1533.371337890625
+velocity: 1533.371337890625
+velocity: 1532.6048583984375
+
+goo.gle/debugproto    
+velocity: 1533.141357421875
+velocity: 1532.8348388671875
+velocity: 1532.8348388671875
+velocity: 1533.141357421875
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.8731689453125
+velocity: 1532.9498291015625
+velocity: 1533.1031494140625
+
+goo.gle/debugproto    
+velocity: 1532.6815185546875
+velocity: 1533.2181396484375
+velocity: 1533.294677734375
+velocity: 1532.7581787109375
+
+goo.gle/debugproto    
+velocity: 1600.8170166015625
+velocity: 1600.670166015625
+velocity: 1600.8170166015625
+velocity: 1600.9637451171875
+
+goo.gle/debugproto    
+velocity: 1715.3377685546875
+velocity: 1715.20068359375
+velocity: 1715.40625
+velocity: 1715.5433349609375
+
+goo.gle/debugproto    
+velocity: 1821.25830078125
+velocity: 1821.8388671875
+velocity: 1821.3873291015625
+velocity: 1820.8065185546875
+
+goo.gle/debugproto    
+velocity: 1930.37841796875
+velocity: 1930.0740966796875
+velocity: 1929.8914794921875
+velocity: 1930.1959228515625
+
+goo.gle/debugproto    
+velocity: 2037.7213134765625
+velocity: 2037.7213134765625
+velocity: 2037.54833984375
+velocity: 2037.54833984375
+
+goo.gle/debugproto    
+velocity: 2140.3994140625
+velocity: 2140.344482421875
+velocity: 2140.179931640625
+velocity: 2140.23486328125
+
+goo.gle/debugproto    
+velocity: 2283.020263671875
+velocity: 2282.917236328125
+velocity: 2283.1748046875
+velocity: 2283.277587890625
+
+goo.gle/debugproto    
+velocity: 2328.4267578125
+velocity: 2328.275390625
+velocity: 2328.023193359375
+velocity: 2328.174560546875
+
+goo.gle/debugproto    
+velocity: 2413.032470703125
+velocity: 2413.373291015625
+velocity: 2413.227294921875
+velocity: 2412.88623046875
+
+goo.gle/debugproto    
+velocity: 2494.958984375
+velocity: 2494.48779296875
+velocity: 2494.58203125
+velocity: 2495.052978515625
+
+goo.gle/debugproto    
+velocity: 2562.10888671875
+velocity: 2562.20068359375
+velocity: 2562.10888671875
+velocity: 2562.01708984375
+
+goo.gle/debugproto    
+velocity: 2619.59375
+velocity: 2619.638671875
+velocity: 2619.548828125
+velocity: 2619.504150390625
+
+goo.gle/debugproto    
+velocity: 2645.815185546875
+velocity: 2645.859375
+velocity: 2645.7705078125
+velocity: 2645.72607421875
+
+goo.gle/debugproto    
+velocity: 2701.366943359375
+velocity: 2701.58447265625
+velocity: 2701.58447265625
+velocity: 2701.366943359375
+
+goo.gle/debugproto    
+velocity: 2728.934326171875
+velocity: 2728.934326171875
+velocity: 2728.84814453125
+velocity: 2728.84814453125
+
+goo.gle/debugproto    
+velocity: 2741.135498046875
+velocity: 2741.135498046875
+velocity: 2741.0498046875
+velocity: 2741.0498046875
+
+goo.gle/debugproto    
+velocity: 2726.86669921875
+velocity: 2726.780517578125
+velocity: 2727.168212890625
+velocity: 2727.25439453125
+
+goo.gle/debugproto    
+velocity: 2704.10595703125
+velocity: 2703.9755859375
+velocity: 2703.888671875
+velocity: 2704.01904296875
+
+goo.gle/debugproto    
+velocity: 2665.879150390625
+velocity: 2665.702880859375
+velocity: 2665.041748046875
+velocity: 2665.218017578125
+
+goo.gle/debugproto    
+velocity: 2642.4375
+velocity: 2642.30419921875
+velocity: 2642.30419921875
+velocity: 2642.4375
+
+goo.gle/debugproto    
+velocity: 2545.7529296875
+velocity: 2545.7529296875
+velocity: 2546.122314453125
+velocity: 2546.122314453125
+
+goo.gle/debugproto    
+velocity: 2461.9619140625
+velocity: 2462.200439453125
+velocity: 2462.057373046875
+velocity: 2461.818603515625
+
+goo.gle/debugproto    
+velocity: 2363.438232421875
+velocity: 2363.189697265625
+velocity: 2362.99072265625
+velocity: 2363.239501953125
+
+goo.gle/debugproto    
+velocity: 2250.831787109375
+velocity: 2250.779541015625
+velocity: 2250.884033203125
+velocity: 2250.93603515625
+
+goo.gle/debugproto    
+velocity: 2123.119384765625
+velocity: 2122.953369140625
+velocity: 2123.0087890625
+velocity: 2123.1748046875
+
+goo.gle/debugproto    
+velocity: 2053.775146484375
+velocity: 2054.118408203125
+velocity: 2054.175537109375
+velocity: 2053.832275390625
+
+goo.gle/debugproto    
+velocity: 1824.2880859375
+velocity: 1824.0303955078125
+velocity: 1824.0303955078125
+velocity: 1824.2880859375
+
+goo.gle/debugproto    
+velocity: 1651.9324951171875
+velocity: 1652.5726318359375
+velocity: 1652.50146484375
+velocity: 1651.8614501953125
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1533.1798095703125
+velocity: 1533.0264892578125
+velocity: 1532.7965087890625
+
+goo.gle/debugproto    
+velocity: 1533.371337890625
+velocity: 1532.8348388671875
+velocity: 1532.6048583984375
+velocity: 1533.141357421875
+
+goo.gle/debugproto    
+velocity: 1532.7581787109375
+velocity: 1533.5245361328125
+velocity: 1533.2181396484375
+velocity: 1532.451416015625
+
+goo.gle/debugproto    
+velocity: 1532.6048583984375
+velocity: 1532.988037109375
+velocity: 1533.371337890625
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.8731689453125
+velocity: 1532.9498291015625
+velocity: 1533.1031494140625
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1532.5281982421875
+velocity: 1533.371337890625
+velocity: 1533.447998046875
+velocity: 1532.6048583984375
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.8731689453125
+velocity: 1532.9498291015625
+velocity: 1533.1031494140625
+
+goo.gle/debugproto    
+velocity: 1533.1031494140625
+velocity: 1533.25634765625
+velocity: 1532.8731689453125
+velocity: 1532.7198486328125
+
+goo.gle/debugproto    
+velocity: 1533.1798095703125
+velocity: 1532.5665283203125
+velocity: 1532.7965087890625
+velocity: 1533.4095458984375
+
+goo.gle/debugproto    
+velocity: 1532.6048583984375
+velocity: 1533.371337890625
+velocity: 1533.371337890625
+velocity: 1532.6048583984375
+
+goo.gle/debugproto    
+velocity: 1533.1798095703125
+velocity: 1532.7198486328125
+velocity: 1532.7965087890625
+velocity: 1533.25634765625
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1533.371337890625
+velocity: 1533.371337890625
+velocity: 1532.6048583984375
+velocity: 1532.6048583984375
+
+goo.gle/debugproto    
+velocity: 1532.6815185546875
+velocity: 1532.7581787109375
+velocity: 1533.294677734375
+velocity: 1533.2181396484375
+
+goo.gle/debugproto    
+velocity: 1532.7965087890625
+velocity: 1532.9498291015625
+velocity: 1533.1798095703125
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1533.1031494140625
+velocity: 1533.3330078125
+velocity: 1532.8731689453125
+velocity: 1532.6431884765625
+
+goo.gle/debugproto    
+velocity: 1532.5665283203125
+velocity: 1532.8731689453125
+velocity: 1533.4095458984375
+velocity: 1533.1031494140625
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1533.3330078125
+velocity: 1533.0264892578125
+velocity: 1532.6431884765625
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1532.4130859375
+velocity: 1533.1031494140625
+velocity: 1533.5628662109375
+
+goo.gle/debugproto    
+velocity: 1533.25634765625
+velocity: 1533.25634765625
+velocity: 1532.7198486328125
+velocity: 1532.7198486328125
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1532.6048583984375
+velocity: 1532.6048583984375
+velocity: 1533.371337890625
+velocity: 1533.371337890625
+
+goo.gle/debugproto    
+velocity: 1533.1031494140625
+velocity: 1533.1031494140625
+velocity: 1532.8731689453125
+velocity: 1532.8731689453125
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.7581787109375
+velocity: 1533.141357421875
+velocity: 1533.2181396484375
+velocity: 1532.8348388671875
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1532.8731689453125
+velocity: 1533.1031494140625
+velocity: 1533.1031494140625
+
+goo.gle/debugproto    
+velocity: 1533.3330078125
+velocity: 1533.3330078125
+velocity: 1532.6431884765625
+velocity: 1532.6431884765625
+
+goo.gle/debugproto    
+velocity: 1659.0302734375
+velocity: 1659.0302734375
+velocity: 1659.2427978515625
+velocity: 1659.2427978515625
+
+goo.gle/debugproto    
+velocity: 1785.322509765625
+velocity: 1785.256591796875
+velocity: 1785.0592041015625
+velocity: 1785.1251220703125
+
+goo.gle/debugproto    
+velocity: 1843.892333984375
+velocity: 1843.82861328125
+velocity: 1843.5736083984375
+velocity: 1843.6373291015625
+
+goo.gle/debugproto    
+velocity: 2017.9912109375
+velocity: 2017.874755859375
+velocity: 2018.0494384765625
+velocity: 2018.1658935546875
+
+goo.gle/debugproto    
+velocity: 2128.3154296875
+velocity: 2128.205078125
+velocity: 2127.818603515625
+velocity: 2127.928955078125
+
+goo.gle/debugproto    
+velocity: 2235.69384765625
+velocity: 2236.061767578125
+velocity: 2235.95654296875
+velocity: 2235.588623046875
+
+goo.gle/debugproto    
+velocity: 2331.629150390625
+velocity: 2331.2763671875
+velocity: 2331.175537109375
+velocity: 2331.5283203125
+
+goo.gle/debugproto    
+velocity: 2422.266845703125
+velocity: 2422.6064453125
+velocity: 2422.50927734375
+velocity: 2422.169677734375
+
+goo.gle/debugproto    
+velocity: 2507.993896484375
+velocity: 2508.087646484375
+velocity: 2508.36865234375
+velocity: 2508.27490234375
+
+goo.gle/debugproto    
+velocity: 2584.506103515625
+velocity: 2584.59716796875
+velocity: 2584.460693359375
+velocity: 2584.36962890625
+
+goo.gle/debugproto    
+velocity: 2648.899658203125
+velocity: 2648.944091796875
+velocity: 2649.299072265625
+velocity: 2649.254638671875
+
+goo.gle/debugproto    
+velocity: 2690.427001953125
+velocity: 2689.990234375
+velocity: 2689.640625
+velocity: 2690.077392578125
+
+goo.gle/debugproto    
+velocity: 2727.728271484375
+velocity: 2727.900634765625
+velocity: 2727.857421875
+velocity: 2727.685302734375
+
+goo.gle/debugproto    
+velocity: 2749.738037109375
+velocity: 2749.6953125
+velocity: 2749.5244140625
+velocity: 2749.567138671875
+
+goo.gle/debugproto    
+velocity: 2763.824951171875
+velocity: 2763.782470703125
+velocity: 2763.782470703125
+velocity: 2763.824951171875
+
+goo.gle/debugproto    
+velocity: 2764.058837890625
+velocity: 2763.931396484375
+velocity: 2763.846435546875
+velocity: 2763.973876953125
+
+goo.gle/debugproto    
+velocity: 2749.994384765625
+velocity: 2749.823486328125
+velocity: 2749.908935546875
+velocity: 2750.079833984375
+
+goo.gle/debugproto    
+velocity: 2721.6474609375
+velocity: 2721.73388671875
+velocity: 2721.8203125
+velocity: 2721.73388671875
+
+goo.gle/debugproto    
+velocity: 2679.201171875
+velocity: 2679.201171875
+velocity: 2678.93798828125
+velocity: 2678.93798828125
+
+goo.gle/debugproto    
+velocity: 2620.042236328125
+velocity: 2620.042236328125
+velocity: 2620.132080078125
+velocity: 2620.132080078125
+
+goo.gle/debugproto    
+velocity: 2550.134033203125
+velocity: 2550.45654296875
+velocity: 2550.45654296875
+velocity: 2550.134033203125
+
+goo.gle/debugproto    
+velocity: 2466.27734375
+velocity: 2466.134521484375
+velocity: 2466.134521484375
+velocity: 2466.27734375
+
+goo.gle/debugproto    
+velocity: 2367.85888671875
+velocity: 2367.759521484375
+velocity: 2367.7099609375
+velocity: 2367.809326171875
+
+goo.gle/debugproto    
+velocity: 2256.879150390625
+velocity: 2257.347900390625
+velocity: 2257.295654296875
+velocity: 2256.8271484375
+
+goo.gle/debugproto    
+velocity: 2128.867431640625
+velocity: 2129.033203125
+velocity: 2128.867431640625
+velocity: 2128.701904296875
+
+goo.gle/debugproto    
+velocity: 2054.089599609375
+velocity: 2054.26123046875
+velocity: 2054.089599609375
+velocity: 2053.91796875
+
+goo.gle/debugproto    
+velocity: 1798.04541015625
+velocity: 1797.849365234375
+velocity: 1797.457275390625
+velocity: 1797.6533203125
+
+goo.gle/debugproto    
+velocity: 1597.988525390625
+velocity: 1598.4295654296875
+velocity: 1598.4295654296875
+velocity: 1597.988525390625
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1533.1798095703125
+velocity: 1533.1031494140625
+velocity: 1532.7965087890625
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1532.6048583984375
+velocity: 1533.0648193359375
+velocity: 1533.371337890625
+
+goo.gle/debugproto    
+velocity: 1532.6815185546875
+velocity: 1533.371337890625
+velocity: 1533.294677734375
+velocity: 1532.6048583984375
+
+goo.gle/debugproto    
+velocity: 1532.8348388671875
+velocity: 1533.2181396484375
+velocity: 1533.141357421875
+velocity: 1532.7581787109375
+
+goo.gle/debugproto    
+velocity: 1533.141357421875
+velocity: 1532.9114990234375
+velocity: 1532.8348388671875
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1532.7198486328125
+velocity: 1532.7198486328125
+velocity: 1533.25634765625
+velocity: 1533.25634765625
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1533.1798095703125
+velocity: 1532.9498291015625
+velocity: 1532.7965087890625
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1533.1031494140625
+velocity: 1533.0264892578125
+velocity: 1532.8731689453125
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1533.1798095703125
+velocity: 1533.1031494140625
+velocity: 1532.7965087890625
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1532.8348388671875
+velocity: 1533.0648193359375
+velocity: 1533.141357421875
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1532.988037109375
+velocity: 1533.0648193359375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.8348388671875
+velocity: 1532.988037109375
+velocity: 1533.141357421875
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.7198486328125
+velocity: 1533.0264892578125
+velocity: 1533.25634765625
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1532.6048583984375
+velocity: 1532.988037109375
+velocity: 1533.371337890625
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1533.1798095703125
+velocity: 1532.8731689453125
+velocity: 1532.7965087890625
+velocity: 1533.1031494140625
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1532.7965087890625
+velocity: 1533.1798095703125
+velocity: 1533.1798095703125
+velocity: 1532.7965087890625
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1533.1031494140625
+velocity: 1533.1031494140625
+velocity: 1532.8731689453125
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1532.9498291015625
+velocity: 1533.1031494140625
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1532.6815185546875
+velocity: 1532.9114990234375
+velocity: 1533.294677734375
+
+goo.gle/debugproto    
+velocity: 1532.6431884765625
+velocity: 1533.1031494140625
+velocity: 1533.3330078125
+velocity: 1532.8731689453125
+
+goo.gle/debugproto    
+velocity: 1533.294677734375
+velocity: 1533.294677734375
+velocity: 1532.6815185546875
+velocity: 1532.6815185546875
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1532.7965087890625
+velocity: 1532.8731689453125
+velocity: 1533.1798095703125
+velocity: 1533.1031494140625
+
+goo.gle/debugproto    
+velocity: 1533.6395263671875
+velocity: 1532.8731689453125
+velocity: 1532.33642578125
+velocity: 1533.1031494140625
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1532.5665283203125
+velocity: 1532.5665283203125
+velocity: 1533.4095458984375
+velocity: 1533.4095458984375
+
+goo.gle/debugproto    
+velocity: 1606.49560546875
+velocity: 1606.641845703125
+velocity: 1606.5687255859375
+velocity: 1606.42236328125
+
+goo.gle/debugproto    
+velocity: 1715.2691650390625
+velocity: 1715.20068359375
+velocity: 1715.20068359375
+velocity: 1715.2691650390625
+
+goo.gle/debugproto    
+velocity: 1823.3216552734375
+velocity: 1823.2572021484375
+velocity: 1823.2572021484375
+velocity: 1823.3216552734375
+
+goo.gle/debugproto    
+velocity: 1876.3612060546875
+velocity: 1876.2359619140625
+velocity: 1876.17333984375
+velocity: 1876.298583984375
+
+goo.gle/debugproto    
+velocity: 2030.008544921875
+velocity: 2030.1822509765625
+velocity: 2030.1243896484375
+velocity: 2029.95068359375
+
+goo.gle/debugproto    
+velocity: 2129.005615234375
+velocity: 2128.83984375
+velocity: 2128.78466796875
+velocity: 2128.950439453125
+
+goo.gle/debugproto    
+velocity: 2223.49365234375
+velocity: 2223.863525390625
+velocity: 2223.757568359375
+velocity: 2223.3876953125
+
+goo.gle/debugproto    
+velocity: 2314.88818359375
+velocity: 2314.98974609375
+velocity: 2314.98974609375
+velocity: 2314.88818359375
+
+goo.gle/debugproto    
+velocity: 2398.257080078125
+velocity: 2398.10986328125
+velocity: 2397.718017578125
+velocity: 2397.864990234375
+
+goo.gle/debugproto    
+velocity: 2489.34814453125
+velocity: 2489.34814453125
+velocity: 2489.253662109375
+velocity: 2489.253662109375
+
+goo.gle/debugproto    
+velocity: 2547.760009765625
+velocity: 2547.760009765625
+velocity: 2548.03662109375
+velocity: 2548.03662109375
+
+goo.gle/debugproto    
+velocity: 2610.224609375
+velocity: 2610.224609375
+velocity: 2610.04443359375
+velocity: 2610.04443359375
+
+goo.gle/debugproto    
+velocity: 2665.085693359375
+velocity: 2665.085693359375
+velocity: 2665.35009765625
+velocity: 2665.35009765625
+
+goo.gle/debugproto    
+velocity: 2711.26611328125
+velocity: 2711.179443359375
+velocity: 2710.78955078125
+velocity: 2710.876220703125
+
+goo.gle/debugproto    
+velocity: 2743.7705078125
+velocity: 2743.64208984375
+velocity: 2743.941650390625
+velocity: 2744.070068359375
+
+goo.gle/debugproto    
+velocity: 2764.377685546875
+velocity: 2764.462646484375
+velocity: 2764.505126953125
+velocity: 2764.420166015625
+
+goo.gle/debugproto    
+velocity: 2773.416748046875
+velocity: 2773.458984375
+velocity: 2773.50146484375
+velocity: 2773.458984375
+
+goo.gle/debugproto    
+velocity: 2770.958251953125
+velocity: 2770.958251953125
+velocity: 2771.17041015625
+velocity: 2771.17041015625
+
+goo.gle/debugproto    
+velocity: 2753.26123046875
+velocity: 2753.26123046875
+velocity: 2753.218505859375
+velocity: 2753.218505859375
+
+goo.gle/debugproto    
+velocity: 2722.705078125
+velocity: 2722.705078125
+velocity: 2722.661865234375
+velocity: 2722.661865234375
+
+goo.gle/debugproto    
+velocity: 2677.643798828125
+velocity: 2677.863037109375
+velocity: 2677.775390625
+velocity: 2677.555908203125
+
+goo.gle/debugproto    
+velocity: 2585.142578125
+velocity: 2585.006103515625
+velocity: 2584.915283203125
+velocity: 2585.0517578125
+
+goo.gle/debugproto    
+velocity: 2506.212890625
+velocity: 2506.353515625
+velocity: 2506.400390625
+velocity: 2506.259765625
+
+goo.gle/debugproto    
+velocity: 2461.69921875
+velocity: 2461.84228515625
+velocity: 2461.93798828125
+velocity: 2461.794677734375
+
+goo.gle/debugproto    
+velocity: 2362.29443359375
+velocity: 2362.34423828125
+velocity: 2361.796875
+velocity: 2361.747314453125
+
+goo.gle/debugproto    
+velocity: 2184.279541015625
+velocity: 2184.656005859375
+velocity: 2184.656005859375
+velocity: 2184.279541015625
+
+goo.gle/debugproto    
+velocity: 2117.244873046875
+velocity: 2117.355712890625
+velocity: 2117.355712890625
+velocity: 2117.244873046875
+
+goo.gle/debugproto    
+velocity: 1889.093017578125
+velocity: 1889.279541015625
+velocity: 1889.9014892578125
+velocity: 1889.71484375
+
+goo.gle/debugproto    
+velocity: 1714.1385498046875
+velocity: 1714.20703125
+velocity: 1714.0699462890625
+velocity: 1714.0013427734375
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1532.7965087890625
+velocity: 1533.1798095703125
+velocity: 1533.1798095703125
+velocity: 1532.7965087890625
+
+goo.gle/debugproto    
+velocity: 1533.141357421875
+velocity: 1532.9114990234375
+velocity: 1532.8348388671875
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1532.8348388671875
+velocity: 1533.141357421875
+velocity: 1533.141357421875
+velocity: 1532.8348388671875
+
+goo.gle/debugproto    
+velocity: 1532.298095703125
+velocity: 1532.6815185546875
+velocity: 1533.677734375
+velocity: 1533.294677734375
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.7965087890625
+velocity: 1532.9498291015625
+velocity: 1533.1798095703125
+
+goo.gle/debugproto    
+velocity: 1533.1031494140625
+velocity: 1533.1798095703125
+velocity: 1532.8731689453125
+velocity: 1532.7965087890625
+
+goo.gle/debugproto    
+velocity: 1532.6048583984375
+velocity: 1532.7581787109375
+velocity: 1533.371337890625
+velocity: 1533.2181396484375
+
+goo.gle/debugproto    
+velocity: 1532.6815185546875
+velocity: 1532.9114990234375
+velocity: 1533.294677734375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1533.25634765625
+velocity: 1533.0264892578125
+velocity: 1532.7198486328125
+
+goo.gle/debugproto    
+velocity: 1533.141357421875
+velocity: 1532.8348388671875
+velocity: 1532.8348388671875
+velocity: 1533.141357421875
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1532.8348388671875
+velocity: 1533.0648193359375
+velocity: 1533.141357421875
+
+goo.gle/debugproto    
+velocity: 1532.8348388671875
+velocity: 1532.8348388671875
+velocity: 1533.141357421875
+velocity: 1533.141357421875
+
+goo.gle/debugproto    
+velocity: 1532.7965087890625
+velocity: 1532.7965087890625
+velocity: 1533.1798095703125
+velocity: 1533.1798095703125
+
+goo.gle/debugproto    
+velocity: 1533.2181396484375
+velocity: 1533.2181396484375
+velocity: 1532.7581787109375
+velocity: 1532.7581787109375
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1533.447998046875
+velocity: 1533.294677734375
+velocity: 1532.5281982421875
+velocity: 1532.6815185546875
+
+goo.gle/debugproto    
+velocity: 1533.1031494140625
+velocity: 1532.9498291015625
+velocity: 1532.8731689453125
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1532.6431884765625
+velocity: 1533.1031494140625
+velocity: 1533.3330078125
+
+goo.gle/debugproto    
+velocity: 1533.1798095703125
+velocity: 1532.9498291015625
+velocity: 1532.7965087890625
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1532.6815185546875
+velocity: 1533.294677734375
+velocity: 1533.294677734375
+velocity: 1532.6815185546875
+
+goo.gle/debugproto    
+velocity: 1533.3330078125
+velocity: 1532.7198486328125
+velocity: 1532.6431884765625
+velocity: 1533.25634765625
+
+goo.gle/debugproto    
+velocity: 1533.1798095703125
+velocity: 1532.8731689453125
+velocity: 1532.7965087890625
+velocity: 1533.1031494140625
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1533.141357421875
+velocity: 1532.988037109375
+velocity: 1532.8348388671875
+
+goo.gle/debugproto    
+velocity: 1622
+velocity: 1621.4927978515625
+velocity: 1621.347900390625
+velocity: 1621.8551025390625
+
+goo.gle/debugproto    
+velocity: 1741.6796875
+velocity: 1741.882080078125
+velocity: 1742.21923828125
+velocity: 1742.0169677734375
+
+goo.gle/debugproto    
+velocity: 1858.9654541015625
+velocity: 1859.0286865234375
+velocity: 1858.8389892578125
+velocity: 1858.77587890625
+
+goo.gle/debugproto    
+velocity: 1970.590576171875
+velocity: 1969.994140625
+velocity: 1969.755615234375
+velocity: 1970.35205078125
+
+goo.gle/debugproto    
+velocity: 2078.0615234375
+velocity: 2078.0615234375
+velocity: 2078.174560546875
+velocity: 2078.174560546875
+
+goo.gle/debugproto    
+velocity: 2181.72265625
+velocity: 2181.72265625
+velocity: 2181.453369140625
+velocity: 2181.453369140625
+
+goo.gle/debugproto    
+velocity: 2279.904296875
+velocity: 2279.904296875
+velocity: 2280.007568359375
+velocity: 2280.007568359375
+
+goo.gle/debugproto    
+velocity: 2372.518798828125
+velocity: 2372.518798828125
+velocity: 2372.568359375
+velocity: 2372.568359375
+
+goo.gle/debugproto    
+velocity: 2458.857666015625
+velocity: 2458.809814453125
+velocity: 2458.475341796875
+velocity: 2458.52294921875
+
+goo.gle/debugproto    
+velocity: 2577.74609375
+velocity: 2577.65478515625
+velocity: 2577.65478515625
+velocity: 2577.74609375
+
+goo.gle/debugproto    
+velocity: 2647.63525390625
+velocity: 2647.63525390625
+velocity: 2647.63525390625
+velocity: 2647.63525390625
+
+goo.gle/debugproto    
+velocity: 2701.1494140625
+velocity: 2701.280029296875
+velocity: 2701.236572265625
+velocity: 2701.10595703125
+
+goo.gle/debugproto    
+velocity: 2748.926025390625
+velocity: 2748.755126953125
+velocity: 2748.669677734375
+velocity: 2748.840576171875
+
+goo.gle/debugproto    
+velocity: 2774.856689453125
+velocity: 2774.98388671875
+velocity: 2774.856689453125
+velocity: 2774.729736328125
+
+goo.gle/debugproto    
+velocity: 2774.6875
+velocity: 2774.814453125
+velocity: 2774.98388671875
+velocity: 2774.856689453125
+
+goo.gle/debugproto    
+velocity: 2774.98388671875
+velocity: 2774.98388671875
+velocity: 2774.98388671875
+velocity: 2774.98388671875
+
+goo.gle/debugproto    
+velocity: 2774.772216796875
+velocity: 2774.772216796875
+velocity: 2774.98388671875
+velocity: 2774.98388671875
+
+goo.gle/debugproto    
+velocity: 2774.64501953125
+velocity: 2774.98388671875
+velocity: 2774.98388671875
+velocity: 2774.64501953125
+
+goo.gle/debugproto    
+velocity: 2751.404052734375
+velocity: 2751.404052734375
+velocity: 2751.361572265625
+velocity: 2751.361572265625
+
+goo.gle/debugproto    
+velocity: 2694.529296875
+velocity: 2694.529296875
+velocity: 2694.747314453125
+velocity: 2694.747314453125
+
+goo.gle/debugproto    
+velocity: 2623.98583984375
+velocity: 2623.98583984375
+velocity: 2623.8515625
+velocity: 2623.8515625
+
+goo.gle/debugproto    
+velocity: 2537.89404296875
+velocity: 2537.9404296875
+velocity: 2537.89404296875
+velocity: 2537.847900390625
+
+goo.gle/debugproto    
+velocity: 2436.655517578125
+velocity: 2436.655517578125
+velocity: 2436.800048828125
+velocity: 2436.800048828125
+
+goo.gle/debugproto    
+velocity: 2321.756103515625
+velocity: 2321.756103515625
+velocity: 2321.90771484375
+velocity: 2321.90771484375
+
+goo.gle/debugproto    
+velocity: 2190.457275390625
+velocity: 2190.510986328125
+velocity: 2190.349853515625
+velocity: 2190.296142578125
+
+goo.gle/debugproto    
+velocity: 2035.3267822265625
+velocity: 2035.3846435546875
+velocity: 2035.615478515625
+velocity: 2035.557861328125
+
+goo.gle/debugproto    
+velocity: 1859.31298828125
+velocity: 1859.439453125
+velocity: 1859.692138671875
+velocity: 1859.56591796875
+
+goo.gle/debugproto    
+velocity: 1665.8863525390625
+velocity: 1666.0274658203125
+velocity: 1665.6041259765625
+velocity: 1665.463134765625
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1533.1798095703125
+velocity: 1533.1031494140625
+velocity: 1532.7965087890625
+
+goo.gle/debugproto    
+velocity: 1532.7198486328125
+velocity: 1532.6431884765625
+velocity: 1533.25634765625
+velocity: 1533.3330078125
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1532.8348388671875
+velocity: 1532.9114990234375
+velocity: 1533.141357421875
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1533.141357421875
+velocity: 1532.988037109375
+velocity: 1532.8348388671875
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1533.1798095703125
+velocity: 1533.0264892578125
+velocity: 1532.7965087890625
+
+goo.gle/debugproto    
+velocity: 1532.5281982421875
+velocity: 1532.8348388671875
+velocity: 1533.447998046875
+velocity: 1533.141357421875
+
+goo.gle/debugproto    
+velocity: 1532.7965087890625
+velocity: 1533.1798095703125
+velocity: 1533.1798095703125
+velocity: 1532.7965087890625
+
+goo.gle/debugproto    
+velocity: 1533.1798095703125
+velocity: 1532.7198486328125
+velocity: 1532.7965087890625
+velocity: 1533.25634765625
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1532.8348388671875
+velocity: 1532.8348388671875
+velocity: 1533.141357421875
+velocity: 1533.141357421875
+
+goo.gle/debugproto    
+velocity: 1532.7965087890625
+velocity: 1532.7965087890625
+velocity: 1533.1798095703125
+velocity: 1533.1798095703125
+
+goo.gle/debugproto    
+velocity: 1533.1798095703125
+velocity: 1533.1798095703125
+velocity: 1532.7965087890625
+velocity: 1532.7965087890625
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1533.1031494140625
+velocity: 1532.8731689453125
+velocity: 1532.8731689453125
+velocity: 1533.1031494140625
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1533.1031494140625
+velocity: 1532.9498291015625
+velocity: 1532.8731689453125
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1533.1798095703125
+velocity: 1533.1031494140625
+velocity: 1532.7965087890625
+
+goo.gle/debugproto    
+velocity: 1533.1798095703125
+velocity: 1532.9498291015625
+velocity: 1532.7965087890625
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1532.7581787109375
+velocity: 1533.371337890625
+velocity: 1533.2181396484375
+velocity: 1532.6048583984375
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1532.298095703125
+velocity: 1533.0648193359375
+velocity: 1533.677734375
+
+goo.gle/debugproto    
+velocity: 1533.371337890625
+velocity: 1533.0648193359375
+velocity: 1532.6048583984375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1533.141357421875
+velocity: 1532.988037109375
+velocity: 1532.8348388671875
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.2598876953125
+velocity: 1532.9498291015625
+velocity: 1533.7161865234375
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1533.5245361328125
+velocity: 1532.9114990234375
+velocity: 1532.451416015625
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1533.141357421875
+velocity: 1532.9114990234375
+velocity: 1532.8348388671875
+
+goo.gle/debugproto    
+velocity: 1532.7965087890625
+velocity: 1532.8731689453125
+velocity: 1533.1798095703125
+velocity: 1533.1031494140625
+
+goo.gle/debugproto    
+velocity: 1533.1798095703125
+velocity: 1533.1031494140625
+velocity: 1532.7965087890625
+velocity: 1532.8731689453125
+
+goo.gle/debugproto    
+velocity: 1533.1031494140625
+velocity: 1532.33642578125
+velocity: 1532.8731689453125
+velocity: 1533.6395263671875
+
+goo.gle/debugproto    
+velocity: 1532.6815185546875
+velocity: 1532.988037109375
+velocity: 1533.294677734375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1532.9498291015625
+velocity: 1533.1031494140625
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1533.447998046875
+velocity: 1533.8309326171875
+velocity: 1532.5281982421875
+velocity: 1532.144775390625
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1548.35595703125
+velocity: 1548.35595703125
+velocity: 1548.35595703125
+velocity: 1548.35595703125
+
+goo.gle/debugproto    
+velocity: 1691.9910888671875
+velocity: 1691.9217529296875
+velocity: 1691.9217529296875
+velocity: 1691.9910888671875
+
+goo.gle/debugproto    
+velocity: 1834.2445068359375
+velocity: 1834.1805419921875
+velocity: 1834.1805419921875
+velocity: 1834.2445068359375
+
+goo.gle/debugproto    
+velocity: 1971.4549560546875
+velocity: 1971.395263671875
+velocity: 1971.395263671875
+velocity: 1971.4549560546875
+
+goo.gle/debugproto    
+velocity: 2101.228515625
+velocity: 2101.78759765625
+velocity: 2101.78759765625
+velocity: 2101.228515625
+
+goo.gle/debugproto    
+velocity: 2223.2822265625
+velocity: 2223.07080078125
+velocity: 2223.07080078125
+velocity: 2223.2822265625
+
+goo.gle/debugproto    
+velocity: 2335.6572265625
+velocity: 2335.556640625
+velocity: 2335.556640625
+velocity: 2335.6572265625
+
+goo.gle/debugproto    
+velocity: 2482.589111328125
+velocity: 2482.494384765625
+velocity: 2482.494384765625
+velocity: 2482.589111328125
+
+goo.gle/debugproto    
+velocity: 2527.641357421875
+velocity: 2527.54833984375
+velocity: 2527.54833984375
+velocity: 2527.641357421875
+
+goo.gle/debugproto    
+velocity: 2604.4111328125
+velocity: 2604.63671875
+velocity: 2604.63671875
+velocity: 2604.4111328125
+
+goo.gle/debugproto    
+velocity: 2670.041259765625
+velocity: 2669.777099609375
+velocity: 2669.733154296875
+velocity: 2669.9970703125
+
+goo.gle/debugproto    
+velocity: 2736.673828125
+velocity: 2736.97412109375
+velocity: 2737.403564453125
+velocity: 2737.10302734375
+
+goo.gle/debugproto    
+velocity: 2753.517333984375
+velocity: 2753.645263671875
+velocity: 2753.474609375
+velocity: 2753.346435546875
+
+goo.gle/debugproto    
+velocity: 2774.98388671875
+velocity: 2774.729736328125
+velocity: 2774.64501953125
+velocity: 2774.899169921875
+
+goo.gle/debugproto    
+velocity: 2774.263916015625
+velocity: 2774.602783203125
+velocity: 2774.98388671875
+velocity: 2774.64501953125
+
+goo.gle/debugproto    
+velocity: 2774.98388671875
+velocity: 2774.64501953125
+velocity: 2774.263916015625
+velocity: 2774.602783203125
+
+goo.gle/debugproto    
+velocity: 2774.306396484375
+velocity: 2774.6875
+velocity: 2774.98388671875
+velocity: 2774.602783203125
+
+goo.gle/debugproto    
+velocity: 2768.158203125
+velocity: 2768.285400390625
+velocity: 2768.412841796875
+velocity: 2768.285400390625
+
+goo.gle/debugproto    
+velocity: 2734.612060546875
+velocity: 2734.483154296875
+velocity: 2734.311279296875
+velocity: 2734.440185546875
+
+goo.gle/debugproto    
+velocity: 2686.602783203125
+velocity: 2686.95263671875
+velocity: 2687.12744140625
+velocity: 2686.777587890625
+
+goo.gle/debugproto    
+velocity: 2617.125732421875
+velocity: 2616.856201171875
+velocity: 2616.901123046875
+velocity: 2617.17041015625
+
+goo.gle/debugproto    
+velocity: 2539.4677734375
+velocity: 2539.42138671875
+velocity: 2539.560302734375
+velocity: 2539.606689453125
+
+goo.gle/debugproto    
+velocity: 2498.488525390625
+velocity: 2498.911865234375
+velocity: 2499.099853515625
+velocity: 2498.6767578125
+
+goo.gle/debugproto    
+velocity: 2394.57958984375
+velocity: 2394.530517578125
+velocity: 2394.334228515625
+velocity: 2394.38330078125
+
+goo.gle/debugproto    
+velocity: 2285.875
+velocity: 2285.875
+velocity: 2285.772216796875
+velocity: 2285.772216796875
+
+goo.gle/debugproto    
+velocity: 2086.55419921875
+velocity: 2086.6103515625
+velocity: 2087.17333984375
+velocity: 2087.116943359375
+
+goo.gle/debugproto    
+velocity: 1934.9990234375
+velocity: 1935.1204833984375
+velocity: 1934.81689453125
+velocity: 1934.6954345703125
+
+goo.gle/debugproto    
+velocity: 1760.80224609375
+velocity: 1761.00244140625
+velocity: 1761.00244140625
+velocity: 1760.80224609375
+
+goo.gle/debugproto    
+velocity: 1565.2628173828125
+velocity: 1565.56298828125
+velocity: 1565.56298828125
+velocity: 1565.2628173828125
+
+goo.gle/debugproto    
+velocity: 1533.1798095703125
+velocity: 1532.7965087890625
+velocity: 1532.7965087890625
+velocity: 1533.1798095703125
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1532.8731689453125
+velocity: 1533.1031494140625
+velocity: 1533.1031494140625
+
+goo.gle/debugproto    
+velocity: 1532.8348388671875
+velocity: 1532.8348388671875
+velocity: 1533.141357421875
+velocity: 1533.141357421875
+
+goo.gle/debugproto    
+velocity: 1532.7965087890625
+velocity: 1532.7965087890625
+velocity: 1533.1798095703125
+velocity: 1533.1798095703125
+
+goo.gle/debugproto    
+velocity: 1533.1798095703125
+velocity: 1533.1798095703125
+velocity: 1532.7965087890625
+velocity: 1532.7965087890625
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.7965087890625
+velocity: 1532.7965087890625
+velocity: 1533.1798095703125
+velocity: 1533.1798095703125
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1532.988037109375
+velocity: 1532.9114990234375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1532.988037109375
+velocity: 1532.9114990234375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1533.1031494140625
+velocity: 1532.9498291015625
+velocity: 1532.8731689453125
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1533.141357421875
+velocity: 1532.9114990234375
+velocity: 1532.8348388671875
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1532.7581787109375
+velocity: 1532.9114990234375
+velocity: 1533.2181396484375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1533.0648193359375
+velocity: 1532.988037109375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1533.4095458984375
+velocity: 1532.7965087890625
+velocity: 1532.5665283203125
+velocity: 1533.1798095703125
+
+goo.gle/debugproto    
+velocity: 1532.6431884765625
+velocity: 1533.1031494140625
+velocity: 1533.3330078125
+velocity: 1532.8731689453125
+
+goo.gle/debugproto    
+velocity: 1533.3330078125
+velocity: 1533.3330078125
+velocity: 1532.6431884765625
+velocity: 1532.6431884765625
+
+goo.gle/debugproto    
+velocity: 1533.141357421875
+velocity: 1533.141357421875
+velocity: 1532.8348388671875
+velocity: 1532.8348388671875
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1533.371337890625
+velocity: 1533.371337890625
+velocity: 1532.6048583984375
+velocity: 1532.6048583984375
+
+goo.gle/debugproto    
+velocity: 1532.7965087890625
+velocity: 1532.7198486328125
+velocity: 1533.1798095703125
+velocity: 1533.25634765625
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.8731689453125
+velocity: 1532.9498291015625
+velocity: 1533.1031494140625
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.8731689453125
+velocity: 1532.9498291015625
+velocity: 1533.1031494140625
+
+goo.gle/debugproto    
+velocity: 1533.447998046875
+velocity: 1533.2181396484375
+velocity: 1532.5281982421875
+velocity: 1532.7581787109375
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1533.3330078125
+velocity: 1532.6431884765625
+velocity: 1532.6431884765625
+velocity: 1533.3330078125
+
+goo.gle/debugproto    
+velocity: 1532.7198486328125
+velocity: 1533.25634765625
+velocity: 1533.25634765625
+velocity: 1532.7198486328125
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1533.0648193359375
+velocity: 1532.988037109375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1540.672119140625
+velocity: 1540.82470703125
+velocity: 1540.7484130859375
+velocity: 1540.595947265625
+
+goo.gle/debugproto    
+velocity: 1664.5455322265625
+velocity: 1664.6868896484375
+velocity: 1664.5455322265625
+velocity: 1664.4044189453125
+
+goo.gle/debugproto    
+velocity: 1736.9844970703125
+velocity: 1736.5108642578125
+velocity: 1736.307861328125
+velocity: 1736.7816162109375
+
+goo.gle/debugproto    
+velocity: 1914.70166015625
+velocity: 1914.762939453125
+velocity: 1914.947021484375
+velocity: 1914.8857421875
+
+goo.gle/debugproto    
+velocity: 2063.535400390625
+velocity: 2063.6494140625
+velocity: 2063.478515625
+velocity: 2063.364501953125
+
+goo.gle/debugproto    
+velocity: 2171.438720703125
+velocity: 2171.005615234375
+velocity: 2171.384521484375
+velocity: 2171.8173828125
+
+goo.gle/debugproto    
+velocity: 2272.93603515625
+velocity: 2273.091064453125
+velocity: 2272.6259765625
+velocity: 2272.470703125
+
+goo.gle/debugproto    
+velocity: 2367.387451171875
+velocity: 2367.536376953125
+velocity: 2367.933349609375
+velocity: 2367.784423828125
+
+goo.gle/debugproto    
+velocity: 2468.277587890625
+velocity: 2468.087158203125
+velocity: 2468.182373046875
+velocity: 2468.372802734375
+
+goo.gle/debugproto    
+velocity: 2548.4287109375
+velocity: 2548.56689453125
+velocity: 2548.244140625
+velocity: 2548.105712890625
+
+goo.gle/debugproto    
+velocity: 2619.25732421875
+velocity: 2618.943359375
+velocity: 2619.077880859375
+velocity: 2619.391845703125
+
+goo.gle/debugproto    
+velocity: 2679.749267578125
+velocity: 2680.14404296875
+velocity: 2680.275390625
+velocity: 2679.880859375
+
+goo.gle/debugproto    
+velocity: 2730.591552734375
+velocity: 2730.247314453125
+velocity: 2729.989013671875
+velocity: 2730.333251953125
+
+goo.gle/debugproto    
+velocity: 2774.856689453125
+velocity: 2774.814453125
+velocity: 2774.94140625
+velocity: 2774.98388671875
+
+goo.gle/debugproto    
+velocity: 2774.64501953125
+velocity: 2774.856689453125
+velocity: 2774.98388671875
+velocity: 2774.772216796875
+
+goo.gle/debugproto    
+velocity: 2774.899169921875
+velocity: 2774.899169921875
+velocity: 2774.98388671875
+velocity: 2774.98388671875
+
+goo.gle/debugproto    
+velocity: 2774.856689453125
+velocity: 2774.856689453125
+velocity: 2774.98388671875
+velocity: 2774.98388671875
+
+goo.gle/debugproto    
+velocity: 2774.94140625
+velocity: 2774.98388671875
+velocity: 2774.602783203125
+velocity: 2774.560302734375
+
+goo.gle/debugproto    
+velocity: 2763.39990234375
+velocity: 2763.4423828125
+velocity: 2763.56982421875
+velocity: 2763.52734375
+
+goo.gle/debugproto    
+velocity: 2720.4384765625
+velocity: 2720.568115234375
+velocity: 2720.697509765625
+velocity: 2720.568115234375
+
+goo.gle/debugproto    
+velocity: 2662.593505859375
+velocity: 2662.77001953125
+velocity: 2662.99072265625
+velocity: 2662.814208984375
+
+goo.gle/debugproto    
+velocity: 2589.88818359375
+velocity: 2589.5703125
+velocity: 2589.479736328125
+velocity: 2589.79736328125
+
+goo.gle/debugproto    
+velocity: 2500.7685546875
+velocity: 2500.7685546875
+velocity: 2500.721435546875
+velocity: 2500.721435546875
+
+goo.gle/debugproto    
+velocity: 2391.093017578125
+velocity: 2391.093017578125
+velocity: 2391.486083984375
+velocity: 2391.486083984375
+
+goo.gle/debugproto    
+velocity: 2270.220458984375
+velocity: 2270.220458984375
+velocity: 2270.013427734375
+velocity: 2270.013427734375
+
+goo.gle/debugproto    
+velocity: 2127.07275390625
+velocity: 2126.575439453125
+velocity: 2126.630859375
+velocity: 2127.1279296875
+
+goo.gle/debugproto    
+velocity: 1967.24853515625
+velocity: 1967.308349609375
+velocity: 1967.427734375
+velocity: 1967.3680419921875
+
+goo.gle/debugproto    
+velocity: 1783.6434326171875
+velocity: 1783.709228515625
+velocity: 1783.906982421875
+velocity: 1783.841064453125
+
+goo.gle/debugproto    
+velocity: 1571.2567138671875
+velocity: 1571.40625
+velocity: 1571.705322265625
+velocity: 1571.5557861328125
+
+goo.gle/debugproto    
+velocity: 1533.371337890625
+velocity: 1532.988037109375
+velocity: 1532.6048583984375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1533.4095458984375
+velocity: 1532.5665283203125
+velocity: 1532.5665283203125
+velocity: 1533.4095458984375
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1533.1031494140625
+velocity: 1532.8731689453125
+velocity: 1532.8731689453125
+velocity: 1533.1031494140625
+
+goo.gle/debugproto    
+velocity: 1533.1031494140625
+velocity: 1532.8731689453125
+velocity: 1532.8731689453125
+velocity: 1533.1031494140625
+
+goo.gle/debugproto    
+velocity: 1532.8348388671875
+velocity: 1532.988037109375
+velocity: 1533.141357421875
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1533.25634765625
+velocity: 1532.7965087890625
+velocity: 1532.7198486328125
+velocity: 1533.1798095703125
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1533.1031494140625
+velocity: 1532.9498291015625
+velocity: 1532.8731689453125
+
+goo.gle/debugproto    
+velocity: 1532.8348388671875
+velocity: 1532.8348388671875
+velocity: 1533.141357421875
+velocity: 1533.141357421875
+
+goo.gle/debugproto    
+velocity: 1533.371337890625
+velocity: 1533.294677734375
+velocity: 1532.6048583984375
+velocity: 1532.6815185546875
+
+goo.gle/debugproto    
+velocity: 1533.2181396484375
+velocity: 1533.0648193359375
+velocity: 1532.7581787109375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.7965087890625
+velocity: 1532.9498291015625
+velocity: 1533.1798095703125
+
+goo.gle/debugproto    
+velocity: 1533.5245361328125
+velocity: 1533.2181396484375
+velocity: 1532.451416015625
+velocity: 1532.7581787109375
+
+goo.gle/debugproto    
+velocity: 1532.6815185546875
+velocity: 1533.141357421875
+velocity: 1533.294677734375
+velocity: 1532.8348388671875
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1533.1031494140625
+velocity: 1533.1031494140625
+velocity: 1532.8731689453125
+velocity: 1532.8731689453125
+
+goo.gle/debugproto    
+velocity: 1533.1031494140625
+velocity: 1533.1798095703125
+velocity: 1532.8731689453125
+velocity: 1532.7965087890625
+
+goo.gle/debugproto    
+velocity: 1532.7581787109375
+velocity: 1532.8348388671875
+velocity: 1533.2181396484375
+velocity: 1533.141357421875
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1532.9498291015625
+velocity: 1533.1031494140625
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1533.2181396484375
+velocity: 1533.294677734375
+velocity: 1532.7581787109375
+velocity: 1532.6815185546875
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1532.9498291015625
+velocity: 1533.1031494140625
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1532.9498291015625
+velocity: 1533.1031494140625
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1533.141357421875
+velocity: 1533.294677734375
+velocity: 1532.8348388671875
+velocity: 1532.6815185546875
+
+goo.gle/debugproto    
+velocity: 1533.1798095703125
+velocity: 1532.6431884765625
+velocity: 1532.7965087890625
+velocity: 1533.3330078125
+
+goo.gle/debugproto    
+velocity: 1532.7581787109375
+velocity: 1533.0648193359375
+velocity: 1533.2181396484375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1533.1798095703125
+velocity: 1533.3330078125
+velocity: 1532.7965087890625
+velocity: 1532.6431884765625
+
+goo.gle/debugproto    
+velocity: 1533.141357421875
+velocity: 1532.6815185546875
+velocity: 1532.8348388671875
+velocity: 1533.294677734375
+
+goo.gle/debugproto    
+velocity: 1532.7965087890625
+velocity: 1533.0264892578125
+velocity: 1533.1798095703125
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1533.294677734375
+velocity: 1533.371337890625
+velocity: 1532.6815185546875
+velocity: 1532.6048583984375
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1532.7965087890625
+velocity: 1533.1031494140625
+velocity: 1533.1798095703125
+
+goo.gle/debugproto    
+velocity: 1532.7581787109375
+velocity: 1532.988037109375
+velocity: 1533.2181396484375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1533.486328125
+velocity: 1533.0264892578125
+velocity: 1532.4898681640625
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1532.5665283203125
+velocity: 1533.1798095703125
+velocity: 1533.4095458984375
+velocity: 1532.7965087890625
+
+goo.gle/debugproto    
+velocity: 1532.7965087890625
+velocity: 1532.9498291015625
+velocity: 1533.1798095703125
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1715.919921875
+velocity: 1715.8514404296875
+velocity: 1715.5089111328125
+velocity: 1715.5775146484375
+
+goo.gle/debugproto    
+velocity: 1828.469970703125
+velocity: 1828.919677734375
+velocity: 1828.7269287109375
+velocity: 1828.277099609375
+
+goo.gle/debugproto    
+velocity: 1941.7581787109375
+velocity: 1941.6976318359375
+velocity: 1942.000244140625
+velocity: 1942.0606689453125
+
+goo.gle/debugproto    
+velocity: 2052.71630859375
+velocity: 2052.71630859375
+velocity: 2052.601806640625
+velocity: 2052.601806640625
+
+goo.gle/debugproto    
+velocity: 2162.192626953125
+velocity: 2162.192626953125
+velocity: 2162.572998046875
+velocity: 2162.572998046875
+
+goo.gle/debugproto    
+velocity: 2215.68505859375
+velocity: 2215.68505859375
+velocity: 2215.313720703125
+velocity: 2215.313720703125
+
+goo.gle/debugproto    
+velocity: 2364.432373046875
+velocity: 2364.432373046875
+velocity: 2364.829833984375
+velocity: 2364.829833984375
+
+goo.gle/debugproto    
+velocity: 2500.956298828125
+velocity: 2501.00341796875
+velocity: 2500.862548828125
+velocity: 2500.8154296875
+
+goo.gle/debugproto    
+velocity: 2542.150146484375
+velocity: 2542.196533203125
+velocity: 2542.196533203125
+velocity: 2542.150146484375
+
+goo.gle/debugproto    
+velocity: 2615.0595703125
+velocity: 2615.1494140625
+velocity: 2615.1494140625
+velocity: 2615.0595703125
+
+goo.gle/debugproto    
+velocity: 2681.984619140625
+velocity: 2681.765380859375
+velocity: 2681.765380859375
+velocity: 2681.984619140625
+
+goo.gle/debugproto    
+velocity: 2756.524169921875
+velocity: 2756.694580078125
+velocity: 2756.7373046875
+velocity: 2756.56689453125
+
+goo.gle/debugproto    
+velocity: 2774.899169921875
+velocity: 2774.64501953125
+velocity: 2774.729736328125
+velocity: 2774.98388671875
+
+goo.gle/debugproto    
+velocity: 2774.899169921875
+velocity: 2774.814453125
+velocity: 2774.899169921875
+velocity: 2774.98388671875
+
+goo.gle/debugproto    
+velocity: 2774.98388671875
+velocity: 2774.899169921875
+velocity: 2774.64501953125
+velocity: 2774.729736328125
+
+goo.gle/debugproto    
+velocity: 2774.98388671875
+velocity: 2774.94140625
+velocity: 2774.814453125
+velocity: 2774.856689453125
+
+goo.gle/debugproto    
+velocity: 2774.98388671875
+velocity: 2774.94140625
+velocity: 2774.814453125
+velocity: 2774.856689453125
+
+goo.gle/debugproto    
+velocity: 2764.505126953125
+velocity: 2764.505126953125
+velocity: 2764.8876953125
+velocity: 2764.8876953125
+
+goo.gle/debugproto    
+velocity: 2764.547607421875
+velocity: 2764.547607421875
+velocity: 2764.84521484375
+velocity: 2764.84521484375
+
+goo.gle/debugproto    
+velocity: 2737.31787109375
+velocity: 2737.31787109375
+velocity: 2737.5322265625
+velocity: 2737.5322265625
+
+goo.gle/debugproto    
+velocity: 2594.51171875
+velocity: 2594.51171875
+velocity: 2594.51171875
+velocity: 2594.51171875
+
+goo.gle/debugproto    
+velocity: 2504.501220703125
+velocity: 2503.98486328125
+velocity: 2504.172607421875
+velocity: 2504.688720703125
+
+goo.gle/debugproto    
+velocity: 2400.31396484375
+velocity: 2400.55859375
+velocity: 2400.509765625
+velocity: 2400.264892578125
+
+goo.gle/debugproto    
+velocity: 2274.7705078125
+velocity: 2274.7705078125
+velocity: 2274.7705078125
+velocity: 2274.7705078125
+
+goo.gle/debugproto    
+velocity: 2056.890869140625
+velocity: 2056.890869140625
+velocity: 2056.890869140625
+velocity: 2056.890869140625
+
+goo.gle/debugproto    
+velocity: 1890.36767578125
+velocity: 1889.683837890625
+velocity: 1889.683837890625
+velocity: 1890.36767578125
+
+goo.gle/debugproto    
+velocity: 1705.8583984375
+velocity: 1705.8583984375
+velocity: 1705.8583984375
+velocity: 1705.8583984375
+
+goo.gle/debugproto    
+velocity: 1606.641845703125
+velocity: 1606.49560546875
+velocity: 1606.49560546875
+velocity: 1606.641845703125
+
+goo.gle/debugproto    
+velocity: 1533.141357421875
+velocity: 1532.9114990234375
+velocity: 1532.8348388671875
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1533.25634765625
+velocity: 1533.1031494140625
+velocity: 1532.7198486328125
+
+goo.gle/debugproto    
+velocity: 1533.294677734375
+velocity: 1532.9114990234375
+velocity: 1532.6815185546875
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1533.4095458984375
+velocity: 1532.9498291015625
+velocity: 1532.5665283203125
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1533.0648193359375
+velocity: 1532.9114990234375
+velocity: 1532.9114990234375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1533.141357421875
+velocity: 1532.9114990234375
+velocity: 1532.8348388671875
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1533.2181396484375
+velocity: 1532.9114990234375
+velocity: 1532.7581787109375
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1533.294677734375
+velocity: 1532.9114990234375
+velocity: 1532.6815185546875
+velocity: 1533.0648193359375
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1533.25634765625
+velocity: 1532.9498291015625
+velocity: 1532.7198486328125
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1532.988037109375
+velocity: 1533.0648193359375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1532.988037109375
+velocity: 1533.0648193359375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.7581787109375
+velocity: 1533.141357421875
+velocity: 1533.2181396484375
+velocity: 1532.8348388671875
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1532.988037109375
+velocity: 1533.0648193359375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1533.371337890625
+velocity: 1533.447998046875
+velocity: 1532.6048583984375
+velocity: 1532.5281982421875
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1533.0264892578125
+velocity: 1533.1031494140625
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1532.8731689453125
+velocity: 1533.0264892578125
+velocity: 1533.1031494140625
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1532.988037109375
+velocity: 1533.0648193359375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.8348388671875
+velocity: 1532.988037109375
+velocity: 1533.141357421875
+
+goo.gle/debugproto    
+velocity: 1532.7965087890625
+velocity: 1533.0264892578125
+velocity: 1533.1798095703125
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1533.141357421875
+velocity: 1533.447998046875
+velocity: 1532.8348388671875
+velocity: 1532.5281982421875
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.7965087890625
+velocity: 1532.9498291015625
+velocity: 1533.1798095703125
+
+goo.gle/debugproto    
+velocity: 1532.7581787109375
+velocity: 1532.988037109375
+velocity: 1533.2181396484375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.6815185546875
+velocity: 1533.0648193359375
+velocity: 1533.294677734375
+velocity: 1532.9114990234375
+
+goo.gle/debugproto    
+velocity: 1533.141357421875
+velocity: 1532.988037109375
+velocity: 1532.8348388671875
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1533.1798095703125
+velocity: 1533.0264892578125
+velocity: 1532.7965087890625
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1533.25634765625
+velocity: 1533.0264892578125
+velocity: 1532.7198486328125
+velocity: 1532.9498291015625
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.7581787109375
+velocity: 1532.988037109375
+velocity: 1533.2181396484375
+
+goo.gle/debugproto    
+velocity: 1532.9114990234375
+velocity: 1533.447998046875
+velocity: 1533.0648193359375
+velocity: 1532.5281982421875
+
+goo.gle/debugproto    
+velocity: 1653.2125244140625
+velocity: 1653.4967041015625
+velocity: 1653.994140625
+velocity: 1653.7099609375
+
+goo.gle/debugproto    
+velocity: 1789.52978515625
+velocity: 1789.3985595703125
+velocity: 1789.1358642578125
+velocity: 1789.26708984375
+
+goo.gle/debugproto    
+velocity: 1850.8253173828125
+velocity: 1851.3966064453125
+velocity: 1851.9677734375
+velocity: 1851.3966064453125
+
+goo.gle/debugproto    
+velocity: 2017.8455810546875
+velocity: 2016.4476318359375
+velocity: 2014.9320068359375
+velocity: 2016.3310546875
+
+goo.gle/debugproto    
+velocity: 2102.6259765625
+velocity: 2102.849609375
+velocity: 2102.905517578125
+velocity: 2102.68212890625
+
+goo.gle/debugproto    
+velocity: 2141.4970703125
+velocity: 2141.33251953125
+velocity: 2141.66162109375
+velocity: 2141.826416015625
+
+goo.gle/debugproto    
+velocity: 2147.6884765625
+velocity: 2147.8525390625
+velocity: 2147.9072265625
+velocity: 2147.7431640625
+
+goo.gle/debugproto    
+velocity: 2130.4951171875
+velocity: 2130.43994140625
+velocity: 2130.32958984375
+velocity: 2130.384765625
+
+goo.gle/debugproto    
+velocity: 2095.040283203125
+velocity: 2094.984130859375
+velocity: 2095.48876953125
+velocity: 2095.544921875
+
+goo.gle/debugproto    
+velocity: 2046.3525390625
+velocity: 2046.3525390625
+velocity: 2046.295166015625
+velocity: 2046.295166015625
+
+goo.gle/debugproto    
+velocity: 1986.4769287109375
+velocity: 1986.4769287109375
+velocity: 1986.4769287109375
+velocity: 1986.4769287109375
+
+goo.gle/debugproto    
+velocity: 1917.767578125
+velocity: 1917.767578125
+velocity: 1917.89013671875
+velocity: 1917.89013671875
+
+goo.gle/debugproto    
+velocity: 1801.89697265625
+velocity: 1802.02734375
+velocity: 1802.2882080078125
+velocity: 1802.1578369140625
+
+goo.gle/debugproto    
+velocity: 1718.28076171875
+velocity: 1718.48583984375
+velocity: 1718.8277587890625
+velocity: 1718.62255859375
+
+goo.gle/debugproto    
+velocity: 1631.6064453125
+velocity: 1631.8944091796875
+velocity: 1631.75048828125
+velocity: 1631.46240234375
+
+goo.gle/debugproto    
+velocity: 1542.88232421875
+velocity: 1543.339111328125
+velocity: 1543.339111328125
+velocity: 1542.88232421875
+
+goo.gle/debugproto    
+velocity: 1533.0264892578125
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+velocity: 1532.988037109375
+
+goo.gle/debugproto    
+velocity: 1533.486328125
+velocity: 1532.4898681640625
+velocity: 1532.4898681640625
+velocity: 1533.486328125
+
+goo.gle/debugproto    
+velocity: 1532.9498291015625
+velocity: 1532.9498291015625
+velocity: 1533.0264892578125
+velocity: 1533.0264892578125
+
+goo.gle/debugproto    
+velocity: 1533.4095458984375
+velocity: 1533.3330078125
+velocity: 1532.5665283203125
+velocity: 1532.6431884765625
+
