@@ -1,0 +1,28 @@
+{
+  "schema": "nano-c-slam-passive-telemetry-attempt-v1",
+  "status": "failed",
+  "failure": "pairwise labels do not match stable pair order",
+  "source_revision": "7982801f167f2bc7d2d780f5d17393af54a6216b",
+  "source_was_clean_at_launch": true,
+  "overlay": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.Dvetqa/install",
+  "overlay_build_receipt": "../../../..//build/gazebo-ros-overlay.Dvetqa/build-receipt.txt",
+  "ros_domain_id": 50,
+  "gazebo_partition": "nano_c_slam_passive3_20261019",
+  "launch_processes": {
+    "launch_parent": 28326,
+    "gazebo": 28327,
+    "parameter_bridge": 28328,
+    "sensor_bridge": 28329,
+    "gazebo_gui": 28450
+  },
+  "checker_command": "uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 -m scripts.verify_gazebo_swarm_ros --timeout 20",
+  "checker_exit_code": 1,
+  "checker_stdout": "Gazebo swarm telemetry check failed: Gazebo swarm telemetry check failed: telemetry rejected: ranges=[], pairwise=['pairwise labels do not match stable pair order', 'pairwise labels do not match stable pair order', 'pairwise labels do not match stable pair order']",
+  "observed_pairwise": {
+    "drone_ids": ["cf1", "cf3", "cf4"],
+    "pair_labels": ["cf4:cf1", "cf4:cf3", "cf1:cf3"],
+    "source_stamps_ns": [37700000000, 37720000000, 37700000000],
+    "ranges_m": [1.4142135381698608, 1.0, 1.0]
+  },
+  "cleanup": "Ctrl-C sent to the owned launch; Gazebo, bridge, sensor bridge, GUI and launch processes were absent from the post-run process audit. Unrelated durandal Gazebo processes were left untouched."
+}

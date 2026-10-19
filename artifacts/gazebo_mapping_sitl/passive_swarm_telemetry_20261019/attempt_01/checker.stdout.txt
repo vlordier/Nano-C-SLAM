@@ -1,0 +1,1 @@
+Gazebo swarm telemetry check failed: Gazebo swarm telemetry check failed: telemetry rejected: ranges=[], pairwise=['pairwise labels do not match stable pair order', 'pairwise labels do not match stable pair order', 'pairwise labels do not match stable pair order']
