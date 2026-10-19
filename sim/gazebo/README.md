@@ -263,6 +263,7 @@ cd ~/Work/Nano-C-SLAM
 export NANO_C_SLAM_OVERLAY_SETUP="$PWD/build/gazebo-ros-overlay.<id>/install/local_setup.bash"
 export NANO_C_SLAM_NEARFIELD_MAPPING=1
 export NANO_C_SLAM_NEARFIELD_VARIANT=heldout
+export NANO_C_SLAM_GZ_GUI=false
 export NANO_C_SLAM_GZ_PARTITION=nano_c_slam_mapping_heldout
 export NANO_C_SLAM_ROS_DOMAIN_ID=69
 export GZ_DISCOVERY_MSG_PORT=45327

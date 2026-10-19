@@ -143,6 +143,17 @@ def _publish_session(context: LaunchContext) -> list[LaunchDescriptionEntity]:
     return []
 
 
+def _gui_actions(context: LaunchContext) -> list[LaunchDescriptionEntity]:
+    """Start the GUI only when explicitly enabled in the launch arguments."""
+    gui_value = LaunchConfiguration("gui").perform(context).lower()
+    if gui_value not in {"1", "true", "yes", "0", "false", "no"}:
+        raise ValueError("gui must be true or false")
+    if gui_value not in {"1", "true", "yes"}:
+        return []
+    gui = ExecuteProcess(cmd=["gz", "sim", "-g"], output="screen")
+    return [TimerAction(period=8.0, actions=[gui])]
+
+
 def _record_started_process(
     event: ProcessStarted, context: LaunchContext
 ) -> list[LaunchDescriptionEntity]:
@@ -176,9 +187,6 @@ def generate_launch_description() -> LaunchDescription:
             ]
         }.items(),
     )
-    gazebo_gui = ExecuteProcess(cmd=["gz", "sim", "-g"], output="screen")
-    gazebo_gui_after_server = TimerAction(period=8.0, actions=[gazebo_gui])
-
     sensor_bridge = Node(
         package="nano_c_slam_gazebo",
         executable="sensor_bridge",
@@ -191,6 +199,11 @@ def generate_launch_description() -> LaunchDescription:
         [
             DeclareLaunchArgument("world", default_value=default_world),
             DeclareLaunchArgument(
+                "gui",
+                default_value="true",
+                description="Start the Gazebo GUI client after the server",
+            ),
+            DeclareLaunchArgument(
                 "failure_truth_odometry",
                 default_value="false",
                 description=(
@@ -200,7 +213,7 @@ def generate_launch_description() -> LaunchDescription:
             OpaqueFunction(function=_publish_session),
             RegisterEventHandler(OnProcessStart(on_start=_record_started_process)),
             gazebo,
-            gazebo_gui_after_server,
+            OpaqueFunction(function=_gui_actions),
             OpaqueFunction(function=_bridge_actions),
             sensor_bridge,
         ]
