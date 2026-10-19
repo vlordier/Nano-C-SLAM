@@ -30,3 +30,11 @@ subsequent token tenures. The optimized-pose batch remains capped by the
 20-entry `scan_poses` array. These are software timeout calculations, not
 physical radio or flight measurements. Hardware timing can exceed these
 assumptions and still requires propeller-off validation.
+
+After a successful outgoing token handoff, the STM32 clears its one-entry UWB
+message queue before enabling the responder again. This removes already
+queued ACK/retry messages that could otherwise be mistaken for a fresh token
+after the next tenure. A failed handoff lands and does not clear-and-continue.
+The current TOKEN payload has no epoch, so a radio packet that arrives after
+the queue purge still cannot be distinguished from a fresh token in software;
+that case remains a propeller-off radio validation requirement.

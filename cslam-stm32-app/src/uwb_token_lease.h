@@ -9,6 +9,8 @@ typedef struct {
     bool armed;
 } uwb_token_lease_t;
 
+typedef void (*uwb_token_queue_clear_fn)(void *context);
+
 /** Begin or restart the deadline while this node is waiting for a token. */
 void uwb_token_lease_arm(uwb_token_lease_t *lease, uint32_t now_tick);
 
@@ -41,6 +43,14 @@ bool uwb_token_lease_receive(uwb_token_lease_t *lease, uint32_t now_tick,
 /** Clear local ownership and arm the receive deadline after a passed token. */
 void uwb_token_lease_passed(uwb_token_lease_t *lease, uint32_t now_tick,
                             uint8_t *agent_has_token);
+
+/** Clear stale inbound messages and arm listening only after a successful pass.
+ */
+bool uwb_token_lease_finish_handoff(bool passed, uwb_token_lease_t *lease,
+                                    uint32_t now_tick, uint8_t *agent_has_token,
+                                    volatile uint8_t *land,
+                                    uwb_token_queue_clear_fn clear_queue,
+                                    void *context);
 
 /** Disarm the lease and mark local token ownership after a valid handoff. */
 void uwb_token_lease_take(uwb_token_lease_t *lease, uint8_t *agent_has_token);

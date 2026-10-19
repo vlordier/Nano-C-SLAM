@@ -166,6 +166,41 @@ static void test_successful_pass_starts_waiting_lease(void) {
     assert(lease.armed && lease.since_tick == 42 && !has_token);
 }
 
+typedef struct pending_messages {
+    uint8_t count;
+    uint8_t clears;
+} pending_messages_t;
+
+static void clear_pending_messages(void *context) {
+    pending_messages_t *messages = context;
+    messages->count = 0;
+    messages->clears++;
+}
+
+static void test_successful_handoff_clears_stale_messages_before_listening(void) {
+    uwb_token_lease_t lease = {0};
+    uint8_t has_token = 1;
+    volatile uint8_t land = 0;
+    pending_messages_t messages = {.count = 1};
+
+    assert(uwb_token_lease_finish_handoff(true, &lease, 42, &has_token, &land,
+                                          clear_pending_messages, &messages));
+    assert(messages.clears == 1 && messages.count == 0);
+    assert(lease.armed && lease.since_tick == 42 && !has_token && !land);
+}
+
+static void test_failed_handoff_lands_without_purging_or_rearming(void) {
+    uwb_token_lease_t lease = {.since_tick = 12, .armed = true};
+    uint8_t has_token = 1;
+    volatile uint8_t land = 0;
+    pending_messages_t messages = {.count = 1};
+
+    assert(!uwb_token_lease_finish_handoff(false, &lease, 42, &has_token, &land,
+                                           clear_pending_messages, &messages));
+    assert(messages.clears == 0 && messages.count == 1);
+    assert(!lease.armed && !has_token && land);
+}
+
 int main(void) {
     test_lease_expires_at_the_configured_boundary();
     test_lease_deadline_is_wrap_safe();
@@ -181,5 +216,7 @@ int main(void) {
     test_expiry_requests_land_without_claiming_token();
     test_failed_outgoing_handoff_lands_and_clears_ownership();
     test_successful_pass_starts_waiting_lease();
+    test_successful_handoff_clears_stale_messages_before_listening();
+    test_failed_handoff_lands_without_purging_or_rearming();
     return 0;
 }

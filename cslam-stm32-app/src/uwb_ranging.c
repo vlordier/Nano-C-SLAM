@@ -407,6 +407,11 @@ static void stop_after_gap9_failure(const char *operation) {
     vTaskDelete(NULL);
 }
 
+static void clear_pending_uwb_messages(void *context) {
+    (void)context;
+    (void)reset_msg_queue();
+}
+
 void uwb_ranging_task(void *parameters) {
     UWB_measurement uwb_msrm = {0};
     UWB_message uwb_msg = {0};
@@ -547,19 +552,20 @@ void uwb_ranging_task(void *parameters) {
             // 6. Pass token and switch to listening mode
             vTaskDelay(M2T(2));
             uint8_t target_id = NODE_ID;
-            if (!uwb_token_try_handoff(NODE_ID, NR_OF_NODES,
-                                       send_token_with_opt, pass_token_attempt,
-                                       NULL, &target_id)) {
+            bool passed =
+                uwb_token_try_handoff(NODE_ID, NR_OF_NODES, send_token_with_opt,
+                                      pass_token_attempt, NULL, &target_id);
+            if (!uwb_token_lease_finish_handoff(
+                    passed, &token_lease, (uint32_t)xTaskGetTickCount(),
+                    &agent_has_token, &land, clear_pending_uwb_messages,
+                    NULL)) {
                 DEBUG_PRINT(
                     "UWB token handoff exhausted; requesting landing\n");
-                uwb_token_request_land(&token_lease, &agent_has_token, &land);
                 vTaskDelete(NULL);
                 return;
             }
             send_token_with_opt = 0;
 
-            uwb_token_lease_passed(&token_lease, (uint32_t)xTaskGetTickCount(),
-                                   &agent_has_token);
             uwb_responder_on();
         } else { // Listening mode: Execute while not having the token
             // Perform ranging with other drones that request it

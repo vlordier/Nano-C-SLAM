@@ -82,6 +82,21 @@ void uwb_token_lease_passed(uwb_token_lease_t *lease, uint32_t now_tick,
     uwb_token_lease_arm(lease, now_tick);
 }
 
+bool uwb_token_lease_finish_handoff(bool passed, uwb_token_lease_t *lease,
+                                    uint32_t now_tick, uint8_t *agent_has_token,
+                                    volatile uint8_t *land,
+                                    uwb_token_queue_clear_fn clear_queue,
+                                    void *context) {
+    if (!passed) {
+        uwb_token_request_land(lease, agent_has_token, land);
+        return false;
+    }
+    if (clear_queue != NULL)
+        clear_queue(context);
+    uwb_token_lease_passed(lease, now_tick, agent_has_token);
+    return true;
+}
+
 void uwb_token_lease_take(uwb_token_lease_t *lease, uint8_t *agent_has_token) {
     uwb_token_lease_disarm(lease);
     if (agent_has_token != NULL)
