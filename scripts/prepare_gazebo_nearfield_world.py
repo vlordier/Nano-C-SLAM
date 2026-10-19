@@ -18,6 +18,17 @@ OBSTACLE_POSES = {
     "obstacle2": (-0.55, -1.0, 0.2),
     "obstacle3": (-1.0, -0.55, 0.2),
 }
+HELDOUT_WALL_POSITIONS = {
+    "wall1": (1.2, 0.1),
+    "wall2": (-1.7, -0.1),
+    "wall3": (0.25, 1.25),
+    "wall4": (-0.2, -1.7),
+}
+HELDOUT_OBSTACLE_POSES = {
+    "obstacle1": (0.45, 0.1, 0.25),
+    "obstacle2": (-0.8, -0.85, 0.2),
+    "obstacle3": (-1.25, -0.25, 0.2),
+}
 
 
 def _required_model(world: ET.Element, name: str) -> ET.Element:
@@ -49,8 +60,18 @@ def _set_box_size(model: ET.Element, size: str) -> None:
         box_size.text = size
 
 
-def prepare_nearfield_world(source: Path, destination: Path) -> None:
+def prepare_nearfield_world(
+    source: Path, destination: Path, *, variant: str = "baseline"
+) -> None:
     """Move the arena boundaries and mapping obstacles within the 1.4 m gate."""
+    if variant == "baseline":
+        wall_positions = WALL_POSITIONS
+        obstacle_poses = OBSTACLE_POSES
+    elif variant == "heldout":
+        wall_positions = HELDOUT_WALL_POSITIONS
+        obstacle_poses = HELDOUT_OBSTACLE_POSES
+    else:
+        raise ValueError("near-field variant must be baseline or heldout")
     source_data = source.read_bytes()
     if len(source_data) > 5_000_000 or b"<!DOCTYPE" in source_data.upper():
         raise ValueError("source SDF is oversized or contains a document type")
@@ -61,12 +82,12 @@ def prepare_nearfield_world(source: Path, destination: Path) -> None:
     if world is None:
         raise ValueError("source SDF has no world")
 
-    for name, (x, y) in WALL_POSITIONS.items():
+    for name, (x, y) in wall_positions.items():
         model = _required_model(world, name)
         _set_pose_xy(model, x, y)
         _set_box_size(model, "0.2 3.0 1")
 
-    for name, (x, y, z) in OBSTACLE_POSES.items():
+    for name, (x, y, z) in obstacle_poses.items():
         model = _required_model(world, name)
         pose = model.find("pose")
         if pose is None:
@@ -83,9 +104,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--variant", choices=("baseline", "heldout"), default="baseline"
+    )
     args = parser.parse_args()
-    prepare_nearfield_world(args.source, args.output)
-    print(f"Prepared 1.4 m mapping scene: {args.output}")
+    prepare_nearfield_world(args.source, args.output, variant=args.variant)
+    print(f"Prepared {args.variant} 1.4 m mapping scene: {args.output}")
     return 0
 
 

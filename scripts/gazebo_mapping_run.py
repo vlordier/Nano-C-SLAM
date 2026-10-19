@@ -191,6 +191,11 @@ def _parse_args(
         default="nearfield-mapping",
     )
     parser.add_argument(
+        "--mapping-route",
+        choices=("square", "heldout-asymmetric"),
+        default="square",
+    )
+    parser.add_argument(
         "--output",
         type=Path,
         default=Path(tempfile.gettempdir()) / "nano-c-slam-gazebo-run.json",
@@ -225,6 +230,7 @@ def _parse_args(
             binary_path=options.binary,
             drone_name=options.drone,
             scene=options.scene,
+            mapping_route=options.mapping_route,
             sample_count=options.samples,
             timeout_s=options.timeout,
             run_id=options.run_id or create_run_id(),

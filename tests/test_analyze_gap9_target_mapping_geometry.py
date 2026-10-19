@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 from copy import deepcopy
 from pathlib import Path
 
-from scripts.analyze_gap9_target_mapping_geometry import analyze_mapping
+from scripts.analyze_gap9_target_mapping_geometry import _mapping_route, analyze_mapping
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
     MappingSample,
 )
@@ -125,6 +125,19 @@ def _write_nearfield_fixture(path: Path) -> None:
 
 
 class Gap9TargetMappingGeometryTests(unittest.TestCase):
+    def test_mapping_route_is_bound_to_mission_command(self) -> None:
+        run = {"child_commands": {"mission": ["ros2", "run", "mission"]}}
+        self.assertEqual(_mapping_route(run, "square"), "square")
+        run["child_commands"]["mission"].append("mapping_route:=heldout-asymmetric")
+        self.assertEqual(
+            _mapping_route(run, "heldout-asymmetric"), "heldout-asymmetric"
+        )
+        with self.assertRaisesRegex(ValueError, "expected"):
+            _mapping_route(run, "square")
+        run["child_commands"]["mission"].append("mapping_route:=square")
+        with self.assertRaisesRegex(ValueError, "duplicate"):
+            _mapping_route(run, None)
+
     def setUp(self) -> None:
         self.temporary_directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary_directory.cleanup)
@@ -269,6 +282,7 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
                     "drone": "cf1",
                     "scene": "nearfield-mapping",
                     "gazebo_world_session_id": self.session_id,
+                    "child_commands": {"mission": ["ros2", "launch", "mission"]},
                     "capture_report": {
                         "run_id": self.run_id,
                         "drone": "cf1",

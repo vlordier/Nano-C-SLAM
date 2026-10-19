@@ -47,6 +47,29 @@ def _mapping(value: object, label: str) -> dict[str, object]:
     return cast(dict[str, object], value)
 
 
+def _mapping_route(run: dict[str, object], expected_route: str | None) -> str:
+    """Read and optionally enforce the route recorded in the mission argv."""
+    commands = _mapping(run.get("child_commands"), "run child commands")
+    mission = commands.get("mission")
+    if not isinstance(mission, list) or not all(
+        isinstance(argument, str) for argument in mission
+    ):
+        raise ValueError("run bundle has no valid mission command")
+    route_arguments = [
+        argument.partition(":=")[2]
+        for argument in mission
+        if argument.startswith("mapping_route:=")
+    ]
+    if len(route_arguments) > 1:
+        raise ValueError("mission command contains duplicate mapping routes")
+    route = route_arguments[0] if route_arguments else "square"
+    if route not in ("square", "heldout-asymmetric"):
+        raise ValueError("mission command contains an unsupported mapping route")
+    if expected_route is not None and route != expected_route:
+        raise ValueError(f"run mapping route is {route!r}, expected {expected_route!r}")
+    return route
+
+
 def _point_to_segment_distance(
     point: tuple[float, float],
     segment: tuple[tuple[float, float], tuple[float, float]],
@@ -470,6 +493,7 @@ def analyze_mapping(
     session_path: Path,
     world_attestation_path: Path,
     sdf_path: Path,
+    expected_route: str | None = None,
 ) -> dict[str, object]:
     """Produce diagnostic geometry metrics without silently choosing a pass bar."""
     target = load_json_file(target_report_path, label="target report")
@@ -485,6 +509,7 @@ def analyze_mapping(
     run = _mapping(run, "run bundle")
     session = _mapping(session, "world session")
     world_attestation = _mapping(world_attestation, "world input attestation")
+    mapping_route = _mapping_route(run, expected_route)
     _verify_world_binding(run, session, session_path, sdf_path, world_attestation)
     if target.get("status") != "passed" or target.get("sequence") != "gazebo-live":
         raise ValueError("target report must prove a live Gazebo-to-GAP9 run")
@@ -599,6 +624,7 @@ def analyze_mapping(
             "target_build_reproducibility": "artifact-hashes-verified-not-rebuilt",
         },
         "run_id": run["run_id"],
+        "mapping_route": mapping_route,
         "world_session_id": session["session_id"],
         "coordinate_convention": (
             "Gazebo world-frame XY meters and yaw radians; GAP9 z field is planar yaw. "
@@ -699,6 +725,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--world-session", type=Path, required=True)
     parser.add_argument("--world-attestation", type=Path, required=True)
     parser.add_argument("--world-sdf", type=Path, required=True)
+    parser.add_argument("--expected-route", choices=("square", "heldout-asymmetric"))
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
@@ -712,6 +739,7 @@ def main(argv: list[str] | None = None) -> int:
             session_path=args.world_session,
             world_attestation_path=args.world_attestation,
             sdf_path=args.world_sdf,
+            expected_route=args.expected_route,
         )
     except (OSError, ValueError) as error:
         parser.error(str(error))

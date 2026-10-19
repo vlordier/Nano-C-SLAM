@@ -15,7 +15,7 @@ from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, HistoryPolicy, QoSProfile
 from std_msgs.msg import Bool, String
 
-from .mapping_path import MappingPath
+from .mapping_path import MappingPath, waypoint_offsets_for_route
 from .mission_model import (
     MISSION_STATUS_QOS_DEPTH,
     MissionPhase,
@@ -42,6 +42,7 @@ class SimMission(Node):
         self.declare_parameter("hover_height_m", 0.5)
         self.declare_parameter("hover_duration_s", 3.0)
         self.declare_parameter("mapping_path", False)
+        self.declare_parameter("mapping_route", "square")
         self.declare_parameter("mapping_start_max_altitude_m", 0.15)
         self.declare_parameter("odometry_startup_timeout_s", 10.0)
         self._drone_name = validate_drone_name(self.get_parameter("drone_name").value)
@@ -54,6 +55,13 @@ class SimMission(Node):
             self.get_parameter("hover_duration_s").value,
         )
         self._mapping_path_enabled = bool(self.get_parameter("mapping_path").value)
+        self._mapping_route = str(self.get_parameter("mapping_route").value)
+        try:
+            self._mapping_waypoint_offsets = waypoint_offsets_for_route(
+                self._mapping_route
+            )
+        except ValueError as error:
+            raise ValueError(f"invalid mapping_route: {error}") from error
         self._mapping_start_max_altitude_m = create_mapping_start_altitude_limit(
             self.get_parameter("mapping_start_max_altitude_m").value
         )
@@ -208,9 +216,11 @@ class SimMission(Node):
                 self._mapping_path = MappingPath(
                     *self._position_xy_m,
                     now_s,
+                    offsets_m=self._mapping_waypoint_offsets,
                 )
                 self.get_logger().info(
-                    "Starting bounded square mapping path at measured position"
+                    f"Starting bounded {self._mapping_route} mapping path "
+                    "at measured position"
                 )
             else:
                 command.linear.x, command.linear.y = self._mapping_path.step(

@@ -7,6 +7,7 @@ import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from .mapping_path import waypoint_offsets_for_route
 from .mission_model import (
     MissionPhase,
     MissionStatusEvent,
@@ -88,11 +89,13 @@ class MappingRunConfig:
     stream_socket_path: Path | None = None
     stream_timeout_s: float = 1.0
     mission_hover_duration_s: float = 3.0
+    mapping_route: str = "square"
 
     def __post_init__(self) -> None:
         validate_drone_name(self.drone_name)
         if self.scene not in ("default", "nearfield-mapping"):
             raise ValueError("scene must be default or nearfield-mapping")
+        waypoint_offsets_for_route(self.mapping_route)
         if (
             isinstance(self.sample_count, bool)
             or not isinstance(self.sample_count, int)
@@ -222,6 +225,8 @@ class MappingRunConfig:
             "-p",
             f"hover_duration_s:={self.mission_hover_duration_s}",
         )
+        if self.mapping_route != "square":
+            mission += ("-p", f"mapping_route:={self.mapping_route}")
         return MappingRunCommands(collector=collector, mission=mission)
 
     def validate_runtime(self, *, python_executable: str, ros2_executable: str) -> None:

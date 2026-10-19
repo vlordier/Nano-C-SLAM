@@ -53,6 +53,17 @@ class GazeboGvsocLiveCliTests(unittest.TestCase):
                 with self.subTest(arguments=arguments), self.assertRaises(SystemExit):
                     _parse_args(arguments)
 
+    def test_forwards_heldout_route_to_mapping_runner(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "live.json"
+            options = _parse_args(
+                ["--output", str(output), "--mapping-route", "heldout-asymmetric"]
+            )
+            commands, *_ = _commands(options, "15a06f08-657e-4012-922e-4ca35f7dda22")
+
+        route_index = commands.gazebo.index("--mapping-route")
+        self.assertEqual(commands.gazebo[route_index + 1], "heldout-asymmetric")
+
 
 if __name__ == "__main__":
     unittest.main()

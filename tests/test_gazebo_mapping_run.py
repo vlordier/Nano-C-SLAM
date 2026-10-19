@@ -145,6 +145,22 @@ class MappingRunConfigTests(unittest.TestCase):
 
         self.assertIn("hover_duration_s:=120.0", commands.mission)
 
+    def test_heldout_route_is_forwarded_and_default_route_stays_implicit(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            directory = Path(temporary_directory)
+            baseline = MappingRunConfig(
+                output_path=directory / "baseline.json",
+                binary_path=directory / "mapping_replay",
+            ).build_commands(python_executable=sys.executable, ros2_executable="ros2")
+            heldout = MappingRunConfig(
+                output_path=directory / "heldout.json",
+                binary_path=directory / "mapping_replay",
+                mapping_route="heldout-asymmetric",
+            ).build_commands(python_executable=sys.executable, ros2_executable="ros2")
+
+        self.assertNotIn("mapping_route:=square", baseline.mission)
+        self.assertIn("mapping_route:=heldout-asymmetric", heldout.mission)
+
     def test_rejects_invalid_drone_bounds_timeout_and_run_id(self) -> None:
         invalid_configs = (
             lambda path, binary: MappingRunConfig(

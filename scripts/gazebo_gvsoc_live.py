@@ -35,6 +35,11 @@ def _parse_args(args: list[str] | None) -> argparse.Namespace:
     parser.add_argument(
         "--scene", choices=("default", "nearfield-mapping"), default="nearfield-mapping"
     )
+    parser.add_argument(
+        "--mapping-route",
+        choices=("square", "heldout-asymmetric"),
+        default="square",
+    )
     parser.add_argument("--samples", type=int, default=SAMPLE_COUNT)
     parser.add_argument("--mission-timeout", type=float, default=600.0)
     parser.add_argument("--timeout", type=float, default=600.0)
@@ -129,6 +134,8 @@ def _commands(
         options.drone,
         "--scene",
         options.scene,
+        "--mapping-route",
+        options.mapping_route,
         "--samples",
         str(options.samples),
         "--timeout",

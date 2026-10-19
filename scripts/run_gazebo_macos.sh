@@ -110,13 +110,23 @@ export GZ_SIM_PHYSICS_ENGINE_PATH="${NANO_C_SLAM_GZ_PHYSICS_ENGINE_PATH:-$gz_ins
 gazebo_models="$(uv run --no-project --python "$python311" ros2 pkg prefix ros_gz_crazyflie_gazebo)/share/ros_gz_crazyflie_gazebo/models"
 nearfield_world=""
 if [[ "${NANO_C_SLAM_NEARFIELD_MAPPING:-0}" == "1" ]]; then
+    nearfield_variant="${NANO_C_SLAM_NEARFIELD_VARIANT:-baseline}"
+    if [[ "$nearfield_variant" != "baseline" && "$nearfield_variant" != "heldout" ]]; then
+        echo "NANO_C_SLAM_NEARFIELD_VARIANT must be baseline or heldout." >&2
+        exit 1
+    fi
     gazebo_worlds="$(uv run --no-project --python "$python311" ros2 pkg prefix ros_gz_crazyflie_gazebo)/share/ros_gz_crazyflie_gazebo/worlds"
     nearfield_world="$temporary_dir/nano_c_slam_nearfield.sdf"
+    if [[ "$nearfield_variant" == "heldout" ]]; then
+        nearfield_world="$temporary_dir/nano_c_slam_nearfield_heldout.sdf"
+    fi
     uv run --no-project --python "$python311" python \
         "$repo_root/scripts/prepare_gazebo_nearfield_world.py" \
         --source "$gazebo_worlds/crazyflie_swarm_world.sdf" \
-        --output "$nearfield_world"
-    printf 'Mapping scene: near-field walls/obstacles inside the 1.4 m gate\n'
+        --output "$nearfield_world" \
+        --variant "$nearfield_variant"
+    printf 'Mapping scene: %s near-field walls/obstacles inside the 1.4 m gate\n' \
+        "$nearfield_variant"
 fi
 export GZ_SIM_RESOURCE_PATH="$gazebo_models:$gz_install/share/gz/gz-sim8/worlds"
 export GZ_RENDERING_PLUGIN_PATH="$gz_install/lib/gz-rendering-8/engine-plugins"

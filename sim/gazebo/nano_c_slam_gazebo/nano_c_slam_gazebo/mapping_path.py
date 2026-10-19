@@ -10,6 +10,22 @@ DEFAULT_WAYPOINT_OFFSETS_M = (
     (0.0, 0.25),
     (0.0, 0.0),
 )
+HELDOUT_ASYMMETRIC_WAYPOINT_OFFSETS_M = (
+    (0.18, 0.02),
+    (0.32, 0.22),
+    (0.05, 0.38),
+    (-0.18, 0.12),
+    (0.0, 0.0),
+)
+
+
+def waypoint_offsets_for_route(route: str) -> tuple[tuple[float, float], ...]:
+    """Return one predeclared path profile for deterministic sim validation."""
+    if route == "square":
+        return DEFAULT_WAYPOINT_OFFSETS_M
+    if route == "heldout-asymmetric":
+        return HELDOUT_ASYMMETRIC_WAYPOINT_OFFSETS_M
+    raise ValueError("mapping route must be square or heldout-asymmetric")
 
 
 class MappingPath:

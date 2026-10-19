@@ -9,6 +9,8 @@ byte-identical to the SDF argument recorded for the Gazebo server in
 The target emitted 60 finite optimized poses and 191 finite XY map points from
 the firmware `pcl_extract_scan` path. `geometry-metrics.json` reports direct
 same-world-frame pose errors and point distance to the named SDF box boundaries:
+the mission command records the default `square` route. This run is baseline
+evidence and cannot satisfy the independent heldout-route check.
 
 - Pose XY RMSE 0.0201 m, maximum 0.0382 m.
 - Yaw RMSE 0.0322 rad (1.84°), maximum 0.0430 rad (2.46°).
@@ -59,5 +61,16 @@ uv run --locked python -m scripts.analyze_gap9_target_mapping_geometry \
   --world-session "$artifact_dir/world-session.json" \
   --world-attestation "$artifact_dir/world-input-attestation.json" \
   --world-sdf "$artifact_dir/world.sdf" \
+  --expected-route square \
   --output /tmp/attempt12-geometry-revalidated.json
 ```
+
+For the independent scenario, start Gazebo with a distinct partition and ROS
+domain using `NANO_C_SLAM_NEARFIELD_MAPPING=1 NANO_C_SLAM_NEARFIELD_VARIANT=heldout`
+and matching `NANO_C_SLAM_GZ_PARTITION` / `NANO_C_SLAM_ROS_DOMAIN_ID`. After
+the server is ready, capture with
+`uv run --no-project --python /path/to/ros-python -m scripts.gazebo_gvsoc_live
+--output /path/to/new-run.json --mapping-route heldout-asymmetric`. Archive the
+new run, world session, exact launched SDF and its attestation together. The
+geometry analyzer must then be invoked with `--expected-route heldout-asymmetric`;
+it rejects a run bundle whose recorded mission argv used the square route.

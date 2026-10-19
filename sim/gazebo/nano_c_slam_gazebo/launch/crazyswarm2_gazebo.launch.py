@@ -132,7 +132,7 @@ def _publish_session(context: LaunchContext) -> list[LaunchDescriptionEntity]:
     world = LaunchConfiguration("world").perform(context)
     scene = (
         "nearfield-mapping"
-        if Path(world).name == "nano_c_slam_nearfield.sdf"
+        if Path(world).name.startswith("nano_c_slam_nearfield")
         else "default"
     )
     partition = os.environ.get("GZ_PARTITION", "default")

@@ -81,6 +81,46 @@ class NearfieldWorldTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "wall1"):
                 prepare_nearfield_world(source, output)
 
+    def test_heldout_variant_changes_geometry_and_is_repeatable(self) -> None:
+        models = "".join(
+            _model(name, "3 0 0.5 0 0 0", "0.2 6 1")
+            for name in ("wall1", "wall2", "wall3", "wall4")
+        ) + "".join(
+            _model(name, "0 0 0.25 0 0 0", "0.5 0.5 0.5")
+            for name in ("obstacle1", "obstacle2", "obstacle3")
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "source.sdf"
+            baseline = root / "baseline.sdf"
+            heldout = root / "heldout.sdf"
+            heldout_repeat = root / "heldout-repeat.sdf"
+            source.write_text(f"<sdf version='1.8'><world>{models}</world></sdf>")
+
+            prepare_nearfield_world(source, baseline)
+            prepare_nearfield_world(source, heldout, variant="heldout")
+            prepare_nearfield_world(source, heldout_repeat, variant="heldout")
+
+            self.assertNotEqual(baseline.read_bytes(), heldout.read_bytes())
+            self.assertEqual(heldout.read_bytes(), heldout_repeat.read_bytes())
+            world = ET.fromstring(heldout.read_bytes()).find("world")  # noqa: S314
+            assert world is not None
+            self.assertEqual(
+                world.findtext("model[@name='wall1']/pose"), "1.2 0.1 0.5 0 0 0"
+            )
+            self.assertEqual(
+                world.findtext("model[@name='obstacle3']/pose"),
+                "-1.25 -0.25 0.2 0 0 0",
+            )
+
+    def test_rejects_unknown_world_variant(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "source.sdf"
+            source.write_text("<sdf version='1.8'><world /></sdf>")
+            with self.assertRaisesRegex(ValueError, "variant"):
+                prepare_nearfield_world(source, root / "output.sdf", variant="other")
+
 
 if __name__ == "__main__":
     unittest.main()
