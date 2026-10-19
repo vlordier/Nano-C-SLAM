@@ -27,6 +27,7 @@ from launch.substitutions import (
 )
 from launch_ros.actions import Node
 from nano_c_slam_gazebo.bridge_config_model import split_cf1_odometry_bridge
+from nano_c_slam_gazebo.physics_engine_model import gazebo_server_arguments
 from nano_c_slam_gazebo.world_session_model import (
     acquire_world_session_lock,
     publish_world_session,
@@ -160,6 +161,9 @@ def generate_launch_description() -> LaunchDescription:
     gazebo_share = Path(get_package_share_directory("ros_gz_crazyflie_gazebo"))
     sim_share = get_package_share_directory("ros_gz_sim")
     default_world = str(gazebo_share / "worlds/crazyflie_swarm_world.sdf")
+    server_arguments = gazebo_server_arguments(
+        os.environ.get("NANO_C_SLAM_GZ_PHYSICS_ENGINE")
+    )
 
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -168,12 +172,7 @@ def generate_launch_description() -> LaunchDescription:
         launch_arguments={
             "gz_args": [
                 LaunchConfiguration("world"),
-                TextSubstitution(
-                    text=(
-                        " -r -s --headless-rendering --render-engine-server=ogre2 "
-                        "--render-engine-server-api-backend=metal"
-                    )
-                ),
+                TextSubstitution(text=server_arguments),
             ]
         }.items(),
     )

@@ -141,10 +141,13 @@ source "$HOME/Work/gz-macOS/ws/install/setup.zsh"
 
 The script reads `~/Work/gz-macOS/gz-physics` and writes no files there. It
 prints an engine path containing the rebuilt plugin and the existing Gazebo
-plugins; pass that value through `NANO_C_SLAM_GZ_PHYSICS_ENGINE_PATH` when
-running `scripts/run_gazebo_macos.sh`. The default engine path remains the
-installed Gazebo plugins. Retain the build receipt with any test evidence that
-uses the rebuilt wrapper, since its hash and DART version identify that runtime.
+plugins. Export the printed `NANO_C_SLAM_GZ_PHYSICS_ENGINE_PATH` and
+`NANO_C_SLAM_GZ_PHYSICS_ENGINE` values before running
+`scripts/run_gazebo_macos.sh`. The plugin is copied under a unique name because
+Gazebo otherwise prefers its built-in DART plugin even when an alternate path
+is configured. The default engine path and selection remain the installed
+Gazebo plugins. Retain the build receipt with any test evidence that uses the
+rebuilt wrapper, since its hash and DART version identify that runtime.
 
 Only one `run_gazebo_macos.sh` launch may be active at a time because the
 Abseil compatibility link is shared through Homebrew's global `opt` directory.

@@ -31,10 +31,14 @@ cmake --build "$build_root" --target gz-physics7-dartsim-plugin --parallel 4
 
 plugin="$build_root/lib/libgz-physics7-dartsim-plugin.7.8.0.dylib"
 physics_library="$build_root/lib/libgz-physics7.7.8.0.dylib"
+custom_engine_directory="$build_root/custom"
+custom_engine="$custom_engine_directory/libnano-c-slam-dartsim-plugin.dylib"
 if [[ ! -f "$plugin" || ! -f "$physics_library" ]]; then
     echo "The rebuilt Gazebo DART plugin or its physics library is missing." >&2
     exit 1
 fi
+mkdir -p "$custom_engine_directory"
+cp "$plugin" "$custom_engine"
 
 receipt="$build_root/build-receipt.txt"
 {
@@ -47,6 +51,8 @@ receipt="$build_root/build-receipt.txt"
     printf 'dartsim_version: %s\n' "$(brew list --versions dartsim)"
     printf 'cmake_version: %s\n' "$(cmake --version | head -n 1)"
     printf 'plugin_sha256: %s\n' "$(shasum -a 256 "$plugin" | awk '{print $1}')"
+    printf 'custom_engine_sha256: %s\n' \
+        "$(shasum -a 256 "$custom_engine" | awk '{print $1}')"
     printf 'physics_library_sha256: %s\n' \
         "$(shasum -a 256 "$physics_library" | awk '{print $1}')"
     printf 'engine_path: %s/lib\n' "$build_root"
@@ -55,5 +61,6 @@ receipt="$build_root/build-receipt.txt"
 printf 'Rebuilt Gazebo DART engine plugin against Homebrew DART.\n'
 printf 'Receipt: %s\n' "$receipt"
 printf 'For the Nano-C-SLAM launcher, set:\n'
-printf '  NANO_C_SLAM_GZ_PHYSICS_ENGINE_PATH="%s/lib:%s/lib/gz-physics-7/engine-plugins"\n' \
+printf '  NANO_C_SLAM_GZ_PHYSICS_ENGINE_PATH="%s/custom:%s/lib/gz-physics-7/engine-plugins"\n' \
     "$build_root" "$gz_install"
+printf '  NANO_C_SLAM_GZ_PHYSICS_ENGINE="nano-c-slam-dartsim-plugin"\n'
