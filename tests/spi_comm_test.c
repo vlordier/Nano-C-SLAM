@@ -234,9 +234,13 @@ static void build_gazebo_pose_scan_frames(void) {
         for (size_t row = 0; row < 8; row++)
             pose.tof[direction][row] = -1;
     pose.tof[0][3] = 1900;
+    pose.tof[0][4] = 1900;
     pose.tof[1][3] = 900;
+    pose.tof[1][4] = 900;
     pose.tof[2][3] = 1350;
+    pose.tof[2][4] = 1350;
     pose.tof[3][3] = 900;
+    pose.tof[3][4] = 900;
 
     gpio_mode = 0;
     gpio_reads = 0;

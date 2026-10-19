@@ -19,7 +19,7 @@ def make_pose_frame(
     position: tuple[float, float, float] = (0.0, 0.0, 0.0),
     tof_ranges: tuple[int, int, int, int] = (1000, 1200, 900, 1100),
 ) -> bytes:
-    """Build a production-layout POSE frame with four cardinal ToF samples."""
+    """Build a POSE frame with four ranges in the symmetric central bins."""
     if not 0 <= pose_id <= 0x7FFF:
         raise ValueError("pose_id must fit the decoder's nonnegative int16 range")
     if len(position) != 3 or len(tof_ranges) != 4:
@@ -27,6 +27,7 @@ def make_pose_frame(
     tof = [-1] * 32
     for direction, distance in enumerate(tof_ranges):
         tof[direction * 8 + 3] = distance
+        tof[direction * 8 + 4] = distance
     pose_timestamp = pose_id * 100 if timestamp is None else timestamp
     payload = POSE_PAYLOAD.pack(pose_id, pose_timestamp, *position, *tof)
     return _guarded_frame(POSE_CMD, payload, checksum_width=4)

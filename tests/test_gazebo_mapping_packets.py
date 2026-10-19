@@ -238,9 +238,11 @@ class MappingPacketTests(unittest.TestCase):
         first_pose = packets[0]
         pose_payload = first_pose.frame[2 : 2 + POSE_PAYLOAD.size]
         expected_tof = [-1] * 32
-        expected_tof[3] = 700
-        expected_tof[19] = 1300
-        expected_tof[27] = 1800
+        for direction, distance in enumerate((700, -1, 1300, 1800)):
+            expected_tof[direction * 8 + 3 : direction * 8 + 5] = [
+                distance,
+                distance,
+            ]
         self.assertEqual(
             POSE_PAYLOAD.unpack(pose_payload),
             (0, 100, 0.0, 0.0, 0.0, *expected_tof),

@@ -1,0 +1,639 @@
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_pdm_out_0, slave: udma / sfu_pdm_out_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_pdm_out_1, slave: udma / sfu_pdm_out_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_pdm_out_0, slave: udma / sfu_pdm_out_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_pdm_out_1, slave: udma / sfu_pdm_out_3) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_pdm_out_0, slave: udma / sfu_pdm_out_4) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_pdm_out_1, slave: udma / sfu_pdm_out_5) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_pdm_in_0, slave: udma / sfu_pdm_in_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_pdm_in_1, slave: udma / sfu_pdm_in_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_pdm_in_2, slave: udma / sfu_pdm_in_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_pdm_in_3, slave: udma / sfu_pdm_in_3) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_pdm_in_0, slave: udma / sfu_pdm_in_4) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_pdm_in_1, slave: udma / sfu_pdm_in_5) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_pdm_in_2, slave: udma / sfu_pdm_in_6) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_pdm_in_3, slave: udma / sfu_pdm_in_7) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_pdm_in_0, slave: udma / sfu_pdm_in_8) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_pdm_in_1, slave: udma / sfu_pdm_in_9) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_pdm_in_2, slave: udma / sfu_pdm_in_10) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_pdm_in_3, slave: udma / sfu_pdm_in_11) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s0_ws_out, slave: udma / sfu_ws_in_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s1_ws_out, slave: udma / sfu_ws_in_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / i2s2_ws_out, slave: udma / sfu_ws_in_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_0, slave: udma / stream_in_ready_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_1, slave: udma / stream_in_ready_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_2, slave: udma / stream_in_ready_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_3, slave: udma / stream_in_ready_3) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_4, slave: udma / stream_in_ready_4) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_5, slave: udma / stream_in_ready_5) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_6, slave: udma / stream_in_ready_6) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_7, slave: udma / stream_in_ready_7) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_8, slave: udma / stream_in_ready_8) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_9, slave: udma / stream_in_ready_9) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_10, slave: udma / stream_in_ready_10) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_11, slave: udma / stream_in_ready_11) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_12, slave: udma / stream_in_ready_12) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_13, slave: udma / stream_in_ready_13) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_14, slave: udma / stream_in_ready_14) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_in_ready_15, slave: udma / stream_in_ready_15) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_0, slave: udma / sfu_stream_in_data_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_1, slave: udma / sfu_stream_in_data_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_2, slave: udma / sfu_stream_in_data_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_3, slave: udma / sfu_stream_in_data_3) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_4, slave: udma / sfu_stream_in_data_4) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_5, slave: udma / sfu_stream_in_data_5) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_6, slave: udma / sfu_stream_in_data_6) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_7, slave: udma / sfu_stream_in_data_7) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_8, slave: udma / sfu_stream_in_data_8) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_9, slave: udma / sfu_stream_in_data_9) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_10, slave: udma / sfu_stream_in_data_10) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_11, slave: udma / sfu_stream_in_data_11) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_12, slave: udma / sfu_stream_in_data_12) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_13, slave: udma / sfu_stream_in_data_13) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_14, slave: udma / sfu_stream_in_data_14) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_in_data_15, slave: udma / sfu_stream_in_data_15) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_0, slave: udma / sfu_stream_out_ready_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_1, slave: udma / sfu_stream_out_ready_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_2, slave: udma / sfu_stream_out_ready_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_3, slave: udma / sfu_stream_out_ready_3) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_4, slave: udma / sfu_stream_out_ready_4) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_5, slave: udma / sfu_stream_out_ready_5) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_6, slave: udma / sfu_stream_out_ready_6) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_7, slave: udma / sfu_stream_out_ready_7) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_8, slave: udma / sfu_stream_out_ready_8) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_9, slave: udma / sfu_stream_out_ready_9) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_10, slave: udma / sfu_stream_out_ready_10) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_11, slave: udma / sfu_stream_out_ready_11) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_12, slave: udma / sfu_stream_out_ready_12) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_13, slave: udma / sfu_stream_out_ready_13) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_14, slave: udma / sfu_stream_out_ready_14) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding to invalid slave port (master: udma / stream_out_ready_15, slave: udma / sfu_stream_out_ready_15) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_0, slave: udma / stream_out_data_0) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_1, slave: udma / stream_out_data_1) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_2, slave: udma / stream_out_data_2) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_3, slave: udma / stream_out_data_3) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_4, slave: udma / stream_out_data_4) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_5, slave: udma / stream_out_data_5) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_6, slave: udma / stream_out_data_6) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_7, slave: udma / stream_out_data_7) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_8, slave: udma / stream_out_data_8) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_9, slave: udma / stream_out_data_9) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_10, slave: udma / stream_out_data_10) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_11, slave: udma / stream_out_data_11) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_12, slave: udma / stream_out_data_12) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_13, slave: udma / stream_out_data_13) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_14, slave: udma / stream_out_data_14) — skipping
+0: 0: [[31m/chip/soc/comp                                               [0m] Binding from invalid master port (master: udma / sfu_stream_out_data_15, slave: udma / stream_out_data_15) — skipping
+Opened proxy on socket 11018
+FC frequency : 50000000
+CL frequency : 50000000
+NANO_C_SLAM_GVSOC_SPI_MAIN:scan_busy index=0 pose_id=0 duration_us=14
+Int scan 0 rcv! 20 poses
+
+NANO_C_SLAM_GVSOC_SPI_MAIN:internal_icp from=20 to=0 distance_mm=139 ref_points=160 cur_points=148 has_nan=0 error_under_threshold=1 accepted=1
+Loop closure 20 -> 0
+NANO_C_SLAM_GVSOC_SPI_MAIN:scan_busy index=1 pose_id=20 duration_us=50991
+Int scan 20 rcv! 40 poses
+
+NANO_C_SLAM_GVSOC_SPI_MAIN:internal_icp from=40 to=0 distance_mm=227 ref_points=160 cur_points=152 has_nan=0 error_under_threshold=1 accepted=1
+Loop closure 40 -> 0
+NANO_C_SLAM_GVSOC_SPI_MAIN:internal_icp from=40 to=20 distance_mm=255 ref_points=148 cur_points=152 has_nan=0 error_under_threshold=1 accepted=1
+Loop closure 40 -> 20
+NANO_C_SLAM_GVSOC_SPI_MAIN:scan_busy index=2 pose_id=40 duration_us=100015
+Int scan 40 rcv! 60 poses
+
+Opt..
+NANO_C_SLAM_GVSOC_SPI_MAIN:pose_dump_start count=60
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=0 x_bits=befffec0 y_bits=befff85e z_bits=b7f4f671 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=1 x_bits=bf007853 y_bits=bf0046a5 z_bits=bbc9507c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=2 x_bits=befd4d8d y_bits=bf005c54 z_bits=bbd11a15 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=3 x_bits=bef887e1 y_bits=bf00546a z_bits=bb98c422 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=4 x_bits=bef43665 y_bits=bf004f8c z_bits=bb47eec7 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=5 x_bits=bef03428 y_bits=bf004ebc z_bits=bac4630c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=6 x_bits=beec5ea5 y_bits=bf004ffd z_bits=38a3fdce finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=7 x_bits=bee8b8dc y_bits=bf005348 z_bits=3ad9afac finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=8 x_bits=bee54bab y_bits=bf005966 z_bits=3b5187f4 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=9 x_bits=bee20a76 y_bits=bf00619f z_bits=3b9a57ff finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=10 x_bits=bedefe6c y_bits=bf006c95 z_bits=3bc9494d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=11 x_bits=bedc1b2b y_bits=bf00799e z_bits=3bfa2f73 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=12 x_bits=bed968e0 y_bits=bf008968 z_bits=3c142781 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=13 x_bits=bed6dce1 y_bits=bf009b3c z_bits=3c2ae697 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=14 x_bits=bed47671 y_bits=bf00af1e z_bits=3c414cdc finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=15 x_bits=becfe898 y_bits=bf009eba z_bits=3c5be6bd finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=16 x_bits=becd75ba y_bits=bf00ab93 z_bits=3c6d5cf9 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=17 x_bits=becce0e7 y_bits=bf01567d z_bits=bc79f8e6 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=18 x_bits=beca212f y_bits=bf0051fb z_bits=bd19f1be finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=19 x_bits=bec4b900 y_bits=befb98db z_bits=bd11f21a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=20 x_bits=bebf5137 y_bits=bef69690 z_bits=bcf8a1cd finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=21 x_bits=beb9c58d y_bits=bef1de67 z_bits=bcfb2d35 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=22 x_bits=beb45546 y_bits=beed4074 z_bits=bce9c8f7 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=23 x_bits=beaf2b98 y_bits=bee8e30e z_bits=bcdcee88 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=24 x_bits=beaa588e y_bits=bee4d537 z_bits=bcda042a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=25 x_bits=bea5a8dd y_bits=bee0e8f1 z_bits=bcc82e73 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=26 x_bits=bea15807 y_bits=bedd54ff z_bits=bcc0988c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=27 x_bits=be9d4dd4 y_bits=beda0399 z_bits=bcbba30c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=28 x_bits=be997d95 y_bits=bed6e8c8 z_bits=bcb971f1 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=29 x_bits=be95dd52 y_bits=bed3fb6a z_bits=bcb906a4 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=30 x_bits=be92691b y_bits=bed13804 z_bits=bcbeb754 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=31 x_bits=be8ef1d7 y_bits=bece733d z_bits=bcb8c515 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=32 x_bits=be8bc006 y_bits=becbefdb z_bits=bcb75cc3 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=33 x_bits=be88c44f y_bits=bec99fdf z_bits=bcb97320 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=34 x_bits=bef5158a y_bits=be8325eb z_bits=bd037b56 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=35 x_bits=befa58b8 y_bits=be8745b3 z_bits=bd00cbee finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=36 x_bits=beff47d1 y_bits=be8b2959 z_bits=bcfe7fc1 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=37 x_bits=bf01f68c y_bits=be8ed7d4 z_bits=bcfc19cd finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=38 x_bits=bf042610 y_bits=be92539e z_bits=bcfb3c1c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=39 x_bits=bf063288 y_bits=be959d61 z_bits=bcfc26eb finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=40 x_bits=bf081d97 y_bits=be98bcec z_bits=bcff3edd finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=41 x_bits=bf0a1214 y_bits=be9b96a5 z_bits=bcf5fb68 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=42 x_bits=bf0beb17 y_bits=be9e488a z_bits=bcedcacd finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=43 x_bits=bf0da865 y_bits=bea0d2b4 z_bits=bce76cd8 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=44 x_bits=bf08eb62 y_bits=beeda2e1 z_bits=3c1c90f6 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=45 x_bits=bf08eb64 y_bits=beeda2dd z_bits=3c1c8f76 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=46 x_bits=bf08eb64 y_bits=beeda2e6 z_bits=3c1c906a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=47 x_bits=bf08eb66 y_bits=beeda2e4 z_bits=3c1c8d6c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=48 x_bits=bf08eb67 y_bits=beeda2dc z_bits=3c1c8aee finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=49 x_bits=bf08eb68 y_bits=beeda2e6 z_bits=3c1c8bf4 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=50 x_bits=bf08eb69 y_bits=beeda2e8 z_bits=3c1c899e finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=51 x_bits=bf08eb6b y_bits=beeda2de z_bits=3c1c869e finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=52 x_bits=bf08eb6c y_bits=beeda2e4 z_bits=3c1c86ec finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=53 x_bits=bf08eb6d y_bits=beeda2e8 z_bits=3c1c8572 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=54 x_bits=bf08eb6f y_bits=beeda2df z_bits=3c1c81fa finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=55 x_bits=bf08eb9d y_bits=beeda2ef z_bits=3c1c52bc finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=56 x_bits=bf08eb9f y_bits=beeda2e5 z_bits=3c1c4ebc finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=57 x_bits=bf08eba1 y_bits=beeda2e5 z_bits=3c1c4e16 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=58 x_bits=bf08eba1 y_bits=beeda2f0 z_bits=3c1c4e7e finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=59 x_bits=bf08eba3 y_bits=beeda2e8 z_bits=3c1c4ab8 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:pose_dump_done count=60 finite=60
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_dump_start count=460 range_limit_mm=1400
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=0 x_bits=3f399a57 y_bits=bee1ce12 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=1 x_bits=3f399a1d y_bits=bf0f1605 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=2 x_bits=bfc99957 y_bits=bf0dcfad finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=3 x_bits=bfc9993d y_bits=bee44936 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=4 x_bits=bf0e76df y_bits=3f2bca95 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=5 x_bits=bee306ce y_bits=3f2bca5d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=6 x_bits=bee457d2 y_bits=bfca3b95 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=7 x_bits=bf0dd6fb y_bits=bfca3b7b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=8 x_bits=3f3dd37a y_bits=bee5d37a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=9 x_bits=3f3da34c y_bits=bf118c7b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=10 x_bits=bfcbec6a y_bits=bf0c985e finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=11 x_bits=bfcbd658 y_bits=bee10cd1 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=12 x_bits=bf0d1a85 y_bits=3f2b9554 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=13 x_bits=bee04e63 y_bits=3f2b67cc finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=14 x_bits=bee8ab62 y_bits=bfca6af9 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=15 x_bits=bf1000a1 y_bits=bfca5537 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=16 x_bits=3f4028f3 y_bits=bee61a5e finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=17 x_bits=3f3ff6d1 y_bits=bf11bccb finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=18 x_bits=bfcd313b y_bits=bf0cccad finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=19 x_bits=bfcd19f5 y_bits=bee09a86 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=20 x_bits=bf0b33ec y_bits=3f2b3eda finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=21 x_bits=bedc8e17 y_bits=3f2b0f9a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=22 x_bits=bee52457 y_bits=bfca96f5 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=23 x_bits=bf0e4389 y_bits=bfca8057 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=24 x_bits=3f3f7333 y_bits=bee537da finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=25 x_bits=3f3f4eef y_bits=bf10fe57 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=26 x_bits=bfcd033a y_bits=bf0d58f2 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=27 x_bits=bfccf21a y_bits=bee14be7 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=28 x_bits=bf095208 y_bits=3f2aff96 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=29 x_bits=bed8d70c y_bits=3f2add18 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=30 x_bits=bedf652e y_bits=bfcab112 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=31 x_bits=bf0b6a76 y_bits=bfcaa088 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=32 x_bits=3f3ec52e y_bits=bee46c18 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=33 x_bits=3f3eadaa y_bits=bf1051ae finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=34 x_bits=bfccd187 y_bits=bf0ddf15 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=35 x_bits=bfccc641 y_bits=bee1fdee finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=36 x_bits=bf07a1be y_bits=3f2abd6b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=37 x_bits=bed58340 y_bits=3f2aa6df finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=38 x_bits=beda2918 y_bits=bfcaccc6 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=39 x_bits=bf08d2e7 y_bits=bfcac1f0 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=40 x_bits=3f3e3131 y_bits=bee3b039 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=41 x_bits=3f3e25bd y_bits=bf0fb361 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=42 x_bits=bfccd465 y_bits=bf0e6985 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=43 x_bits=bfccced1 y_bits=bee2abba finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=44 x_bits=bf061457 y_bits=3f2a7738 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=45 x_bits=bed27546 y_bits=3f2a6c28 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=46 x_bits=bed5443c y_bits=bfcaea81 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=47 x_bits=bf0666ef y_bits=bfcae52d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=48 x_bits=3f3dc830 y_bits=bee2f253 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=49 x_bits=3f3dc8c8 y_bits=bf0f1a7d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=50 x_bits=bfcca0bb y_bits=bf0ef2f8 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=51 x_bits=bfcca105 y_bits=bee37158 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=52 x_bits=bf049ef0 y_bits=3f2a2eb3 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=53 x_bits=becf9754 y_bits=3f2a2f47 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=54 x_bits=bed08844 y_bits=bfcb0922 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=55 x_bits=bf040f66 y_bits=bfcb096a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=56 x_bits=3f3d05aa y_bits=bee241f1 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=57 x_bits=3f3d1228 y_bits=bf0e81e5 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=58 x_bits=bfcc581a y_bits=bf0f7cd4 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=59 x_bits=bfcc5e58 y_bits=bee444b0 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=60 x_bits=bf0341a6 y_bits=3f29e3ee finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=61 x_bits=becce9a6 y_bits=3f29f02c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=62 x_bits=becc016b y_bits=bfcb07ec finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=63 x_bits=bf01cbf7 y_bits=bfcb0dd4 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=64 x_bits=3f3c6877 y_bits=bee19bb0 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=65 x_bits=3f3c8053 y_bits=bf0df4c9 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=66 x_bits=bfcc3e59 y_bits=bf100a7d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=67 x_bits=bfcc4a6d y_bits=bee512cd finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=68 x_bits=bf020057 y_bits=3f29d7dd finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=69 x_bits=beca6717 y_bits=3f29ef6f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=70 x_bits=bec7b2e8 y_bits=bfcb28df finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=71 x_bits=beff563e y_bits=bfcb3441 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=72 x_bits=3f3bf6cc y_bits=bee0f9d4 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=73 x_bits=3f3c19b4 y_bits=bf0d704c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=74 x_bits=bfcc0ec4 y_bits=bf10962a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=75 x_bits=bfcc20a2 y_bits=bee5e9d8 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=76 x_bits=bf00cfb3 y_bits=3f298817 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=77 x_bits=bec812c7 y_bits=3f29aac9 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=78 x_bits=bec39351 y_bits=bfcb4ad6 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=79 x_bits=befb4373 y_bits=bfcb5ba0 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=80 x_bits=3f3b6ac9 y_bits=bee06cf2 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=81 x_bits=3f3b97ff y_bits=bf0cf64a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=82 x_bits=bfcbec88 y_bits=bf111f75 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=83 x_bits=bfcc03ee y_bits=bee6bc2a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=84 x_bits=beff669e y_bits=3f2935bd finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=85 x_bits=bec5e6fc y_bits=3f2962f3 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=86 x_bits=bebfb3fe y_bits=bfcb6e3f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=87 x_bits=bef770e4 y_bits=bfcb8429 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=88 x_bits=3f3b0b92 y_bits=bedfd6b8 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=89 x_bits=3f3b436c y_bits=bf0c7e07 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=90 x_bits=bfcbd443 y_bits=bf11b04d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=91 x_bits=bfcbf177 y_bits=bee79d9e finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=92 x_bits=befd5f51 y_bits=3f28e0ec finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=93 x_bits=bec3ecb7 y_bits=3f291910 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=94 x_bits=bebbfc03 y_bits=bfcb71bd finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=95 x_bits=bef3b8c3 y_bits=bfcb8cf9 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=96 x_bits=3f3a9424 y_bits=bedf5590 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=97 x_bits=3f3ad5e0 y_bits=bf0c104a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=98 x_bits=bfcba790 y_bits=bf123a93 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=99 x_bits=bfcbca44 y_bits=bee87ed5 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=100 x_bits=befb8352 y_bits=3f28cb10 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=101 x_bits=bec210e4 y_bits=3f290d8e finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=102 x_bits=beb87973 y_bits=bfcb9773 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=103 x_bits=bef042e9 y_bits=bfcbb7bd finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=104 x_bits=3f3a4b14 y_bits=beded62b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=105 x_bits=3f3a9682 y_bits=bf0ba9dd finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=106 x_bits=bfcb8461 y_bits=bf12c624 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=107 x_bits=bfcbac8b y_bits=bee962a9 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=108 x_bits=bef9c2db y_bits=3f28719b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=109 x_bits=bec05d81 y_bits=3f28be3d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=110 x_bits=beb51f96 y_bits=bfcbbe28 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=111 x_bits=beecf5bc y_bits=bfcbe36e finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=112 x_bits=3f39ef40 y_bits=bede6040 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=113 x_bits=3f3a441c y_bits=bf0b4829 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=114 x_bits=bfcb8b49 y_bits=bf1356d5 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=115 x_bits=bfcbb8e7 y_bits=beea43e5 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=116 x_bits=bef8245d y_bits=3f28160c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=117 x_bits=bebecc1d y_bits=3f286ca6 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=118 x_bits=beb1f5f0 y_bits=bfcbc51c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=119 x_bits=bee9cbde y_bits=bfcbef46 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=120 x_bits=3f395e72 y_bits=bedda6c9 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=121 x_bits=3f39be08 y_bits=bf0aa475 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=122 x_bits=bfcb69d8 y_bits=bf13e447 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=123 x_bits=bfcb9e16 y_bits=beeaf815 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=124 x_bits=bef484fe y_bits=3f27dd71 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=125 x_bits=bebb39eb y_bits=3f283fe1 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=126 x_bits=beac781d y_bits=bfcbda07 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=127 x_bits=bee45aa0 y_bits=bfcc0a09 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=128 x_bits=3f3845a4 y_bits=bedd6da4 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=129 x_bits=3f38abfa y_bits=bf0a4dd5 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=130 x_bits=bfcaa9bc y_bits=bf143f96 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=131 x_bits=bfcae214 y_bits=beebbbcf finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=132 x_bits=bef2b3ea y_bits=3f27cb8e finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=133 x_bits=beb9690f y_bits=3f2835ce finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=134 x_bits=bea9649d y_bits=bfcbfec1 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=135 x_bits=bee153ca y_bits=bfcc329f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=136 x_bits=3f3b4675 y_bits=beefb1c4 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=137 x_bits=3f3ad9cf y_bits=bf13a9c2 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=138 x_bits=bfcca9c2 y_bits=bf0c09c2 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=139 x_bits=bfcc6db0 y_bits=beda8f2c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=140 x_bits=bee0addd y_bits=3f2a9fc5 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=141 x_bits=bea6c8a7 y_bits=3f2a2eb3 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=142 x_bits=beb94041 y_bits=bfcdf1b9 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=143 x_bits=bef1bce9 y_bits=bfcdba8f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=144 x_bits=3f3f9bcb y_bits=befa88eb finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=145 x_bits=3f3e8d89 y_bits=bf1957ea finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=146 x_bits=bfcf845c y_bits=bf043f05 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=147 x_bits=bfceed24 y_bits=bec9a784 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=148 x_bits=bed09d50 y_bits=3f2f6045 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=149 x_bits=be960cae y_bits=3f2e4665 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=150 x_bits=bec2f9ba y_bits=bfd0b6a2 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=151 x_bits=befcaf96 y_bits=bfd02bc0 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=152 x_bits=3f3f7c84 y_bits=bef46c9f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=153 x_bits=3f3e7ed0 y_bits=bf16037f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=154 x_bits=bfcf921b y_bits=bf026024 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=155 x_bits=bfcf017b y_bits=bec55b0a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=156 x_bits=becc4f94 y_bits=3f2ed0bf finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=157 x_bits=be925850 y_bits=3f2dc843 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=158 x_bits=bebc5ed6 y_bits=bfd0baef finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=159 x_bits=bef69674 y_bits=bfd0361f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=160 x_bits=3f3e5279 y_bits=beec7f92 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=161 x_bits=3f3d7d49 y_bits=bf11adab finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=162 x_bits=bfcf1a1c y_bits=bf0193cf finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=163 x_bits=bfce9e3a y_bits=bec36570 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=164 x_bits=bec9f21f y_bits=3f2db53e finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=165 x_bits=be90ac7b y_bits=3f2cd6ae finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=166 x_bits=beb3d14c y_bits=bfd05ca1 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=167 x_bits=beee659e y_bits=bfcfeacf finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=168 x_bits=3f3e4710 y_bits=bee80f7d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=169 x_bits=3f3d71de y_bits=bf0f2ec3 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=170 x_bits=bfceff77 y_bits=befe5501 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=171 x_bits=bfce8153 y_bits=bebe1243 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=172 x_bits=bec41f09 y_bits=3f2d81b2 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=173 x_bits=be8b5a42 y_bits=3f2ca2d4 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=174 x_bits=beae5c21 y_bits=bfd076d7 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=175 x_bits=bee97107 y_bits=bfd002dd finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=176 x_bits=3f3da790 y_bits=bee260cf finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=177 x_bits=3f3ce384 y_bits=bf0c0430 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=178 x_bits=bfce666a y_bits=befb243f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=179 x_bits=bfcdf074 y_bits=beba933b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=180 x_bits=bebfcbc0 y_bits=3f2c78e2 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=181 x_bits=be87ad68 y_bits=3f2babd6 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=182 x_bits=bea7973e y_bits=bfd03352 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=183 x_bits=bee30735 y_bits=bfcfc6bc finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=184 x_bits=3f3d26ef y_bits=bedd4575 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=185 x_bits=3f3c6fbf y_bits=bf092991 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=186 x_bits=bfce0025 y_bits=bef7de59 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=187 x_bits=bfcd900f y_bits=beb6f27f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=188 x_bits=bebb6bfe y_bits=3f2bd398 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=189 x_bits=be83daa2 y_bits=3f2b13ba finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=190 x_bits=bea16cf0 y_bits=bfcfdf71 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=191 x_bits=bedd2ace y_bits=bfcf784d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=192 x_bits=3f3cffef y_bits=bed922ad finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=193 x_bits=3f3c4ce1 y_bits=bf06d7df finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=194 x_bits=bfcdd16f y_bits=bef42339 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=195 x_bits=bfcd6225 y_bits=beb2d039 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=196 x_bits=beb6b2ee y_bits=3f2b8b90 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=197 x_bits=be7f2a9b y_bits=3f2acfc4 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=198 x_bits=be9c4bc7 y_bits=bfcfe20f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=199 x_bits=bed870c8 y_bits=bfcf7b97 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=200 x_bits=3f3c4137 y_bits=bed42b9e finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=201 x_bits=3f3b9eb1 y_bits=bf040f78 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=202 x_bits=bfcd2677 y_bits=bef1afc3 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=203 x_bits=bfccbff7 y_bits=beb02856 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=204 x_bits=beb31e69 y_bits=3f2aac8b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=205 x_bits=be791b3a y_bits=3f2a01d7 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=206 x_bits=be963c02 y_bits=bfcf88ed finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=207 x_bits=bed2a23e y_bits=bfcf2a73 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=208 x_bits=3f3c19c2 y_bits=bed0355b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=209 x_bits=3f3b7ec0 y_bits=bf01da8d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=210 x_bits=bfccd607 y_bits=beeecb36 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=211 x_bits=bfcc72f5 y_bits=beacf62a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=212 x_bits=beaf323f y_bits=3f29e4f5 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=213 x_bits=be7243c6 y_bits=3f29423b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=214 x_bits=be914aec y_bits=bfcf4700 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=215 x_bits=becdf1df y_bits=bfceebb8 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=216 x_bits=3f3bcf7d y_bits=beccaf93 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=217 x_bits=3f3b39cd y_bits=beffbba1 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=218 x_bits=bfcc76c7 y_bits=beebf0f6 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=219 x_bits=bfcc15e3 y_bits=bea9db4d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=220 x_bits=beab6384 y_bits=3f297fd4 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=221 x_bits=be6b73ee y_bits=3f28e278 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=222 x_bits=be8ccdec y_bits=bfcf36cb finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=223 x_bits=bec9c257 y_bits=bfcedd6d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=224 x_bits=3f3baa6a y_bits=bec98c06 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=225 x_bits=3f3b17a4 y_bits=befc3128 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=226 x_bits=bfcc472f y_bits=bee91833 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=227 x_bits=bfcbe6fd y_bits=bea6b530 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=228 x_bits=bea79da6 y_bits=3f290002 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=229 x_bits=be64b607 y_bits=3f2865a8 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=230 x_bits=be88c27e y_bits=bfcf13c9 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=231 x_bits=bec5f761 y_bits=bfcebb19 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=232 x_bits=3f3baf51 y_bits=bec6b012 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=233 x_bits=3f3b1de5 y_bits=bef8fb18 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=234 x_bits=bfcc030a y_bits=bee644ee finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=235 x_bits=bfcba2b2 y_bits=bea3a186 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=236 x_bits=bea3ec49 y_bits=3f28ab76 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=237 x_bits=be5e0785 y_bits=3f28127a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=238 x_bits=be8508d0 y_bits=bfcefc5f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=239 x_bits=bec27e18 y_bits=bfcea385 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=240 x_bits=3f3be109 y_bits=bec45e63 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=241 x_bits=3f3b4c0b y_bits=bef65bf5 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=242 x_bits=bfcbcac5 y_bits=bee31bfa finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=243 x_bits=bfcb6717 y_bits=bea03877 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=244 x_bits=bea00216 y_bits=3f2884d5 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=245 x_bits=be56ce0c y_bits=3f27e80b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=246 x_bits=be81edcb y_bits=bfcf110b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=247 x_bits=bebfb013 y_bits=bfceb501 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=248 x_bits=3f3b8eb9 y_bits=bec1546e finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=249 x_bits=3f3aff89 y_bits=bef2eb36 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=250 x_bits=bfcb6f4b y_bits=bee0e16b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=251 x_bits=bfcb0e6f y_bits=be9dca1f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=252 x_bits=be9cd479 y_bits=3f27d934 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=253 x_bits=be514061 y_bits=3f274276 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=254 x_bits=be7beb26 y_bits=bfcee240 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=255 x_bits=bebbeb9d y_bits=bfce88cc finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=256 x_bits=3f3b9dc9 y_bits=bebecf49 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=257 x_bits=3f3b108d y_bits=bef018de finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=258 x_bits=bfcb25d2 y_bits=bede8987 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=259 x_bits=bfcac568 y_bits=be9b3eab finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=260 x_bits=be99a57a y_bits=3f279108 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=261 x_bits=be4b7cc8 y_bits=3f26fc4e finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=262 x_bits=be7534dc y_bits=bfcec466 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=263 x_bits=beb8c408 y_bits=bfce6b56 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=264 x_bits=3f3b9284 y_bits=bebcb5b8 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=265 x_bits=3f3b048c y_bits=beedb1fa finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=266 x_bits=bfcaea61 y_bits=bedc1b90 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=267 x_bits=bfca8893 y_bits=be989d4d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=268 x_bits=be9671c4 y_bits=3f272fee finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=269 x_bits=be45b002 y_bits=3f269a62 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=270 x_bits=be6f72fb y_bits=bfceb3de finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=271 x_bits=beb61681 y_bits=bfce5980 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=272 x_bits=bfcd4d02 y_bits=be8d9065 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=273 x_bits=bfccd648 y_bits=be2795ad finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=274 x_bits=befc99dd y_bits=3f2a71b4 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=275 x_bits=becf4c7c y_bits=3f29b780 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=276 x_bits=bee8b210 y_bits=bfcfb251 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=277 x_bits=bf172aaa y_bits=bfcf2333 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=278 x_bits=bfccd21f y_bits=be91f06d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=279 x_bits=bfcc5f3d y_bits=be31bd8b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=280 x_bits=bf011e3d y_bits=3f2a2c67 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=281 x_bits=bed494c1 y_bits=3f297495 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=282 x_bits=beed96f4 y_bits=bfcf71b5 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=283 x_bits=bf195cf0 y_bits=bfcee687 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=284 x_bits=bfcc4269 y_bits=be95e9fa finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=285 x_bits=bfcbd24d y_bits=be3b18b6 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=286 x_bits=bf03b3df y_bits=3f29c3d1 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=287 x_bits=bed972a7 y_bits=3f290d01 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=288 x_bits=bef25832 y_bits=bfcf4317 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=289 x_bits=bf1b83bd y_bits=bfceba7b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=290 x_bits=bfcbe1e5 y_bits=be99a5b9 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=291 x_bits=bfcb7409 y_bits=be43c4e1 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=292 x_bits=bf061fa9 y_bits=3f2975e5 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=293 x_bits=beddfce3 y_bits=3f28bf9f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=294 x_bits=bef6df64 y_bits=bfcf073e finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=295 x_bits=bf1d8d7e y_bits=bfce80d0 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=296 x_bits=bfcb90c4 y_bits=be9d15fb finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=297 x_bits=bfcb245e y_bits=be4bc07d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=298 x_bits=bf085cf3 y_bits=3f294183 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=299 x_bits=bee22a30 y_bits=3f288aad finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=300 x_bits=befb3f36 y_bits=bfcedfb0 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=301 x_bits=bf1f89f1 y_bits=bfce5a82 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=302 x_bits=bfcb2e40 y_bits=bea0358b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=303 x_bits=bfcac28c y_bits=be531ae6 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=304 x_bits=bf0a6878 y_bits=3f28e4c5 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=305 x_bits=bee600e9 y_bits=3f282c47 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=306 x_bits=beff7c82 y_bits=bfcecc9b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=307 x_bits=bf217b81 y_bits=bfce47a3 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=308 x_bits=bfcadc03 y_bits=bea308ee finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=309 x_bits=bfca6ffd y_bits=be59c373 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=310 x_bits=bf0c41db y_bits=3f289d6c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=311 x_bits=bee97376 y_bits=3f27e1aa finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=312 x_bits=bf01d24a y_bits=bfceaf30 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=313 x_bits=bf236264 y_bits=bfce294a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=314 x_bits=bfcaae46 y_bits=bea6683d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=315 x_bits=bfca470a y_bits=be6168ce finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=316 x_bits=bf0e8383 y_bits=3f287756 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=317 x_bits=beedb5ff y_bits=3f27c16c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=318 x_bits=bf036dfc y_bits=bfce7f11 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=319 x_bits=bf24d154 y_bits=bfcdfeb3 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=320 x_bits=bfca72dc y_bits=bea98b3f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=321 x_bits=bfca0fe8 y_bits=be6895b9 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=322 x_bits=bf10a0d1 y_bits=3f2823a1 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=323 x_bits=bef1bcc2 y_bits=3f277305 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=324 x_bits=bf04f919 y_bits=bfce65dd finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=325 x_bits=bf263613 y_bits=bfcdea55 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=326 x_bits=bfca4a8a y_bits=beac68fc finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=327 x_bits=bfc9eaf6 y_bits=be6f1e90 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=328 x_bits=bf129629 y_bits=3f282599 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=329 x_bits=bef566ce y_bits=3f2778cf finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=330 x_bits=bf067c38 y_bits=bfce42e6 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=331 x_bits=bf2792c4 y_bits=bfcdcb38 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=332 x_bits=3f3b44b9 y_bits=bec832e2 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=333 x_bits=3f3b9125 y_bits=bf035682 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=334 x_bits=bfc89d37 y_bits=bf06a686 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=335 x_bits=bfc8bdc3 y_bits=bed8146b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=336 x_bits=bf19633f y_bits=3f25f72c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=337 x_bits=befbcb25 y_bits=3f263a6e finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=338 x_bits=beef2537 y_bits=bfccff30 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=339 x_bits=bf14b2cf y_bits=bfcd22d0 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=340 x_bits=3f3b44b7 y_bits=bec832ed finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=341 x_bits=3f3b9123 y_bits=bf035687 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=342 x_bits=bfc89d38 y_bits=bf06a67c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=343 x_bits=bfc8bdc4 y_bits=bed81457 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=344 x_bits=bf19633a y_bits=3f25f72f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=345 x_bits=befbcb1b y_bits=3f263a6f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=346 x_bits=beef2549 y_bits=bfccff2f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=347 x_bits=bf14b2d8 y_bits=bfcd22cf finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=348 x_bits=3f3b44b7 y_bits=bec832ec finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=349 x_bits=3f3b9123 y_bits=bf035687 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=350 x_bits=bfc89d38 y_bits=bf06a685 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=351 x_bits=bfc8bdc4 y_bits=bed81468 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=352 x_bits=bf19633e y_bits=3f25f729 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=353 x_bits=befbcb23 y_bits=3f263a6b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=354 x_bits=beef253f y_bits=bfccff32 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=355 x_bits=bf14b2d3 y_bits=bfcd22d2 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=356 x_bits=3f3b44b6 y_bits=bec83308 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=357 x_bits=3f3b9120 y_bits=bf035695 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=358 x_bits=bfc89d39 y_bits=bf06a677 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=359 x_bits=bfc8bdc5 y_bits=bed8144d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=360 x_bits=bf196333 y_bits=3f25f72b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=361 x_bits=befbcb0d y_bits=3f263a6b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=362 x_bits=beef255f y_bits=bfccff31 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=363 x_bits=bf14b2e3 y_bits=bfcd22d1 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=364 x_bits=3f3b44b5 y_bits=bec8331a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=365 x_bits=3f3b911f y_bits=bf03569e finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=366 x_bits=bfc89d3a y_bits=bf06a66b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=367 x_bits=bfc8bdc6 y_bits=bed81435 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=368 x_bits=bf196329 y_bits=3f25f730 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=369 x_bits=befbcaf9 y_bits=3f263a6e finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=370 x_bits=beef2577 y_bits=bfccff2f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=371 x_bits=bf14b2ef y_bits=bfcd22cf finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=372 x_bits=3f3b44b4 y_bits=bec83319 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=373 x_bits=3f3b911e y_bits=bf03569d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=374 x_bits=bfc89d3a y_bits=bf06a674 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=375 x_bits=bfc8bdc6 y_bits=bed81447 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=376 x_bits=bf19632e y_bits=3f25f72a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=377 x_bits=befbcb03 y_bits=3f263a6a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=378 x_bits=beef2571 y_bits=bfccff32 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=379 x_bits=bf14b2ec y_bits=bfcd22d2 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=380 x_bits=3f3b44b4 y_bits=bec83333 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=381 x_bits=3f3b911c y_bits=bf0356aa finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=382 x_bits=bfc89d3b y_bits=bf06a66d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=383 x_bits=bfc8bdc7 y_bits=bed81439 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=384 x_bits=bf196324 y_bits=3f25f72a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=385 x_bits=befbcaef y_bits=3f263a68 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=386 x_bits=beef2589 y_bits=bfccff33 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=387 x_bits=bf14b2f8 y_bits=bfcd22d1 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=388 x_bits=3f3b44b2 y_bits=bec83347 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=389 x_bits=3f3b911a y_bits=bf0356b4 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=390 x_bits=bfc89d3d y_bits=bf06a65c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=391 x_bits=bfc8bdc7 y_bits=bed81416 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=392 x_bits=bf196319 y_bits=3f25f730 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=393 x_bits=befbcad9 y_bits=3f263a6c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=394 x_bits=beef25a9 y_bits=bfccff31 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=395 x_bits=bf14b308 y_bits=bfcd22cf finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=396 x_bits=3f3b44b1 y_bits=bec8334a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=397 x_bits=3f3b9119 y_bits=bf0356b6 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=398 x_bits=bfc89d3d y_bits=bf06a65f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=399 x_bits=bfc8bdc7 y_bits=bed8141c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=400 x_bits=bf19631c y_bits=3f25f72d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=401 x_bits=befbcadf y_bits=3f263a69 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=402 x_bits=beef25a5 y_bits=bfccff32 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=403 x_bits=bf14b306 y_bits=bfcd22d0 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=404 x_bits=3f3b44b1 y_bits=bec8335d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=405 x_bits=3f3b9117 y_bits=bf0356bf finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=406 x_bits=bfc89d3e y_bits=bf06a658 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=407 x_bits=bfc8bdc8 y_bits=bed8140f finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=408 x_bits=bf196317 y_bits=3f25f72b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=409 x_bits=befbcad5 y_bits=3f263a67 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=410 x_bits=beef25b5 y_bits=bfccff33 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=411 x_bits=bf14b30e y_bits=bfcd22d1 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=412 x_bits=3f3b44b2 y_bits=bec83377 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=413 x_bits=3f3b9116 y_bits=bf0356cc finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=414 x_bits=bfc89d3f y_bits=bf06a647 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=415 x_bits=bfc8bdc9 y_bits=bed813ed finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=416 x_bits=bf196309 y_bits=3f25f732 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=417 x_bits=befbcab9 y_bits=3f263a6c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=418 x_bits=beef25d9 y_bits=bfccff31 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=419 x_bits=bf14b320 y_bits=bfcd22cf finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=420 x_bits=3f3b4490 y_bits=bec83566 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=421 x_bits=3f3b90de y_bits=bf0357c4 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=422 x_bits=bfc89d5c y_bits=bf06a58d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=423 x_bits=bfc8bddc y_bits=bed81279 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=424 x_bits=bf196263 y_bits=3f25f735 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=425 x_bits=befbc96d y_bits=3f263a5b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=426 x_bits=beef27e5 y_bits=bfccff3c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=427 x_bits=bf14b426 y_bits=bfcd22ce finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=428 x_bits=3f3b4490 y_bits=bec83585 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=429 x_bits=3f3b90dc y_bits=bf0357d4 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=430 x_bits=bfc89d5d y_bits=bf06a578 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=431 x_bits=bfc8bddd y_bits=bed8124e finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=432 x_bits=bf196255 y_bits=3f25f73c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=433 x_bits=befbc94f y_bits=3f263a60 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=434 x_bits=beef280e y_bits=bfccff3a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=435 x_bits=bf14b43b y_bits=bfcd22cc finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=436 x_bits=3f3b448e y_bits=bec8358b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=437 x_bits=3f3b90da y_bits=bf0357d7 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=438 x_bits=bfc89d5e y_bits=bf06a574 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=439 x_bits=bfc8bdde y_bits=bed81246 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=440 x_bits=bf196254 y_bits=3f25f73c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=441 x_bits=befbc94d y_bits=3f263a60 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=442 x_bits=beef2816 y_bits=bfccff3a finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=443 x_bits=bf14b43f y_bits=bfcd22cc finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=444 x_bits=3f3b448e y_bits=bec83592 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=445 x_bits=3f3b90da y_bits=bf0357da finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=446 x_bits=bfc89d5e y_bits=bf06a579 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=447 x_bits=bfc8bdde y_bits=bed81251 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=448 x_bits=bf196257 y_bits=3f25f737 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=449 x_bits=befbc953 y_bits=3f263a5b finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=450 x_bits=beef2812 y_bits=bfccff3d finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=451 x_bits=bf14b43d y_bits=bfcd22cf finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=452 x_bits=3f3b448d y_bits=bec835b1 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=453 x_bits=3f3b90d7 y_bits=bf0357ea finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=454 x_bits=bfc89d60 y_bits=bf06a569 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=455 x_bits=bfc8bdde y_bits=bed81230 finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=456 x_bits=bf196247 y_bits=3f25f73c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=457 x_bits=befbc933 y_bits=3f263a5e finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=458 x_bits=beef283a y_bits=bfccff3c finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=459 x_bits=bf14b451 y_bits=bfcd22cc finite=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:map_dump_done count=460 finite=460
+NANO_C_SLAM_GVSOC_SPI_MAIN:graph_summary stored=3 optimizer_input=3 unique_edges=3
+NANO_C_SLAM_GVSOC_SPI_MAIN:stored_constraint index=0 from=20 to=0 valid=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:stored_constraint index=1 from=40 to=0 valid=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:stored_constraint index=2 from=40 to=20 valid=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimizer_edge index=0 from=1 to=0 valid=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimizer_edge index=1 from=2 to=0 valid=1
+NANO_C_SLAM_GVSOC_SPI_MAIN:optimizer_edge index=2 from=2 to=1 valid=1
+NANO_C_SLAM_SPI:stats rx=64 malformed=0 unknown=0 frames=60,3,1,0,0,0,0 decode_ok=60,3,0,0,0,0,0 decode_error=0,0,0,0,0,0,0 pose_id_missing=0 pose_id_nonadvancing=0 optimize_responses=1
+
+NANO_C_SLAM_GVSOC_SPI_MAIN:gazebo_capture_ok packets=64 pose_decoded=60 pose_inserted=60 scans_decoded=3 scans_registered=3 constraints=3 optimize=1 poses=60 graph=3 solver_calls=3 has_nan=0 completed=1 response_expected_hex=3c0003001500840000000100030009000100
+NANO_C_SLAM_GVSOC_SPI_HOST:live_response_rx_hex=3c0003001500840000000100030009000100

@@ -690,7 +690,10 @@ def main(args: list[str] | None = None) -> int:
         "input_samples": [sample.to_record() for sample in samples],
         "input_pair_provenance": capture.pair_provenance,
         "capture_rejections": capture.rejections,
-        "tof_projection": "one four-ray reading per direction in central ToF column",
+        "tof_projection": (
+            "four cardinal ranges per direction in the symmetric central ToF "
+            "columns 3 and 4"
+        ),
         "mapping": mapping,
         "process_streams": {
             "stdout": {

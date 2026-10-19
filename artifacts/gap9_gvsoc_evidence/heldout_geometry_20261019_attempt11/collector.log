@@ -1,0 +1,7 @@
+Nano-C-SLAM host mapping OK: 60 poses, 3 scans, 230 points, graph=3; report: /private/tmp/.heldout_geometry_20261019_attempt11_tofpair.b2838364-f5a6-40b7-8cc7-d6fed9242770.capture.json
+[INFO] [1792416044.358279000] [nano_c_slam_mapping_capture]: Captured 10/60 samples
+[INFO] [1792416045.644854000] [nano_c_slam_mapping_capture]: Captured 20/60 samples
+[INFO] [1792416046.773101000] [nano_c_slam_mapping_capture]: Captured 30/60 samples
+[INFO] [1792416052.683558000] [nano_c_slam_mapping_capture]: Captured 40/60 samples
+[INFO] [1792416061.191896000] [nano_c_slam_mapping_capture]: Captured 50/60 samples
+[INFO] [1792416065.792235000] [nano_c_slam_mapping_capture]: Captured 60/60 samples

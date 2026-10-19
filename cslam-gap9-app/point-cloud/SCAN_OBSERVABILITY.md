@@ -4,9 +4,11 @@ The host replay emits the coordinates produced by the owned `pcl_extract_scan`
 function for non-overlapping 20-pose windows. These coordinates use the
 firmware projection convention and the inclusive `measurement <= 1400 mm` gate.
 Incomplete final windows are retained and evaluated with their actual pose
-count. This is a host-only diagnostic over the four cardinal Gazebo rays
-projected into the central ToF column; it does not establish sensor hardware
-quality or map accuracy.
+count. This is a host-only diagnostic over four cardinal Gazebo ranges copied
+into ToF columns 3 and 4. The firmware projects those column centers at
++2.8125 and -2.8125 degrees, symmetrically around the cardinal direction.
+This two-bin approximation does not model the full ToF image or establish
+sensor hardware quality or map accuracy.
 
 For each window the report records point count, exact unique-coordinate count,
 axis-aligned x/y span in meters, and the major/minor eigenvalues of the
