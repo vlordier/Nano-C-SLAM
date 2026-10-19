@@ -69,6 +69,16 @@ tests validate those units only; they do not start appMain() or provide an
 RTOS scheduler, radio, estimator, sensor, UWB transceiver, SPI peripheral, or
 motor mixer.
 
+The exact owned translation units currently compiled by the host suite are
+`src/flight_commander.c`, `src/operator_heartbeat.c`,
+`src/exploration/limit_actuation.c`, `src/tof_freshness.c`,
+`src/mission_timeout.c`, `src/uwb_token_handoff.c`,
+`src/uwb_token_lease.c`, `src/bounded_batch.c`, `src/spi_comm/spi_wait.c`,
+and `src/spi_comm/spi_comm.c`. The suite uses purpose-built test stubs, not
+the FreeRTOS POSIX port. No complete Nano app translation unit has yet been
+verified in a host FreeRTOS SITL build; portability of these selected units
+must not be confused with proof that `appMain()` or its task graph runs there.
+
 The likely portable control path is existing Nano logic in flight_commander.c,
 exploration/, line_detector.c, limit_actuation.c, and the pure policy modules
 above. Board seams are concentrated in tof_matrix.c/i2c_platform.c,
@@ -76,6 +86,30 @@ spi_comm.c/deck GPIO, uwb_ranging.c plus the UWB submodule,
 radio_comm.c/CRTP, and the Crazyflie estimator/commander/motor pipeline. A
 Linux-port integration needs simulator-backed implementations for each seam
 it executes; every stub must be named in the run report.
+
+## Execution and flight evidence markers
+
+The existing app emits a ToF-ready message from `mission_task()` and `Take-off:`
+from `flight_commander.c`. Those strings
+are useful debugging clues, but they are not a sufficient SITL contract: no
+existing marker identifies each task, timestamps simulator input, or proves
+that motor output reached Gazebo. A SITL adapter must add structured markers
+with at least these fields before flight is claimed:
+
+- `NCS_SITL_TASK_READY task=<name>` for each required Nano task, including
+  `mission_task`, `tof_task`, `flight_task`, and `uwb_ranging_task`.
+- `NCS_SITL_SENSOR source=<adapter> seq=<n> sim_ns=<n> fw_tick=<n>` when a
+  fresh simulator sample is accepted by the corresponding owned task.
+- `NCS_SITL_MOTOR seq=<n> sim_ns=<n> fw_tick=<n> m1=<n> m2=<n> m3=<n> m4=<n>`
+  at the firmware-to-simulator actuator boundary, after range and finite-value
+  validation.
+- `NCS_SITL_MISSION phase=<takeoff|hover|land|done|fault>` with simulator
+  time and the reason for terminal phases.
+
+The run evidence must correlate those markers with Gazebo pose/velocity,
+include a disconnected-actuator negative control, and show nonzero exit status
+for stale sensor or malformed motor input. Markers alone are not proof: the
+negative control and output-to-state causal link are required.
 
 ## Evidence-backed SITL direction
 

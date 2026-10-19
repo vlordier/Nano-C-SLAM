@@ -64,6 +64,22 @@ class Stm32SitlInventoryTests(unittest.TestCase):
 
         self.assertEqual(_listed_source_paths(document), _kbuild_source_paths())
 
+    def test_inventory_distinguishes_stub_compilation_from_sitl_execution(self) -> None:
+        document = INVENTORY.read_text(encoding="utf-8")
+
+        self.assertIn(
+            "The suite uses purpose-built test stubs, not\nthe FreeRTOS POSIX port.",
+            document,
+        )
+        for marker in (
+            "NCS_SITL_TASK_READY",
+            "NCS_SITL_SENSOR",
+            "NCS_SITL_MOTOR",
+            "NCS_SITL_MISSION",
+        ):
+            with self.subTest(marker=marker):
+                self.assertIn(marker, document)
+
 
 if __name__ == "__main__":
     unittest.main()
