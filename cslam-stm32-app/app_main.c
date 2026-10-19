@@ -37,8 +37,8 @@ SemaphoreHandle_t tofSemaphore0;
 SemaphoreHandle_t tofSemaphore1;
 QueueHandle_t poseQueue;
 
-uint8_t ready = 0;
-uint8_t land = 0;
+volatile uint8_t ready = 0;
+volatile uint8_t land = 0;
 
 float x_init = 0.0f;
 float y_init = 0.0f;

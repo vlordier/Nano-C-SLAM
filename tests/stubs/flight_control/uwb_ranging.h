@@ -1,0 +1,4 @@
+#ifndef TEST_FLIGHT_UWB_RANGING_H
+#define TEST_FLIGHT_UWB_RANGING_H
+
+#endif

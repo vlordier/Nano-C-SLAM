@@ -22,14 +22,16 @@
 #include "config_params.h"
 #include "crtp_commander_high_level.h"
 #include "exploration.h"
+#include "flight_commander.h"
 #include "limit_actuation.h"
 #include "line_detector.h"
 #include "tof_daq.h"
-#include "uwb_ranging.h"
+#include "uwb_ranging_distance.h"
 
 #define RAD_TO_DEG 57.3f
-static uint8_t commander_en = 0;
-extern uint8_t land;
+static volatile uint8_t commander_en = 0;
+extern volatile uint8_t land;
+volatile flight_status_t flight_status = FLIGHT_STATUS_WAITING_FOR_ENABLE;
 
 static setpoint_t setpoint = {
     .mode =
@@ -54,31 +56,59 @@ static setpoint_t setpoint = {
 void update_flight_commands(int16_t tof_data_buf[4][8][8], float *fly_cmds);
 
 void flight_task(void *parameters) {
+    (void)parameters;
     while (!commander_en)
         vTaskDelay(M2T(100));
-    // crtpCommanderHighLevelTakeoffWithVelocity(0.6f, 0.3f, false);
+    if (land) {
+        flight_status = FLIGHT_STATUS_ABORTED_BEFORE_TAKEOFF;
+        vTaskDelete(NULL);
+        return;
+    }
+    flight_status = FLIGHT_STATUS_TAKEOFF;
+    if (crtpCommanderHighLevelTakeoffWithVelocity(EXP_HEIGHT, 0.3f, false) !=
+        0) {
+        flight_status = FLIGHT_STATUS_TAKEOFF_FAILED;
+        vTaskDelete(NULL);
+        return;
+    }
     DEBUG_PRINT("Take-off: %.2f  %.2f  %.2f\n",
                 logGetFloat(logGetVarId("kalman", "stateX")),
                 logGetFloat(logGetVarId("kalman", "stateY")),
                 logGetFloat(logGetVarId("stateEstimate", "yaw")));
     vTaskDelay(M2T(2500));
     while (1) {
+        if (land) {
+            // Low-level EXTRX setpoints outrank the high-level commander.
+            // Release that priority before asking the planner to land.
+            commanderRelaxPriority();
+            if (crtpCommanderHighLevelLand(0.0f, 2.0f) == 0) {
+                flight_status = FLIGHT_STATUS_LANDING;
+                vTaskDelay(M2T(2000));
+                flight_status = FLIGHT_STATUS_COMPLETE;
+                vTaskDelete(NULL);
+                return;
+            }
+
+            // Keep a stationary altitude hold if the landing trajectory was
+            // rejected. The operator may clear land and retry after inspection.
+            flight_status = FLIGHT_STATUS_LAND_FAILED;
+            setpoint.velocity.x = 0.0f;
+            setpoint.velocity.y = 0.0f;
+            setpoint.attitudeRate.yaw = 0.0f;
+            commanderSetSetpoint(&setpoint, COMMANDER_PRIORITY_EXTRX);
+            vTaskDelay(M2T(100));
+            continue;
+        }
+
+        flight_status = FLIGHT_STATUS_ACTIVE;
         float fly_cmds[3];
         update_flight_commands(tof_data_buf, fly_cmds);
         setpoint.velocity.x = fly_cmds[0];
         setpoint.velocity.y = fly_cmds[1];
         setpoint.attitudeRate.yaw = fly_cmds[2];
-        // commanderSetSetpoint(&setpoint, COMMANDER_PRIORITY_EXTRX);
+        commanderSetSetpoint(&setpoint, COMMANDER_PRIORITY_EXTRX);
         vTaskDelay(M2T(20));
-        if (land) {
-            crtpCommanderHighLevelLand(0.0f, 2);
-            vTaskDelay(M2T(2000));
-            break;
-        }
     }
-
-    while (1)
-        vTaskDelay(M2T(10));
 }
 
 void process_line(int16_t *line_in, float *line_out) {

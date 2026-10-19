@@ -15,6 +15,7 @@
 #include "uwb_api.h"
 #include "uwb_api_message_utils.h"
 #include "uwb_collision_det.h"
+#include "uwb_ranging_distance.h"
 
 typedef struct Measurement {
     uint32_t time;
@@ -29,13 +30,6 @@ typedef struct scan_poses_t {
 } scan_poses_t;
 
 void uwb_ranging_task(void *parameters);
-
-/**
- * @brief Calculate the minimum inter-drone distance
- *
- * @return Minimum distance in meters.
- */
-float get_min_dtd_dist();
 
 /**
  * @brief Check if there is another drone ahead closer than dist_threshold

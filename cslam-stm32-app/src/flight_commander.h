@@ -11,6 +11,19 @@
 #ifndef FLIGHT_CMD_H
 #define FLIGHT_CMD_H
 
+typedef enum {
+    FLIGHT_STATUS_WAITING_FOR_ENABLE = 0,
+    FLIGHT_STATUS_TAKEOFF = 1,
+    FLIGHT_STATUS_ACTIVE = 2,
+    FLIGHT_STATUS_LANDING = 3,
+    FLIGHT_STATUS_COMPLETE = 4,
+    FLIGHT_STATUS_TAKEOFF_FAILED = 5,
+    FLIGHT_STATUS_LAND_FAILED = 6,
+    FLIGHT_STATUS_ABORTED_BEFORE_TAKEOFF = 7,
+} flight_status_t;
+
+extern volatile flight_status_t flight_status;
+
 void flight_task(void *parameters);
 
 /**

@@ -266,7 +266,7 @@ void update_inter_drone_pos(float x_source, float y_source, uint8_t drone_id) {
     measurements[drone_id].y = y_source;
 }
 
-float get_min_dtd_dist() {
+float get_min_dtd_dist(void) {
     float min = 100.0f;
 
     for (uint8_t i = 0; i < NR_OF_NODES; i++) {
