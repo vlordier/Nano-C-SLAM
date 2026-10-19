@@ -32,6 +32,44 @@ _RANGES_TYPE = "nano_c_slam_interfaces/msg/StampedRanges"
 _PAIRWISE_TYPE = "nano_c_slam_interfaces/msg/StampedPairwiseRanges"
 
 
+def validate_passive_command_graph(
+    node_names: Sequence[str],
+    endpoints: dict[str, dict[str, list[str]]],
+) -> dict[str, object]:
+    """Reject any mission node or ROS publisher able to command a drone."""
+    mission_nodes = [
+        name
+        for name in node_names
+        if "sim_mission" in name or name.endswith("_mission")
+    ]
+    if mission_nodes:
+        raise RuntimeError(
+            f"passive telemetry graph contains mission nodes: {mission_nodes}"
+        )
+    missing = [
+        f"/{drone}/{topic}"
+        for drone in SUPPORTED_DRONE_NAMES
+        for topic in ("cmd_vel", "enable")
+        if f"/{drone}/{topic}" not in endpoints
+    ]
+    if missing:
+        raise RuntimeError(f"passive telemetry graph omitted control topics: {missing}")
+    publishers = {
+        topic: graph["publishers"]
+        for topic, graph in endpoints.items()
+        if graph["publishers"]
+    }
+    if publishers:
+        raise RuntimeError(
+            f"passive telemetry graph has flight-control publishers: {publishers}"
+        )
+    return {
+        "mission_nodes": mission_nodes,
+        "control_topics": endpoints,
+        "no_control_publishers": True,
+    }
+
+
 def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, object]:
     """Subscribe only; never publish flight or simulator-control commands."""
     rclpy = importlib.import_module("rclpy")
@@ -219,6 +257,23 @@ def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, obj
                 }
             return self.cmd_vel
 
+        def inspect_passive_command_graph(self) -> dict[str, dict[str, list[str]]]:
+            result: dict[str, dict[str, list[str]]] = {}
+            for drone in SUPPORTED_DRONE_NAMES:
+                for topic in ("cmd_vel", "enable"):
+                    full_topic = f"/{drone}/{topic}"
+                    result[full_topic] = {
+                        "publishers": [
+                            item.node_name
+                            for item in self.get_publishers_info_by_topic(full_topic)
+                        ],
+                        "subscribers": [
+                            item.node_name
+                            for item in self.get_subscriptions_info_by_topic(full_topic)
+                        ],
+                    }
+            return result
+
     rclpy.init(args=[])
     node = TelemetryProbe()
     deadline = time.monotonic() + timeout_s
@@ -235,6 +290,15 @@ def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, obj
             if node.clock_errors:
                 break
         commands = node.inspect_command_graph() if require_mission_commands else {}
+        passive_command_graph: dict[str, object] | None = None
+        if not require_mission_commands:
+            discovered_nodes = [
+                f"{namespace.rstrip('/')}/{name}"
+                for name, namespace in node.get_node_names_and_namespaces()
+            ]
+            passive_command_graph = validate_passive_command_graph(
+                discovered_nodes, node.inspect_passive_command_graph()
+            )
         missing = [
             drone
             for drone, endpoints in commands.items()
@@ -326,6 +390,8 @@ def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, obj
         if require_mission_commands:
             result["cmd_vel_endpoints"] = commands
             result["cmd_vel_missing_endpoints"] = missing
+        elif passive_command_graph is not None:
+            result["passive_command_graph"] = passive_command_graph
         return result
     finally:
         node.destroy_node()
