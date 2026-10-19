@@ -349,9 +349,38 @@ second. The log reported 542 events; that warning cannot be interpreted as a
 the measurement clock is aligned. Kalman prediction counts of 86–98 against
 the configured 100 Hz target also remain unexplained. Do not clear these
 warnings by simply widening limits. Bead `ncs-fea.5.8.2.1` tracks the explicit
-rate-measurement fix and its negative test. Temporary CrazySim source edits
-and the 500-Hz binary remain only in the Lima guest; no vendor source or
-submodule pin changed in this repository.
+rate-measurement fix and its negative test. The 500-Hz main-loop override,
+task-priority, filter, and trace edits remain in the Lima guest diagnostic
+clone; no submodule pointer in the Nano checkout changed.
+
+## POSIX tick-width correction and repeat flight (2026-10-19)
+
+The 500-Hz reference firmware build also warned that `vTaskDelayUntil()` was
+passed a `uint32_t *` where the POSIX FreeRTOS port expects `TickType_t *`
+(64-bit `unsigned long`). `stabilizerTask()` kept `lastWakeTime` as `uint32_t`,
+so the call could write eight bytes into a four-byte stack variable while
+waiting for sensor calibration. The local CrazySim firmware branch
+`codex/sitl-rate-supervisor` now has focused commits `78f4021e` (derive and
+report the stabilizer supervisor frequency from `RATE_MAIN_LOOP`) and
+`7db68dbd` (use `TickType_t` for `lastWakeTime`). The `cf2` target rebuilt;
+the incompatible-pointer warning disappeared. These commits exist only in the
+Lima guest firmware worktree and have not been pushed or added to Nano's
+submodule.
+
+A fresh single-process run with those two fixes still failed. It logged
+`ESTKALMAN: State out of bounds, resetting`, accepted TAKEOFF_2 and LAND_2,
+and emitted finite, nonzero motor commands. Captures contain 4,841 odometry
+samples over 24.32 simulation seconds, 12,140 IMU samples, and 97,300 motor
+velocity values. Altitude ranged from 2.040 m to 6.202 m and ended at 3.813 m;
+the first non-finite angular velocity was at 14.695 s. Of 4,841 odometry
+samples, 3,395 were fully finite; finite angular speed peaked at 612.70 rad/s,
+and the stable-hover envelope lasted only 0.195 s. The patched supervisor now
+reports `547 Hz; expected 500 Hz`; Kalman prediction remained 80–98 Hz against
+100 Hz. The run was timeout-terminated. This removes one concrete stack-width
+hazard and makes the rate diagnostic accurate, but it does not fix the
+remaining scheduler/estimator/flight failure. Bead `ncs-fea.5.8.2.2` tracks
+the state/attitude trace. No stable flight or Nano firmware execution is
+claimed.
 
 ## Reproducible flight-capture gate
 
