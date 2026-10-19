@@ -1,0 +1,6 @@
+41610 41164 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 ros2 launch nano_c_slam_gazebo crazyswarm2_gazebo.launch.py world:=/var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T//nano-c-slam-ros2.u2dM8n/nano_c_slam_nearfield.sdf
+41611 41610 /Library/Frameworks/Python.framework/Versions/3.11/Resources/Python.app/Contents/MacOS/Python /opt/homebrew/opt/ros2-jazzy/bin/ros2 launch nano_c_slam_gazebo crazyswarm2_gazebo.launch.py world:=/var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T//nano-c-slam-ros2.u2dM8n/nano_c_slam_nearfield.sdf
+41612 41611 gz sim /var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T//nano-c-slam-ros2.u2dM8n/nano_c_slam_nearfield.sdf -r -s --headless-rendering --render-engine-server=ogre2 --render-engine-server-api-backend=metal
+41613 41611 /opt/homebrew/opt/ros2-jazzy/lib/ros_gz_bridge/parameter_bridge --ros-args --params-file /var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T/launch_params_24iflr70
+41614 41611 /Library/Frameworks/Python.framework/Versions/3.11/Resources/Python.app/Contents/MacOS/Python /Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.kGu07m/install/nano_c_slam_gazebo/lib/nano_c_slam_gazebo/sensor_bridge --ros-args -r __node:=nano_c_slam_sensor_bridge --params-file /var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T/launch_params_ww4jvvqy
+41844 41611 gz sim -g

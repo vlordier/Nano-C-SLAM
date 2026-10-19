@@ -1,0 +1,3 @@
+Post-stop PID check (owned PIDs 41610, 41611, 41612, 41613, 41614, 41844): no processes found.
+Post-stop Nano-C-SLAM partition/world process scan: no processes found.
+Unrelated durandal Gazebo processes (38302, 39029) were not stopped.

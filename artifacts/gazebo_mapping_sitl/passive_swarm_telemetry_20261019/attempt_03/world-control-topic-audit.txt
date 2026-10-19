@@ -1,0 +1,9 @@
+Read-only audit during the live passive session (ROS_DOMAIN_ID=52, GZ_PARTITION=nano_c_slam_passive3_accept_20261019):
+
+  ros2 topic list -t | rg '/world/.*/control|/world/control'
+  result: no matching ROS topics
+
+  gz topic -l | rg '/world/.*/control|/world/control'
+  result: no matching Gazebo world-control topics
+
+The ROS telemetry probe separately found no publishers on any /cf{1,3,4}/cmd_vel or /cf{1,3,4}/enable topic and no mission nodes. The parameter bridge is a subscriber on those ROS topics, which is expected wiring; it did not publish commands.

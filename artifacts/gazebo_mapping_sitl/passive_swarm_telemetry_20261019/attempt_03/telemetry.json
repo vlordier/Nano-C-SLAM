@@ -1,0 +1,248 @@
+{
+  "clock": {
+    "count": 240,
+    "first_stamp_ns": 7166000000,
+    "last_stamp_ns": 7405000000,
+    "span_ns": 239000000
+  },
+  "odometry": {
+    "cf1": {
+      "count": 12,
+      "first_stamp_ns": 7180000000,
+      "last_stamp_ns": 7400000000
+    },
+    "cf3": {
+      "count": 12,
+      "first_stamp_ns": 7180000000,
+      "last_stamp_ns": 7400000000
+    },
+    "cf4": {
+      "count": 12,
+      "first_stamp_ns": 7180000000,
+      "last_stamp_ns": 7400000000
+    }
+  },
+  "pairwise": {
+    "count": 34,
+    "first_sequence": 1044,
+    "first_stamp_ns": 7184000000,
+    "last_sequence": 1077,
+    "last_stamp_ns": 7401000000,
+    "last_validated_snapshots": [
+      {
+        "computed_ranges_m": [
+          1.0,
+          1.4142135623730951,
+          1.0
+        ],
+        "drone_ids": [
+          "cf1",
+          "cf3",
+          "cf4"
+        ],
+        "pair_labels": [
+          "cf1:cf3",
+          "cf1:cf4",
+          "cf3:cf4"
+        ],
+        "publication_stamp_ns": 7401000000,
+        "published_ranges_m": [
+          1.0,
+          1.4142135381698608,
+          1.0
+        ],
+        "residuals_m": [
+          0.0,
+          2.4203234305630872e-08,
+          0.0
+        ],
+        "sequence": 1075,
+        "source_age_ns": [
+          3000000,
+          23000000,
+          23000000
+        ],
+        "source_skew_ns": 20000000,
+        "source_stamps_ns": [
+          7400000000,
+          7380000000,
+          7380000000
+        ]
+      },
+      {
+        "computed_ranges_m": [
+          1.0,
+          1.4142135623730951,
+          1.0
+        ],
+        "drone_ids": [
+          "cf1",
+          "cf3",
+          "cf4"
+        ],
+        "pair_labels": [
+          "cf1:cf3",
+          "cf1:cf4",
+          "cf3:cf4"
+        ],
+        "publication_stamp_ns": 7401000000,
+        "published_ranges_m": [
+          1.0,
+          1.4142135381698608,
+          1.0
+        ],
+        "residuals_m": [
+          0.0,
+          2.4203234305630872e-08,
+          0.0
+        ],
+        "sequence": 1076,
+        "source_age_ns": [
+          3000000,
+          3000000,
+          23000000
+        ],
+        "source_skew_ns": 20000000,
+        "source_stamps_ns": [
+          7400000000,
+          7400000000,
+          7380000000
+        ]
+      },
+      {
+        "computed_ranges_m": [
+          1.0,
+          1.4142135623730951,
+          1.0
+        ],
+        "drone_ids": [
+          "cf1",
+          "cf3",
+          "cf4"
+        ],
+        "pair_labels": [
+          "cf1:cf3",
+          "cf1:cf4",
+          "cf3:cf4"
+        ],
+        "publication_stamp_ns": 7401000000,
+        "published_ranges_m": [
+          1.0,
+          1.4142135381698608,
+          1.0
+        ],
+        "residuals_m": [
+          0.0,
+          2.4203234305630872e-08,
+          0.0
+        ],
+        "sequence": 1077,
+        "source_age_ns": [
+          3000000,
+          3000000,
+          3000000
+        ],
+        "source_skew_ns": 0,
+        "source_stamps_ns": [
+          7400000000,
+          7400000000,
+          7400000000
+        ]
+      }
+    ],
+    "source_age_max_ns": 31000000,
+    "source_age_min_ns": 1000000,
+    "source_skew_max_ns": 20000000
+  },
+  "passive_command_graph": {
+    "control_topics": {
+      "/cf1/cmd_vel": {
+        "publishers": [],
+        "subscribers": [
+          "ros_gz_bridge"
+        ]
+      },
+      "/cf1/enable": {
+        "publishers": [],
+        "subscribers": [
+          "ros_gz_bridge"
+        ]
+      },
+      "/cf3/cmd_vel": {
+        "publishers": [],
+        "subscribers": [
+          "ros_gz_bridge"
+        ]
+      },
+      "/cf3/enable": {
+        "publishers": [],
+        "subscribers": [
+          "ros_gz_bridge"
+        ]
+      },
+      "/cf4/cmd_vel": {
+        "publishers": [],
+        "subscribers": [
+          "ros_gz_bridge"
+        ]
+      },
+      "/cf4/enable": {
+        "publishers": [],
+        "subscribers": [
+          "ros_gz_bridge"
+        ]
+      }
+    },
+    "mission_nodes": [],
+    "no_control_publishers": true
+  },
+  "ranges": {
+    "cf1": {
+      "count": 3,
+      "first_sequence": 72,
+      "first_stamp_ns": 7200000000,
+      "last_sequence": 74,
+      "last_stamp_ns": 7400000000
+    },
+    "cf3": {
+      "count": 3,
+      "first_sequence": 69,
+      "first_stamp_ns": 7200000000,
+      "last_sequence": 71,
+      "last_stamp_ns": 7400000000
+    },
+    "cf4": {
+      "count": 3,
+      "first_sequence": 69,
+      "first_stamp_ns": 7200000000,
+      "last_sequence": 71,
+      "last_stamp_ns": 7400000000
+    }
+  },
+  "topic_types": {
+    "/cf1/odom": [
+      "nav_msgs/msg/Odometry"
+    ],
+    "/cf3/odom": [
+      "nav_msgs/msg/Odometry"
+    ],
+    "/cf4/odom": [
+      "nav_msgs/msg/Odometry"
+    ],
+    "/clock": [
+      "rosgraph_msgs/msg/Clock"
+    ],
+    "/nano_c_slam/sim/cf1/ranges_mm": [
+      "nano_c_slam_interfaces/msg/StampedRanges"
+    ],
+    "/nano_c_slam/sim/cf3/ranges_mm": [
+      "nano_c_slam_interfaces/msg/StampedRanges"
+    ],
+    "/nano_c_slam/sim/cf4/ranges_mm": [
+      "nano_c_slam_interfaces/msg/StampedRanges"
+    ],
+    "/nano_c_slam/sim/uwb_pairwise_range_m": [
+      "nano_c_slam_interfaces/msg/StampedPairwiseRanges"
+    ]
+  }
+}

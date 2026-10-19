@@ -1,0 +1,143 @@
+{
+  "commands": {
+    "checker": "uv run --locked python - (bounded subprocess: /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 -m scripts.verify_gazebo_swarm_ros --timeout 20; outer timeout 25s)",
+    "checker_exit_code": 0,
+    "launch": "NANO_C_SLAM_NEARFIELD_MAPPING=1 NANO_C_SLAM_GZ_PARTITION=nano_c_slam_passive3_accept_20261019 NANO_C_SLAM_ROS_DOMAIN_ID=52 NANO_C_SLAM_OVERLAY_SETUP=\"$PWD/build/gazebo-ros-overlay.kGu07m/install/local_setup.bash\" scripts/run_gazebo_macos.sh"
+  },
+  "control_audit": {
+    "control_topics": {
+      "/cf1/cmd_vel": {
+        "publishers": [],
+        "subscribers": [
+          "ros_gz_bridge"
+        ]
+      },
+      "/cf1/enable": {
+        "publishers": [],
+        "subscribers": [
+          "ros_gz_bridge"
+        ]
+      },
+      "/cf3/cmd_vel": {
+        "publishers": [],
+        "subscribers": [
+          "ros_gz_bridge"
+        ]
+      },
+      "/cf3/enable": {
+        "publishers": [],
+        "subscribers": [
+          "ros_gz_bridge"
+        ]
+      },
+      "/cf4/cmd_vel": {
+        "publishers": [],
+        "subscribers": [
+          "ros_gz_bridge"
+        ]
+      },
+      "/cf4/enable": {
+        "publishers": [],
+        "subscribers": [
+          "ros_gz_bridge"
+        ]
+      }
+    },
+    "gazebo_world_control_topics": [],
+    "mission_nodes": [],
+    "no_control_publishers": true,
+    "ros_world_control_topics": []
+  },
+  "overlay": {
+    "build_receipt": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.kGu07m/build-receipt.txt",
+    "build_receipt_sha256": "33166c29e9f0a570a5bfbe5b29351376110acf9436e25e7826f234c4dfde01bf",
+    "nano_c_slam_gazebo_prefix": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.kGu07m/install/nano_c_slam_gazebo",
+    "nano_c_slam_interfaces_prefix": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.kGu07m/install/nano_c_slam_interfaces",
+    "prefix": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.kGu07m/install",
+    "source_snapshot_sha256": "0990e52ec8977f4d9caecbba6c5d2f114a3f23051e52d10c9c358fda08ba9ba8"
+  },
+  "preflight": {
+    "decision": "no unrelated ROS participants; launch allowed",
+    "observed_nodes": [
+      "nano_c_slam_domain_preflight"
+    ],
+    "ros_domain_id": 52
+  },
+  "processes_before_stop": {
+    "captured_process_lines": [
+      "41610 41164 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 ros2 launch nano_c_slam_gazebo crazyswarm2_gazebo.launch.py world:=/var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T//nano-c-slam-ros2.u2dM8n/nano_c_slam_nearfield.sdf",
+      "41611 41610 /Library/Frameworks/Python.framework/Versions/3.11/Resources/Python.app/Contents/MacOS/Python /opt/homebrew/opt/ros2-jazzy/bin/ros2 launch nano_c_slam_gazebo crazyswarm2_gazebo.launch.py world:=/var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T//nano-c-slam-ros2.u2dM8n/nano_c_slam_nearfield.sdf",
+      "41612 41611 gz sim /var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T//nano-c-slam-ros2.u2dM8n/nano_c_slam_nearfield.sdf -r -s --headless-rendering --render-engine-server=ogre2 --render-engine-server-api-backend=metal",
+      "41613 41611 /opt/homebrew/opt/ros2-jazzy/lib/ros_gz_bridge/parameter_bridge --ros-args --params-file /var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T/launch_params_24iflr70",
+      "41614 41611 /Library/Frameworks/Python.framework/Versions/3.11/Resources/Python.app/Contents/MacOS/Python /Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.kGu07m/install/nano_c_slam_gazebo/lib/nano_c_slam_gazebo/sensor_bridge --ros-args -r __node:=nano_c_slam_sensor_bridge --params-file /var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T/launch_params_ww4jvvqy",
+      "41844 41611 gz sim -g"
+    ],
+    "mission_process_present": false,
+    "owned_pids": [
+      41610,
+      41611,
+      41612,
+      41613,
+      41614,
+      41844
+    ]
+  },
+  "result": "PASS",
+  "runtime": {
+    "gazebo_executable": "/Users/vincent/Work/gz-macOS/ws/install/bin/gz",
+    "gazebo_partition": "nano_c_slam_passive3_accept_20261019",
+    "gazebo_prefix": "/Users/vincent/Work/gz-macOS/ws/install",
+    "rmw_implementation": "default",
+    "ros2_executable": "/opt/homebrew/opt/ros2-jazzy/bin/ros2",
+    "ros2_prefix": "/opt/homebrew/opt/ros2-jazzy",
+    "ros_distro": "jazzy",
+    "ros_domain_id": 52
+  },
+  "schema": "nano-c-slam-passive-telemetry-session-v1",
+  "session_uuid": "925d8a86-2de9-44e3-9b37-44fe97b37ead",
+  "source": {
+    "clean_at_launch": true,
+    "repository": "/Users/vincent/Work/Nano-C-SLAM",
+    "revision": "89319fc4880d53f89a2f668a7fbac3af992d750f"
+  },
+  "teardown": {
+    "all_test_owned_processes_absent_after_stop": true,
+    "gazebo_server": "did not exit on SIGINT/SIGTERM; launch escalated to SIGKILL; exited -9",
+    "parameter_bridge": "Fast DDS shared-memory mutex error during shutdown; exited -6",
+    "signal": "SIGINT to owned ROS launch",
+    "unrelated_durandal_gazebo_pids_left_running": [
+      38302,
+      39029
+    ]
+  },
+  "telemetry": {
+    "clock_samples": 240,
+    "clock_span_ns": 239000000,
+    "distance_residuals_m": [
+      0.0,
+      2.4203234305630872e-08,
+      0.0
+    ],
+    "last_exact_source_stamps_ns": [
+      7400000000,
+      7400000000,
+      7400000000
+    ],
+    "odom_counts": {
+      "cf1": 12,
+      "cf3": 12,
+      "cf4": 12
+    },
+    "pair_labels": [
+      "cf1:cf3",
+      "cf1:cf4",
+      "cf3:cf4"
+    ],
+    "pairwise_valid_distinct_source_snapshots": 34,
+    "range_counts": {
+      "cf1": 3,
+      "cf3": 3,
+      "cf4": 3
+    }
+  }
+}
