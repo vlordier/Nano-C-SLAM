@@ -85,6 +85,8 @@ class MappingRunConfig:
     sample_count: int = 60
     timeout_s: float = 120.0
     run_id: str = field(default_factory=create_run_id)
+    stream_socket_path: Path | None = None
+    stream_timeout_s: float = 1.0
 
     def __post_init__(self) -> None:
         validate_drone_name(self.drone_name)
@@ -110,6 +112,17 @@ class MappingRunConfig:
         if not timeout_is_finite or self.timeout_s <= 0:
             raise ValueError("timeout_s must be finite and positive")
         validate_run_id(self.run_id)
+        if self.stream_socket_path is not None and not isinstance(
+            self.stream_socket_path, Path
+        ):
+            raise ValueError("stream_socket_path must be a pathlib Path or None")
+        if (
+            isinstance(self.stream_timeout_s, bool)
+            or not isinstance(self.stream_timeout_s, (int, float))
+            or not math.isfinite(self.stream_timeout_s)
+            or self.stream_timeout_s <= 0
+        ):
+            raise ValueError("stream_timeout_s must be finite and positive")
         if not isinstance(self.output_path, Path) or not isinstance(
             self.binary_path, Path
         ):
@@ -177,6 +190,13 @@ class MappingRunConfig:
             str(self.binary_path.resolve()),
             "--reuse-binary",
         )
+        if self.stream_socket_path is not None:
+            collector += (
+                "--stream-socket",
+                str(self.stream_socket_path.resolve()),
+                "--stream-timeout",
+                str(self.stream_timeout_s),
+            )
         mission = (
             ros2_path,
             "run",

@@ -91,6 +91,23 @@ class MappingSampleTests(unittest.TestCase):
         )
         self.assertTrue(gated.mission_gated)
         self.assertEqual(gated.ready_file, Path("collector.ready"))
+        streamed = _parse_args(
+            [
+                "--mission-gated",
+                "--run-id",
+                supplied_run_id,
+                "--ready-file",
+                "collector.ready",
+                "--stream-socket",
+                "gvsoc.sock",
+                "--stream-timeout",
+                "0.25",
+            ]
+        )
+        self.assertEqual(streamed.stream_socket, Path("gvsoc.sock"))
+        self.assertEqual(streamed.stream_timeout, 0.25)
+        with self.assertRaises(SystemExit):
+            _parse_args(["--stream-socket", "gvsoc.sock"])
 
     def test_capture_timeout_reports_named_pairing_rejections(self) -> None:
         message = _format_capture_timeout(

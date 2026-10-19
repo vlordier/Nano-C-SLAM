@@ -110,6 +110,26 @@ class MappingRunConfigTests(unittest.TestCase):
         self.assertIn("--ready-file", commands.collector)
         self.assertIn(str(config.readiness_path.resolve()), commands.collector)
 
+    def test_optional_live_stream_is_bound_to_the_run_collector(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            directory = Path(temporary_directory)
+            socket_path = directory / "gvsoc.sock"
+            config = MappingRunConfig(
+                output_path=directory / "mapping-run.json",
+                binary_path=directory / "mapping_replay",
+                stream_socket_path=socket_path,
+                stream_timeout_s=2.5,
+            )
+            commands = config.build_commands(
+                python_executable=sys.executable,
+                ros2_executable="ros2",
+            )
+
+        self.assertIn("--stream-socket", commands.collector)
+        self.assertIn(str(socket_path.resolve()), commands.collector)
+        self.assertIn("--stream-timeout", commands.collector)
+        self.assertIn("2.5", commands.collector)
+
     def test_rejects_invalid_drone_bounds_timeout_and_run_id(self) -> None:
         invalid_configs = (
             lambda path, binary: MappingRunConfig(
@@ -129,6 +149,9 @@ class MappingRunConfigTests(unittest.TestCase):
             ),
             lambda path, binary: MappingRunConfig(
                 output_path=path, binary_path=binary, run_id=""
+            ),
+            lambda path, binary: MappingRunConfig(
+                output_path=path, binary_path=binary, stream_timeout_s=0.0
             ),
         )
         with tempfile.TemporaryDirectory() as temporary_directory:
