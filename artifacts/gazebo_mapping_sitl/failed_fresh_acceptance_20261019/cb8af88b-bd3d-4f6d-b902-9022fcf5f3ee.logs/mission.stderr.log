@@ -1,0 +1,10 @@
+[INFO] [1792386608.992465000] [nano_c_slam_sim_mission]: Mission run cb8af88b-bd3d-4f6d-b902-9022fcf5f3ee; waiting for /cf1/odom before takeoff to 0.50 m
+[INFO] [1792386608.992859000] [nano_c_slam_sim_mission]: mission_status={"altitude_m": null, "drone_name": "cf1", "failure_reason": null, "landing_height_m": 0.1, "landing_stable_since_s": null, "mapping_path_complete": false, "mapping_path_requested": true, "odometry_stamp_s": null, "phase": "WAITING", "run_id": "cb8af88b-bd3d-4f6d-b902-9022fcf5f3ee", "schema_version": 2, "sequence": 0, "sim_time_s": 0.0}
+[INFO] [1792386609.016473000] [nano_c_slam_sim_mission]: mission_status={"altitude_m": -8.466971613205199e-07, "drone_name": "cf1", "failure_reason": null, "landing_height_m": 0.1, "landing_stable_since_s": null, "mapping_path_complete": false, "mapping_path_requested": true, "odometry_stamp_s": 14.8, "phase": "TAKEOFF", "run_id": "cb8af88b-bd3d-4f6d-b902-9022fcf5f3ee", "schema_version": 2, "sequence": 1, "sim_time_s": 14.801}
+[INFO] [1792386609.016793000] [nano_c_slam_sim_mission]: cf1 mission readiness: odometry_callbacks=2, odometry_stamp_s=14.8
+[INFO] [1792386609.017102000] [nano_c_slam_sim_mission]: cf1 mission phase: takeoff at altitude -0.000 m
+[INFO] [1792386610.219812000] [nano_c_slam_sim_mission]: Starting bounded square mapping path at measured position
+[INFO] [1792386610.220134000] [nano_c_slam_sim_mission]: mission_status={"altitude_m": 0.5296153973758686, "drone_name": "cf1", "failure_reason": null, "landing_height_m": 0.1, "landing_stable_since_s": null, "mapping_path_complete": false, "mapping_path_requested": true, "odometry_stamp_s": 16.0, "phase": "HOVER", "run_id": "cb8af88b-bd3d-4f6d-b902-9022fcf5f3ee", "schema_version": 2, "sequence": 2, "sim_time_s": 16.004}
+[INFO] [1792386610.220412000] [nano_c_slam_sim_mission]: cf1 mission readiness: odometry_callbacks=62, odometry_stamp_s=16.0
+[INFO] [1792386610.220696000] [nano_c_slam_sim_mission]: cf1 mission phase: hover at altitude 0.530 m
+[INFO] [1792386619.356657000] [nano_c_slam_sim_mission]: Mapping path complete; beginning configured hover interval

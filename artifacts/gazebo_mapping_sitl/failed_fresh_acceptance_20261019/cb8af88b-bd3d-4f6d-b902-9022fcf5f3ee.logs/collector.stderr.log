@@ -1,0 +1,17 @@
+[INFO] [1792386611.328584000] [nano_c_slam_mapping_capture]: Captured 10/60 samples
+[INFO] [1792386612.320598000] [nano_c_slam_mapping_capture]: Captured 20/60 samples
+[INFO] [1792386613.320232000] [nano_c_slam_mapping_capture]: Captured 30/60 samples
+[INFO] [1792386614.320868000] [nano_c_slam_mapping_capture]: Captured 40/60 samples
+[INFO] [1792386615.318075000] [nano_c_slam_mapping_capture]: Captured 50/60 samples
+[INFO] [1792386616.315640000] [nano_c_slam_mapping_capture]: Captured 60/60 samples
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/vincent/Work/Nano-C-SLAM/scripts/gazebo_mapping_sitl.py", line 696, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/Users/vincent/Work/Nano-C-SLAM/scripts/gazebo_mapping_sitl.py", line 586, in main
+    verify_source_identity(REPOSITORY_ROOT, source_before)
+  File "/Users/vincent/Work/Nano-C-SLAM/scripts/source_provenance.py", line 145, in verify_source_identity
+    raise ValueError("repository or submodule source changed after snapshot")
+ValueError: repository or submodule source changed after snapshot

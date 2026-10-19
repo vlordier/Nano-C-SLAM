@@ -38,3 +38,4 @@ acceptance attempt must use a fresh launch after that is resolved.
 Raw coordinator logs and collector-ready markers are retained in this
 directory by run ID. The macOS crash report is retained outside the repository
 at `~/Library/Logs/DiagnosticReports/ruby-2026-10-19-070444.ips`.
+| Run `cb8af88b-bd3d-4f6d-b902-9022fcf5f3ee` | 51 / `nano_c_slam_loopback_20261019_c714` | With `GZ_IP=127.0.0.1`, odometry arrived and the mission completed its mapping path, but the host collector rejected publication because repository source changed during capture (the provenance fixes were being edited concurrently). The 60-sample ready marker and child logs are retained under this run ID; no passing report was produced. |

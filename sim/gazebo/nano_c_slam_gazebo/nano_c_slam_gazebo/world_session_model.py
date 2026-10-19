@@ -68,7 +68,13 @@ def publish_world_session(path: Path, *, scene: str) -> str:
 def world_process_role(argv: Sequence[str]) -> str | None:
     """Classify only known Gazebo server and ROS bridge process commands."""
     executable_names = {Path(argument).name for argument in argv}
-    if argv and Path(argv[0]).name == "gz" and "sim" in argv:
+    # On macOS the installed `gz` command may be a Ruby launcher whose argv is
+    # `ruby /path/to/gz sim ...`; Linux builds commonly exec `gz` directly.
+    gazebo_command_index = next(
+        (index for index, argument in enumerate(argv) if Path(argument).name == "gz"),
+        None,
+    )
+    if gazebo_command_index is not None and "sim" in argv[gazebo_command_index + 1 :]:
         if "-s" in argv or "--server" in argv:
             return "gazebo-server"
         return None
@@ -111,6 +117,13 @@ def record_world_process(
     processes = payload.setdefault("processes", [])
     if not isinstance(processes, list):
         raise RuntimeError("world session process list is malformed")
+    launch_pid = payload.get("launch_pid")
+    if (
+        isinstance(launch_pid, bool)
+        or not isinstance(launch_pid, int)
+        or launch_pid <= 0
+    ):
+        raise RuntimeError("world session launch PID is malformed")
     for existing in processes:
         if isinstance(existing, dict) and existing.get("pid") == pid:
             if existing.get("role") == role and existing.get("argv") == command:
@@ -129,7 +142,7 @@ def record_world_process(
         {
             "role": role,
             "pid": pid,
-            "launch_pid": os.getpid(),
+            "launch_pid": launch_pid,
             "argv": command,
             "executable_path": executable_path,
             "observed_at_utc": datetime.now(UTC).isoformat().replace("+00:00", "Z"),

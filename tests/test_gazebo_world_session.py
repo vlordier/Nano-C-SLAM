@@ -162,6 +162,9 @@ class WorldSessionTests(unittest.TestCase):
             manifest = json.loads(path.read_text(encoding="utf-8"))
             self.assertEqual(manifest["session_id"], session_id)
             self.assertEqual(len(manifest["processes"]), 1)
+            self.assertEqual(
+                manifest["processes"][0]["launch_pid"], manifest["launch_pid"]
+            )
             with self.assertRaisesRegex(
                 RuntimeError, "already has a mapping-run claim"
             ):
@@ -172,6 +175,19 @@ class WorldSessionTests(unittest.TestCase):
                 )
 
     def test_ros_bridge_process_roles_are_classified(self) -> None:
+        self.assertEqual(
+            world_process_role(["gz", "sim", "world.sdf", "-s"]),
+            "gazebo-server",
+        )
+        self.assertEqual(
+            world_process_role(
+                ["/usr/bin/ruby", "/opt/gz-macos/bin/gz", "sim", "world.sdf", "-s"]
+            ),
+            "gazebo-server",
+        )
+        self.assertIsNone(
+            world_process_role(["/usr/bin/ruby", "/opt/gz-macos/bin/gz", "sim", "-g"])
+        )
         self.assertEqual(
             world_process_role(["/opt/ros/bin/parameter_bridge", "--ros-args"]),
             "ros-gazebo-bridge",
