@@ -107,8 +107,11 @@ include = [
     "scripts/gazebo_mapping_run.py",
     "scripts/gazebo_failure_probe.py",
     "scripts/crazysim_udp_probe.py",
+    "scripts/check_crazysim_flight.py",
     "test_support/gap9_mapping_fixtures.py",
+    "test_support/crazysim_flight_fixtures.py",
     "test_support/ros_fixtures.py",
+    "tests/test_crazysim_flight_checker.py",
 ]
 
 [tool.ty.rules]

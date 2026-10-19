@@ -312,3 +312,36 @@ Nano mapping remain unproven.
 The temporary debug edits live only in `/tmp/ncs-crazysim` in the Lima guest;
 they are not a maintained patch and were not copied into the submodule. Bead
 `ncs-fea.5.8.1` now isolates readiness gating and bounded-queue diagnosis.
+
+## Reproducible flight-capture gate
+
+`scripts/check_crazysim_flight.py` checks paired positive-flight and
+disconnected-actuator captures. It requires timestamped odometry at 50 Hz or
+faster, IMU at 20 Hz or faster, finite telemetry and actuator values, a spawn
+height within 0.10 m of the raised platform, at least 0.30 m of climb, five
+continuous seconds within 0.12 m of the requested hover altitude while upright
+and below 0.5 rad/s angular speed, and a landing within 0.10 m of platform
+height. It also requires the firmware readiness markers, captured TAKEOFF_2
+and LAND_2 commands, a plugin trace attributing motor output to the firmware,
+no estimator/rate/crash messages, and successful process exit codes. The
+negative capture must explicitly identify a disconnected actuator bridge,
+stay within 0.10 m of its starting height, and contain only zero motor output.
+
+Run it against saved `gz topic -e` captures and complete firmware/plugin logs:
+
+```sh
+uv run --locked python scripts/check_crazysim_flight.py \
+  --odometry flight-odometry.txt --imu flight-imu.txt \
+  --motors flight-motors.txt --firmware-log flight-firmware.log \
+  --plugin-log flight-gazebo.log \
+  --negative-control-odometry disconnected-odometry.txt \
+  --negative-control-motors disconnected-motors.txt \
+  --negative-control-log disconnected-run.log
+```
+
+The checker is tested with synthetic fixtures, not represented as a passed
+flight capture. The current single-process evidence above fails the hover,
+finite-state, rate, crash, and landing criteria. Passing this upstream
+CrazySim gate would still not prove execution of Nano-C-SLAM's STM32 tasks or
+validate mapping; those require their own firmware-integrated capture and
+geometry comparison.
