@@ -7,6 +7,7 @@ TOOLCHAIN_ROOT="${GAP9_TOOLCHAIN_ROOT:-$HOME/Work/da3_gap9/deploy/gap_riscv_tool
 STIMULUS_ROOT="${GAP9_STIMULUS_ROOT:-$HOME/Work/da3_gap9}"
 MODEL_ROOT="${GAP9_GVSOC_MODEL_ROOT:-$SDK_ROOT/install/workstation/models}"
 WORK_ROOT="${GAP9_GVSOC_WORK_ROOT:-${TMPDIR:-/tmp}/nano-c-slam-gvsoc}"
+GVSOC_WORKDIR_LINK="${GAP9_GVSOC_WORKDIR_LINK:-/tmp/gvsoc_workdir}"
 DEFAULT_ELF="$ROOT/cslam-gap9-app/BUILD-gvsoc/nano_c_slam_gvsoc_smoke"
 MAPPING_CAPTURE="${GAP9_GVSOC_MAPPING_CAPTURE:-0}"
 if [[ "$MAPPING_CAPTURE" == "1" ]]; then
@@ -69,6 +70,11 @@ if [[ "$(uname -s)" != Darwin ]]; then
     exit 2
 fi
 
+if [[ "$GVSOC_WORKDIR_LINK" != /* || "$GVSOC_WORKDIR_LINK" == "$WORK_ROOT" ]]; then
+    echo "GAP9_GVSOC_WORKDIR_LINK must be absolute and differ from the work root" >&2
+    exit 2
+fi
+
 for required in \
     "$SDK_ROOT/utils/gapy_v2/bin/gapy" \
     "$SDK_ROOT/install/workstation/bin/gvsoc_launcher" \
@@ -91,7 +97,7 @@ for stimulus in chip.efuse_preload.data chip.soc.mram.bin; do
         cp "$STIMULUS_ROOT/$stimulus" "$WORK_ROOT/$stimulus"
     fi
 done
-ln -sfn "$WORK_ROOT" /tmp/gvsoc_workdir
+"$ROOT/scripts/link_gvsoc_workdir.sh" "$WORK_ROOT" "$GVSOC_WORKDIR_LINK"
 
 set +u
 # shellcheck source=/dev/null
