@@ -144,17 +144,42 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
         )
         return expected_response
 
-    def _write_pose_request_evidence(self, response_hex: str | None = None) -> None:
+    def _write_pose_request_evidence(
+        self,
+        response_hex: str | None = None,
+        *,
+        include_invalid_requests: bool = False,
+    ) -> None:
         positions = ((0.25, -0.5, 0.75), (1.25, -1.5, 1.75))
-        frames = (
+        requests = ((0, 0), (0, -1), (0, 101), (2, 1), (0, 2))
+        frames = [
             make_pose_frame(0, position=positions[0]),
             make_pose_frame(1, position=positions[1]),
-            make_pose_request_frame(0, 2),
+        ]
+        commands = ["POSE", "POSE"]
+        if include_invalid_requests:
+            frames.extend(
+                make_pose_request_frame(from_id, count) for from_id, count in requests
+            )
+            commands.extend(
+                [
+                    "POSE_REQ_ZERO",
+                    "POSE_REQ_NEGATIVE",
+                    "POSE_REQ_OVER_CAPACITY",
+                    "POSE_REQ_UNAVAILABLE_RANGE",
+                    "POSE_REQ_VALID",
+                ]
+            )
+        else:
+            frames.append(make_pose_request_frame(0, 2))
+            commands.append("POSE_REQ")
+        sequence = (
+            "pose-request-boundaries" if include_invalid_requests else "pose-request"
         )
         self.host_transfer_path.write_text(
             json.dumps(
                 {
-                    "sequence": "pose-request",
+                    "sequence": sequence,
                     "pre_cs_dummy_clock_cycles": 8,
                     "frames": [
                         {
@@ -162,26 +187,48 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
                             "frame_tx_hex": frame.hex(),
                             "length": len(frame),
                         }
-                        for command, frame in zip(
-                            ("POSE", "POSE", "POSE_REQ"), frames, strict=True
-                        )
+                        for command, frame in zip(commands, frames, strict=True)
                     ],
                     "response_size": 24,
                     "response_rx_hex": response_hex
                     or struct.pack("<6f", *positions[0], *positions[1]).hex(),
                     "control_phase": "pose_response_captured",
+                    "rejected_requests": [
+                        {"from_id": from_id, "count": count}
+                        for from_id, count in requests[:-1]
+                    ]
+                    if include_invalid_requests
+                    else None,
                 }
             ),
             encoding="utf-8",
         )
+        if include_invalid_requests:
+            duration_us = 1279
+            rejection_markers = "".join(
+                "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_request_rejected "
+                f"from={from_id} count={count}\n"
+                for from_id, count in requests[:-1]
+            )
+            success_marker = (
+                "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_request_boundaries_ok packets=7 "
+                "pose_decoded=2 pose_inserted=2 requests_decoded=5 "
+                "requests_rejected=4 requests_served=1 poses=2\n"
+            )
+        else:
+            duration_us = 109294
+            rejection_markers = ""
+            success_marker = (
+                "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_request_ok packets=3 "
+                "pose_decoded=2 pose_inserted=2 requests_decoded=1 "
+                "requests_served=1 poses=2\n"
+            )
         self.log_path.write_text(
-            "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_response_ready "
-            "from=0 count=2 bytes=24\n"
-            "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_response_done "
-            "from=0 count=2 duration_us=109294\n"
-            "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_request_ok packets=3 "
-            "pose_decoded=2 pose_inserted=2 requests_decoded=1 "
-            "requests_served=1 poses=2\n",
+            rejection_markers + "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_response_ready "
+            "from=0 count=2 bytes=24 ready_latency_us=14\n"
+            + "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_response_done "
+            + f"from=0 count=2 duration_us={duration_us}\n"
+            + success_marker,
             encoding="utf-8",
         )
 
@@ -216,6 +263,42 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
         self._write_pose_request_evidence("00" * 24)
 
         with self.assertRaisesRegex(ValueError, "differ from the two inserted poses"):
+            self._capture()
+
+    def test_pose_request_boundary_probe_requires_all_four_rejections(self) -> None:
+        self._write_pose_request_evidence(include_invalid_requests=True)
+
+        report = self._capture()
+
+        self.assertEqual(report["sequence"], "pose-request-boundaries")
+        self.assertIn("requests_rejected=4", str(report["target_marker"]))
+        deadline = cast(dict[str, object], report["deadline_comparison"])
+        self.assertEqual(deadline["target_decode_to_busy_high_us"], 14)
+        self.assertEqual(deadline["observed_readiness_margin_us"], 99986)
+        self.assertEqual(deadline["target_busy_high_to_response_return_us"], 1279)
+        self.assertEqual(deadline["observed_simulator_margin_us"], 98721)
+
+        self.log_path.write_text(
+            self.log_path.read_text(encoding="utf-8").replace(
+                "pose_request_rejected from=2 count=1\n", ""
+            ),
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(ValueError, "rejection markers"):
+            self._capture()
+
+    def test_pose_request_boundary_probe_rejects_extra_ready_markers(self) -> None:
+        self._write_pose_request_evidence(include_invalid_requests=True)
+        ready_marker = (
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_response_ready "
+            "from=0 count=2 bytes=24 ready_latency_us=14\n"
+        )
+        self.log_path.write_text(
+            self.log_path.read_text(encoding="utf-8") + ready_marker,
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(ValueError, "exactly one POSE_REQ ready"):
             self._capture()
 
     def test_rejects_wrong_or_reordered_host_frames(self) -> None:

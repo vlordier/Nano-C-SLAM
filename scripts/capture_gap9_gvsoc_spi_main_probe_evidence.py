@@ -62,45 +62,104 @@ def _capture_pose_request_evidence(
 ) -> dict[str, object]:
     """Validate real target POSE_REQ response bytes and marker ordering."""
     positions = ((0.25, -0.5, 0.75), (1.25, -1.5, 1.75))
+    sequence = str(host_transfer.get("sequence"))
     expected_frames = [
         make_pose_frame(0, position=positions[0]),
         make_pose_frame(1, position=positions[1]),
-        make_pose_request_frame(0, 2),
     ]
+    expected_commands = ["POSE", "POSE"]
+    rejected_requests: list[tuple[int, int]] = []
+    if sequence == "pose-request-boundaries":
+        rejected_requests = [(0, 0), (0, -1), (0, 101), (2, 1)]
+        expected_frames.extend(
+            make_pose_request_frame(from_id, count)
+            for from_id, count in (*rejected_requests, (0, 2))
+        )
+        expected_commands.extend(
+            [
+                "POSE_REQ_ZERO",
+                "POSE_REQ_NEGATIVE",
+                "POSE_REQ_OVER_CAPACITY",
+                "POSE_REQ_UNAVAILABLE_RANGE",
+                "POSE_REQ_VALID",
+            ]
+        )
+    else:
+        expected_frames.append(make_pose_request_frame(0, 2))
+        expected_commands.append("POSE_REQ")
     expected_records = [
         {"command": name, "frame_tx_hex": frame.hex(), "length": len(frame)}
-        for name, frame in zip(
-            ("POSE", "POSE", "POSE_REQ"), expected_frames, strict=True
-        )
+        for name, frame in zip(expected_commands, expected_frames, strict=True)
     ]
     if (
-        host_transfer.get("sequence") != "pose-request"
+        sequence not in {"pose-request", "pose-request-boundaries"}
         or host_transfer.get("pre_cs_dummy_clock_cycles") != 8
         or host_transfer.get("frames") != expected_records
         or host_transfer.get("response_size") != 24
         or host_transfer.get("control_phase") != "pose_response_captured"
     ):
         raise ValueError("host transfer does not match the POSE_REQ probe contract")
+    rejection_matches: list[re.Match[str]] = []
+    if rejected_requests:
+        expected_rejections = [
+            {"from_id": from_id, "count": count} for from_id, count in rejected_requests
+        ]
+        if host_transfer.get("rejected_requests") != expected_rejections:
+            raise ValueError(
+                "host transfer does not record the expected invalid requests"
+            )
 
-    ready = re.search(
+    ready_pattern = (
         r"NANO_C_SLAM_GVSOC_SPI_MAIN:pose_response_ready "
-        r"from=0 count=2 bytes=24\b",
-        log,
+        r"from=0 count=2 bytes=24 ready_latency_us=(\d+)\b"
     )
-    done = re.search(
+    ready_matches = list(re.finditer(ready_pattern, log))
+    done_pattern = (
         r"NANO_C_SLAM_GVSOC_SPI_MAIN:pose_response_done "
-        r"from=0 count=2 duration_us=(\d+)\b",
-        log,
+        r"from=0 count=2 duration_us=(\d+)\b"
     )
-    target_marker = re.search(
-        r"NANO_C_SLAM_GVSOC_SPI_MAIN:pose_request_ok packets=3 "
-        r"pose_decoded=2 pose_inserted=2 requests_decoded=1 "
-        r"requests_served=1 poses=2\b",
-        log,
-    )
-    if ready is None or done is None or target_marker is None:
+    done_matches = list(re.finditer(done_pattern, log))
+    if rejected_requests:
+        target_pattern = (
+            r"NANO_C_SLAM_GVSOC_SPI_MAIN:pose_request_boundaries_ok packets=7 "
+            r"pose_decoded=2 pose_inserted=2 requests_decoded=5 "
+            r"requests_rejected=4 requests_served=1 poses=2\b"
+        )
+        rejection_matches = list(
+            re.finditer(
+                r"NANO_C_SLAM_GVSOC_SPI_MAIN:pose_request_rejected "
+                r"from=(-?\d+) count=(-?\d+)\b",
+                log,
+            )
+        )
+        observed_rejections = [
+            (int(match.group(1)), int(match.group(2))) for match in rejection_matches
+        ]
+        if observed_rejections != rejected_requests:
+            raise ValueError(
+                "target rejection markers differ from invalid request frames"
+            )
+    else:
+        target_pattern = (
+            r"NANO_C_SLAM_GVSOC_SPI_MAIN:pose_request_ok packets=3 "
+            r"pose_decoded=2 pose_inserted=2 requests_decoded=1 "
+            r"requests_served=1 poses=2\b"
+        )
+    target_marker = re.search(target_pattern, log)
+    if len(ready_matches) != 1 or len(done_matches) != 1 or target_marker is None:
         raise ValueError(
-            "GVSOC log lacks POSE_REQ ready, completion, or success evidence"
+            "GVSOC log must contain exactly one POSE_REQ ready and completion "
+            "marker plus the success marker"
+        )
+    ready = ready_matches[0]
+    done = done_matches[0]
+    if (
+        (rejected_requests and rejection_matches[-1].end() > ready.start())
+        or ready.end() > done.start()
+        or done.end() > target_marker.start()
+    ):
+        raise ValueError(
+            "POSE_REQ rejection, ready, done, and success markers are out of order"
         )
 
     expected_response = struct.pack("<6f", *positions[0], *positions[1]).hex()
@@ -108,26 +167,48 @@ def _capture_pose_request_evidence(
     if response_hex != expected_response:
         raise ValueError("POSE_REQ response bytes differ from the two inserted poses")
     duration_us = int(done.group(1))
+    ready_latency_us = int(ready.group(1))
+    deadline_comparison: dict[str, object] | None = None
+    if rejected_requests:
+        timeout_us = 100_000
+        if ready_latency_us >= timeout_us or duration_us >= timeout_us:
+            raise ValueError(
+                "GVSOC POSE_REQ readiness or busy-high response interval does "
+                "not fit the 100 ms STM32 reference timeout"
+            )
+        deadline_comparison = {
+            "stm32_reference_timeout_us": timeout_us,
+            "target_decode_to_busy_high_us": ready_latency_us,
+            "observed_readiness_margin_us": timeout_us - ready_latency_us,
+            "target_busy_high_to_response_return_us": duration_us,
+            "observed_simulator_margin_us": timeout_us - duration_us,
+            "interpretation": (
+                "Passes the 100 ms reference in this GVSOC run only; this "
+                "does not measure the STM32 GPIO wait or physical bus timing."
+            ),
+        }
     return {
         "schema_version": 1,
         "status": "passed",
         "evidence_class": "gvsoc-production-main-spi2-pose-request",
         "sdk_release": "5.20.4",
         "interface": "SPI2/CS0, mode 0, 8-bit words",
-        "sequence": "pose-request",
+        "sequence": sequence,
         "frame_count": len(expected_frames),
         "frames": [frame.hex() for frame in expected_frames],
         "target_marker": target_marker.group(0),
         "target_ready_marker": ready.group(0),
+        "target_ready_latency_us": ready_latency_us,
         "target_done_marker": done.group(0),
         "target_response_duration_us": duration_us,
+        "deadline_comparison": deadline_comparison,
         "response_size": 24,
         "response_expected_hex": expected_response,
         "response_rx_hex": response_hex,
         "response_status": "captured and matches both inserted float poses",
         "controller_timing": {
-            "ready_settle_delay_ms": 10,
-            "gvsoc_run_after_response_queue_ms": 100,
+            "ready_settle_delay_ms": 1,
+            "gvsoc_run_after_response_queue_ms": 10,
             "note": (
                 "These are simulator scheduling intervals, not pin-edge measurements."
             ),
@@ -192,13 +273,29 @@ def capture_evidence(
     elif sequence == "pose-scan":
         expected = [make_pose_frame(), make_scan_frame()]
         expected_commands = ["POSE", "SCAN"]
-    elif sequence == "pose-request":
+    elif sequence in {"pose-request", "pose-request-boundaries"}:
         expected = [
             make_pose_frame(0, position=(0.25, -0.5, 0.75)),
             make_pose_frame(1, position=(1.25, -1.5, 1.75)),
-            make_pose_request_frame(0, 2),
         ]
-        expected_commands = ["POSE", "POSE", "POSE_REQ"]
+        expected_commands = ["POSE", "POSE"]
+        if sequence == "pose-request-boundaries":
+            requests = ((0, 0), (0, -1), (0, 101), (2, 1), (0, 2))
+            expected.extend(
+                make_pose_request_frame(from_id, count) for from_id, count in requests
+            )
+            expected_commands.extend(
+                [
+                    "POSE_REQ_ZERO",
+                    "POSE_REQ_NEGATIVE",
+                    "POSE_REQ_OVER_CAPACITY",
+                    "POSE_REQ_UNAVAILABLE_RANGE",
+                    "POSE_REQ_VALID",
+                ]
+            )
+        else:
+            expected.append(make_pose_request_frame(0, 2))
+            expected_commands.append("POSE_REQ")
     else:
         raise ValueError(f"unsupported production-main SPI sequence: {sequence}")
     if host_transfer.get("pre_cs_dummy_clock_cycles") != 8 or not isinstance(
@@ -216,7 +313,7 @@ def capture_evidence(
         log = log_path.read_text(encoding="utf-8")
     except OSError as error:
         raise ValueError(f"cannot read GVSOC log: {error}") from error
-    if sequence == "pose-request":
+    if sequence in {"pose-request", "pose-request-boundaries"}:
         return _capture_pose_request_evidence(
             config_path=config_path,
             elf_path=elf_path,

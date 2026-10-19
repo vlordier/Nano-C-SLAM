@@ -91,6 +91,7 @@ void slam_loop() {
     int16_t optimize_packets = 0;
     int16_t pose_requests_decoded = 0;
     int16_t pose_requests_served = 0;
+    int16_t pose_requests_rejected = 0;
     uint16_t processed_packets = 0;
 #endif
 
@@ -305,30 +306,43 @@ void slam_loop() {
             if (result == SPI_OK) {
 #ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
                 pose_requests_decoded++;
+                uint64_t pose_request_decoded_us = pi_time_get_us();
 #endif
                 int16_t from_id = pose_request[0];
                 int16_t nr_of_poses = pose_request[1];
                 if (nr_of_poses <= 0 || nr_of_poses > 100 ||
-                    !pcl_to_poses(requested_poses, from_id, nr_of_poses))
+                    !pcl_to_poses(requested_poses, from_id, nr_of_poses)) {
+#ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
+                    pose_requests_rejected++;
+                    printf("NANO_C_SLAM_GVSOC_SPI_MAIN:pose_request_rejected "
+                           "from=%d count=%d\n",
+                           from_id, nr_of_poses);
+#endif
                     break;
+                }
 
                 set_cf_gpio(1); // Pose response is ready; STM32 may clock it.
+#ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
                 uint64_t pose_response_started_us = pi_time_get_us();
+                uint64_t pose_ready_latency_us =
+                    pose_response_started_us - pose_request_decoded_us;
+#endif
 #ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
                 printf("NANO_C_SLAM_GVSOC_SPI_MAIN:pose_response_ready "
-                       "from=%d count=%d bytes=%u\n",
+                       "from=%d count=%d bytes=%u ready_latency_us=%llu\n",
                        from_id, nr_of_poses,
-                       (unsigned)(3 * sizeof(float) * nr_of_poses));
+                       (unsigned)(3 * sizeof(float) * nr_of_poses),
+                       (unsigned long long)pose_ready_latency_us);
 #endif
                 spi_send_blocking((uint8_t *)requested_poses,
                                   3 * sizeof(float) * nr_of_poses);
 #ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
                 pose_requests_served++;
 #endif
-                uint64_t pose_response_duration_us =
-                    pi_time_get_us() - pose_response_started_us;
                 set_cf_gpio(0); // Response clocks completed.
 #ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
+                uint64_t pose_response_duration_us =
+                    pi_time_get_us() - pose_response_started_us;
                 printf("NANO_C_SLAM_GVSOC_SPI_MAIN:pose_response_done "
                        "from=%d count=%d duration_us=%llu\n",
                        from_id, nr_of_poses,
@@ -353,13 +367,26 @@ void slam_loop() {
         // OPTIMIZE is the final command in this bounded probe. If an ingress
         // frame was lost, exit with a failure marker instead of blocking
         // forever waiting for the nominal packet count.
-        if (cmd == OPTIMIZE_CMD || cmd == POSE_REQ_CMD) break;
+        if (cmd == OPTIMIZE_CMD ||
+            (cmd == POSE_REQ_CMD && pose_requests_served > 0))
+            break;
 #endif
     }
 
 #ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
     int passed;
-#if NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT == 3
+#if NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT == 7
+    passed = processed_packets == 7 && pose_packets_decoded == 2 &&
+             poses_inserted == 2 && pose_requests_decoded == 5 &&
+             pose_requests_rejected == 4 && pose_requests_served == 1 &&
+             pcl_get_pose_count() == 2;
+    printf("NANO_C_SLAM_GVSOC_SPI_MAIN:pose_request_boundaries_%s packets=%u "
+           "pose_decoded=%d pose_inserted=%d requests_decoded=%d "
+           "requests_rejected=%d requests_served=%d poses=%d\n",
+           passed ? "ok" : "fail", processed_packets, pose_packets_decoded,
+           poses_inserted, pose_requests_decoded, pose_requests_rejected,
+           pose_requests_served, pcl_get_pose_count());
+#elif NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT == 3
     passed = processed_packets == 3 && pose_packets_decoded == 2 &&
              poses_inserted == 2 && pose_requests_decoded == 1 &&
              pose_requests_served == 1 && pcl_get_pose_count() == 2;

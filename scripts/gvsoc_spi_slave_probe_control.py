@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Protocol, cast
 
 from scripts.gap9_gvsoc_spi_probe_protocol import (
+    POSE_REQ_CMD,
     SCAN_CMD,
     make_mapping_trace,
     make_pose_frame,
@@ -120,6 +121,41 @@ def target_control(gvsoc: GvsocProxy) -> int:
             ],
             "response_size": 24,
         }
+    elif sequence == "pose-request-boundaries":
+        requests = ((0, 0), (0, -1), (0, 101), (2, 1), (0, 2))
+        frames = [
+            make_pose_frame(0, position=(0.25, -0.5, 0.75)),
+            make_pose_frame(1, position=(1.25, -1.5, 1.75)),
+            *(make_pose_request_frame(start, count) for start, count in requests),
+        ]
+        result = {
+            "sequence": sequence,
+            "pre_cs_dummy_clock_cycles": 8,
+            "frames": [
+                {
+                    "command": command,
+                    "frame_tx_hex": frame.hex(),
+                    "length": len(frame),
+                }
+                for command, frame in zip(
+                    (
+                        "POSE",
+                        "POSE",
+                        "POSE_REQ_ZERO",
+                        "POSE_REQ_NEGATIVE",
+                        "POSE_REQ_OVER_CAPACITY",
+                        "POSE_REQ_UNAVAILABLE_RANGE",
+                        "POSE_REQ_VALID",
+                    ),
+                    frames,
+                    strict=True,
+                )
+            ],
+            "response_size": 24,
+            "rejected_requests": [
+                {"from_id": start, "count": count} for start, count in requests[:-1]
+            ],
+        }
     elif sequence == "mapping":
         frames = list(make_mapping_trace())
         result = {
@@ -183,7 +219,8 @@ def target_control(gvsoc: GvsocProxy) -> int:
         }
     else:
         raise ValueError(
-            "GAP9_GVSOC_SPI_SEQUENCE must be scan, pose-scan, pose-request, mapping, "
+            "GAP9_GVSOC_SPI_SEQUENCE must be scan, pose-scan, pose-request, "
+            "pose-request-boundaries, mapping, "
             "max-mapping, or capacity-mapping"
         )
     output_root = Path(os.environ.get("GAP9_GVSOC_WORK_ROOT", "."))
@@ -191,7 +228,7 @@ def target_control(gvsoc: GvsocProxy) -> int:
     (output_root / "spi_slave_probe_host.json").write_text(
         json.dumps(result, indent=2) + "\n", encoding="utf-8"
     )
-    for frame in frames:
+    for frame_index, frame in enumerate(frames):
         spi.full_duplex(frame, len(frame))
         # SCAN dispatch runs synchronous ICP before the production target
         # arms its next receive. Give that command a longer virtual gap so
@@ -204,12 +241,19 @@ def target_control(gvsoc: GvsocProxy) -> int:
             # retains 2.5x virtual-time margin without making 131 scans take
             # more wall time than the bounded 600 s GVSOC test invocation.
             settle_time_ps = 250_000_000_000
+        elif frame[1] == POSE_REQ_CMD and sequence in {
+            "pose-request",
+            "pose-request-boundaries",
+        }:
+            final_request = frame_index == len(frames) - 1
+            settle_time_ps = 1_000_000_000 if final_request else 100_000_000_000
         gvsoc.run(settle_time_ps)
         if sequence in {
             "mapping",
             "max-mapping",
             "capacity-mapping",
             "pose-request",
+            "pose-request-boundaries",
         }:
             rx_data = spi.get_received_bytes(len(frame))
             if rx_data is None or len(rx_data) != len(frame):
@@ -217,17 +261,17 @@ def target_control(gvsoc: GvsocProxy) -> int:
                     "GVSOC did not return the complete command transfer RX bytes"
                 )
 
-    if sequence == "pose-request":
+    if sequence in {"pose-request", "pose-request-boundaries"}:
         # Let production dispatch assert ready and block in its real slave TX
         # before queuing the distinct master response transaction.
         result["control_phase"] = "allowing_target_to_assert_ready"
         (output_root / "spi_slave_probe_host.json").write_text(
             json.dumps(result, indent=2) + "\n", encoding="utf-8"
         )
-        gvsoc.run(10_000_000_000)
+        gvsoc.run(1_000_000_000)
         result["control_phase"] = "queueing_pose_response_receive"
         spi.receive(24)
-        gvsoc.run(100_000_000_000)
+        gvsoc.run(10_000_000_000)
         response = spi.get_received_bytes()
         if response is None or len(response) != 24:
             result["control_phase"] = "pose_response_length_mismatch"
