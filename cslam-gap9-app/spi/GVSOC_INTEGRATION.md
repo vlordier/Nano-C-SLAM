@@ -504,12 +504,20 @@ These counters are cumulative and printed only when optimization is requested;
 they cannot reveal clocks lost before a complete fixed-size transaction or
 losses in commands that carry no sequence number.
 
-The captured 66-frame report with diagnostics enabled is retained at
-`artifacts/gap9_gvsoc_evidence/spi_mapping_main_diagnostics_20261019.json`.
-It observed 66 transactions, no malformed or unknown commands, 61 POSE, four
-SCAN, and one OPTIMIZE frames; the pose decoder accepted 60 and rejected one
-checksum, all four scan decodes succeeded, and one optimization response
-completed. These are simulator accounting results, not physical bus-loss
-measurements. To build the normal firmware without the counters, set
+The reconciled 66-frame report is retained at
+`artifacts/gap9_gvsoc_evidence/spi_mapping_loss_reconciliation_20261019.json`.
+It records 66 completed full-duplex host command transfers (6,402 TX bytes and
+6,402 RX bytes) alongside 66 target receive calls, no malformed or unknown
+commands, 61 POSE, four SCAN, and one OPTIMIZE frames. The pose decoder accepted
+60 and rejected one checksum, all four scan decodes succeeded, and one
+optimization response completed. The report decodes all nine little-endian
+`slam_job_t` fields and checks marker fields such as pose count, graph size,
+solver calls, completion, and runtime against those exact response bytes.
+These are simulator accounting results, not physical bus-loss measurements.
+They establish that this injected trace was fully clocked and received in
+GVSoC; they do not reveal commands lost before a complete fixed-size receive,
+or distinguish drops from duplicates for identical sequence-less commands.
+A logic analyzer and correlated STM32/GAP9 observations remain necessary for
+physical loss claims. To build the normal firmware without the counters, set
 `GAP9_BUILD_SPI_DIAGNOSTICS=OFF`; the SPI protocol and mission behavior are
 unchanged.

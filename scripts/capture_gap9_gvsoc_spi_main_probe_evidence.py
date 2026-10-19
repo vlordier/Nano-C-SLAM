@@ -9,6 +9,7 @@ import re
 import struct
 import sys
 from pathlib import Path
+from typing import cast
 
 from scripts.gap9_gvsoc_spi_probe_protocol import (
     SCAN_CMD,
@@ -44,10 +45,32 @@ COMMAND_NAMES = (
     "external_pose",
     "pose_update",
 )
+SLAM_JOB = struct.Struct("<9h")
+SLAM_JOB_FIELDS = (
+    "number_of_poses",
+    "main_graph_size",
+    "max_subgraph_size",
+    "time_ms",
+    "has_nan",
+    "main_solver_returned",
+    "successful_solver_call_count",
+    "completed_solver_iteration_count",
+    "optimization_completed",
+)
 
 
 def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _decode_slam_job(response_hex: str) -> dict[str, int]:
+    try:
+        values = SLAM_JOB.unpack(bytes.fromhex(response_hex))
+    except (ValueError, struct.error) as error:
+        raise ValueError(
+            "target slam_job_t response must be exactly 18 bytes"
+        ) from error
+    return dict(zip(SLAM_JOB_FIELDS, values, strict=True))
 
 
 def _capture_pose_request_evidence(
@@ -308,6 +331,16 @@ def capture_evidence(
     ]
     if frames != expected_records:
         raise ValueError("host transfer bytes/order differ from expected sequence")
+    command_transfer_lengths = host_transfer.get("command_transfer_lengths")
+    if sequence in {"mapping", "max-mapping", "capacity-mapping"}:
+        expected_transfer_lengths = [
+            {"master_tx_bytes": len(frame), "master_rx_bytes": len(frame)}
+            for frame in expected
+        ]
+        if command_transfer_lengths != expected_transfer_lengths:
+            raise ValueError(
+                "host command transfer TX/RX lengths differ from expected frames"
+            )
 
     try:
         log = log_path.read_text(encoding="utf-8")
@@ -329,6 +362,9 @@ def capture_evidence(
     optimizer_time_ms: int | None = None
     optimizer_graph_size: int | None = None
     mapping_outcome: str | None = None
+    slam_job_fields: dict[str, int] | None = None
+    transaction_accounting: dict[str, object] | None = None
+    marker_optimizer_fields: dict[str, int] = {}
     if sequence == "pose-scan":
         if TARGET_MARKER not in log:
             raise ValueError(
@@ -353,7 +389,7 @@ def capture_evidence(
                 r"NANO_C_SLAM_GVSOC_SPI_MAIN:mapping_ok packets=66 "
                 r"pose_decoded=60 pose_inserted=60 bad_pose_checksum=1 "
                 r"scans_decoded=4 scans_registered=3 constraints=2 "
-                r"optimizer_edges=2 optimize=1 graph=3 solver_calls=\d+ "
+                r"optimizer_edges=2 optimize=1 graph=(\d+) solver_calls=(\d+) "
                 r"response_expected_hex=([0-9a-f]{36})"
             )
             expected_diagnostics = {
@@ -369,8 +405,8 @@ def capture_evidence(
                 r"NANO_C_SLAM_GVSOC_SPI_MAIN:max_mapping_ok packets=276 "
                 r"pose_decoded=260 pose_inserted=260 bad_pose_checksum=1 "
                 r"scans_decoded=14 scans_registered=13 constraints=\d+ "
-                r"optimizer_edges=\d+ optimize=1 poses=260 graph=13 "
-                r"solver_calls=\d+ time_ms=(\d+) has_nan=0 completed=1 "
+                r"optimizer_edges=\d+ optimize=1 poses=(\d+) graph=(\d+) "
+                r"solver_calls=(\d+) time_ms=(\d+) has_nan=(\d+) completed=(\d+) "
                 r"response_expected_hex=([0-9a-f]{36})"
             )
             expected_diagnostics = {
@@ -445,6 +481,15 @@ def capture_evidence(
                 int(value) for value in match.groups()[:7]
             )
             response_expected_hex = match.group(8)
+            marker_optimizer_fields = {
+                "number_of_poses": poses,
+                "main_graph_size": graph,
+                "time_ms": duration,
+                "has_nan": 0,
+                "main_solver_returned": int(constraints > 0),
+                "successful_solver_call_count": calls,
+                "optimization_completed": completed,
+            }
             if not 0 <= edges <= constraints <= 50:
                 raise ValueError("capacity ingress constraint counts exceed limits")
             if constraints == 0:
@@ -462,10 +507,46 @@ def capture_evidence(
                 optimizer_graph_size = graph
                 optimizer_time_ms = duration
         elif sequence == "max-mapping":
-            optimizer_time_ms = int(match.group(1))
-            response_expected_hex = match.group(2)
+            poses, graph, calls, duration, has_nan, completed = (
+                int(value) for value in match.groups()[:6]
+            )
+            response_expected_hex = match.group(7)
+            optimizer_time_ms = duration
+            optimizer_graph_size = graph
+            marker_optimizer_fields = {
+                "number_of_poses": poses,
+                "main_graph_size": graph,
+                "time_ms": duration,
+                "has_nan": has_nan,
+                "main_solver_returned": 1,
+                "successful_solver_call_count": calls,
+                "optimization_completed": completed,
+            }
+            if (
+                poses != 260
+                or graph != 13
+                or calls < 1
+                or has_nan != 0
+                or completed != 1
+            ):
+                raise ValueError(
+                    "max-mapping marker reports an invalid optimizer result"
+                )
         else:
-            response_expected_hex = match.group(1)
+            response_expected_hex = match.group(3)
+            marker_graph = int(match.group(1))
+            marker_calls = int(match.group(2))
+            marker_optimizer_fields = {
+                "number_of_poses": 60,
+                "main_graph_size": marker_graph,
+                "has_nan": 0,
+                "main_solver_returned": 1,
+                "successful_solver_call_count": marker_calls,
+                "optimization_completed": 1,
+            }
+            if marker_graph != 3 or marker_calls < 1:
+                raise ValueError("mapping marker reports an invalid optimizer result")
+            optimizer_graph_size = marker_graph
         diagnostics_match = SPI_DIAGNOSTICS_PATTERN.search(log)
         if diagnostics_match is None:
             raise ValueError("GVSOC log lacks production SPI receive diagnostics")
@@ -529,6 +610,29 @@ def capture_evidence(
                 f"{len(expected)}-frame "
                 f"sequence: {actual_diagnostics!r}"
             )
+        slam_job_fields = _decode_slam_job(response_expected_hex)
+        expected_fields = marker_optimizer_fields
+        if any(
+            slam_job_fields[name] != value for name, value in expected_fields.items()
+        ):
+            raise ValueError("target slam_job_t fields disagree with mapping marker")
+        transfer_lengths = cast(list[dict[str, int]], command_transfer_lengths)
+        transaction_accounting = {
+            "completed_host_command_transfers": len(transfer_lengths),
+            "master_tx_bytes": sum(
+                item["master_tx_bytes"] for item in transfer_lengths
+            ),
+            "master_rx_bytes": sum(
+                item["master_rx_bytes"] for item in transfer_lengths
+            ),
+            "target_completed_receive_frames": int(received_frames),
+            "interpretation": (
+                "Host TX/RX byte totals count completed full-duplex testbench "
+                "transfers; target frames count completed fixed-size receives. "
+                "Neither detects unclocked commands or identifies drops of "
+                "identical sequence-less commands."
+            ),
+        }
         response_rx_hex = host_transfer.get("response_rx_hex")
         if response_rx_hex is None:
             if "response_phase=skipped" not in log:
@@ -585,6 +689,8 @@ def capture_evidence(
         "optimizer_response_expected_hex": response_expected_hex,
         "optimizer_time_ms": optimizer_time_ms,
         "optimizer_graph_size": optimizer_graph_size,
+        "slam_job_fields": slam_job_fields,
+        "transaction_accounting": transaction_accounting,
         "mapping_outcome": mapping_outcome if sequence == "capacity-mapping" else None,
         "scan_busy_durations_us": scan_busy_durations_us,
         "scan_busy_max_us": (

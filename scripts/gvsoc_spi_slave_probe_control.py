@@ -223,6 +223,8 @@ def target_control(gvsoc: GvsocProxy) -> int:
             "pose-request-boundaries, mapping, "
             "max-mapping, or capacity-mapping"
         )
+    if sequence in {"mapping", "max-mapping", "capacity-mapping"}:
+        result["command_transfer_lengths"] = []
     output_root = Path(os.environ.get("GAP9_GVSOC_WORK_ROOT", "."))
     output_root.mkdir(parents=True, exist_ok=True)
     (output_root / "spi_slave_probe_host.json").write_text(
@@ -259,6 +261,13 @@ def target_control(gvsoc: GvsocProxy) -> int:
             if rx_data is None or len(rx_data) != len(frame):
                 raise RuntimeError(
                     "GVSOC did not return the complete command transfer RX bytes"
+                )
+            if sequence in {"mapping", "max-mapping", "capacity-mapping"}:
+                transfer_lengths = cast(
+                    list[dict[str, int]], result["command_transfer_lengths"]
+                )
+                transfer_lengths.append(
+                    {"master_tx_bytes": len(frame), "master_rx_bytes": len(rx_data)}
                 )
 
     if sequence in {"pose-request", "pose-request-boundaries"}:

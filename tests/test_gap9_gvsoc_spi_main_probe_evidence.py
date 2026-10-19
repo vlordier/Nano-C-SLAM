@@ -7,6 +7,7 @@ import json
 import struct
 import tempfile
 import unittest
+from collections.abc import Sequence
 from pathlib import Path
 from typing import cast
 
@@ -60,6 +61,13 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
         self.host_transfer_path.write_text(json.dumps(transfer), encoding="utf-8")
 
     @staticmethod
+    def _transfer_lengths(frames: Sequence[bytes]) -> list[dict[str, int]]:
+        return [
+            {"master_tx_bytes": len(frame), "master_rx_bytes": len(frame)}
+            for frame in frames
+        ]
+
+    @staticmethod
     def _scan_busy_lines(frames: tuple[bytes, ...]) -> str:
         scan_ids = [
             int.from_bytes(frame[2:4], "little", signed=True)
@@ -103,6 +111,7 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
                         }
                         for command, frame in zip(commands, frames, strict=True)
                     ],
+                    "command_transfer_lengths": self._transfer_lengths(frames),
                     "response_rx_hex": response_rx_hex,
                     "control_phase": (
                         "optimizer_completed_response_not_clocked"
@@ -113,7 +122,7 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
-        expected_response = "010002000300040005000600070008000900"
+        expected_response = struct.pack("<9h", 60, 3, 21, 128, 0, 1, 3, 9, 1).hex()
         marker = (
             "NANO_C_SLAM_GVSOC_SPI_MAIN:mapping_ok packets=66 "
             "pose_decoded=60 pose_inserted=60 bad_pose_checksum=1 "
@@ -189,6 +198,7 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
                         }
                         for command, frame in zip(commands, frames, strict=True)
                     ],
+                    "command_transfer_lengths": self._transfer_lengths(frames),
                     "response_size": 24,
                     "response_rx_hex": response_hex
                     or struct.pack("<6f", *positions[0], *positions[1]).hex(),
@@ -337,6 +347,25 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
         diagnostics = cast(dict[str, object], report["spi_diagnostics"])
         self.assertEqual(diagnostics["received_frames"], 66)
         self.assertEqual(diagnostics["completed_optimize_responses"], 0)
+        self.assertEqual(
+            report["slam_job_fields"],
+            {
+                "number_of_poses": 60,
+                "main_graph_size": 3,
+                "max_subgraph_size": 21,
+                "time_ms": 128,
+                "has_nan": 0,
+                "main_solver_returned": 1,
+                "successful_solver_call_count": 3,
+                "completed_solver_iteration_count": 9,
+                "optimization_completed": 1,
+            },
+        )
+        accounting = cast(dict[str, object], report["transaction_accounting"])
+        self.assertEqual(accounting["completed_host_command_transfers"], 66)
+        self.assertEqual(accounting["master_tx_bytes"], 66 * 97)
+        self.assertEqual(accounting["master_rx_bytes"], 66 * 97)
+        self.assertEqual(accounting["target_completed_receive_frames"], 66)
         self.assertTrue(
             any(
                 "skips the SPI slave TX" in limitation
@@ -365,6 +394,7 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
                         }
                         for command, frame in zip(commands, frames, strict=True)
                     ],
+                    "command_transfer_lengths": self._transfer_lengths(frames),
                     "control_phase": "optimizer_completed_response_not_clocked",
                 }
             ),
@@ -376,7 +406,8 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
             "scans_decoded=14 scans_registered=13 constraints=30 "
             "optimizer_edges=30 optimize=1 poses=260 graph=13 "
             "solver_calls=3 time_ms=4321 has_nan=0 completed=1 "
-            "response_expected_hex=010002000300040005000600070008000900"
+            "response_expected_hex="
+            + struct.pack("<9h", 260, 13, 13, 4321, 0, 1, 3, 9, 1).hex()
         )
         stats = (
             "NANO_C_SLAM_SPI:stats rx=276 malformed=0 unknown=0 "
@@ -432,6 +463,7 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
                         }
                         for command, frame in zip(commands, frames, strict=True)
                     ],
+                    "command_transfer_lengths": self._transfer_lengths(frames),
                     "control_phase": "optimizer_response_captured",
                     "response_rx_hex": "040133000300840200000100330099000100",
                 }
@@ -510,6 +542,24 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
         self.log_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
         with self.assertRaisesRegex(ValueError, "lacks production SPI receive"):
+            self._capture()
+
+    def test_rejects_incomplete_host_full_duplex_transfer(self) -> None:
+        self._write_mapping_evidence()
+        transfer = json.loads(self.host_transfer_path.read_text(encoding="utf-8"))
+        transfer["command_transfer_lengths"][0]["master_rx_bytes"] -= 1
+        self.host_transfer_path.write_text(json.dumps(transfer), encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "TX/RX lengths"):
+            self._capture()
+
+    def test_rejects_slam_job_fields_that_disagree_with_target_marker(self) -> None:
+        self._write_mapping_evidence()
+        log = self.log_path.read_text(encoding="utf-8")
+        log = log.replace("solver_calls=3", "solver_calls=4")
+        self.log_path.write_text(log, encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "slam_job_t fields disagree"):
             self._capture()
 
     def test_rejects_missing_scan_busy_measurement(self) -> None:
