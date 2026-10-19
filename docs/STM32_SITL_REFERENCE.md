@@ -176,6 +176,22 @@ uv run --locked python scripts/crazysim_udp_probe.py \
   --ready-log /tmp/cf2-firmware.log --imu-hz 100 --imu-seconds 5
 ```
 
+The 2026-10-19 ready-gated retest sent 2,994 stationary IMU datagrams at
+500 Hz after the `Self test passed!` marker, then sent the high-level takeoff
+packet. The firmware still logged `Wait for sensor calibration`; the probe
+received zero motor packets. Raising the socket task from
+`USBLINK_TASK_PRI-1` to `USBLINK_TASK_PRI` and yielding one tick per poll did
+not change that result. Guest packet capture proves datagrams reached the VM,
+but temporary first-packet logging in both `socketlinkTask` and `sensorsTask`
+did not appear in captured firmware output. Therefore this run does not prove
+that the socket task consumed the packets; calibration logic is not yet the
+confirmed root cause. The candidate patch in
+`sim/crazysim/patches/0001-sitl-socketlink-drain-after-eintr.patch` builds
+`cf2` but is still experimental and is not validated as a fix. The full
+CrazySim aggregate build also attempts to build the Gazebo plugin in the Linux
+guest and fails because `gz-plugin2` is unavailable there; this does not
+invalidate the separate `cf2` target build.
+
 The temporary debug edits live only in `/tmp/ncs-crazysim` in the Lima guest;
 they are not a maintained patch and were not copied into the submodule. Bead
 `ncs-fea.5.8.1` now isolates readiness gating and bounded-queue diagnosis.
