@@ -34,8 +34,10 @@ build_root="$(mktemp -d "$repo_root/build/gazebo-ros-overlay.XXXXXX")"
 interface_package="$repo_root/sim/gazebo/nano_c_slam_interfaces"
 gazebo_package="$repo_root/sim/gazebo/nano_c_slam_gazebo"
 base_paths=("$interface_package" "$gazebo_package")
+colcon_package_targets=(nano_c_slam_gazebo)
 upstream_gazebo_package="$workspace/src/ros_gz_crazyflie/ros_gz_crazyflie_gazebo"
 upstream_bringup_package="$workspace/src/ros_gz_crazyflie/ros_gz_crazyflie_bringup"
+upstream_multiranger_root="$workspace/src/crazyflie_ros2_multiranger"
 capture_upstream_sources=0
 
 if [[ -d "$upstream_gazebo_package" && -d "$upstream_bringup_package" ]]; then
@@ -46,6 +48,20 @@ elif ! ros2 pkg prefix ros_gz_crazyflie_gazebo >/dev/null 2>&1 || \
     echo "Crazyswarm Gazebo packages are neither installed nor available in $workspace/src." >&2
     exit 1
 fi
+
+# The installed Crazyswarm overlay can retain dangling ament-index links after
+# its build tree is cleaned. ros_gz_sim discovers every indexed package while
+# starting, so rebuild the multiranger package markers in this isolated overlay.
+for package in \
+    crazyflie_ros2_multiranger_bringup \
+    crazyflie_ros2_multiranger_simple_mapper \
+    crazyflie_ros2_multiranger_wall_following; do
+    package_path="$upstream_multiranger_root/$package"
+    if [[ -d "$package_path" ]]; then
+        base_paths+=("$package_path")
+        colcon_package_targets+=("$package")
+    fi
+done
 
 capture_source_snapshot() {
     local destination="$1"
@@ -97,7 +113,7 @@ colcon_arguments=(
     --base-paths "${base_paths[@]}"
     --build-base "$build_root/build"
     --install-base "$build_root/install"
-    --packages-up-to nano_c_slam_gazebo
+    --packages-up-to "${colcon_package_targets[@]}"
     --event-handlers console_direct+
     --cmake-args
     -DCMAKE_BUILD_TYPE=Release
@@ -134,7 +150,7 @@ set +u
 # shellcheck source=/dev/null
 source "$build_root/install/local_setup.bash"
 set -u
-for package in nano_c_slam_interfaces nano_c_slam_gazebo; do
+for package in nano_c_slam_interfaces "${colcon_package_targets[@]}"; do
     package_prefix="$(uv run --no-project --python "$python_executable" ros2 pkg prefix "$package")"
     if [[ "$package_prefix" != "$build_root/install/$package" ]]; then
         echo "Nano-C-SLAM package did not resolve from the new overlay: $package_prefix" >&2
@@ -163,8 +179,8 @@ uv run --no-project --python "$python_executable" ros2 launch \
     nano_c_slam_gazebo crazyswarm2_gazebo.launch.py --show-args >/dev/null
 
 printf 'Nano-C-SLAM ROS overlay built successfully.\n'
-if [[ "${#base_paths[@]}" -gt 2 ]]; then
-    printf 'The overlay also repairs the two missing Crazyswarm Gazebo packages.\n'
+if [[ "${#colcon_package_targets[@]}" -gt 1 ]]; then
+    printf 'The overlay also rebuilds available Crazyswarm multiranger packages.\n'
 fi
 printf 'Source it in this shell with:\n  source "%s/install/local_setup.bash"\n' \
     "$build_root"
