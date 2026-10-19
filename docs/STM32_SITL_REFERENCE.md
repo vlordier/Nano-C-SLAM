@@ -80,10 +80,13 @@ rendering the model SDF from its template. The model was accepted by
 were observed. This validates plugin loading and sensor-topic production only;
 no firmware executable was running and no actuator-driven flight occurred.
 Gazebo's default DART plugin has a stale Homebrew dependency on
-`libdart-collision-bullet.6.19.dylib`, while 6.20.1 is installed. Launching
-with the installed `gz-physics-bullet-plugin` avoided that DART load error and
-allowed the model to fall and contact the ground, proving a physics backend
-was active for the later firmware probe.
+`libdart-collision-bullet.6.19.dylib`, while 6.20.1 is installed. The integrated
+Nano launcher already selects Bullet Featherstone. Direct CrazySim invocations
+must also explicitly select an engine; the SDF `type="ode"` field does not
+select Gazebo Sim's engine plugin. A manual invocation that omitted
+`--physics-engine` hit the DART load error and left firmware motor commands with
+no observed physical response. CrazySim flight should use the force-capable
+Featherstone plugin rather than regular Bullet.
 
 The reference plugin also has a shutdown/reconnect defect. Its destructor
 joins threads whose `recvfrom()` calls can block indefinitely, but does not
@@ -726,3 +729,52 @@ firmware binary: stable finite hover and commanded landing, plus a disconnected
 actuator run that stays on the platform with zero motor output. Even those
 reference-SITL results would not prove that Nano-C-SLAM's STM32 application or
 GAP9 mapping runs in Gazebo.
+
+## Sampled estimator diagnostics and matched-rate retest (2026-10-19)
+
+Crazyflie fork commits `da4ba7de` and `783219ac` add `CRAZYSIM_DIAGNOSTICS`,
+disabled by default. When enabled, the firmware prints sampled raw/converted
+IMU values and, at 20-Hz intervals, estimator position/velocity, attitude,
+setpoint altitude, and controller thrust. Exact fork source builds passed both
+with diagnostics on (`cf2` SHA-256
+`5325a25fd8b057052aef8177053dd68826ca864b8dea6af6b683c956e0aecbbf`) and off
+(`dd4359b93d566833c0694336c43521f61fc6e8bd8806fdc3c176c38c24820e9a`). The
+option is pushed to `vlordier/crazyflie-firmware`, branch
+`codex/sitl-imu-wakeup`.
+
+The first matched-rate diagnostic capture accidentally omitted the engine flag,
+so Gazebo attempted its broken default DART load and odometry stayed at 2.040 m
+despite saturated thrust. That was a launcher error, not evidence of a broken
+motor conversion. Re-running with `gz-physics-bullet-featherstone-plugin`
+selected explicitly produced a firmware-driven rise and landing: odometry
+moved from 2.015 m to 2.591 m and returned to 2.015 m; motor topics reached
+2,501 rad/s. This resolves the previously unexplained “motor commands but no
+climb” result for the direct test setup.
+
+The corrected-engine run still fails the flight gate. Of 1,483 sampled poses,
+1,438 were finite; the first nonfinite state appeared at 14.15 s. The sampled
+altitude range was 2.015–2.591 m, but the capture did not hold the requested
+2.40-m envelope for five seconds. Firmware reported a 473/500-Hz stabilizer
+rate, Kalman rates between 67 and 98/100 Hz, and `Landing timeout, disarming`.
+Aggregate RTF was 0.728, odometry gaps reached 0.130 s, and IMU gaps reached
+0.236 s. The capture therefore fails timing and finite-state checks and cannot
+be used to infer clean steady-state controller performance. The strict
+positive/negative capture gate remains open.
+
+For every direct reproduction, match firmware and Gazebo IMU rates and select
+Featherstone explicitly:
+
+```sh
+export GZ_SIM_PHYSICS_ENGINE_PATH="$GZ_INSTALL/lib/gz-physics-7/engine-plugins"
+gz sim --physics-engine gz-physics-bullet-featherstone-plugin -r -s world.sdf
+```
+
+Gazebo 8's documentation says DART is the default and that the engine plugin
+is selected separately from SDF physics parameters. The same CLI flag is
+already built into Nano-C-SLAM's `physics_engine_model.py` and macOS launcher;
+the omission was in the manual CrazySim reproduction. An earlier attempt also
+paired 500-Hz firmware with a 1-kHz IMU and flushed every sampler record; its
+1,053-Hz loop count and 0.806 RTF are configuration/instrumentation failures.
+The corrected run's sampler still missed strict sensor-rate coverage, and
+neither run passes the checker. Stable reference flight, Nano STM32 firmware,
+and mapping validation are still unproven.
