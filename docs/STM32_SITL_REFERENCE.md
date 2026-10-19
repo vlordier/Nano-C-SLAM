@@ -233,6 +233,19 @@ calibration test. Context7 documentation
 lookup was unavailable because its monthly quota was exhausted; local source
 inspection and the upstream Gazebo example were used for this diagnosis.
 
+Follow-up source inspection identified the backend capability mismatch. In the
+local `gz-sim` `Physics.cc`, an `ExternalWorldWrenchCmd` is skipped with the
+diagnostic `Wrench will be ignored` when the selected backend lacks
+`AddLinkExternalForceTorque`. The local `gz-physics` Bullet Featherstone
+backend implements that feature; the regular Bullet backend does not. Repeating
+the official X3 test with `gz-physics-bullet-featherstone-plugin` and the same
+`[700, 700, 700, 700]` command raised the root from `z=0.055 m` to `z=2.3558 m`
+in roughly three seconds. This confirms thrust works in the local Gazebo stack
+with Featherstone. It does not validate the Crazyflie model or firmware flight;
+those are the next tests. The integrated Gazebo launcher now selects this
+force-capable backend by default, while `NANO_C_SLAM_GZ_PHYSICS_ENGINE` can
+override it.
+
 The temporary debug edits live only in `/tmp/ncs-crazysim` in the Lima guest;
 they are not a maintained patch and were not copied into the submodule. Bead
 `ncs-fea.5.8.1` now isolates readiness gating and bounded-queue diagnosis.

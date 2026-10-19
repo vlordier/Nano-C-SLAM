@@ -10,11 +10,12 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.physics_engine_model impor
 
 
 class GazeboPhysicsEngineModelTests(unittest.TestCase):
-    def test_default_arguments_keep_the_installed_engine_selection(self) -> None:
+    def test_default_arguments_select_force_capable_featherstone(self) -> None:
         self.assertEqual(
             gazebo_server_arguments(),
             " -r -s --headless-rendering --render-engine-server=ogre2 "
-            "--render-engine-server-api-backend=metal",
+            "--render-engine-server-api-backend=metal "
+            "--physics-engine gz-physics-bullet-featherstone-plugin",
         )
         self.assertEqual(gazebo_server_arguments(" "), gazebo_server_arguments())
 
