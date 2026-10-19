@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import contextlib
+import io
 import socket
 import tempfile
 import threading
@@ -73,22 +75,24 @@ class LiveGvsocReceiverTests(unittest.TestCase):
             spi = _Spi()
             outcome: list[dict[str, object]] = []
             failure: list[BaseException] = []
+            control_output = io.StringIO()
 
             def target() -> None:
                 try:
-                    outcome.append(
-                        _run_live_mapping_stream(
-                            gvsoc,
-                            spi,
-                            socket_path=socket_path,
-                            ready_path=ready_path,
-                            run_id=RUN_ID,
-                            drone_id="cf1",
-                            packet_count=2,
-                            timeout_s=2.0,
-                            output_path=output_path,
+                    with contextlib.redirect_stdout(control_output):
+                        outcome.append(
+                            _run_live_mapping_stream(
+                                gvsoc,
+                                spi,
+                                socket_path=socket_path,
+                                ready_path=ready_path,
+                                run_id=RUN_ID,
+                                drone_id="cf1",
+                                packet_count=2,
+                                timeout_s=2.0,
+                                output_path=output_path,
+                            )
                         )
-                    )
                 except BaseException as error:
                     failure.append(error)
 
@@ -126,6 +130,10 @@ class LiveGvsocReceiverTests(unittest.TestCase):
             self.assertEqual(spi.frames, list(frames))
             self.assertTrue(spi.response_requested)
             self.assertEqual(outcome[0]["response_rx_hex"], bytes(18).hex())
+            self.assertIn(
+                f"NANO_C_SLAM_GVSOC_SPI_HOST:live_response_rx_hex={bytes(18).hex()}",
+                control_output.getvalue(),
+            )
             transfer_lengths = cast(
                 list[object], outcome[0]["command_transfer_lengths"]
             )

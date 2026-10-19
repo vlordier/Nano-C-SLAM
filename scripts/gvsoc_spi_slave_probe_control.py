@@ -150,6 +150,10 @@ def _run_live_mapping_stream(
             raise RuntimeError("GVSOC did not capture the 18-byte optimizer response")
         result["response_rx_hex"] = response.hex()
         result["control_phase"] = "optimizer_response_captured"
+        print(
+            f"NANO_C_SLAM_GVSOC_SPI_HOST:live_response_rx_hex={response.hex()}",
+            flush=True,
+        )
         output_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
         return result
     finally:
@@ -528,7 +532,10 @@ def target_control(gvsoc: GvsocProxy) -> int:
                 )
             result["response_rx_hex"] = response.hex()
             result["control_phase"] = "optimizer_response_captured"
-            print(f"NANO_C_SLAM_GVSOC_SPI_HOST:response_rx_hex={response.hex()}")
+            print(
+                f"NANO_C_SLAM_GVSOC_SPI_HOST:live_response_rx_hex={response.hex()}",
+                flush=True,
+            )
         else:
             result["control_phase"] = "optimizer_completed_response_not_clocked"
         (output_root / "spi_slave_probe_host.json").write_text(
