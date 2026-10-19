@@ -778,3 +778,57 @@ paired 500-Hz firmware with a 1-kHz IMU and flushed every sampler record; its
 The corrected run's sampler still missed strict sensor-rate coverage, and
 neither run passes the checker. Stable reference flight, Nano STM32 firmware,
 and mapping validation are still unproven.
+
+## Rebuilt-fork command and telemetry retest (2026-10-19)
+
+The Lima checkout was stale at `cb1f716d`; it had not fetched the newer
+published `codex/sitl-imu-wakeup` tip. It is now checked out at
+`fc30709529ee60dc02b386c49ee004855375bb15`, with the CrazySim submodule at
+`7e2d25bcb448349290b65fc0f86a98cdb46bb1d9`. A clean-first default `cf2`
+build at 500 Hz completed with diagnostics disabled (SHA-256
+`8557d0d18ce57bff1f73e88b7209acddf540089935e5aefe4a02b10cb92d34b1`). A
+separate diagnostics-enabled binary also built from a fresh build directory
+(SHA-256
+`7d824ef815c56627ca7117d15c0ef06cb753c49bea09bb5425d750f3269d25b5`). The
+build still emits warnings in upstream SITL code; they are not treated as
+warnings-free evidence.
+
+A fresh native Gazebo Sim 8.15.0 world used the Featherstone engine, the
+raised platform at 2.015 m, and a single `cf_0`. The diagnostics-enabled
+firmware connected, calibrated, logged `SUP: Ready to fly`, accepted the
+bounded CRTP client's TAKEOFF_2 and LAND_2 commands with result byte zero, and
+sent motor commands that moved the model. In a 24-second subscription window,
+3,724/3,724 odometry poses and 74,500 motor velocity values were finite;
+odometry altitude ranged 2.0150–2.6565 m. Against the requested 2.615 m
+takeoff target, the longest continuous interval within 0.12 m was only 1.840
+seconds. The capture contains 9,314 IMU messages and 228 world-stat samples;
+the arithmetic mean of sampled instantaneous RTF values was 0.795, with a
+0.024–2.160 range. Because the capture used four verbose topic subscriptions
+and sampled firmware diagnostics, this RTF is a loaded diagnostic measurement,
+not an idle or production benchmark.
+
+Firmware logged `STAB: WARNING: stabilizer loop rate is off (502)` against
+the configured 500 Hz and later `SUP: Landing timeout, disarming`. A follow-up
+8-second capture showed 1,365 poses at the 2.015 m platform and zero motor
+commands: the vehicle did return to the platform and disarm, but only after
+the firmware reported the landing timeout. No `State out of bounds` or
+`SUP: Crashed` message appeared in this run. The capture still fails the
+flight gate: less than five seconds in the required hover envelope, loop-rate
+warning, landing timeout, and degraded capture-time RTF. The standalone
+checker was not run because this run did not include a synchronized plugin
+motor-attribution trace or disconnected-actuator negative-control bundle.
+
+The new `scripts/crazysim_bridge_command.py` sends these bounded commands to
+the plugin's cflib UDP port (20850). Its initial default was corrected after
+an ACK test exposed that 19850 was the wrong port for this world. Unit tests
+cover the wire encoding, ACK filtering, invalid values, and the port default.
+This client makes command reproduction easier; it does not change the flight
+gate or turn the diagnostic upstream CrazySim firmware into Nano-C-SLAM.
+
+Next, repeat the same pinned build with a single synchronized capture and
+reduced observer overhead, then trace the 502-Hz supervisor measurement and
+landing-timeout predicate against simulation timestamps. Keep the existing
+five-second hover, finite-state, no-warning, commanded-landing, and
+disconnected-actuator checks unchanged. Nano STM32 task execution, ToF/UWB
+adapters, and map-to-Gazebo geometry comparison remain separate, unpassed
+gates.
