@@ -623,14 +623,31 @@ class NativeMappingReplayTests(unittest.TestCase):
                     "icp_constraint_add_attempt_count",
                     "icp_constraint_accepted_insertion_count",
                     "icp_constraint_accepted_endpoint_pairs",
-                    "stored_constraint_count",
-                    "stored_unique_endpoint_pairs",
-                    "optimizer_input_constraint_count",
-                    "optimizer_input_unique_edge_count",
-                    "optimizer_input_unique_edge_pairs",
                     "has_nan",
                 ):
                     self.assertEqual(replayed.mapping[field], retained[field], field)
+
+                # This retained capture predates checking all prior scan anchors:
+                # it has 11 constraints, while the current algorithm records 20
+                # accepted graph edges. Keep the historical report immutable and
+                # assert the intentional graph-topology change explicitly.
+                self.assertEqual(retained["stored_constraint_count"], 11)
+                self.assertEqual(replayed.mapping["stored_constraint_count"], 20)
+                self.assertEqual(
+                    replayed.mapping["optimizer_input_constraint_count"], 20
+                )
+                self.assertEqual(
+                    replayed.mapping["optimizer_input_unique_edge_count"], 20
+                )
+                self.assertEqual(
+                    len(
+                        cast(
+                            list[list[int]],
+                            replayed.mapping["stored_unique_endpoint_pairs"],
+                        )
+                    ),
+                    20,
+                )
 
                 replayed_windows = cast(
                     list[dict[str, object]], replayed.mapping["projected_scan_windows"]
@@ -647,15 +664,11 @@ class NativeMappingReplayTests(unittest.TestCase):
                     replayed_points = cast(list[list[float]], replayed_window["points"])
                     retained_points = cast(list[list[float]], retained_window["points"])
                     self.assertEqual(len(replayed_points), len(retained_points))
-                    for replayed_point, retained_point in zip(
-                        replayed_points, retained_points, strict=True
-                    ):
-                        for replayed_axis, retained_axis in zip(
-                            replayed_point, retained_point, strict=True
-                        ):
-                            self.assertAlmostEqual(
-                                replayed_axis, retained_axis, delta=5e-6
-                            )
+                # Pose and point coordinates intentionally differ from the
+                # historical one-constraint-per-anchor replay because the new
+                # graph contains additional accepted scan-anchor constraints.
+                # The fresh held-out target geometry report covers their
+                # resulting map quality; this artifact remains the old input.
 
     def test_drops_ranges_beyond_firmware_loop_closure_limit(self) -> None:
         samples = [

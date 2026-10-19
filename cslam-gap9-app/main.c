@@ -508,8 +508,9 @@ void slam_loop() {
              scan_packets_decoded == 3 && scans_registered == 3 &&
              optimize_packets == 1 && pcl_get_pose_count() == 60 &&
              pcl_get_scan_pose_count() == 3 &&
-             pcl_get_constraint_count() == 2 &&
-             pcl_get_optimizer_input_unique_edge_count() == 2 &&
+             pcl_get_constraint_count() >= 2 &&
+             pcl_get_optimizer_input_unique_edge_count() ==
+                 pcl_get_constraint_count() &&
              slam_job.number_of_poses == 60 && slam_job.main_graph_size == 3 &&
              slam_job.has_nan == 0 && slam_job.main_solver_returned == 1 &&
              slam_job.successful_solver_call_count >= 1 &&

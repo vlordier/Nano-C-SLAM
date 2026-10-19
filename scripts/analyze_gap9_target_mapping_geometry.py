@@ -349,7 +349,7 @@ def _verify_target_capture(
         or inserted_poses != sample_count
         or decoded_scans != len(expected_scans)
         or registered_scans != len(expected_scans)
-        or constraint_count != 2
+        or constraint_count < 2
         or optimize_count != 1
         or optimized_poses != sample_count
         or graph_size != 3
@@ -486,7 +486,7 @@ def _verify_target_capture(
     graph_constraints = _parse_target_graph_constraints(
         target_log,
         expected_pose_count=len(samples),
-        expected_stored_count=2,
+        expected_stored_count=constraint_count,
     )
     if target.get("target_graph_constraints") != graph_constraints:
         raise ValueError("target graph endpoint report differs from its raw log")

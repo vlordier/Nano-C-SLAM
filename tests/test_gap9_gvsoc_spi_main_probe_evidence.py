@@ -190,6 +190,36 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
         self.assertEqual(report["stored_pose_endpoint_pairs"], [[20, 0], [40, 0]])
         self.assertEqual(report["optimizer_compact_node_edges"], [[1, 0], [2, 0]])
 
+    def test_target_graph_accepts_independent_closure_edge(self) -> None:
+        log = (
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:graph_summary "
+            "stored=3 optimizer_input=3 unique_edges=3\n"
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:stored_constraint "
+            "index=0 from=20 to=0 valid=1\n"
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:stored_constraint "
+            "index=1 from=40 to=0 valid=1\n"
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:stored_constraint "
+            "index=2 from=40 to=20 valid=1\n"
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:optimizer_edge "
+            "index=0 from=1 to=0 valid=1\n"
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:optimizer_edge "
+            "index=1 from=2 to=0 valid=1\n"
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:optimizer_edge "
+            "index=2 from=2 to=1 valid=1\n"
+        )
+
+        report = _parse_target_graph_constraints(
+            log, expected_pose_count=60, expected_stored_count=None
+        )
+
+        self.assertEqual(report["stored_constraint_count"], 3)
+        self.assertEqual(
+            report["stored_pose_endpoint_pairs"], [[20, 0], [40, 0], [40, 20]]
+        )
+        self.assertEqual(
+            report["optimizer_compact_node_edges"], [[1, 0], [2, 0], [2, 1]]
+        )
+
     def test_target_graph_endpoints_reject_missing_duplicate_or_out_of_range_edges(
         self,
     ) -> None:

@@ -178,7 +178,7 @@ def _parse_target_poses(
 
 
 def _parse_target_graph_constraints(
-    log: str, *, expected_pose_count: int, expected_stored_count: int
+    log: str, *, expected_pose_count: int, expected_stored_count: int | None
 ) -> dict[str, object]:
     """Validate exact stored pose constraints and reduced optimizer edges."""
     summary_pattern = re.compile(
@@ -208,17 +208,16 @@ def _parse_target_graph_constraints(
     summaries = list(summary_pattern.finditer(log))
     stored_matches = list(stored_pattern.finditer(log))
     edge_matches = list(edge_pattern.finditer(log))
-    if (
-        len(summaries) != 1
-        or len(raw_lines[raw_prefixes[0]]) != 1
-        or len(stored_matches) != expected_stored_count
-        or len(raw_lines[raw_prefixes[1]]) != expected_stored_count
-    ):
+    if len(summaries) != 1 or len(raw_lines[raw_prefixes[0]]) != 1:
         raise ValueError("target graph constraint summary is missing or incomplete")
     stored_count, optimizer_count, unique_edge_count = map(int, summaries[0].groups())
     if (
-        stored_count != expected_stored_count
-        or optimizer_count != expected_stored_count
+        (expected_stored_count is not None and stored_count != expected_stored_count)
+        or stored_count < 2
+        or stored_count > 100
+        or len(stored_matches) != stored_count
+        or len(raw_lines[raw_prefixes[1]]) != stored_count
+        or optimizer_count != stored_count
         or unique_edge_count != optimizer_count
         or len(edge_matches) != optimizer_count
         or len(raw_lines[raw_prefixes[2]]) != optimizer_count
@@ -714,7 +713,7 @@ def capture_evidence(
             mapping_pattern = re.compile(
                 r"NANO_C_SLAM_GVSOC_SPI_MAIN:gazebo_capture_ok packets=64 "
                 r"pose_decoded=60 pose_inserted=60 scans_decoded=3 "
-                r"scans_registered=3 constraints=2 optimize=1 poses=60 "
+                r"scans_registered=3 constraints=\d+ optimize=1 poses=60 "
                 r"graph=(\d+) solver_calls=(\d+) has_nan=0 completed=1 "
                 r"response_expected_hex=([0-9a-f]{36})"
             )
@@ -832,7 +831,7 @@ def capture_evidence(
                 target_graph_constraints = _parse_target_graph_constraints(
                     log,
                     expected_pose_count=len(gazebo_samples),
-                    expected_stored_count=2,
+                    expected_stored_count=None,
                 )
             response_expected_hex = match.group(3)
             marker_graph = int(match.group(1))

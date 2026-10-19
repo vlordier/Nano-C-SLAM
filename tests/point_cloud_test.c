@@ -17,6 +17,7 @@
 #include "../cslam-gap9-app/slam/graph-based-slam.h"
 
 extern constraint constraints[];
+extern pcl_pose_t p_cloud[];
 
 uint8_t verbose;
 static int main_graph_calls;
@@ -176,6 +177,20 @@ int main(void) {
         CHECK(pcl_add_augmented_pose(pose));
     }
     icp_points_t points;
+    int16_t saved_ranges[4][8];
+    memcpy(saved_ranges, p_cloud[0].tof, sizeof(saved_ranges));
+    for (int direction = 0; direction < 4; direction++)
+        for (int column = 0; column < 8; column++)
+            p_cloud[0].tof[direction][column] = -1;
+    p_cloud[0].tof[DIR_FRONT][3] = 600;
+    p_cloud[0].tof[DIR_FRONT][4] = 600;
+    pcl_extract_scan(0, 1, &points, 1400);
+    CHECK(points.num == 2);
+    CHECK(fabsf(points.items[0].x - points.items[1].x) < 1e-6f);
+    CHECK(fabsf(points.items[0].y + points.items[1].y) < 1e-6f);
+    CHECK(fabsf(fabsf(points.items[0].y) - 0.6f * tanf((float)M_PI / 64.0f)) <
+          1e-6f);
+    memcpy(p_cloud[0].tof, saved_ranges, sizeof(saved_ranges));
     pcl_extract_scan(0, 30, &points, 1400);
     CHECK(points.num == SIZE_POINTS);
     pcl_extract_scan(-1, 30, &points, 1400);
@@ -188,9 +203,27 @@ int main(void) {
     CHECK(points.num == 0);
     pcl_extract_scan(0, 30, NULL, 1400);
 
+    // A new scan anchor must test every prior anchor. The ICP and distance
+    // stubs accept these deliberately identical synthetic windows, exposing
+    // regressions that return after the first successful constraint.
+    for (int i = 30; i <= 80; i++) {
+        pose.id = (int16_t)(i + 1);
+        CHECK(pcl_add_augmented_pose(pose));
+    }
+    add_scan_pose_id(41); // Pose-table index 40.
+    CHECK(pcl_get_constraint_count() == 2);
+    add_scan_pose_id(61); // Pose-table index 60; matches both prior anchors.
+    CHECK(pcl_get_constraint_count() == 4);
+    int16_t edge_from = -1;
+    int16_t edge_to = -1;
+    CHECK(pcl_get_constraint_endpoints(2, &edge_from, &edge_to));
+    CHECK(edge_from == 60 && edge_to == 4);
+    CHECK(pcl_get_constraint_endpoints(3, &edge_from, &edge_to));
+    CHECK(edge_from == 60 && edge_to == 40);
+
     for (int i = 0; i < 60; i++)
         pcl_add_constraint(2, 4, correction);
-    for (int i = 31; i < 3011; i++) {
+    for (int i = 82; i < 3011; i++) {
         pose.id = (int16_t)i;
         CHECK(pcl_add_augmented_pose(pose) == (i <= 3000));
     }

@@ -168,13 +168,22 @@ void check_internal_constraints(uint16_t cur_pose_id) {
             icp(&ref_scan, &cur_scan, 25, 0.4f, icp_res, &icp_job);
             // if (verbose) printf("%.3f  %d\n", icp_job.error,
             // icp_job.has_nan);
-            if ((icp_job.has_nan == 0) && (icp_job.error < 0.01)) {
+            int accepted = (icp_job.has_nan == 0) && (icp_job.error < 0.01);
+#ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
+            printf("NANO_C_SLAM_GVSOC_SPI_MAIN:internal_icp "
+                   "from=%d to=%d distance_mm=%ld ref_points=%d "
+                   "cur_points=%d has_nan=%d error_under_threshold=%d "
+                   "accepted=%d\n",
+                   cur_pose_id, ref_pose_id, (long)(distance * 1000.0f),
+                   ref_scan.num, cur_scan.num, icp_job.has_nan,
+                   icp_job.error < 0.01f, accepted);
+#endif
+            if (accepted) {
                 diagnostics.internal_icp_acceptances++;
                 if (verbose)
                     printf("Loop closure %d -> %d\n", cur_pose_id, ref_pose_id);
                 // printf("Cur %.1f %.1f  Cnt %d\n", cur_pose[0], cur_pose[1]);
                 pcl_add_constraint(cur_pose_id, ref_pose_id, icp_res);
-                return;
             }
         }
     }
