@@ -144,3 +144,38 @@ with logs and hashes archived. First determine why it remains at
 handshake and live Gazebo sensor topics. Then port Nano's owned tasks and
 device seams; the reference app is upstream Crazyflie firmware, not
 Nano-C-SLAM.
+
+## Follow-up packet-boundary trace (2026-10-19)
+
+The exact pinned CrazySim repository and its firmware submodule were re-cloned
+into the Lima guest and `cf2` rebuilt. A bounded host UDP probe completed the
+handshake, and a guest-side packet capture saw approximately 2,500
+14-byte IMU-shaped datagrams arrive. This proves host-to-guest UDP delivery,
+not consumption by the sensor task. Temporary instrumentation in the guest
+clone showed `poll()` returning `EINTR`; the observed loop must retry that
+condition rather than treat it as readiness. Changing task priority to make
+the socket task run allowed startup to continue but did not prove calibration
+or actuator output. A 500-Hz injected stream filled the 2,000-entry socket
+queue and hit its assertion at `socketlink.c:104`.
+
+The trace exposed a confound in the first probe: the plugin handshake occurs
+before system self-tests release `systemWaitStart()`, while the sensor task
+blocks there. Injecting a high-rate stationary IMU stream during that interval
+can fill the queue before sensor consumption begins. The host probe now
+supports `--ready-log <firmware-log>` to wait for `Self test passed!` before
+injecting its synthetic IMU stream. That mode is a transport/calibration
+diagnostic only. A separate run with native Gazebo IMU callbacks must show
+sensor-task receive counts, calibration, firmware motor packets and resulting
+Gazebo motion before the reference flight can pass. No such run has passed.
+
+The ready log is mandatory so a new probe run cannot silently repeat the
+pre-self-test injection. Example once firmware stdout is being captured:
+
+```sh
+uv run --locked python scripts/crazysim_udp_probe.py \
+  --ready-log /tmp/cf2-firmware.log --imu-hz 100 --imu-seconds 5
+```
+
+The temporary debug edits live only in `/tmp/ncs-crazysim` in the Lima guest;
+they are not a maintained patch and were not copied into the submodule. Bead
+`ncs-fea.5.8.1` now isolates readiness gating and bounded-queue diagnosis.
