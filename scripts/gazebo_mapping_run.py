@@ -88,7 +88,7 @@ def _mapping_topics_ready(node: _StatusListener, drone_name: str) -> bool:
 def _events_from_mission_log(
     mission_log: str, observed_events: list[MissionStatusEvent]
 ) -> list[MissionStatusEvent]:
-    """Recover the publisher's complete event stream and cross-check ROS delivery."""
+    """Recover log events and validate the ordered ROS-delivered subset."""
     marker = "mission_status="
     logged_events = [
         MissionStatusEvent.from_json(line.split(marker, 1)[1])
@@ -97,13 +97,25 @@ def _events_from_mission_log(
     ]
     if not logged_events:
         raise RuntimeError("mission log contains no structured status events")
-    if len(observed_events) > len(logged_events) or any(
-        observed.to_json() != logged.to_json()
-        for observed, logged in zip(observed_events, logged_events, strict=False)
-    ):
-        raise RuntimeError("ROS status events disagree with the mission publisher log")
     if not observed_events:
         raise RuntimeError("ROS listener received no mission status events")
+    next_log_index = 0
+    for observed in observed_events:
+        matching_index = next(
+            (
+                index
+                for index in range(next_log_index, len(logged_events))
+                if observed.to_json() == logged_events[index].to_json()
+            ),
+            None,
+        )
+        if matching_index is None:
+            raise RuntimeError(
+                "ROS status events disagree with the mission publisher log"
+            )
+        next_log_index = matching_index + 1
+    if observed_events[-1].to_json() != logged_events[-1].to_json():
+        raise RuntimeError("ROS listener did not receive the mission terminal status")
     return logged_events
 
 

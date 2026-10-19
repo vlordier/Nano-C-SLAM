@@ -212,6 +212,82 @@ class RuntimeLoadedLibrariesTests(unittest.TestCase):
             self.assertEqual(len(plugin["sha256"]), 64)
             self.assertIn("-a", run.call_args_list[1].args[0])
 
+    def test_ruby_gazebo_wrapper_title_is_bound_to_the_recorded_gz_command(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            ruby = directory / "ruby"
+            gz = directory / "gz"
+            library = directory / "libgz-sim.dylib"
+            for path, contents in (
+                (ruby, b"ruby executable"),
+                (gz, b"gz launcher"),
+                (library, b"mapped Gazebo plugin"),
+            ):
+                path.write_bytes(contents)
+            ps = directory / "ps"
+            lsof = directory / "lsof"
+            ps.write_bytes(b"")
+            lsof.write_bytes(b"")
+            session_path = directory / "session.json"
+            command = [
+                "ruby",
+                str(gz),
+                "sim",
+                "world.sdf",
+                "-r",
+                "-s",
+                "--force-version",
+                "8",
+            ]
+            _write_session(
+                session_path,
+                pid=4567,
+                executable=ruby,
+                argv=command,
+                session_id="dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+            )
+            lsof_output = _lsof_fields(
+                4567,
+                [("txt", "REG", str(ruby)), ("txt", "REG", str(library))],
+                parent_pid=os.getpid(),
+            )
+            with (
+                patch(
+                    "scripts.runtime_loaded_libraries.platform.system",
+                    return_value="Darwin",
+                ),
+                patch(
+                    "scripts.runtime_loaded_libraries.session_file_for_partition",
+                    return_value=session_path,
+                ),
+                patch(
+                    "scripts.runtime_loaded_libraries.shutil.which",
+                    side_effect=[str(ps), str(lsof)],
+                ),
+                patch(
+                    "scripts.runtime_loaded_libraries.subprocess.run",
+                    side_effect=[
+                        CompletedProcess(
+                            [str(ps)], 0, stdout=b"gz sim world.sdf -r -s\n"
+                        ),
+                        CompletedProcess([str(lsof)], 0, stdout=lsof_output),
+                    ],
+                ),
+            ):
+                evidence = capture_session_gazebo_libraries(
+                    partition="test", expected_executable_path=gz
+                )
+
+            self.assertEqual(evidence["status"], "observed")
+            self.assertEqual(evidence["executable_path"], str(ruby.resolve()))
+            self.assertEqual(evidence["pid"], 4567)
+            self.assertEqual(
+                [item["path"] for item in evidence["libraries"]],
+                [str(library.resolve())],
+            )
+
     def test_pid_command_mismatch_and_unavailable_mapped_file_are_unknown(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary)

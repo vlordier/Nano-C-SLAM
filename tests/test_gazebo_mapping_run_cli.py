@@ -81,11 +81,15 @@ class MappingRunCliTests(unittest.TestCase):
         ]
         mission_log = "\n".join(f"mission_status={event.to_json()}" for event in events)
 
-        recovered = _events_from_mission_log(mission_log, events[:-1])
+        recovered = _events_from_mission_log(
+            mission_log, [events[0], events[2], events[-1]]
+        )
 
         self.assertEqual(recovered, events)
         with self.assertRaisesRegex(RuntimeError, "disagree"):
-            _events_from_mission_log(mission_log, [events[1]])
+            _events_from_mission_log(mission_log, [events[1], events[0], events[-1]])
+        with self.assertRaisesRegex(RuntimeError, "terminal status"):
+            _events_from_mission_log(mission_log, events[:-1])
         with self.assertRaisesRegex(RuntimeError, "no structured"):
             _events_from_mission_log("mission exited 0", [])
 

@@ -135,11 +135,45 @@ def _matches_recorded_command(observed: str, expected: list[str]) -> bool:
         actual_argv = shlex.split(observed)
     except ValueError:
         return False
-    if not actual_argv or len(actual_argv) != len(expected):
-        return False
-    return Path(actual_argv[0]).name == Path(expected[0]).name and (
-        actual_argv[1:] == expected[1:]
+    if actual_argv == expected:
+        return True
+    # ros_gz_sim launches `ruby <gz> sim ...` through a shell. The Ruby
+    # launcher later changes its process title to `gz sim ...`; it also
+    # consumes the trailing --force-version option before doing so.
+    gz_index = next(
+        (
+            index
+            for index, argument in enumerate(expected)
+            if Path(argument).name == "gz"
+        ),
+        None,
     )
+    if gz_index is None or gz_index + 1 >= len(expected):
+        return False
+    expected_title = expected[gz_index:]
+    if len(expected_title) >= 2 and expected_title[-2] == "--force-version":
+        expected_title = expected_title[:-2]
+    return (
+        bool(actual_argv)
+        and Path(actual_argv[0]).name == "gz"
+        and actual_argv[1:] == expected_title[1:]
+    )
+
+
+def _invocation_uses_executable(argv: list[str], executable: Path) -> bool:
+    expected = executable.resolve()
+    for argument in argv:
+        if Path(argument).name != "gz":
+            continue
+        candidate = Path(argument)
+        if not candidate.is_absolute():
+            located = shutil.which(argument)
+            if located is None:
+                continue
+            candidate = Path(located)
+        if candidate.resolve() == expected:
+            return True
+    return False
 
 
 def _hash_mapped_file(path: Path) -> dict[str, object]:
@@ -355,12 +389,12 @@ def capture_session_gazebo_libraries(
             session_id=session_id,
         )
     resolved_executable = Path(executable_path).resolve()
-    if (
-        expected_executable_path is not None
-        and resolved_executable != expected_executable_path.resolve()
+    command = cast(list[str], argv)
+    if expected_executable_path is not None and not _invocation_uses_executable(
+        command, expected_executable_path
     ):
         return _unknown_evidence(
-            "session Gazebo PID uses a different executable than this run",
+            "session Gazebo command uses a different executable than this run",
             session_id=session_id,
         )
     return _capture_process(
@@ -368,6 +402,6 @@ def capture_session_gazebo_libraries(
         pid=pid,
         launch_pid=launch_pid,
         executable_path=str(resolved_executable),
-        expected_argv=cast(list[str], argv),
+        expected_argv=command,
         timeout_s=timeout_s,
     )

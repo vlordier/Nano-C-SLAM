@@ -239,8 +239,12 @@ In a second terminal, run the single-drone example mission (takeoff to 0.5 m, ho
 ```sh
 source /opt/homebrew/opt/ros2-jazzy/setup.zsh
 source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
+source ~/Work/gz-macOS/ws/install/setup.zsh
+overlay_install="$(ls -td build/gazebo-ros-overlay.*/install | head -1)"
+source "$overlay_install/local_setup.zsh"
 export GZ_PARTITION="nano_c_slam_$(id -u)"
 export ROS_DOMAIN_ID=42
+export GZ_IP=127.0.0.1
 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
   ros2 run nano_c_slam_gazebo sim_mission --ros-args -p use_sim_time:=True
 ```
