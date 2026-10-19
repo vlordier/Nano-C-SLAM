@@ -669,3 +669,20 @@ returned guest I/O errors, and fetching the pinned FreeRTOS submodule failed
 with an `fsync` I/O error. The previous measured 95–98/100-Hz Kalman rate,
 non-finite angular odometry, short hover, and landing timeout remain the
 acceptance baseline until a clean build and paired capture are available.
+
+## FreeRTOS POSIX stabilizer tick-width correction (2026-10-19)
+
+Compiling the exact `stabilizer.c` translation unit with Clang against the
+CrazySim FreeRTOS POSIX headers exposed a pointer-width mismatch:
+`lastWakeTime` was `uint32_t`, while `vTaskDelayUntil` takes a `TickType_t *`
+and the 64-bit POSIX port defines `TickType_t` as 64-bit. Passing the narrower
+object lets the delay API write beyond it on this host port. Crazyflie commit
+`17cdadfe` changes `lastWakeTime` to `TickType_t`; targeted compilation then
+completed without the incompatible-pointer diagnostic. The exact Kalman
+translation unit also compiles with Clang using the local SITL include paths.
+
+This is compile-level evidence only. It is not a linked `cf2` build, and the
+latest Gazebo run does not include these exact fixes. Lima's guest shell
+continues to fail with I/O errors, so the previous invalid-estimator state,
+short hover, non-finite odometry, and landing timeout remain the latest runtime
+evidence. Stable flight and Nano firmware execution are still unvalidated.
