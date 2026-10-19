@@ -12,6 +12,7 @@ from scripts.gap9_gvsoc_spi_probe_protocol import (
     SCAN_CMD,
     make_mapping_trace,
     make_pose_frame,
+    make_pose_request_frame,
     make_scan_frame,
 )
 
@@ -98,6 +99,27 @@ def target_control(gvsoc: GvsocProxy) -> int:
             "master_rx_capture": "not required; acceptance uses "
             "target-side receive marker",
         }
+    elif sequence == "pose-request":
+        frames = [
+            make_pose_frame(0, position=(0.25, -0.5, 0.75)),
+            make_pose_frame(1, position=(1.25, -1.5, 1.75)),
+            make_pose_request_frame(0, 2),
+        ]
+        result = {
+            "sequence": sequence,
+            "pre_cs_dummy_clock_cycles": 8,
+            "frames": [
+                {
+                    "command": command,
+                    "frame_tx_hex": frame.hex(),
+                    "length": len(frame),
+                }
+                for command, frame in zip(
+                    ("POSE", "POSE", "POSE_REQ"), frames, strict=True
+                )
+            ],
+            "response_size": 24,
+        }
     elif sequence == "mapping":
         frames = list(make_mapping_trace())
         result = {
@@ -161,7 +183,7 @@ def target_control(gvsoc: GvsocProxy) -> int:
         }
     else:
         raise ValueError(
-            "GAP9_GVSOC_SPI_SEQUENCE must be scan, pose-scan, mapping, "
+            "GAP9_GVSOC_SPI_SEQUENCE must be scan, pose-scan, pose-request, mapping, "
             "max-mapping, or capacity-mapping"
         )
     output_root = Path(os.environ.get("GAP9_GVSOC_WORK_ROOT", "."))
@@ -183,10 +205,43 @@ def target_control(gvsoc: GvsocProxy) -> int:
             # more wall time than the bounded 600 s GVSOC test invocation.
             settle_time_ps = 250_000_000_000
         gvsoc.run(settle_time_ps)
-        if sequence in {"mapping", "max-mapping", "capacity-mapping"}:
+        if sequence in {
+            "mapping",
+            "max-mapping",
+            "capacity-mapping",
+            "pose-request",
+        }:
             rx_data = spi.get_received_bytes(len(frame))
             if rx_data is None or len(rx_data) != len(frame):
-                raise RuntimeError("GVSOC did not return the command transfer RX bytes")
+                raise RuntimeError(
+                    "GVSOC did not return the complete command transfer RX bytes"
+                )
+
+    if sequence == "pose-request":
+        # Let production dispatch assert ready and block in its real slave TX
+        # before queuing the distinct master response transaction.
+        result["control_phase"] = "allowing_target_to_assert_ready"
+        (output_root / "spi_slave_probe_host.json").write_text(
+            json.dumps(result, indent=2) + "\n", encoding="utf-8"
+        )
+        gvsoc.run(10_000_000_000)
+        result["control_phase"] = "queueing_pose_response_receive"
+        spi.receive(24)
+        gvsoc.run(100_000_000_000)
+        response = spi.get_received_bytes()
+        if response is None or len(response) != 24:
+            result["control_phase"] = "pose_response_length_mismatch"
+            result["response_rx_length"] = None if response is None else len(response)
+            (output_root / "spi_slave_probe_host.json").write_text(
+                json.dumps(result, indent=2) + "\n", encoding="utf-8"
+            )
+            raise RuntimeError("GVSOC did not capture all 24 POSE_REQ response bytes")
+        result["response_rx_hex"] = response.hex()
+        result["control_phase"] = "pose_response_captured"
+        print(f"NANO_C_SLAM_GVSOC_SPI_HOST:pose_response_rx_hex={response.hex()}")
+        (output_root / "spi_slave_probe_host.json").write_text(
+            json.dumps(result, indent=2) + "\n", encoding="utf-8"
+        )
 
     if sequence in {"mapping", "max-mapping", "capacity-mapping"}:
         # Let production ICP/graph optimization finish and block in the real

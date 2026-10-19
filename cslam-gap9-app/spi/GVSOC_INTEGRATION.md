@@ -280,6 +280,53 @@ and 117612 B of 131068 B L1 (89.73%); this is a test ELF resource report, not a
  path through simulated SPI2. It does not run ICP/graph optimization, prove map
  quality, validate a physical bus, or establish flight behavior.
 
+### POSE_REQ response transfer
+
+The bounded production-main probe also has a three-frame `pose-request`
+sequence: it inserts two deliberately distinct poses, requests IDs 0–1, then
+checks that the actual `spi_send_blocking` response returns exactly 24 bytes
+matching both inserted float triplets. The target emits `pose_response_ready`
+only after raising its existing busy GPIO and emits `pose_response_done` after
+the blocking send completes and busy is lowered. The host drains command RX
+bytes before capturing the separate response transaction.
+
+Build the finite probe and run it in the local macOS GVSOC runtime:
+
+```sh
+DOCKER_HOST=ssh://colima-act-ci GAP9_BUILD_GVSOC_SPI_MAIN_PROBE=1 \
+  GAP9_BUILD_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT=3 \
+  bash scripts/build_gap9_firmware.sh
+GAP9_GVSOC_ENABLE_TESTBENCH=1 \
+  GAP9_GVSOC_SPI_SEQUENCE=pose-request \
+  GAP9_GVSOC_CONTROL_SCRIPT="$PWD/scripts/gvsoc_spi_slave_probe_control.py" \
+  GAP9_GVSOC_ELF="$PWD/cslam-gap9-app/BUILD-gvsoc-spi-main-probe/nano_c_slam_gvsoc_spi_main_probe" \
+  GAP9_GVSOC_EXPECTED_MARKER='NANO_C_SLAM_GVSOC_SPI_MAIN:pose_request_ok' \
+  GAP9_GVSOC_WORK_ROOT="${TMPDIR:-/tmp}/nano-c-slam-gvsoc-pose-request" \
+  bash scripts/run_gap9_gvsoc_smoke.sh
+uv run --locked python -m scripts.capture_gap9_gvsoc_spi_main_probe_evidence \
+  --config "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-pose-request/gvsoc_config.json" \
+  --elf cslam-gap9-app/BUILD-gvsoc-spi-main-probe/nano_c_slam_gvsoc_spi_main_probe \
+  --host-transfer "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-pose-request/spi_slave_probe_host.json" \
+  --log "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-pose-request/gvsoc.log" \
+  --source cslam-gap9-app/main.c \
+  --source cslam-gap9-app/spi/spi_driver.c \
+  --source cslam-gap9-app/spi/spi_cmds_decode.c \
+  --source cslam-gap9-app/point-cloud/point_cloud.c \
+  --source scripts/gvsoc_spi_slave_probe_control.py \
+  --output artifacts/gap9_gvsoc_evidence/pose_request_20261019.json
+```
+
+The 2026-10-19 run captured `0000803e000000bf0000403f0000a03f0000c0bf0000e03f`,
+which is the byte-exact encoding of the two injected poses. Target markers
+record 24 response bytes and 109294 µs between busy assertion and completion.
+That interval is dominated by the controller's fixed 10 ms settle and 100 ms
+GVSOC run step, so it is not a response-time bound and cannot establish the
+STM32 100 ms timeout margin. The GVSOC control API exposes no GPIO readback;
+the controller schedules response clocks after 10 ms and does not observe the
+ready edge. This validates target command decode, busy-bracketed production
+send, and payload over simulated SPI2, but it does not validate physical GPIO
+timing, STM32/GAP9 electrical integration, mapping quality, or flight.
+
 ## Full mapping ingress over production SPI2
 
 The 66-command scenario drives production `main.c` and `spi/spi_driver.c` over

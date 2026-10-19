@@ -11,6 +11,7 @@ from scripts.gap9_gvsoc_spi_probe_protocol import (
     SCAN_CMD,
     make_mapping_trace,
     make_pose_frame,
+    make_pose_request_frame,
     make_scan_frame,
 )
 
@@ -28,6 +29,20 @@ class Gap9GvsocSpiProbeProtocolTests(unittest.TestCase):
         frame = make_scan_frame(0x0102)
 
         self.assertEqual(frame[2:6], b"\x02\x01\x03\x00")
+
+    def test_builds_pose_request_signed_fields_and_checksum(self) -> None:
+        frame = make_pose_request_frame(0, 2)
+
+        self.assertEqual(frame[:8], b"S\x03\x00\x00\x02\x00\x02\x00")
+        self.assertEqual(frame[-1:], b"E")
+
+    def test_pose_request_rejects_values_outside_wire_width(self) -> None:
+        for from_id, count in ((-32769, 1), (0, 32768), (32768, 1)):
+            with (
+                self.subTest(from_id=from_id, count=count),
+                self.assertRaises(ValueError),
+            ):
+                make_pose_request_frame(from_id, count)
 
     def test_rejects_ids_outside_decoder_range(self) -> None:
         for pose_id in (-1, 0x8000):

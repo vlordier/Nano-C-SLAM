@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 import re
+import struct
 import sys
 from pathlib import Path
 
@@ -13,6 +14,7 @@ from scripts.gap9_gvsoc_spi_probe_protocol import (
     SCAN_CMD,
     make_mapping_trace,
     make_pose_frame,
+    make_pose_request_frame,
     make_scan_frame,
 )
 from scripts.validate_gap9_gvsoc_testbench import validate_config
@@ -46,6 +48,109 @@ COMMAND_NAMES = (
 
 def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _capture_pose_request_evidence(
+    *,
+    config_path: Path,
+    elf_path: Path,
+    host_transfer_path: Path,
+    log_path: Path,
+    source_paths: tuple[Path, ...],
+    host_transfer: dict[str, object],
+    log: str,
+) -> dict[str, object]:
+    """Validate real target POSE_REQ response bytes and marker ordering."""
+    positions = ((0.25, -0.5, 0.75), (1.25, -1.5, 1.75))
+    expected_frames = [
+        make_pose_frame(0, position=positions[0]),
+        make_pose_frame(1, position=positions[1]),
+        make_pose_request_frame(0, 2),
+    ]
+    expected_records = [
+        {"command": name, "frame_tx_hex": frame.hex(), "length": len(frame)}
+        for name, frame in zip(
+            ("POSE", "POSE", "POSE_REQ"), expected_frames, strict=True
+        )
+    ]
+    if (
+        host_transfer.get("sequence") != "pose-request"
+        or host_transfer.get("pre_cs_dummy_clock_cycles") != 8
+        or host_transfer.get("frames") != expected_records
+        or host_transfer.get("response_size") != 24
+        or host_transfer.get("control_phase") != "pose_response_captured"
+    ):
+        raise ValueError("host transfer does not match the POSE_REQ probe contract")
+
+    ready = re.search(
+        r"NANO_C_SLAM_GVSOC_SPI_MAIN:pose_response_ready "
+        r"from=0 count=2 bytes=24\b",
+        log,
+    )
+    done = re.search(
+        r"NANO_C_SLAM_GVSOC_SPI_MAIN:pose_response_done "
+        r"from=0 count=2 duration_us=(\d+)\b",
+        log,
+    )
+    target_marker = re.search(
+        r"NANO_C_SLAM_GVSOC_SPI_MAIN:pose_request_ok packets=3 "
+        r"pose_decoded=2 pose_inserted=2 requests_decoded=1 "
+        r"requests_served=1 poses=2\b",
+        log,
+    )
+    if ready is None or done is None or target_marker is None:
+        raise ValueError(
+            "GVSOC log lacks POSE_REQ ready, completion, or success evidence"
+        )
+
+    expected_response = struct.pack("<6f", *positions[0], *positions[1]).hex()
+    response_hex = host_transfer.get("response_rx_hex")
+    if response_hex != expected_response:
+        raise ValueError("POSE_REQ response bytes differ from the two inserted poses")
+    duration_us = int(done.group(1))
+    return {
+        "schema_version": 1,
+        "status": "passed",
+        "evidence_class": "gvsoc-production-main-spi2-pose-request",
+        "sdk_release": "5.20.4",
+        "interface": "SPI2/CS0, mode 0, 8-bit words",
+        "sequence": "pose-request",
+        "frame_count": len(expected_frames),
+        "frames": [frame.hex() for frame in expected_frames],
+        "target_marker": target_marker.group(0),
+        "target_ready_marker": ready.group(0),
+        "target_done_marker": done.group(0),
+        "target_response_duration_us": duration_us,
+        "response_size": 24,
+        "response_expected_hex": expected_response,
+        "response_rx_hex": response_hex,
+        "response_status": "captured and matches both inserted float poses",
+        "controller_timing": {
+            "ready_settle_delay_ms": 10,
+            "gvsoc_run_after_response_queue_ms": 100,
+            "note": (
+                "These are simulator scheduling intervals, not pin-edge measurements."
+            ),
+        },
+        "sha256": {
+            "elf": _sha256(elf_path),
+            "gvsoc_config": _sha256(config_path),
+            "host_transfer": _sha256(host_transfer_path),
+            "gvsoc_log": _sha256(log_path),
+            "sources": {str(path): _sha256(path) for path in source_paths},
+        },
+        "limitations": [
+            "The target ready marker follows busy assertion and precedes the "
+            "blocking production SPI send; the done marker follows busy deassertion.",
+            "The controller uses a fixed 10 ms settle delay because GVSOC "
+            "exposes no GPIO readback; this does not prove the master "
+            "observed readiness.",
+            "The 100 ms GVSOC run interval dominates target duration and "
+            "cannot be compared precisely with STM32 wait deadlines.",
+            "Does not validate electrical GPIO wiring, physical SPI timing, "
+            "map accuracy, or flight behavior.",
+        ],
+    }
 
 
 def capture_evidence(
@@ -87,6 +192,13 @@ def capture_evidence(
     elif sequence == "pose-scan":
         expected = [make_pose_frame(), make_scan_frame()]
         expected_commands = ["POSE", "SCAN"]
+    elif sequence == "pose-request":
+        expected = [
+            make_pose_frame(0, position=(0.25, -0.5, 0.75)),
+            make_pose_frame(1, position=(1.25, -1.5, 1.75)),
+            make_pose_request_frame(0, 2),
+        ]
+        expected_commands = ["POSE", "POSE", "POSE_REQ"]
     else:
         raise ValueError(f"unsupported production-main SPI sequence: {sequence}")
     if host_transfer.get("pre_cs_dummy_clock_cycles") != 8 or not isinstance(
@@ -104,6 +216,16 @@ def capture_evidence(
         log = log_path.read_text(encoding="utf-8")
     except OSError as error:
         raise ValueError(f"cannot read GVSOC log: {error}") from error
+    if sequence == "pose-request":
+        return _capture_pose_request_evidence(
+            config_path=config_path,
+            elf_path=elf_path,
+            host_transfer_path=host_transfer_path,
+            log_path=log_path,
+            source_paths=source_paths,
+            host_transfer=host_transfer,
+            log=log,
+        )
     response_status: str | None = None
     spi_diagnostics: dict[str, object] | None = None
     scan_busy_durations_us: list[dict[str, int]] | None = None

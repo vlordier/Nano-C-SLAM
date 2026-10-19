@@ -10,6 +10,7 @@ POSE_PAYLOAD = struct.Struct("<h2xi3f32h")
 POSE_CMD = 0
 SCAN_CMD = 1
 OPTIMIZE_CMD = 2
+POSE_REQ_CMD = 3
 
 
 def _float32(value: float) -> float:
@@ -135,5 +136,22 @@ def make_scan_frame(pose_id: int = 0) -> bytes:
     frame[2] = pose_id & 0xFF
     frame[3] = pose_id >> 8
     frame[4:6] = (frame[2] + frame[3]).to_bytes(2, byteorder="little")
+    frame[-1] = ord("E")
+    return bytes(frame)
+
+
+def make_pose_request_frame(from_id: int = 0, count: int = 2) -> bytes:
+    """Build a POSE_REQ frame with the firmware's signed-int16 checksum."""
+    if not -0x8000 <= from_id <= 0x7FFF:
+        raise ValueError("from_id must fit signed int16")
+    if not -0x8000 <= count <= 0x7FFF:
+        raise ValueError("count must fit signed int16")
+    frame = bytearray(FRAME_SIZE)
+    frame[0] = ord("S")
+    frame[1] = POSE_REQ_CMD
+    frame[2:4] = from_id.to_bytes(2, "little", signed=True)
+    frame[4:6] = count.to_bytes(2, "little", signed=True)
+    checksum = sum(frame[2:6])
+    frame[6:8] = checksum.to_bytes(2, "little", signed=True)
     frame[-1] = ord("E")
     return bytes(frame)

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import struct
 import tempfile
 import unittest
 from pathlib import Path
@@ -16,6 +17,7 @@ from scripts.capture_gap9_gvsoc_spi_main_probe_evidence import (
 from scripts.gap9_gvsoc_spi_probe_protocol import (
     make_mapping_trace,
     make_pose_frame,
+    make_pose_request_frame,
     make_scan_frame,
 )
 
@@ -142,6 +144,47 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
         )
         return expected_response
 
+    def _write_pose_request_evidence(self, response_hex: str | None = None) -> None:
+        positions = ((0.25, -0.5, 0.75), (1.25, -1.5, 1.75))
+        frames = (
+            make_pose_frame(0, position=positions[0]),
+            make_pose_frame(1, position=positions[1]),
+            make_pose_request_frame(0, 2),
+        )
+        self.host_transfer_path.write_text(
+            json.dumps(
+                {
+                    "sequence": "pose-request",
+                    "pre_cs_dummy_clock_cycles": 8,
+                    "frames": [
+                        {
+                            "command": command,
+                            "frame_tx_hex": frame.hex(),
+                            "length": len(frame),
+                        }
+                        for command, frame in zip(
+                            ("POSE", "POSE", "POSE_REQ"), frames, strict=True
+                        )
+                    ],
+                    "response_size": 24,
+                    "response_rx_hex": response_hex
+                    or struct.pack("<6f", *positions[0], *positions[1]).hex(),
+                    "control_phase": "pose_response_captured",
+                }
+            ),
+            encoding="utf-8",
+        )
+        self.log_path.write_text(
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_response_ready "
+            "from=0 count=2 bytes=24\n"
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_response_done "
+            "from=0 count=2 duration_us=109294\n"
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_request_ok packets=3 "
+            "pose_decoded=2 pose_inserted=2 requests_decoded=1 "
+            "requests_served=1 poses=2\n",
+            encoding="utf-8",
+        )
+
     def test_hash_binds_frames_target_log_and_owned_source(self) -> None:
         report = self._capture()
 
@@ -156,6 +199,24 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
             sources[str(self.source_path)],
             hashlib.sha256(self.source_path.read_bytes()).hexdigest(),
         )
+
+    def test_pose_request_requires_ready_done_and_exact_pose_bytes(self) -> None:
+        self._write_pose_request_evidence()
+
+        report = self._capture()
+
+        self.assertEqual(report["status"], "passed")
+        self.assertEqual(report["response_size"], 24)
+        self.assertEqual(
+            report["response_status"], "captured and matches both inserted float poses"
+        )
+        self.assertEqual(report["target_response_duration_us"], 109294)
+
+    def test_pose_request_rejects_wrong_response_payload(self) -> None:
+        self._write_pose_request_evidence("00" * 24)
+
+        with self.assertRaisesRegex(ValueError, "differ from the two inserted poses"):
+            self._capture()
 
     def test_rejects_wrong_or_reordered_host_frames(self) -> None:
         self._write_host_transfer((make_scan_frame(), make_pose_frame()))

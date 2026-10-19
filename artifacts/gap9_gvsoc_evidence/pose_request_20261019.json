@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "evidence_class": "gvsoc-production-main-spi2-pose-request",
+  "sdk_release": "5.20.4",
+  "interface": "SPI2/CS0, mode 0, 8-bit words",
+  "sequence": "pose-request",
+  "frame_count": 3,
+  "frames": [
+    "530000000000000000000000803e000000bf0000403fffffffffffffe803ffffffffffffffffffffffffffffb004ffffffffffffffffffffffffffff8403ffffffffffffffffffffffffffff4c04ffffffffffffffff3a3c000000000000000045",
+    "530001000000640000000000a03f0000c0bf0000e03fffffffffffffe803ffffffffffffffffffffffffffffb004ffffffffffffffffffffffffffff8403ffffffffffffffffffffffffffff4c04ffffffffffffffff203e000000000000000045",
+    "53030000020002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000045"
+  ],
+  "target_marker": "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_request_ok packets=3 pose_decoded=2 pose_inserted=2 requests_decoded=1 requests_served=1 poses=2",
+  "target_ready_marker": "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_response_ready from=0 count=2 bytes=24",
+  "target_done_marker": "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_response_done from=0 count=2 duration_us=109294",
+  "target_response_duration_us": 109294,
+  "response_size": 24,
+  "response_expected_hex": "0000803e000000bf0000403f0000a03f0000c0bf0000e03f",
+  "response_rx_hex": "0000803e000000bf0000403f0000a03f0000c0bf0000e03f",
+  "response_status": "captured and matches both inserted float poses",
+  "controller_timing": {
+    "ready_settle_delay_ms": 10,
+    "gvsoc_run_after_response_queue_ms": 100,
+    "note": "These are simulator scheduling intervals, not pin-edge measurements."
+  },
+  "sha256": {
+    "elf": "2bb643957896327fc9e4e0d1a7f4d502d7bd664670d132e26f4add6f789ecb8c",
+    "gvsoc_config": "6f3c21e37c90df98fee5512342002df970f69d27d0da3268223166140910f920",
+    "host_transfer": "2e3552f26e0322708475c66b05280970c67b0d3fd98bd88078c0c64150de8a9a",
+    "gvsoc_log": "9da2d5905d8484f1b799ecb099aa39e6fbd913f50ab680af9f0e2a6cd4e0583c",
+    "sources": {
+      "cslam-gap9-app/main.c": "7aeb5f5931a295bdefa255452dc6202f98d6230cd989547806376211be2eee8e",
+      "cslam-gap9-app/spi/spi_driver.c": "20862abbebafb3ff570a2ab44da0eb550dea2f105910c9c899c17beff3772e3d",
+      "cslam-gap9-app/spi/spi_cmds_decode.c": "67bdf1f58674984eaffc70d52b107a3a222ccadaf40e01759a742fbb321b7dc1",
+      "cslam-gap9-app/point-cloud/point_cloud.c": "ef0b68f0b9cc7b61a7f55b3e2f87f1b6e6708299d20728c5c954f3f0483588f2",
+      "scripts/gvsoc_spi_slave_probe_control.py": "16bf6be9d1bdfa21fd0a5f9cdf2fb54c194636c97e187176c9bd7790b7078a57"
+    }
+  },
+  "limitations": [
+    "The target ready marker follows busy assertion and precedes the blocking production SPI send; the done marker follows busy deassertion.",
+    "The controller uses a fixed 10 ms settle delay because GVSOC exposes no GPIO readback; this does not prove the master observed readiness.",
+    "The 100 ms GVSOC run interval dominates target duration and cannot be compared precisely with STM32 wait deadlines.",
+    "Does not validate electrical GPIO wiring, physical SPI timing, map accuracy, or flight behavior."
+  ]
+}

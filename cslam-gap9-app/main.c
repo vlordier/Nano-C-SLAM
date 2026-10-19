@@ -89,6 +89,8 @@ void slam_loop() {
     int16_t scan_packets_decoded = 0;
     int16_t scans_registered = 0;
     int16_t optimize_packets = 0;
+    int16_t pose_requests_decoded = 0;
+    int16_t pose_requests_served = 0;
     uint16_t processed_packets = 0;
 #endif
 
@@ -301,16 +303,37 @@ void slam_loop() {
                                           result == SPI_OK);
 #endif
             if (result == SPI_OK) {
+#ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
+                pose_requests_decoded++;
+#endif
                 int16_t from_id = pose_request[0];
                 int16_t nr_of_poses = pose_request[1];
-                if (nr_of_poses > 100 ||
+                if (nr_of_poses <= 0 || nr_of_poses > 100 ||
                     !pcl_to_poses(requested_poses, from_id, nr_of_poses))
                     break;
 
                 set_cf_gpio(1); // Pose response is ready; STM32 may clock it.
+                uint64_t pose_response_started_us = pi_time_get_us();
+#ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
+                printf("NANO_C_SLAM_GVSOC_SPI_MAIN:pose_response_ready "
+                       "from=%d count=%d bytes=%u\n",
+                       from_id, nr_of_poses,
+                       (unsigned)(3 * sizeof(float) * nr_of_poses));
+#endif
                 spi_send_blocking((uint8_t *)requested_poses,
                                   3 * sizeof(float) * nr_of_poses);
+#ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
+                pose_requests_served++;
+#endif
+                uint64_t pose_response_duration_us =
+                    pi_time_get_us() - pose_response_started_us;
                 set_cf_gpio(0); // Response clocks completed.
+#ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
+                printf("NANO_C_SLAM_GVSOC_SPI_MAIN:pose_response_done "
+                       "from=%d count=%d duration_us=%llu\n",
+                       from_id, nr_of_poses,
+                       (unsigned long long)pose_response_duration_us);
+#endif
             }
             break;
         }
@@ -330,13 +353,23 @@ void slam_loop() {
         // OPTIMIZE is the final command in this bounded probe. If an ingress
         // frame was lost, exit with a failure marker instead of blocking
         // forever waiting for the nominal packet count.
-        if (cmd == OPTIMIZE_CMD) break;
+        if (cmd == OPTIMIZE_CMD || cmd == POSE_REQ_CMD) break;
 #endif
     }
 
 #ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
     int passed;
-#if NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT == 2
+#if NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT == 3
+    passed = processed_packets == 3 && pose_packets_decoded == 2 &&
+             poses_inserted == 2 && pose_requests_decoded == 1 &&
+             pose_requests_served == 1 && pcl_get_pose_count() == 2;
+    printf("NANO_C_SLAM_GVSOC_SPI_MAIN:pose_request_%s packets=%u "
+           "pose_decoded=%d pose_inserted=%d requests_decoded=%d "
+           "requests_served=%d poses=%d\n",
+           passed ? "ok" : "fail", processed_packets, pose_packets_decoded,
+           poses_inserted, pose_requests_decoded, pose_requests_served,
+           pcl_get_pose_count());
+#elif NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT == 2
     passed = processed_packets == 2 && pose_packets_decoded == 1 &&
              poses_inserted == 1 && bad_pose_checksums == 0 &&
              scan_packets_decoded == 1 && scans_registered == 1 &&
