@@ -20,7 +20,7 @@ class Stm32TofMatrixInitTests(unittest.TestCase):
         )
         mission_task = source.split("void mission_task(void *parameters) {", 1)[1]
         tof_gate = mission_task.index("while (!tof_is_init())")
-        command_gate = mission_task.index("while (!ready)")
+        command_gate = mission_task.index("while (!ready || !tof_is_fresh())")
         estimator_init = mission_task.index("estimatorKalmanInitToPose")
         flight_task_create = mission_task.index('"fly"')
         commander_enable = mission_task.index("enable_commander()")
@@ -67,7 +67,10 @@ class Stm32TofMatrixInitTests(unittest.TestCase):
             executable = Path(temporary) / "stm32_tof_daq_test"
             self._compile(
                 REPOSITORY_ROOT / "tests/stm32_tof_daq_test.c",
-                [REPOSITORY_ROOT / "cslam-stm32-app/src/tof_daq.c"],
+                [
+                    REPOSITORY_ROOT / "cslam-stm32-app/src/tof_daq.c",
+                    REPOSITORY_ROOT / "cslam-stm32-app/src/tof_freshness.c",
+                ],
                 executable,
             )
             for scenario in ("persistent", "recovery", "unavailable-data"):

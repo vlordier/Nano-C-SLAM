@@ -11,9 +11,13 @@
 #ifndef TOFDAQ_H
 #define TOFDAQ_H
 
+#include <stdint.h>
+
 extern int16_t tof_data_buf[4][8][8];
 void tof_task(void *parameters);
 /** True after all four sensors initialize and provide the first data cycle. */
-uint8_t tof_is_init();
+uint8_t tof_is_init(void);
+/** True only while every sensor has returned a frame within 500 ms. */
+uint8_t tof_is_fresh(void);
 
 #endif

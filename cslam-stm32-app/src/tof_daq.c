@@ -12,6 +12,8 @@
 #include "debug.h"
 #include "pm.h"
 #include "semphr.h"
+#include "task.h"
+#include "tof_freshness.h"
 #include "tof_matrix.h"
 #include <string.h>
 
@@ -19,6 +21,12 @@ extern SemaphoreHandle_t tofSemaphore0;
 extern SemaphoreHandle_t tofSemaphore1;
 int16_t tof_data_buf[4][8][8];
 static volatile uint8_t tof_init = 0;
+static volatile tof_freshness_t tof_freshness;
+
+/* Four sensors are read sequentially at 15 Hz; 500 ms permits one missed
+ * acquisition round while bounding how long autonomous commands can use stale
+ * measurements. */
+#define TOF_FRESHNESS_TIMEOUT_MS 500u
 
 #define TOF_INIT_RETRY_INITIAL_MS 100
 #define TOF_INIT_RETRY_MAX_MS 5000
@@ -71,6 +79,8 @@ void tof_task(void *parameters) {
                 e = get_tof_matrix(i, matrix);
             }
             memcpy(&tof_data_buf[i], matrix, 8 * 8 * sizeof(int16_t));
+            (void)tof_freshness_mark_success(&tof_freshness, (uint8_t)i,
+                                             xTaskGetTickCount());
             vTaskDelay(M2T(1));
         }
 
@@ -85,4 +95,9 @@ void tof_task(void *parameters) {
     }
 }
 
-uint8_t tof_is_init() { return tof_init; }
+uint8_t tof_is_init(void) { return tof_init; }
+
+uint8_t tof_is_fresh(void) {
+    return tof_freshness_all_fresh(&tof_freshness, xTaskGetTickCount(),
+                                   M2T(TOF_FRESHNESS_TIMEOUT_MS));
+}

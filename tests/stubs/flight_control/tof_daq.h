@@ -5,5 +5,6 @@
 
 extern int16_t tof_data_buf[4][8][8];
 float get_min_dtd_dist(void);
+uint8_t tof_is_fresh(void);
 
 #endif

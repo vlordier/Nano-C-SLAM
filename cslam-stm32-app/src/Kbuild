@@ -2,6 +2,7 @@ obj-y += /exploration/
 obj-y += /tof-matrix/
 obj-y += /spi_comm/
 obj-y += tof_daq.o
+obj-y += tof_freshness.o
 obj-y += scan.o
 obj-y += flight_commander.o
 obj-y += uwb_ranging.o

@@ -59,7 +59,7 @@ void flight_task(void *parameters) {
     (void)parameters;
     while (!commander_en)
         vTaskDelay(M2T(100));
-    if (land) {
+    if (land || !tof_is_fresh()) {
         flight_status = FLIGHT_STATUS_ABORTED_BEFORE_TAKEOFF;
         vTaskDelete(NULL);
         return;
@@ -72,11 +72,19 @@ void flight_task(void *parameters) {
         return;
     }
     DEBUG_PRINT("Take-off: %.2f  %.2f  %.2f\n",
-                logGetFloat(logGetVarId("kalman", "stateX")),
-                logGetFloat(logGetVarId("kalman", "stateY")),
-                logGetFloat(logGetVarId("stateEstimate", "yaw")));
-    vTaskDelay(M2T(2500));
+                (double)logGetFloat(logGetVarId("kalman", "stateX")),
+                (double)logGetFloat(logGetVarId("kalman", "stateY")),
+                (double)logGetFloat(logGetVarId("stateEstimate", "yaw")));
+    for (uint16_t elapsed_ms = 0; elapsed_ms < 2500; elapsed_ms += 20) {
+        if (!tof_is_fresh()) {
+            land = 1;
+            break;
+        }
+        vTaskDelay(M2T(20));
+    }
     while (1) {
+        if (!tof_is_fresh())
+            land = 1;
         if (land) {
             // Low-level EXTRX setpoints outrank the high-level commander.
             // Release that priority before asking the planner to land.

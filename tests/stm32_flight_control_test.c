@@ -28,7 +28,11 @@ static int setpoint_calls;
 static bool arm_land_after_first_command;
 static bool reset_land_after_first_failed_landing;
 static bool enable_after_two_waits;
+static bool stale_during_takeoff;
+static bool stale_after_first_command;
+static uint8_t tof_fresh = 1;
 static int ready_waits;
+static int takeoff_waits;
 volatile uint8_t land;
 int16_t tof_data_buf[4][8][8];
 
@@ -87,6 +91,10 @@ void commanderRelaxPriority(void) {
 }
 
 void vTaskDelay(TickType_t ticks) {
+    if (stale_during_takeoff && ticks == 20 && ++takeoff_waits == 3)
+        tof_fresh = 0;
+    if (stale_after_first_command && ticks == 20 && setpoint_calls == 1)
+        tof_fresh = 0;
     if (enable_after_two_waits && ticks == 100) {
         assert(event_count == 0);
         if (++ready_waits == 2) {
@@ -129,6 +137,10 @@ float get_min_dtd_dist(void) {
     return 2.0f;
 }
 
+uint8_t tof_is_fresh(void) {
+    return tof_fresh;
+}
+
 void explore(uint16_t tof_data[64], float lines[3], float sides[2], float distance_back,
              float fly_commands[3], float dtd_distance) {
     (void)tof_data;
@@ -149,6 +161,45 @@ static void test_abort_before_takeoff(void) {
     assert(flight_status == FLIGHT_STATUS_ABORTED_BEFORE_TAKEOFF);
     assert(event_count == 1 && events[0] == EVENT_DELETE);
     assert(land_calls == 0 && setpoint_calls == 0);
+}
+
+static void test_stale_tof_before_takeoff_aborts(void) {
+    tof_fresh = 0;
+    enable_commander();
+    if (setjmp(task_exit) == 0)
+        flight_task(NULL);
+    assert(flight_status == FLIGHT_STATUS_ABORTED_BEFORE_TAKEOFF);
+    assert(event_count == 1 && events[0] == EVENT_DELETE);
+    assert(land_calls == 0 && setpoint_calls == 0);
+}
+
+static void test_stale_tof_during_takeoff_requests_landing(void) {
+    stale_during_takeoff = true;
+    enable_commander();
+    if (setjmp(task_exit) == 0)
+        flight_task(NULL);
+    assert(flight_status == FLIGHT_STATUS_COMPLETE);
+    assert(land_calls == 1 && setpoint_calls == 0);
+    assert(event_count == 4);
+    assert(events[0] == EVENT_TAKEOFF);
+    assert(events[1] == EVENT_RELAX_PRIORITY);
+    assert(events[2] == EVENT_LAND);
+    assert(events[3] == EVENT_DELETE);
+}
+
+static void test_stale_tof_stops_active_movement(void) {
+    stale_after_first_command = true;
+    enable_commander();
+    if (setjmp(task_exit) == 0)
+        flight_task(NULL);
+    assert(flight_status == FLIGHT_STATUS_COMPLETE);
+    assert(land_calls == 1 && setpoint_calls == 1);
+    assert(event_count == 5);
+    assert(events[0] == EVENT_TAKEOFF);
+    assert(events[1] == EVENT_SETPOINT);
+    assert(events[2] == EVENT_RELAX_PRIORITY);
+    assert(events[3] == EVENT_LAND);
+    assert(events[4] == EVENT_DELETE);
 }
 
 static void test_ready_gate_prevents_early_commands(void) {
@@ -205,6 +256,12 @@ int main(int argc, char **argv) {
         test_abort_before_takeoff();
     } else if (strcmp(argv[1], "ready-gate") == 0) {
         test_ready_gate_prevents_early_commands();
+    } else if (strcmp(argv[1], "stale-before-takeoff") == 0) {
+        test_stale_tof_before_takeoff_aborts();
+    } else if (strcmp(argv[1], "stale-during-takeoff") == 0) {
+        test_stale_tof_during_takeoff_requests_landing();
+    } else if (strcmp(argv[1], "stale-active") == 0) {
+        test_stale_tof_stops_active_movement();
     } else if (strcmp(argv[1], "takeoff-failure") == 0) {
         test_takeoff_failure_stops_before_setpoints();
     } else if (strcmp(argv[1], "land-handoff") == 0) {

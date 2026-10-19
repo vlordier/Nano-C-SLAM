@@ -112,8 +112,8 @@ void mission_task(void *parameters) {
         vTaskDelay(M2T(1000));
 
     // Wait for ready command from client only after sensor initialization.
-    DEBUG_PRINT("ToF ready; waiting for ready command...\n");
-    while (!ready)
+    DEBUG_PRINT("ToF ready; waiting for ready command and fresh frames...\n");
+    while (!ready || !tof_is_fresh())
         vTaskDelay(M2T(100));
 
     DEBUG_PRINT("Start\n");

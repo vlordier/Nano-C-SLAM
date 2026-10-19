@@ -20,6 +20,7 @@ static TickType_t delays[16];
 static int recover_after_attempts;
 static int read_unavailable;
 static unsigned int diagnostic_count;
+static TickType_t current_tick;
 
 void test_debug_print(const char *format, ...) {
     (void)format;
@@ -51,14 +52,16 @@ int xSemaphoreTake(SemaphoreHandle_t semaphore, unsigned int ticks) {
 
 int xSemaphoreGive(SemaphoreHandle_t semaphore) {
     (void)semaphore;
+    assert(tof_is_fresh());
     return 1;
 }
 
 TickType_t xTaskGetTickCount(void) {
-    return 0;
+    return current_tick;
 }
 
 void vTaskDelay(TickType_t ticks) {
+    current_tick += ticks;
     if (delay_count < sizeof(delays) / sizeof(delays[0]))
         delays[delay_count] = ticks;
     delay_count++;
@@ -71,6 +74,7 @@ void vTaskDelay(TickType_t ticks) {
 void vTaskDelayUntil(TickType_t *previous_wake_time, TickType_t increment) {
     (void)previous_wake_time;
     (void)increment;
+    current_tick += M2T(501);
     longjmp(task_exit, 1);
 }
 
@@ -84,6 +88,7 @@ static void run_persistent_failure(void) {
     assert(memcmp(delays, expected, sizeof(expected)) == 0);
     assert(init_attempts == 7);
     assert(!tof_is_init());
+    assert(!tof_is_fresh());
     assert(read_attempts == 0);
 }
 
@@ -96,6 +101,7 @@ static void run_recovery(void) {
     assert(delay_count == 6);
     assert(delays[0] == 100 && delays[1] == 200);
     assert(tof_is_init());
+    assert(!tof_is_fresh());
     assert(read_attempts == 4);
 }
 
