@@ -1,0 +1,53 @@
+diff --git a/sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/odometry_preflight.py b/sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/odometry_preflight.py
+index 79a614f..ae5a292 100644
+--- a/sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/odometry_preflight.py
++++ b/sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/odometry_preflight.py
+@@ -65,8 +65,14 @@ class GroundedOdometryPreflight:
+         if not all(math.isfinite(value) for value in values):
+             self.failure_reason = "odometry preflight received a non-finite value"
+             return False
+-        if sample.stamp_s <= 0 or sample.sim_time_s <= 0:
+-            self.failure_reason = "simulation clock or odometry stamp has not started"
++        if sample.stamp_s <= 0:
++            self.failure_reason = "odometry stamp has not started"
++            return False
++        if sample.sim_time_s <= 0:
++            # /odom can arrive before the first /clock sample reaches this node.
++            # Ignore that sample and wait for fresh odometry after clock startup;
++            # the caller's bounded wall timeout still fails closed if /clock never
++            # starts.
+             return False
+         age_s = sample.sim_time_s - sample.stamp_s
+         if age_s < -MAX_FUTURE_SKEW_S or age_s > MAX_SAMPLE_AGE_S:
+diff --git a/tests/test_gazebo_odometry_preflight.py b/tests/test_gazebo_odometry_preflight.py
+index 2c2837e..d2fd0fb 100644
+--- a/tests/test_gazebo_odometry_preflight.py
++++ b/tests/test_gazebo_odometry_preflight.py
+@@ -34,6 +34,27 @@ class GroundedOdometryPreflightTests(unittest.TestCase):
+         self.assertTrue(gate.observe(_sample(2)))
+         self.assertTrue(validate_odometry_preflight(gate.to_report())["passed"])
+ 
++    def test_uninitialized_clock_sample_does_not_poison_preflight(self) -> None:
++        gate = GroundedOdometryPreflight()
++        first_odom_before_clock = OdometrySample(10.0, 1.25, -0.4, 0.05, 0.0, 100.0)
++
++        self.assertFalse(gate.observe(first_odom_before_clock))
++        self.assertIsNone(gate.failure_reason)
++        self.assertEqual(gate.samples, [])
++
++        for index in range(3):
++            self.assertEqual(gate.observe(_sample(index)), index == 2)
++
++        self.assertTrue(gate.passed)
++        self.assertTrue(validate_odometry_preflight(gate.to_report())["passed"])
++
++    def test_invalid_odometry_stamp_still_fails_before_clock_start(self) -> None:
++        gate = GroundedOdometryPreflight()
++
++        self.assertFalse(gate.observe(OdometrySample(0.0, 0.0, 0.0, 0.0, 0.0, 1.0)))
++
++        self.assertIn("stamp has not started", gate.failure_reason or "")
++
+     def test_rejects_airborne_nonfinite_stale_future_and_reordered_samples(
+         self,
+     ) -> None:
