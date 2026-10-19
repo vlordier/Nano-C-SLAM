@@ -1,0 +1,5 @@
+# Native nearfield Gazebo launch command (captured from world session manifest)
+ruby /Users/vincent/Work/gz-macOS/ws/install/bin/gz sim /var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T//nano-c-slam-ros2.puce77/nano_c_slam_nearfield.sdf -r -s --headless-rendering --render-engine-server=ogre2 --render-engine-server-api-backend=metal --force-version 8
+
+# Probe command
+ROS_DOMAIN_ID=59 GZ_PARTITION=nano_c_slam_failure_probe_final_20261019 uv run --locked python -m scripts.gazebo_failure_probe --drone cf1 --output artifacts/gazebo_mapping_sitl/mission_failure_acceptance_20261019/attempt_01/probe.json --post-exit-duration 5
