@@ -482,7 +482,7 @@ class DiscoveredTopicTypeTests(unittest.TestCase):
                 ("/cf1/odom", ["nav_msgs/msg/Odometry"]),
                 (
                     "/nano_c_slam/sim/cf1/ranges_mm",
-                    ["nano_c_slam_interfaces/msg/StampedPairwiseRanges"],
+                    ["nano_c_slam_interfaces/msg/StampedRanges"],
                 ),
                 ("/cf1/mission_status", ["std_msgs/msg/String"]),
             ],
@@ -494,7 +494,7 @@ class DiscoveredTopicTypeTests(unittest.TestCase):
             ("/cf1/odom", ["nav_msgs/msg/Odometry"]),
             (
                 "/nano_c_slam/sim/cf1/ranges_mm",
-                ["nano_c_slam_interfaces/msg/StampedPairwiseRanges"],
+                ["nano_c_slam_interfaces/msg/StampedRanges"],
             ),
             ("/cf1/mission_status", ["std_msgs/msg/String"]),
         ]

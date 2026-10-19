@@ -70,6 +70,21 @@ class _StatusListener(Protocol):
     def destroy_node(self) -> None: ...
 
 
+def _mapping_topics_ready(node: _StatusListener, drone_name: str) -> bool:
+    """Wait until telemetry publishers and the collector subscriptions exist."""
+    validate_discovered_topic_types(node.get_topic_names_and_types(), drone_name)
+    subscriptions = (
+        node.count_subscribers(f"/{drone_name}/odom"),
+        node.count_subscribers(f"/nano_c_slam/sim/{drone_name}/ranges_mm"),
+        node.count_subscribers(f"/{drone_name}/mission_status"),
+    )
+    publishers = (
+        node.count_publishers(f"/{drone_name}/odom"),
+        node.count_publishers(f"/nano_c_slam/sim/{drone_name}/ranges_mm"),
+    )
+    return all(count >= 1 for count in subscriptions + publishers)
+
+
 def _events_from_mission_log(
     mission_log: str, observed_events: list[MissionStatusEvent]
 ) -> list[MissionStatusEvent]:
@@ -282,28 +297,7 @@ def _run(config: MappingRunConfig, ros2_executable: str) -> Path:
                 raise RuntimeError(node.error)
 
         def subscriptions_ready() -> bool:
-            validate_discovered_topic_types(
-                node.get_topic_names_and_types(), config.drone_name
-            )
-            topic_counts = (
-                node.count_subscribers(f"/{config.drone_name}/odom"),
-                node.count_subscribers(
-                    f"/nano_c_slam/sim/{config.drone_name}/ranges_mm"
-                ),
-                node.count_subscribers(f"/{config.drone_name}/mission_status"),
-            )
-            publisher_counts = (
-                node.count_publishers(f"/{config.drone_name}/odom"),
-                node.count_publishers(
-                    f"/nano_c_slam/sim/{config.drone_name}/ranges_mm"
-                ),
-            )
-            return (
-                topic_counts[0] >= 1
-                and topic_counts[1] >= 1
-                and topic_counts[2] >= 2
-                and all(count >= 1 for count in publisher_counts)
-            )
+            return _mapping_topics_ready(node, config.drone_name)
 
         execution_started = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         process_result = supervise_mapping_processes(

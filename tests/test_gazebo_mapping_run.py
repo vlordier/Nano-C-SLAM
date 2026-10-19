@@ -8,6 +8,7 @@ import unittest
 import uuid
 from pathlib import Path
 
+from scripts.gazebo_mapping_run import _mapping_topics_ready
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_run_model import (
     MappingRunConfig,
     MissionCaptureGate,
@@ -16,6 +17,50 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     MissionPhase,
     MissionStatusEvent,
 )
+
+
+class _TopicGraph:
+    def __init__(self, *, mission_status_subscribers: int = 1) -> None:
+        self.events: list[MissionStatusEvent] = []
+        self.error: str | None = None
+        self._subscribers = {
+            "/cf1/odom": 1,
+            "/nano_c_slam/sim/cf1/ranges_mm": 1,
+            "/cf1/mission_status": mission_status_subscribers,
+        }
+        self._publishers = {
+            "/cf1/odom": 1,
+            "/nano_c_slam/sim/cf1/ranges_mm": 1,
+        }
+
+    def count_subscribers(self, topic_name: str) -> int:
+        return self._subscribers.get(topic_name, 0)
+
+    def count_publishers(self, topic_name: str) -> int:
+        return self._publishers.get(topic_name, 0)
+
+    def get_topic_names_and_types(self) -> list[tuple[str, list[str]]]:
+        return [
+            ("/cf1/odom", ["nav_msgs/msg/Odometry"]),
+            (
+                "/nano_c_slam/sim/cf1/ranges_mm",
+                ["nano_c_slam_interfaces/msg/StampedRanges"],
+            ),
+            ("/cf1/mission_status", ["std_msgs/msg/String"]),
+        ]
+
+    def destroy_node(self) -> None:
+        pass
+
+
+class MappingTopicReadinessTests(unittest.TestCase):
+    def test_starts_mission_with_one_status_subscriber(self) -> None:
+        self.assertTrue(_mapping_topics_ready(_TopicGraph(), "cf1"))
+
+    def test_waits_if_status_listener_is_not_discovered(self) -> None:
+        self.assertFalse(
+            _mapping_topics_ready(_TopicGraph(mission_status_subscribers=0), "cf1")
+        )
 
 
 class MappingRunConfigTests(unittest.TestCase):

@@ -513,7 +513,7 @@ def validate_discovered_topic_types(
     expected = {
         f"/{drone_name}/odom": "nav_msgs/msg/Odometry",
         f"/nano_c_slam/sim/{drone_name}/ranges_mm": (
-            "nano_c_slam_interfaces/msg/StampedPairwiseRanges"
+            "nano_c_slam_interfaces/msg/StampedRanges"
         ),
         f"/{drone_name}/mission_status": "std_msgs/msg/String",
     }
