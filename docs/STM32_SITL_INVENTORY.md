@@ -62,6 +62,23 @@ treated as a simulator implementation without an explicit device adapter.
 
 ## Host-portability boundary
 
+## Hardware-image build baseline (2026-10-19)
+
+The owned STM32 app and pinned Crazyflie firmware still build together for the
+normal `cf2` target on macOS with the installed Arm GNU Toolchain 15.3.1:
+
+```sh
+cd cslam-stm32-app
+make -j8
+```
+
+The resulting image reports Flash `363,556 / 1,032,192` bytes (35%), RAM
+`115,988 / 131,072` bytes (88%, 15,084 free), and CCM `47,740 / 65,536` bytes
+(73%, 17,796 free). The build emits existing upstream/toolchain warnings,
+including unused UWB library variables and newlib stubs for `_read`, `_write`,
+and `_lseek`; it exits successfully. This proves the regular embedded image
+still compiles, not that it was flashed, flown, or ported to Linux SITL.
+
 The host C suite currently compiles and exercises pure timeout, heartbeat,
 token-handoff/lease, bounded-batch, ToF freshness, packet encoding, SPI wait,
 actuation-limit, and selected flight-task behavior using test stubs. These
