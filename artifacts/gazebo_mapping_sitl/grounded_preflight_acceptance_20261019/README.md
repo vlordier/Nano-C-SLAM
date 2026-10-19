@@ -85,3 +85,23 @@ pre/post process audits, and the world manifest are retained in `trial_b/`.
 
 This trial only checks the installed mission's odometry and flight-state path;
 it makes no mapping or SLAM claim.
+
+## Gazebo launch lock and session renewal
+
+`launch_lock/duplicate-launch.json` records a direct second invocation of the
+installed `ros2 launch nano_c_slam_gazebo crazyswarm2_gazebo.launch.py` on the
+active partition `nano_c_slam_launchlock_20261019` and ROS domain 48. It exited
+1 with the launch-lock diagnostic. The process check found exactly one server
+for the world path (original PID 21257), so the duplicate did not start a
+second `gz sim` server. The test stopped only its own launch, bridges, server,
+and GUI; the post-stop audit found all their PIDs absent.
+
+The same partition then launched successfully again, demonstrating that the
+lock was released. Its new session UUID
+`531df757-4cf1-40cc-9ec9-04fddfe835b9` differs from the rejected session's
+`a1108bd2-2db0-44ef-bbe6-2cde32bc8274`. The fresh world was stopped after
+recording its manifest and all new PIDs were confirmed absent. The session
+manifest path is intentionally reused and atomically replaced by each launch;
+the first session's exact IDs/PIDs and duplicate-launch output are therefore
+retained in the duplicate evidence file, while the fresh session's full
+manifest is retained separately.

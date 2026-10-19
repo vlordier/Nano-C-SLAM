@@ -1,0 +1,52 @@
+{
+  "command": [
+    "uv",
+    "run",
+    "--no-project",
+    "--python",
+    "/Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11",
+    "ros2",
+    "launch",
+    "nano_c_slam_gazebo",
+    "crazyswarm2_gazebo.launch.py",
+    "world:=/var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T//nano-c-slam-ros2.ZDByPE/nano_c_slam_nearfield.sdf"
+  ],
+  "coordinator_pid": 21646,
+  "exit_code": 1,
+  "stdout": "[INFO] [launch]: All log files can be found below /Users/vincent/.ros/log/2026-10-19-07-47-29-962167-macadam2-2.home-21649\n[INFO] [launch]: Default logging verbosity is set to INFO\n[ERROR] [launch]: Caught exception in launch (see debug for traceback): another Nano-C-SLAM Gazebo launch already owns this partition; stop it or choose a different GZ_PARTITION\n",
+  "stderr": "",
+  "gazebo_partition": "nano_c_slam_launchlock_20261019",
+  "ros_domain_id": "48",
+  "active_session_id": "a1108bd2-2db0-44ef-bbe6-2cde32bc8274",
+  "active_launch_pid": 21250,
+  "original_gazebo_server_pid": 21257,
+  "duplicate_launch_reported_lock_error": true,
+  "matching_world_gazebo_processes_after_duplicate": [
+    "21257 gz sim /var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T//nano-c-slam-ros2.ZDByPE/nano_c_slam_nearfield.sdf -r -s --headless-rendering --render-engine-server=ogre2 --render-engine-server-api-backend=metal"
+  ],
+  "no_second_server_started": true,
+  "lock_error_location": "stdout",
+  "launch_processes": [
+    {
+      "role": "ros2_launch_parent",
+      "pid": 21250
+    },
+    {
+      "role": "gazebo_server",
+      "pid": 21257
+    },
+    {
+      "role": "ros_gazebo_bridge",
+      "pid": 21258
+    },
+    {
+      "role": "nano_sensor_bridge",
+      "pid": 21259
+    },
+    {
+      "role": "gazebo_gui",
+      "pid": 21420
+    }
+  ],
+  "full_first_session_manifest_note": "The active manifest was atomically replaced by the fresh post-release launch. The original session UUID, launch PID, server PID, bridge PIDs, and GUI PID were retained from launch output and duplicate-launch process evidence."
+}

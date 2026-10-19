@@ -1,0 +1,56 @@
+{
+  "launch_pid": 22407,
+  "processes": [
+    {
+      "argv": [
+        "ruby",
+        "/Users/vincent/Work/gz-macOS/ws/install/bin/gz",
+        "sim",
+        "/var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T//nano-c-slam-ros2.qFBb7w/nano_c_slam_nearfield.sdf",
+        "-r",
+        "-s",
+        "--headless-rendering",
+        "--render-engine-server=ogre2",
+        "--render-engine-server-api-backend=metal",
+        "--force-version",
+        "8"
+      ],
+      "executable_path": "/usr/bin/ruby",
+      "launch_pid": 22407,
+      "observed_at_utc": "2026-10-19T05:47:52.767543Z",
+      "pid": 22411,
+      "role": "gazebo-server"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/ros2-jazzy/lib/ros_gz_bridge/parameter_bridge",
+        "--ros-args",
+        "--params-file",
+        "/var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T/launch_params_e4vi_4wq"
+      ],
+      "executable_path": "/opt/homebrew/Cellar/ros2-jazzy/26.07.31.106/lib/ros_gz_bridge/parameter_bridge",
+      "launch_pid": 22407,
+      "observed_at_utc": "2026-10-19T05:47:52.768748Z",
+      "pid": 22412,
+      "role": "ros-gazebo-bridge"
+    },
+    {
+      "argv": [
+        "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.Dvetqa/install/nano_c_slam_gazebo/lib/nano_c_slam_gazebo/sensor_bridge",
+        "--ros-args",
+        "-r",
+        "__node:=nano_c_slam_sensor_bridge",
+        "--params-file",
+        "/var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T/launch_params_0v_mui64"
+      ],
+      "executable_path": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.Dvetqa/install/nano_c_slam_gazebo/lib/nano_c_slam_gazebo/sensor_bridge",
+      "launch_pid": 22407,
+      "observed_at_utc": "2026-10-19T05:47:52.769685Z",
+      "pid": 22413,
+      "role": "nano-sensor-bridge"
+    }
+  ],
+  "scene": "nearfield-mapping",
+  "schema_version": 1,
+  "session_id": "531df757-4cf1-40cc-9ec9-04fddfe835b9"
+}

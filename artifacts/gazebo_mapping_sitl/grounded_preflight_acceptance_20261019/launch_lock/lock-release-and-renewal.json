@@ -1,0 +1,40 @@
+{
+  "old_session_id": "a1108bd2-2db0-44ef-bbe6-2cde32bc8274",
+  "released_partition": "nano_c_slam_launchlock_20261019",
+  "test_owned_processes_after_stop": [
+    {
+      "pid": 21250,
+      "alive": false,
+      "command": ""
+    },
+    {
+      "pid": 21257,
+      "alive": false,
+      "command": ""
+    },
+    {
+      "pid": 21258,
+      "alive": false,
+      "command": ""
+    },
+    {
+      "pid": 21259,
+      "alive": false,
+      "command": ""
+    },
+    {
+      "pid": 21420,
+      "alive": false,
+      "command": ""
+    },
+    {
+      "pid": 21646,
+      "alive": false,
+      "command": ""
+    }
+  ],
+  "all_test_owned_processes_stopped": true,
+  "fresh_session_id": "531df757-4cf1-40cc-9ec9-04fddfe835b9",
+  "fresh_launch_pid": 22407,
+  "fresh_server_pid": 22411
+}

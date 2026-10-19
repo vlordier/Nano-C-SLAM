@@ -1,0 +1,33 @@
+{
+  "partition": "nano_c_slam_launchlock_20261019",
+  "first_session_id": "a1108bd2-2db0-44ef-bbe6-2cde32bc8274",
+  "fresh_session_id": "531df757-4cf1-40cc-9ec9-04fddfe835b9",
+  "processes_after_final_stop": [
+    {
+      "pid": 22407,
+      "alive": false,
+      "command": ""
+    },
+    {
+      "pid": 22411,
+      "alive": false,
+      "command": ""
+    },
+    {
+      "pid": 22412,
+      "alive": false,
+      "command": ""
+    },
+    {
+      "pid": 22413,
+      "alive": false,
+      "command": ""
+    },
+    {
+      "pid": 22482,
+      "alive": false,
+      "command": ""
+    }
+  ],
+  "all_final_test_processes_stopped": true
+}
