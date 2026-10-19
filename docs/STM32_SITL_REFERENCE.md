@@ -409,15 +409,34 @@ predictions must wait for both sensor streams. Commit `70eab0ba` rebuilt the
 without an estimator bounds reset; TAKEOFF_2 and LAND_2 reached firmware, and
 Gazebo recorded 85,000 motor values, 24,960 nonzero, with maximum
 `2056.69 rad/s`. Odometry recorded 4,250 poses and rose from `2.040 m` to
-`2.685 m`, confirming a firmware-driven initial climb. The final pose was
-`2.659 m` after the commanded landing, so this run did not prove landing or
-stable hover. It was timeout-terminated; stabilizer rate remained `546 Hz`
-against `500 Hz` configured and Kalman prediction remained `92–98 Hz` against
-`100 Hz`. The focused commit is local to the Lima Crazyflie firmware branch;
-it is not pushed to the configured upstream remote and does not change Nano's
-submodule pointer. Bead `ncs-fea.5.8.2.2` remains open for the rate and
-closed-loop flight failures. No Nano application or mapping validation is
-claimed.
+`2.685 m`, confirming a firmware-driven initial climb. This first retest ended
+at `2.659 m` after the landing command and did not prove landing.
+
+A subsequent bounded positive-control run used one `cf2` process, two identical
+TAKEOFF_2 packets, and one LAND_2 packet. It recorded 3,324 odometry poses from
+`2.040 m` to `2.685 m` and back to `2.040 m`, 215,552 finite motor values
+(84,244 nonzero; maximum `2,426.68 rad/s`), and no Kalman out-of-bounds reset.
+The longest interval in the configured upright/low-angular-rate hover envelope
+was `15.495 s`. After LAND_2, odometry returned to `2.119 m` (within 0.10 m of
+the platform). This demonstrates reference-firmware
+takeoff, sustained hover, and physical return to the platform, but it is not a
+passing flight-gate capture: the firmware emitted 47 rate warnings, reported
+`Landing timeout, disarming`, and the run did not include the disconnected-
+actuator negative control. The duplicate takeoff packet also means this was a
+manual positive-control run, not the checker fixture. Captures are
+`/tmp/ncs-kalman-cycle-{odom,motors}.log` on the host and
+`/tmp/ncs-kalman-cycle-fw.log` in the Lima guest.
+
+The two focused firmware fixes are published on
+[`vlordier/crazyflie-firmware` branch `codex/sitl-rate-supervisor`](https://github.com/vlordier/crazyflie-firmware/tree/codex/sitl-rate-supervisor):
+`516ee762` derives the stabilizer supervisor range from `RATE_MAIN_LOOP` and
+uses `TickType_t` for `lastWakeTime`; `c0df4f62` skips Kalman prediction until
+both sensor streams have supplied samples. The Lima diagnostic clone has
+additional local CrazySim integration changes and its `70eab0ba` commit; those
+were not pushed. Neither branch changes Nano's submodule pointer.
+`ncs-fea.5.8.2.1` remains open for clock-aligned rate validation and
+`ncs-fea.5.8.2.2` remains open for a clean checker-passing flight. No Nano
+application or mapping validation is claimed.
 
 ## Reproducible flight-capture gate
 
