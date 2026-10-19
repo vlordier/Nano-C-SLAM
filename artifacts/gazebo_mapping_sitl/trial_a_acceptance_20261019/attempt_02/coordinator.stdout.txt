@@ -1,0 +1,1 @@
+Gazebo mission and Nano-C-SLAM host replay passed: /private/tmp/nano-c-slam-trial-a-retry/mapping-run.json
