@@ -20,6 +20,7 @@
 
 #include "deck.h"
 #include "exploration.h"
+#include "mission_timeout.h"
 #include "scan.h"
 #include "tof_daq.h"
 #include "tof_matrix.h"
@@ -66,6 +67,9 @@ extern TaskHandle_t uwbTaskHandle;
 void update_poses_pc();
 
 #define FIRST_NODE_RADIO 0xA
+#define MISSION_DURATION_MS (4u * 60u * 1000u)
+#define MISSION_LANDING_GRACE_MS 5000u
+#define MISSION_SEMAPHORE_POLL_MS 100u
 uint8_t NODE_ID;
 static uint8_t broadcast_scan = 0;
 
@@ -139,16 +143,31 @@ void mission_task(void *parameters) {
     int16_t scan_id = -1;
     TickType_t prev_time = 0;
 
-    TickType_t mission_start_time = xTaskGetTickCount();
+    mission_timeout_t mission_timeout = {
+        .started_at = xTaskGetTickCount(),
+    };
     while (1) {
-        if (xTaskGetTickCount() - mission_start_time > 4 * 60 * 1000) {
-            show_optimized_poses();
-            while (1)
-                vTaskDelay(M2T(1));
+        mission_timeout_action_t timeout_action = mission_timeout_update(
+            &mission_timeout, xTaskGetTickCount(), M2T(MISSION_DURATION_MS),
+            M2T(MISSION_LANDING_GRACE_MS), flight_status);
+        if (timeout_action == MISSION_TIMEOUT_REQUEST_LAND) {
+            DEBUG_PRINT("Mission deadline reached; requesting landing\n");
+            land = 1;
+        } else if (timeout_action == MISSION_TIMEOUT_LANDED) {
+            DEBUG_PRINT("Mission ended after landing\n");
+            return;
+        } else if (timeout_action == MISSION_TIMEOUT_FAILED) {
+            DEBUG_PRINT("Mission shutdown ended with flight status %u\n",
+                        (unsigned int)flight_status);
+            return;
         }
 
         // Get ToF data and send it to PC
-        xSemaphoreTake(tofSemaphore0, portMAX_DELAY);
+        if (xSemaphoreTake(tofSemaphore0, M2T(MISSION_SEMAPHORE_POLL_MS)) !=
+            pdTRUE)
+            continue;
+        if (mission_timeout.landing_requested)
+            continue;
         if (loop_cnt++ % 2 > 0)
             continue;
 
@@ -182,7 +201,4 @@ void mission_task(void *parameters) {
             lock_scan_acquisition();
         }
     }
-
-    while (1)
-        vTaskDelay(M2T(1000));
 }

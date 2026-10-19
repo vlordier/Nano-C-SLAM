@@ -29,6 +29,20 @@ class Stm32TofMatrixInitTests(unittest.TestCase):
         self.assertLess(estimator_init, flight_task_create)
         self.assertLess(flight_task_create, commander_enable)
 
+    def test_mission_deadline_is_polled_and_stops_mapping_work(self) -> None:
+        source = (REPOSITORY_ROOT / "cslam-stm32-app/app_main.c").read_text(
+            encoding="utf-8"
+        )
+        mission_task = source.split("void mission_task(void *parameters) {", 1)[1]
+        deadline_check = mission_task.index("mission_timeout_update(")
+        semaphore_wait = mission_task.index("xSemaphoreTake(tofSemaphore0")
+        mapping_work = mission_task.index("send_burst_data(0")
+        self.assertLess(deadline_check, semaphore_wait)
+        self.assertLess(semaphore_wait, mapping_work)
+        self.assertIn("M2T(MISSION_SEMAPHORE_POLL_MS)", mission_task)
+        self.assertIn("if (mission_timeout.landing_requested)", mission_task)
+        self.assertNotIn("portMAX_DELAY", mission_task)
+
     def _compile(self, harness: Path, sources: list[Path], executable: Path) -> None:
         compiler = shutil.which("cc") or shutil.which("clang")
         if compiler is None:

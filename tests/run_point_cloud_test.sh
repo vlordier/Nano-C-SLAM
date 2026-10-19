@@ -74,6 +74,12 @@ cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
 /tmp/tof_freshness_test
 
 cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
+    -Itests/stubs/flight_control -Icslam-stm32-app/src \
+    tests/mission_timeout_test.c cslam-stm32-app/src/mission_timeout.c \
+    -o /tmp/mission_timeout_test
+/tmp/mission_timeout_test
+
+cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
     -ffunction-sections -fdata-sections \
     -Itests/stubs -Icslam-gap9-app/slam -Icslam-gap9-app/slam/rcm \
     tests/pose_graph_validation_test.c \
