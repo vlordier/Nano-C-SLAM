@@ -382,6 +382,17 @@ remaining scheduler/estimator/flight failure. Bead `ncs-fea.5.8.2.2` tracks
 the state/attitude trace. No stable flight or Nano firmware execution is
 claimed.
 
+An idle diagnostic trace narrowed the startup reset further. Temporary
+instrumentation in the firmware localization handler observed live external
+Gazebo poses over CRTP (`z=2.040 m`, identity quaternion). At the first
+Kalman bounds failure, the internal state was approximately `z=-20.293 m`,
+`vz=-19.954 m/s`, while the latest accelerometer value was `(0,0,1.024) g`
+and the gravity-frame term was `Rzz=1.000`. This happened before any takeoff
+command, so motor dynamics cannot explain that initial divergence. The
+temporary trace edits were reverted and `cf2` rebuilt successfully. This
+localizes the next investigation to estimator initialization/prediction and
+measurement timing/conversion; it does not yet identify which is faulty.
+
 ## Reproducible flight-capture gate
 
 `scripts/check_crazysim_flight.py` checks paired positive-flight and
