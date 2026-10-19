@@ -438,6 +438,57 @@ were not pushed. Neither branch changes Nano's submodule pointer.
 `ncs-fea.5.8.2.2` remains open for a clean checker-passing flight. No Nano
 application or mapping validation is claimed.
 
+## Clock observation and lower-overhead retest (2026-10-19)
+
+Two additional one-process reference runs tested the rate-measurement question.
+Both used the Lima-built diagnostic `cf2` from firmware commit
+`70eab0ba1520a4cf0fe679ed8c391e05fac12e5f`, with local SITL changes in
+`config.h`, `sensors_sitl.c`, `socketlink.c`, and CRTP trace points. The binary
+SHA-256 was
+`116573d136471c417c2266c88445bdf8cbbd22e4f3ce3cc2c50f5153ad9c96f8`. These
+are temporary diagnostic builds, not the Nano STM32 application or a
+reproducible checked-in flight package.
+
+The first run subscribed to odometry, IMU, motors, and `/stats` for the same
+capture. It recorded 12,755 odometry samples over 64.09 simulation seconds,
+31,954 IMU samples (2 ms median timestamp spacing, 4 ms maximum gap), and
+256,388 motor components. The model rose from 2.040 m to 3.044 m and returned
+to 2.040 m, but spent only 0.26 s in the 2.64 m hover envelope. The firmware
+console showed a 464 Hz stabilizer interval and Kalman prediction warnings
+between 80 and 98 Hz. The `/stats` echo itself received 64,004 messages and
+created a 10.8 MB text log; its reported real-time factor varied from 0.011 to
+8.219, with a median of 1.000. Simulation advanced 64.07 s while wall time
+advanced about 92.44 s. Because the high-rate stats and IMU text subscribers
+were active during this run, this RTF is observer-influenced and cannot be
+used to attribute the firmware warnings.
+
+The second run removed `/stats` and IMU text echo, retaining only odometry and
+motor capture. It recorded 18,515 odometry samples from 2.225 s to 95.260 s;
+17,619 were finite. Altitude ranged from 2.039 m to 2.915 m and ended at
+2.040 m. The configured 2.40 m stable-hover envelope lasted 0.32 s. All
+372,148 motor components were finite, 87,876 were nonzero, and the maximum
+was 2,774.984 rad/s. The firmware file contained a 536 Hz stabilizer warning
+against 500 Hz and 50 Kalman-rate warnings (80–98 Hz), with no captured
+out-of-bounds reset or landing-timeout marker. TAKEOFF_2 and LAND_2 were sent
+by the host runner, but the firmware log ended at exactly 4 KiB because stdout
+was fully buffered and the process was terminated; the command-receipt markers
+were therefore not preserved. This attempt fails the flight gate on finite
+telemetry, hover duration, and complete command evidence. Its capture files
+are temporary files under `/tmp/ncs-livepass{1,2}-*` on the development host;
+they are not committed evidence artifacts.
+
+The lower-overhead run still reports loop-rate warnings, so the first run's
+monitoring overhead is not a complete explanation. The captures do not
+timestamp firmware loop events against the Gazebo clock on one shared clock,
+and the second run did not record `/stats`; the reason for the remaining
+rate mismatch is therefore unresolved. The next run must line-buffer the
+firmware output (for example, `stdbuf -oL`), record process exit status and
+count, and use low-overhead plugin-side counters for simulation time, IMU
+callbacks, and motor packets instead of high-rate text echo. Do not change
+rate tolerances based on these two failed runs. The CrazySim plugin still
+blocks during shutdown in this setup, so the run procedure must also make its
+cleanup explicit and record any forced termination.
+
 ## Reproducible flight-capture gate
 
 `scripts/check_crazysim_flight.py` checks paired positive-flight and
