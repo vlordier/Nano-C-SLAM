@@ -13,8 +13,10 @@
 #include <string.h>
 
 #include "FreeRTOS.h"
+#include "config_params.h"
 #include "debug.h"
 
+#include "bounded_batch.h"
 #include "scan_manager.h"
 #include "spi_comm.h"
 
@@ -34,11 +36,15 @@ typedef struct gap9_ext_aug_pose_buf_t {
     ext_aug_pose_t poses[100];
 } gap9_ext_aug_pose_buf_t;
 
+typedef struct gap9_pose_update_t {
+    float pose[3];
+    int16_t id;
+    int16_t drone_id;
+} gap9_pose_update_t;
+
 typedef struct gap9_pose_buf_t {
     uint16_t count;
-    float poses[200][3];
-    int16_t ids[200];
-    int16_t drone_ids[200];
+    gap9_pose_update_t poses[200];
 } gap9_pose_buf_t;
 
 gap9_ext_aug_pose_buf_t gap9_ext_aug_pose_buf = {0};
@@ -133,32 +139,43 @@ void add_pose_upd_to_gap9_buffer(float *pose, int16_t id, int16_t drone_id) {
         DEBUG_PRINT("GAP9 pose update buffer full\n");
         return;
     }
-    gap9_pose_buf.drone_ids[gap9_pose_buf.count] = drone_id;
-    gap9_pose_buf.ids[gap9_pose_buf.count] = id;
-    memcpy(&gap9_pose_buf.poses[gap9_pose_buf.count++][0], pose,
+    gap9_pose_buf.poses[gap9_pose_buf.count].drone_id = drone_id;
+    gap9_pose_buf.poses[gap9_pose_buf.count].id = id;
+    memcpy(gap9_pose_buf.poses[gap9_pose_buf.count++].pose, pose,
            3 * sizeof(float));
 }
 
-bool send_ext_aug_poses_to_gap9(void) {
-    // Send scans
-    for (int16_t i = 0; i < gap9_ext_aug_pose_buf.count; i++) {
-        // DEBUG_PRINT("GAP: Sent ext pose %d\n",
-        //             gap9_ext_aug_pose_buf.poses[i].id);
-        if (!spi_send_ext_aug_pose(&gap9_ext_aug_pose_buf.poses[i]))
-            return false;
-        vTaskDelay(M2T(2));
-    }
-    gap9_ext_aug_pose_buf.count = 0;
+static bool send_external_aug_pose(const void *item, void *context) {
+    (void)context;
+    return spi_send_ext_aug_pose((ext_aug_pose_t *)item);
+}
 
-    // Send updated poses
-    for (int16_t i = 0; i < gap9_pose_buf.count; i++) {
-        DEBUG_PRINT("GAP: Sent pose upd %d\n", gap9_pose_buf.ids[i]);
-        if (!spi_send_ext_pose_upd(&gap9_pose_buf.poses[i][0],
-                                   gap9_pose_buf.ids[i],
-                                   gap9_pose_buf.drone_ids[i]))
-            return false;
-        vTaskDelay(M2T(2));
+static bool send_external_pose_update(const void *item, void *context) {
+    (void)context;
+    const gap9_pose_update_t *pose_update = item;
+    DEBUG_PRINT("GAP: Sent pose upd %d\n", pose_update->id);
+    return spi_send_ext_pose_upd((float *)pose_update->pose, pose_update->id,
+                                 pose_update->drone_id);
+}
+
+bool send_ext_aug_poses_to_gap9(void) {
+    if (!bounded_batch_flush(
+            gap9_ext_aug_pose_buf.poses, sizeof(gap9_ext_aug_pose_buf.poses[0]),
+            &gap9_ext_aug_pose_buf.count,
+            sizeof(gap9_ext_aug_pose_buf.poses) /
+                sizeof(gap9_ext_aug_pose_buf.poses[0]),
+            GAP9_EXTERNAL_AUG_POSES_PER_TOKEN, send_external_aug_pose, NULL)) {
+        return false;
     }
-    gap9_pose_buf.count = 0;
+    vTaskDelay(M2T(2));
+
+    if (!bounded_batch_flush(
+            gap9_pose_buf.poses, sizeof(gap9_pose_buf.poses[0]),
+            &gap9_pose_buf.count,
+            sizeof(gap9_pose_buf.poses) / sizeof(gap9_pose_buf.poses[0]),
+            GAP9_POSE_UPDATES_PER_TOKEN, send_external_pose_update, NULL)) {
+        return false;
+    }
+    vTaskDelay(M2T(2));
     return true;
 }

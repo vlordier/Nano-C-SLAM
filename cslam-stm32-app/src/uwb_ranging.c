@@ -443,7 +443,9 @@ void uwb_ranging_task(void *parameters) {
             // Fetch the internally acquired augmented poses and send them to
             // the GAP9
             aug_pose_t aug_pose0 = {0};
-            while (get_aug_pose_from_queue(&aug_pose0, 0)) {
+            for (uint8_t sent = 0; sent < GAP9_AUG_POSES_PER_TOKEN &&
+                                   get_aug_pose_from_queue(&aug_pose0, 0);
+                 sent++) {
                 if (!spi_send_aug_pose(&aug_pose0)) {
                     stop_after_gap9_failure("pose send");
                     return;

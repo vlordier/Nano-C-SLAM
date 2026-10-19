@@ -100,6 +100,11 @@ cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
 /tmp/uwb_token_lease_test
 
 cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
+    -Icslam-stm32-app/src tests/bounded_batch_test.c \
+    cslam-stm32-app/src/bounded_batch.c -o /tmp/bounded_batch_test
+/tmp/bounded_batch_test
+
+cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
     -Icrazyflie-firmware/src/deck/api \
     tests/deck_spi_wait_test.c crazyflie-firmware/src/deck/api/deck_spi_wait.c \
     -o /tmp/deck_spi_wait_test
