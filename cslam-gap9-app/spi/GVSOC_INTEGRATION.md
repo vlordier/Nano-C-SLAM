@@ -226,11 +226,13 @@ production flight-memory margin.
 
 ## Production main loop over testbench SPI2
 
-The separate `NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE` target now joins the real
+The separate `NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE` target joins the real
 testbench SPI path to production command dispatch. It compiles `main.c`,
 `spi/spi_driver.c`, `spi/spi_cmds_decode.c`, and the owned point-cloud/ICP/graph
-sources. Only the probe build defines the two-packet bound and result counters;
-the normal firmware main loop remains unbounded and does not include them.
+sources. Only the probe build defines the packet bound; the normal firmware
+main loop remains unbounded. Cumulative SPI accounting is enabled in both
+builds by default and can be disabled with
+`GAP9_BUILD_SPI_DIAGNOSTICS=OFF` when invoking the build script.
 
 The controller sends one 97-byte POSE frame in the production 84-byte
 `pcl_pose_t` wire layout, including four valid range samples and the unsigned
@@ -333,3 +335,28 @@ these are probe-build figures, not production flight-memory margin. This
 validates the mapping path and feedback transfer on synthetic packet data in
 the virtual target. It does not establish map accuracy, physical SPI behavior,
 or flight readiness.
+
+With `NANO_C_SLAM_SPI_DIAGNOSTICS` enabled, each completed OPTIMIZE command
+prints one `NANO_C_SLAM_SPI:stats` line. `rx` counts received fixed-size
+transactions; `malformed` counts transactions without the `S...E` delimiters;
+`unknown` counts delimited transactions with an unrecognized command. The
+seven-entry `frames`, `decode_ok`, and `decode_error` lists correspond, in
+order, to POSE, SCAN, OPTIMIZE, POSE_REQ, CHECK, EXT_POSE, and UPD_EXT_POSE.
+OPTIMIZE and CHECK do not have payload decoders, so their decode counts remain
+zero. `pose_id_missing` counts forward gaps between successfully decoded POSE
+IDs, while `pose_id_nonadvancing` counts duplicate or backward IDs; the
+sequence is a 16-bit counter and wraparound is handled. `optimize_responses`
+counts completed blocking sends, not commands or attempted transmissions.
+These counters are cumulative and printed only when optimization is requested;
+they cannot reveal clocks lost before a complete fixed-size transaction or
+losses in commands that carry no sequence number.
+
+The captured 66-frame report with diagnostics enabled is retained at
+`artifacts/gap9_gvsoc_evidence/spi_mapping_main_diagnostics_20261019.json`.
+It observed 66 transactions, no malformed or unknown commands, 61 POSE, four
+SCAN, and one OPTIMIZE frames; the pose decoder accepted 60 and rejected one
+checksum, all four scan decodes succeeded, and one optimization response
+completed. These are simulator accounting results, not physical bus-loss
+measurements. To build the normal firmware without the counters, set
+`GAP9_BUILD_SPI_DIAGNOSTICS=OFF`; the SPI protocol and mission behavior are
+unchanged.

@@ -67,6 +67,7 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
         )
 
     def _write_mapping_evidence(self, response_rx_hex: str | None = None) -> str:
+        response_was_skipped = response_rx_hex is None
         frames = make_mapping_trace()
         commands = [
             "POSE_BAD_CHECKSUM"
@@ -88,7 +89,11 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
                         for command, frame in zip(commands, frames, strict=True)
                     ],
                     "response_rx_hex": response_rx_hex,
-                    "control_phase": "optimizer_completed_response_not_clocked",
+                    "control_phase": (
+                        "optimizer_completed_response_not_clocked"
+                        if response_was_skipped
+                        else "optimizer_response_captured"
+                    ),
                 }
             ),
             encoding="utf-8",
@@ -101,9 +106,20 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
             "optimizer_edges=2 optimize=1 graph=3 solver_calls=3 "
             f"response_expected_hex={expected_response}"
         )
+        stats = (
+            "NANO_C_SLAM_SPI:stats rx=66 malformed=0 unknown=0 "
+            "frames=61,4,1,0,0,0,0 decode_ok=60,4,0,0,0,0,0 "
+            "decode_error=1,0,0,0,0,0,0 pose_id_missing=0 "
+            "pose_id_nonadvancing=0 "
+            f"optimize_responses={int(not response_was_skipped)}"
+        )
+        skipped_marker = (
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:response_phase=skipped\n"
+            if response_was_skipped
+            else ""
+        )
         self.log_path.write_text(
-            "NANO_C_SLAM_GVSOC_SPI_MAIN:response_phase=skipped\n" + marker + "\n",
-            encoding="utf-8",
+            skipped_marker + stats + "\n" + marker + "\n", encoding="utf-8"
         )
         return expected_response
 
@@ -155,6 +171,9 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
         self.assertEqual(report["frame_count"], 66)
         self.assertEqual(report["optimizer_response_expected_hex"], expected_response)
         self.assertEqual(report["optimizer_response_status"], "skipped by test target")
+        diagnostics = cast(dict[str, object], report["spi_diagnostics"])
+        self.assertEqual(diagnostics["received_frames"], 66)
+        self.assertEqual(diagnostics["completed_optimize_responses"], 0)
         self.assertTrue(
             any(
                 "skips the SPI slave TX" in limitation
@@ -169,22 +188,41 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
             self._capture()
 
     def test_accepts_captured_matching_optimizer_response(self) -> None:
-        expected_response = self._write_mapping_evidence()
+        expected_response = self._write_mapping_evidence(
+            "010002000300040005000600070008000900"
+        )
         transfer = json.loads(self.host_transfer_path.read_text(encoding="utf-8"))
         transfer["control_phase"] = "optimizer_response_captured"
         transfer["response_rx_hex"] = expected_response
         self.host_transfer_path.write_text(json.dumps(transfer), encoding="utf-8")
-        self.log_path.write_text(
-            self.log_path.read_text(encoding="utf-8").splitlines()[-1] + "\n",
-            encoding="utf-8",
-        )
-
         report = self._capture()
 
         self.assertEqual(
             report["optimizer_response_status"],
             "captured and matched target slam_job_t",
         )
+        diagnostics = cast(dict[str, object], report["spi_diagnostics"])
+        self.assertEqual(diagnostics["completed_optimize_responses"], 1)
+
+    def test_rejects_missing_production_receive_diagnostics(self) -> None:
+        self._write_mapping_evidence()
+        lines = [
+            line
+            for line in self.log_path.read_text(encoding="utf-8").splitlines()
+            if not line.startswith("NANO_C_SLAM_SPI:stats ")
+        ]
+        self.log_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "lacks production SPI receive"):
+            self._capture()
+
+    def test_rejects_inconsistent_production_receive_counts(self) -> None:
+        self._write_mapping_evidence()
+        log = self.log_path.read_text(encoding="utf-8")
+        self.log_path.write_text(log.replace("frames=61,4,1", "frames=60,4,1"))
+
+        with self.assertRaisesRegex(ValueError, "diagnostics differ"):
+            self._capture()
 
 
 if __name__ == "__main__":

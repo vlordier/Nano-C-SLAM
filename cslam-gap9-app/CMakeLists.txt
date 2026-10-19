@@ -19,6 +19,8 @@ include($ENV{GAP_SDK_HOME}/utils/cmake/setup.cmake)
 project(${TARGET_NAME} C ASM)
 
 option(NANO_C_SLAM_ICP_DIAGNOSTICS "Enable test-only ICP stage diagnostics" OFF)
+option(NANO_C_SLAM_SPI_DIAGNOSTICS
+    "Report cumulative received-frame/decode accounting at each optimization" ON)
 set(NANO_C_SLAM_POSE_GRAPH_FC_THRESHOLD "64" CACHE STRING
     "Largest pose-graph dimension solved serially on the FC")
 set(NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT "2" CACHE STRING
@@ -63,6 +65,11 @@ if(NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE)
         NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT=${NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_PACKET_COUNT}
         NANO_C_SLAM_TARGET_GVSOC=1
     )
+    if(NANO_C_SLAM_SPI_DIAGNOSTICS)
+        target_compile_definitions(
+            ${TARGET_NAME} PRIVATE NANO_C_SLAM_SPI_DIAGNOSTICS=1
+        )
+    endif()
     if(NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_SKIP_SPI_TX)
         target_compile_definitions(
             ${TARGET_NAME} PRIVATE NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE_SKIP_SPI_TX=1
@@ -156,6 +163,11 @@ else()
         point-cloud
         gpio
     )
+    if(NANO_C_SLAM_SPI_DIAGNOSTICS)
+        target_compile_definitions(
+            ${TARGET_NAME} PRIVATE NANO_C_SLAM_SPI_DIAGNOSTICS=1
+        )
+    endif()
     set(APP_OPT_LEVEL -O3)
 endif()
 

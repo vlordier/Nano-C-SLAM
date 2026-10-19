@@ -20,6 +20,22 @@ TARGET_MARKER = (
     "NANO_C_SLAM_GVSOC_SPI_MAIN:run_ok packets=2 pose_decoded=1 "
     "pose_inserted=1 scans_decoded=1 scans_registered=1 poses=1 scan_origins=1"
 )
+SPI_DIAGNOSTICS_PATTERN = re.compile(
+    r"^NANO_C_SLAM_SPI:stats rx=(\d+) malformed=(\d+) unknown=(\d+) "
+    r"frames=([0-9,]+) decode_ok=([0-9,]+) decode_error=([0-9,]+) "
+    r"pose_id_missing=(\d+) pose_id_nonadvancing=(\d+) "
+    r"optimize_responses=(\d+)$",
+    re.MULTILINE,
+)
+COMMAND_NAMES = (
+    "pose",
+    "scan",
+    "optimize",
+    "pose_request",
+    "check",
+    "external_pose",
+    "pose_update",
+)
 
 
 def _sha256(path: Path) -> str:
@@ -76,6 +92,7 @@ def capture_evidence(
     except OSError as error:
         raise ValueError(f"cannot read GVSOC log: {error}") from error
     response_status: str | None = None
+    spi_diagnostics: dict[str, object] | None = None
     if sequence == "pose-scan":
         if TARGET_MARKER not in log:
             raise ValueError(
@@ -107,6 +124,72 @@ def capture_evidence(
             raise ValueError("GVSOC log lacks the validated full-mapping marker")
         target_marker = match.group(0)
         response_expected_hex = match.group(1)
+        diagnostics_match = SPI_DIAGNOSTICS_PATTERN.search(log)
+        if diagnostics_match is None:
+            raise ValueError("GVSOC log lacks production SPI receive diagnostics")
+        (
+            received_frames,
+            malformed_frames,
+            unknown_commands,
+            command_frames_csv,
+            decode_success_csv,
+            decode_failure_csv,
+            missing_pose_ids,
+            nonadvancing_pose_ids,
+            completed_optimize_responses,
+        ) = diagnostics_match.groups()
+        command_frames = [int(value) for value in command_frames_csv.split(",")]
+        decode_success = [int(value) for value in decode_success_csv.split(",")]
+        decode_failure = [int(value) for value in decode_failure_csv.split(",")]
+        if (
+            len(command_frames) != len(COMMAND_NAMES)
+            or len(decode_success) != len(COMMAND_NAMES)
+            or len(decode_failure) != len(COMMAND_NAMES)
+        ):
+            raise ValueError("GVSOC SPI diagnostics have an invalid command vector")
+        target_response_was_skipped = "response_phase=skipped" in log
+        expected_diagnostics = {
+            "received_frames": 66,
+            "malformed_frames": 0,
+            "unknown_commands": 0,
+            "command_frames": [61, 4, 1, 0, 0, 0, 0],
+            "decode_success": [60, 4, 0, 0, 0, 0, 0],
+            "decode_failure": [1, 0, 0, 0, 0, 0, 0],
+            "missing_pose_ids": 0,
+            "nonadvancing_pose_ids": 0,
+            "completed_optimize_responses": int(not target_response_was_skipped),
+        }
+        spi_diagnostics = {
+            "received_frames": int(received_frames),
+            "malformed_frames": int(malformed_frames),
+            "unknown_commands": int(unknown_commands),
+            "command_frames": dict(zip(COMMAND_NAMES, command_frames, strict=True)),
+            "decode_success": dict(zip(COMMAND_NAMES, decode_success, strict=True)),
+            "decode_failure": dict(zip(COMMAND_NAMES, decode_failure, strict=True)),
+            "missing_pose_ids": int(missing_pose_ids),
+            "nonadvancing_pose_ids": int(nonadvancing_pose_ids),
+            "completed_optimize_responses": int(completed_optimize_responses),
+            "counter_semantics": (
+                "Cumulative since target boot; uint32 counters wrap modulo 2^32. "
+                "Frames count only completed pi_spi_receive calls."
+            ),
+        }
+        actual_diagnostics = {
+            "received_frames": int(received_frames),
+            "malformed_frames": int(malformed_frames),
+            "unknown_commands": int(unknown_commands),
+            "command_frames": command_frames,
+            "decode_success": decode_success,
+            "decode_failure": decode_failure,
+            "missing_pose_ids": int(missing_pose_ids),
+            "nonadvancing_pose_ids": int(nonadvancing_pose_ids),
+            "completed_optimize_responses": int(completed_optimize_responses),
+        }
+        if actual_diagnostics != expected_diagnostics:
+            raise ValueError(
+                "production SPI diagnostics differ from the injected 66-frame "
+                f"sequence: {actual_diagnostics!r}"
+            )
         response_rx_hex = host_transfer.get("response_rx_hex")
         if response_rx_hex is None:
             if "response_phase=skipped" not in log:
@@ -125,6 +208,9 @@ def capture_evidence(
                 "Proves the 66-command production mapping path over GVSOC SPI2 "
                 "ingress.",
                 "Does not validate map accuracy, physical SPI, or flight behavior.",
+                "Receive counters cannot detect frames for which no clocks were "
+                "observed, and sequence-less identical commands cannot be "
+                "distinguished as dropped or duplicated.",
             ]
         )
 
@@ -147,6 +233,7 @@ def capture_evidence(
             host_transfer.get("response_rx_hex") if sequence == "mapping" else None
         ),
         "optimizer_response_status": response_status,
+        "spi_diagnostics": spi_diagnostics,
         "sha256": {
             "elf": _sha256(elf_path),
             "gvsoc_config": _sha256(config_path),
