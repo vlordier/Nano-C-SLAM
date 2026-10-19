@@ -1,0 +1,28 @@
+# Rebuild the compatibility DART wrapper; use the two values it prints.
+./scripts/build_gz_physics_dartsim_plugin.sh
+
+# Build the Nano-C-SLAM ROS overlay from a shell with ROS 2 Jazzy and the Crazyswarm2 workspace sourced.
+./scripts/build_gazebo_ros_overlay.sh
+
+# Build the host mapping replay.
+./scripts/build_host_mapping_sitl.sh
+
+# In one shell, start Gazebo with the overlay path emitted by the overlay build.
+NANO_C_SLAM_GZ_PARTITION=nano_c_slam_host_map_20261019 \
+NANO_C_SLAM_ROS_DOMAIN_ID=65 \
+NANO_C_SLAM_NEARFIELD_MAPPING=1 \
+NANO_C_SLAM_GZ_PHYSICS_ENGINE=nano-c-slam-dartsim-plugin \
+NANO_C_SLAM_GZ_PHYSICS_ENGINE_PATH="$PWD/build/gz-physics-dartsim-rebuild/custom:$HOME/Work/gz-macOS/ws/install/lib/gz-physics-7/engine-plugins" \
+NANO_C_SLAM_OVERLAY_SETUP="$PWD/build/gazebo-ros-overlay.oYsEGw/install/local_setup.bash" \
+./scripts/run_gazebo_macos.sh
+
+# In another shell, source ROS 2 Jazzy, Crazyswarm2, Gazebo macOS, and the same overlay; then run:
+ROS_DOMAIN_ID=65 GZ_PARTITION=nano_c_slam_host_map_20261019 \
+PATH="/Library/Frameworks/Python.framework/Versions/3.11/bin:$PATH" \
+uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
+  python -m scripts.gazebo_mapping_run --drone cf1 --samples 60 \
+  --scene nearfield-mapping --timeout 120 --preflight-timeout 15 \
+  --output /tmp/nano-c-slam-host-map-20261019/attempt_01/run.json
+
+# Validate the retained bundle.
+uv run --locked python -c 'from pathlib import Path; from scripts.gazebo_run_manifest import validate_gazebo_mapping_bundle; validate_gazebo_mapping_bundle(Path("artifacts/gazebo_mapping_sitl/strict_host_mapping_acceptance_20261019/attempt_01/run.json"))'

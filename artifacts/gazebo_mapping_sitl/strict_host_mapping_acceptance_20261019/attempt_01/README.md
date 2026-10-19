@@ -1,0 +1,9 @@
+# Strict Gazebo to host mapping acceptance passed
+
+This evidence bundle was produced by `scripts.gazebo_mapping_run.py` on clean source revision `1bb0f21c408ac6efadf83afb667c15398ffe5c35`, in a fresh ROS domain and Gazebo partition. The mission and collector ran against Gazebo Harmonic 8.14.0 with the native 1.4 m near-field world; the host replay used the owned GAP9 mapping C core built with AddressSanitizer and UndefinedBehaviorSanitizer.
+
+The machine validator `validate_gazebo_mapping_bundle` passes after relocating the full output directory from temporary storage. It checks the report, manifest, process log hashes, source/runtime provenance, process exits, run IDs and mission events. The mission and collector both exited 0, and run `15a06f08-657e-4012-922e-4ca35f7dda22` ended in a run-bound `COMPLETE` event after takeoff, mapping-path completion, hover, and landing. All 60 telemetry samples fell within the mission interval.
+
+The report records exactly 240 range readings: 11 invalid, 229 valid, 200 accepted at or below the 1400 mm cutoff, and 29 valid readings above the cutoff. It reports 60 poses across three 20-pose scan windows. Each window has finite two-dimensional projected geometry. Two explicit ICP attempts were `[0,20]` and `[20,40]`; three distinct stored endpoint pairs were `[0,20]`, `[20,40]`, `[0,40]`, with three optimizer-visible graph edges `[0,1]`, `[1,2]`, `[0,2]`. The report describes solver calls and finite output; it does not claim numerical convergence, map accuracy, or completeness.
+
+This proves native Gazebo four-ray/simulated-odometry pipeline execution through the host C mapper only. It does not validate GAP9/GVSOC execution, physical ToF or UWB fidelity, multi-drone map fusion, or hardware. The Gazebo server and GUI exited cleanly after the capture; no Nano-C-SLAM processes remained. The unrelated Durandal simulation PIDs 38302 and 39029 were left untouched.

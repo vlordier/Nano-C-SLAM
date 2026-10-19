@@ -1,0 +1,278 @@
+{
+  "build": {
+    "command": null,
+    "configuration_sha256": null,
+    "executable": {
+      "path": "cslam-gap9-app/BUILD-host/mapping_replay",
+      "sha256": "5283212dec2f5191c441e92f7495d151cbe661afb776f8388be7d68dd879de56"
+    },
+    "toolchain": null
+  },
+  "captured_at_utc": "2026-10-19T07:16:53.390739Z",
+  "claim_boundary": "Gazebo synthetic odometry/range telemetry replayed through the host Nano-C-SLAM mapping core; map accuracy is not measured.",
+  "evidence_class": "gazebo-simulation",
+  "execution": {
+    "command": [
+      "/Users/vincent/Work/Nano-C-SLAM/cslam-gap9-app/BUILD-host/mapping_replay"
+    ],
+    "environment": {
+      "AMENT_PREFIX_PATH": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.oYsEGw/install/nano_c_slam_gazebo:/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.oYsEGw/install/crazyflie_ros2_multiranger_bringup:/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.oYsEGw/install/ros_gz_crazyflie_bringup:/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.oYsEGw/install/ros_gz_crazyflie_gazebo:/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.oYsEGw/install/nano_c_slam_interfaces:/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.oYsEGw/install/crazyflie_ros2_multiranger_wall_following:/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.oYsEGw/install/crazyflie_ros2_multiranger_simple_mapper:/Users/vincent/Work/crazyswarm2_gazebo/install/nano_c_slam_gazebo:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie_ros2_multiranger_bringup:/Users/vincent/Work/crazyswarm2_gazebo/install/ros_gz_crazyflie_control:/Users/vincent/Work/crazyswarm2_gazebo/install/nano_c_slam_interfaces:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie:/Users/vincent/Work/crazyswarm2_gazebo/install/motion_capture_tracking_interfaces:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie_sim:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie_ros2_multiranger_wall_following:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie_ros2_multiranger_simple_mapper:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie_examples:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie_py:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie_interfaces:/opt/homebrew/opt/ros2-jazzy",
+      "CMAKE_PREFIX_PATH": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.oYsEGw/install/crazyflie_ros2_multiranger_bringup:/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.oYsEGw/install/ros_gz_crazyflie_bringup:/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.oYsEGw/install/ros_gz_crazyflie_gazebo:/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.oYsEGw/install/nano_c_slam_interfaces:/Users/vincent/Work/gz-macOS/ws/install:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie_ros2_multiranger_bringup:/Users/vincent/Work/crazyswarm2_gazebo/install/ros_gz_crazyflie_bringup:/Users/vincent/Work/crazyswarm2_gazebo/install/ros_gz_crazyflie_gazebo:/Users/vincent/Work/crazyswarm2_gazebo/install/nano_c_slam_interfaces:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie:/Users/vincent/Work/crazyswarm2_gazebo/install/motion_capture_tracking_interfaces:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie_sim:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie_examples:/Users/vincent/Work/crazyswarm2_gazebo/install/crazyflie_interfaces:/opt/homebrew/opt/ros2-jazzy/opt/yaml_cpp_vendor:/opt/homebrew/opt/ros2-jazzy/opt/pybind11_vendor:/opt/homebrew/opt/ros2-jazzy/opt/orocos_kdl_vendor:/opt/homebrew/opt/ros2-jazzy/opt/gz_ogre_next_vendor:/opt/homebrew/opt/ros2-jazzy/opt/gz_dartsim_vendor:/opt/homebrew/opt/ros2-jazzy",
+      "COLCON_PREFIX_PATH": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.oYsEGw/install:/Users/vincent/Work/gz-macOS/ws/install:/Users/vincent/Work/crazyswarm2_gazebo/install:/opt/homebrew/opt/ros2-jazzy",
+      "GZ_IP": null,
+      "GZ_PARTITION": "nano_c_slam_host_map_20261019",
+      "GZ_SIM_RESOURCE_PATH": "/opt/homebrew/opt/ros2-jazzy/share:/opt/homebrew/opt/ros2-jazzy/share/",
+      "GZ_SIM_SYSTEM_PLUGIN_PATH": null,
+      "NANO_C_SLAM_RUN_ID": "15a06f08-657e-4012-922e-4ca35f7dda22",
+      "RMW_IMPLEMENTATION": "<rmw-default>",
+      "ROS_DISTRO": "jazzy",
+      "ROS_DOMAIN_ID": "65",
+      "ROS_PACKAGE_PATH": "/opt/homebrew/opt/ros2-jazzy",
+      "ROS_VERSION": "2",
+      "ROS_WORKSPACE": null
+    },
+    "exit_code": 0,
+    "finished_at_utc": "2026-10-19T07:16:53.390739Z",
+    "started_at_utc": "2026-10-19T07:16:53.061414Z",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_bytes": 12061,
+    "stdout_sha256": "42a98f715f64d0d865c3fb07a9e25f87a6b7fd8ae833a6edb64456a69b46bef2"
+  },
+  "hardware_attestation": null,
+  "runtime_dependencies": [
+    {
+      "disposition": "system-unpinned",
+      "name": "executable:python",
+      "path": null,
+      "sha256": "4e28e811a89aeac6eed668ae641c7f85f5831e42e8dc6cd9a85a3bcc032ec46a",
+      "version": "3.11.9"
+    },
+    {
+      "disposition": "system-unpinned",
+      "name": "executable:ros2",
+      "path": null,
+      "sha256": "89468b3803a9ad8ceed02c9cca54a6c230253505462e275e0242fde273a1e921",
+      "version": "0.32.11"
+    },
+    {
+      "disposition": "system-unpinned",
+      "name": "executable:gazebo",
+      "path": null,
+      "sha256": "c3674a537faedc8f9bc01615a328723095114acaf45dff1419f4f6e48ca96f76",
+      "version": "8.14.0"
+    },
+    {
+      "disposition": "system-unpinned",
+      "name": "linked-libraries:python:0",
+      "path": null,
+      "sha256": "a2909857658602ef7df5918adbba48ecb8f103fc98d4f52fefd4e6d815941b52",
+      "version": "3.11.0, current version 3.11.0"
+    },
+    {
+      "disposition": "unknown",
+      "name": "linked-libraries:python:1",
+      "path": null,
+      "sha256": null,
+      "version": "1.0.0, current version 1311.0.0"
+    },
+    {
+      "disposition": "unknown",
+      "name": "linked-libraries:python:2",
+      "path": null,
+      "sha256": null,
+      "version": null
+    },
+    {
+      "disposition": "system-unpinned",
+      "name": "linked-libraries:python:3",
+      "path": null,
+      "sha256": "a2909857658602ef7df5918adbba48ecb8f103fc98d4f52fefd4e6d815941b52",
+      "version": "3.11.0, current version 3.11.0"
+    },
+    {
+      "disposition": "unknown",
+      "name": "linked-libraries:python:4",
+      "path": null,
+      "sha256": null,
+      "version": "1.0.0, current version 1311.0.0"
+    },
+    {
+      "disposition": "unknown",
+      "name": "linked-libraries:ros2:unresolved",
+      "path": null,
+      "sha256": null,
+      "version": null
+    },
+    {
+      "disposition": "unknown",
+      "name": "linked-libraries:gazebo:unresolved",
+      "path": null,
+      "sha256": null,
+      "version": null
+    },
+    {
+      "disposition": "unknown",
+      "name": "linked-libraries:mapping_binary:0",
+      "path": null,
+      "sha256": null,
+      "version": "1.0.0, current version 1359.0.0"
+    },
+    {
+      "disposition": "unknown",
+      "name": "linked-libraries:mapping_binary:1",
+      "path": null,
+      "sha256": null,
+      "version": "0.0.0, current version 0.0.0"
+    },
+    {
+      "disposition": "system-unpinned",
+      "name": "ros-overlay:nano_c_slam_gazebo",
+      "path": null,
+      "sha256": "21653726d0932e1ac5b1af901e92d2b2c7abcdfc7b6efe9b36dce96193c5d8ef",
+      "version": null
+    },
+    {
+      "disposition": "system-unpinned",
+      "name": "ros-overlay:nano_c_slam_interfaces",
+      "path": null,
+      "sha256": "c300985e6adf40fcabb65e45c19e2c80380350b7c72c9c922eb88133fea2f765",
+      "version": null
+    },
+    {
+      "disposition": "system-unpinned",
+      "name": "ros-overlay:ros_gz_crazyflie_bringup",
+      "path": null,
+      "sha256": "d13c856d04f075512abe8869b894887ffe45aa7c95a4e84945854d6234502881",
+      "version": null
+    },
+    {
+      "disposition": "system-unpinned",
+      "name": "ros-overlay:ros_gz_crazyflie_control",
+      "path": null,
+      "sha256": "04b0b21433a73fa66f4d2b9c3dc831ffce6f03c0be819786bdec32fa9f808260",
+      "version": null
+    },
+    {
+      "disposition": "system-unpinned",
+      "name": "ros-overlay:ros_gz_crazyflie_gazebo",
+      "path": null,
+      "sha256": "965ba98f067c9e954d6de81fabaecc26b7e7710ca76d131b9bd7aa481f3ab9c1",
+      "version": null
+    }
+  ],
+  "schema_version": 1,
+  "source": {
+    "dirty": false,
+    "dirty_patch_sha256": null,
+    "revision": "1bb0f21c408ac6efadf83afb667c15398ffe5c35",
+    "submodules": [
+      {
+        "checkout_revision": "b5a9cfca04e3c4308165aee7536bd78df6b0c048",
+        "dirty": false,
+        "dirty_patch_sha256": null,
+        "gitlink_revision": "b5a9cfca04e3c4308165aee7536bd78df6b0c048",
+        "path": "crazyflie-firmware"
+      },
+      {
+        "checkout_revision": "a65b7c9a3e6502127fdb80eb288d8cbdf251a6f4",
+        "dirty": false,
+        "dirty_patch_sha256": null,
+        "gitlink_revision": "a65b7c9a3e6502127fdb80eb288d8cbdf251a6f4",
+        "path": "crazyflie-firmware/vendor/CMSIS"
+      },
+      {
+        "checkout_revision": "3604527e3b31991c596cd420f32989ee890aca4a",
+        "dirty": false,
+        "dirty_patch_sha256": null,
+        "gitlink_revision": "3604527e3b31991c596cd420f32989ee890aca4a",
+        "path": "crazyflie-firmware/vendor/FreeRTOS"
+      },
+      {
+        "checkout_revision": "cb1ad78b974937e1ad717858fab73ec5380ef94b",
+        "dirty": false,
+        "dirty_patch_sha256": null,
+        "gitlink_revision": "cb1ad78b974937e1ad717858fab73ec5380ef94b",
+        "path": "crazyflie-firmware/vendor/cmock"
+      },
+      {
+        "checkout_revision": "dce9e8b26f2179439002e02d691429e81a32b6c0",
+        "dirty": false,
+        "dirty_patch_sha256": null,
+        "gitlink_revision": "dce9e8b26f2179439002e02d691429e81a32b6c0",
+        "path": "crazyflie-firmware/vendor/cmock/vendor/c_exception"
+      },
+      {
+        "checkout_revision": "2c7629a0ae90ffe991b5fd08e4db8672f72ed64c",
+        "dirty": false,
+        "dirty_patch_sha256": null,
+        "gitlink_revision": "2c7629a0ae90ffe991b5fd08e4db8672f72ed64c",
+        "path": "crazyflie-firmware/vendor/cmock/vendor/c_exception/vendor/unity"
+      },
+      {
+        "checkout_revision": "287e076962ec711cd2bdf08364a8df9ce51e106b",
+        "dirty": false,
+        "dirty_patch_sha256": null,
+        "gitlink_revision": "287e076962ec711cd2bdf08364a8df9ce51e106b",
+        "path": "crazyflie-firmware/vendor/cmock/vendor/unity"
+      },
+      {
+        "checkout_revision": "a77610327fb875a69543f3a8d19507683b68aff1",
+        "dirty": false,
+        "dirty_patch_sha256": null,
+        "gitlink_revision": "a77610327fb875a69543f3a8d19507683b68aff1",
+        "path": "crazyflie-firmware/vendor/libdw1000"
+      },
+      {
+        "checkout_revision": "581642e08c6d2c71f63e6021f97c94829c0098b6",
+        "dirty": false,
+        "dirty_patch_sha256": null,
+        "gitlink_revision": "581642e08c6d2c71f63e6021f97c94829c0098b6",
+        "path": "crazyflie-firmware/vendor/libdw1000/vendor/cmock"
+      },
+      {
+        "checkout_revision": "ea0c4352f8912dcadac1c328901c51190084eb7b",
+        "dirty": false,
+        "dirty_patch_sha256": null,
+        "gitlink_revision": "ea0c4352f8912dcadac1c328901c51190084eb7b",
+        "path": "crazyflie-firmware/vendor/libdw1000/vendor/cmock/vendor/c_exception"
+      },
+      {
+        "checkout_revision": "47a778d606fbfabde459b0f725a67b18c1bce6ee",
+        "dirty": false,
+        "dirty_patch_sha256": null,
+        "gitlink_revision": "47a778d606fbfabde459b0f725a67b18c1bce6ee",
+        "path": "crazyflie-firmware/vendor/libdw1000/vendor/cmock/vendor/c_exception/vendor/unity"
+      },
+      {
+        "checkout_revision": "33325f4a0bc0931823867b11241dff3c2a0b60b7",
+        "dirty": false,
+        "dirty_patch_sha256": null,
+        "gitlink_revision": "33325f4a0bc0931823867b11241dff3c2a0b60b7",
+        "path": "crazyflie-firmware/vendor/libdw1000/vendor/cmock/vendor/unity"
+      },
+      {
+        "checkout_revision": "7943c766b993c9a84e1f6661d2d2427f6f2df9d0",
+        "dirty": false,
+        "dirty_patch_sha256": null,
+        "gitlink_revision": "7943c766b993c9a84e1f6661d2d2427f6f2df9d0",
+        "path": "crazyflie-firmware/vendor/libdw1000/vendor/unity"
+      },
+      {
+        "checkout_revision": "287e076962ec711cd2bdf08364a8df9ce51e106b",
+        "dirty": false,
+        "dirty_patch_sha256": null,
+        "gitlink_revision": "287e076962ec711cd2bdf08364a8df9ce51e106b",
+        "path": "crazyflie-firmware/vendor/unity"
+      },
+      {
+        "checkout_revision": "fd7a2b5cdbb2618abb9fc9d53f5d90465f777e25",
+        "dirty": false,
+        "dirty_patch_sha256": null,
+        "gitlink_revision": "fd7a2b5cdbb2618abb9fc9d53f5d90465f777e25",
+        "path": "uwb-software-library"
+      }
+    ]
+  },
+  "status": "success"
+}

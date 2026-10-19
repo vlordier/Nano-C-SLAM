@@ -1,0 +1,7 @@
+Nano-C-SLAM host mapping OK: 60 poses, 3 scans, 198 points, graph=3; report: /private/tmp/nano-c-slam-host-map-20261019/attempt_01/.run.15a06f08-657e-4012-922e-4ca35f7dda22.capture.json
+[INFO] [1792394208.056193000] [nano_c_slam_mapping_capture]: Captured 10/60 samples
+[INFO] [1792394209.047930000] [nano_c_slam_mapping_capture]: Captured 20/60 samples
+[INFO] [1792394210.046355000] [nano_c_slam_mapping_capture]: Captured 30/60 samples
+[INFO] [1792394211.047190000] [nano_c_slam_mapping_capture]: Captured 40/60 samples
+[INFO] [1792394212.048944000] [nano_c_slam_mapping_capture]: Captured 50/60 samples
+[INFO] [1792394213.048880000] [nano_c_slam_mapping_capture]: Captured 60/60 samples
