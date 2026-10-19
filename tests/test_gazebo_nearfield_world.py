@@ -19,20 +19,34 @@ def _model(name: str, pose: str, size: str) -> str:
     )
 
 
+def _source_world() -> str:
+    """Build the installed arena's four cardinal walls and three boxes."""
+    walls = "".join(
+        _model(
+            name,
+            f"3 0 0.5 0 0 {yaw}",
+            "0.2 6 1",
+        )
+        for name, yaw in (
+            ("wall1", 0),
+            ("wall2", 0),
+            ("wall3", 1.57),
+            ("wall4", 1.57),
+        )
+    )
+    obstacles = "".join(
+        _model(name, "0 0 0.25 0 0 0", "0.5 0.5 0.5")
+        for name in ("obstacle1", "obstacle2", "obstacle3")
+    )
+    return f"<sdf version='1.8'><world>{walls}{obstacles}</world></sdf>"
+
+
 class NearfieldWorldTests(unittest.TestCase):
     def test_moves_arena_walls_within_firmware_range_gate(self) -> None:
-        models = "".join(
-            _model(name, "3 0 0.5 0 0 0", "0.2 6 1")
-            for name in ("wall1", "wall2", "wall3", "wall4")
-        )
-        models += "".join(
-            _model(name, "0 0 0.25 0 0 0", "0.5 0.5 0.5")
-            for name in ("obstacle1", "obstacle2", "obstacle3")
-        )
         with tempfile.TemporaryDirectory() as directory:
             source = Path(directory) / "source.sdf"
             output = Path(directory) / "nearfield.sdf"
-            source.write_text(f"<sdf version='1.8'><world>{models}</world></sdf>")
+            source.write_text(_source_world())
 
             prepare_nearfield_world(source, output)
 
@@ -82,20 +96,13 @@ class NearfieldWorldTests(unittest.TestCase):
                 prepare_nearfield_world(source, output)
 
     def test_heldout_variant_changes_geometry_and_is_repeatable(self) -> None:
-        models = "".join(
-            _model(name, "3 0 0.5 0 0 0", "0.2 6 1")
-            for name in ("wall1", "wall2", "wall3", "wall4")
-        ) + "".join(
-            _model(name, "0 0 0.25 0 0 0", "0.5 0.5 0.5")
-            for name in ("obstacle1", "obstacle2", "obstacle3")
-        )
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             source = root / "source.sdf"
             baseline = root / "baseline.sdf"
             heldout = root / "heldout.sdf"
             heldout_repeat = root / "heldout-repeat.sdf"
-            source.write_text(f"<sdf version='1.8'><world>{models}</world></sdf>")
+            source.write_text(_source_world())
 
             prepare_nearfield_world(source, baseline)
             prepare_nearfield_world(source, heldout, variant="heldout")
@@ -106,7 +113,27 @@ class NearfieldWorldTests(unittest.TestCase):
             world = ET.fromstring(heldout.read_bytes()).find("world")  # noqa: S314
             assert world is not None
             self.assertEqual(
-                world.findtext("model[@name='wall1']/pose"), "1.2 0.1 0.5 0 0 0"
+                world.findtext("model[@name='wall1']/pose"), "0.8 0.1 0.5 0 0 0"
+            )
+            self.assertEqual(
+                world.findtext("model[@name='wall3']/pose"),
+                "0.25 0.75 0.5 0 0 1.57",
+            )
+            # At the known mission spawn (-0.5, -0.5), all four arena walls
+            # remain within the firmware's 1.4 m range gate. This keeps each
+            # 20-pose scan window geometrically observable on the held-out map.
+            wall1_surface_distance = 0.8 - 0.1 - (-0.5)
+            wall2_surface_distance = -0.5 - (-1.7 + 0.1)
+            wall3_surface_distance = 0.75 - 0.1 - (-0.5)
+            wall4_surface_distance = -0.5 - (-1.7 + 0.1)
+            self.assertLessEqual(
+                max(
+                    wall1_surface_distance,
+                    wall2_surface_distance,
+                    wall3_surface_distance,
+                    wall4_surface_distance,
+                ),
+                1.4,
             )
             self.assertEqual(
                 world.findtext("model[@name='obstacle3']/pose"),

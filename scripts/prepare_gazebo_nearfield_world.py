@@ -19,9 +19,9 @@ OBSTACLE_POSES = {
     "obstacle3": (-1.0, -0.55, 0.2),
 }
 HELDOUT_WALL_POSITIONS = {
-    "wall1": (1.2, 0.1),
+    "wall1": (0.8, 0.1),
     "wall2": (-1.7, -0.1),
-    "wall3": (0.25, 1.25),
+    "wall3": (0.25, 0.75),
     "wall4": (-0.2, -1.7),
 }
 HELDOUT_OBSTACLE_POSES = {
