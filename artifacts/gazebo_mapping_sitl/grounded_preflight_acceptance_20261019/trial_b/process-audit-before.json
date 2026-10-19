@@ -1,0 +1,18 @@
+{
+  "captured_at_utc": "2026-10-19T05:44:27.612108+00:00",
+  "selected_ros_domain_id": "48",
+  "selected_gazebo_partition": "nano_c_slam_trial_b_20261019",
+  "existing_ros_gazebo_processes": [
+    {
+      "pid": 38302,
+      "command": "gz sim -v 2 -s --seed 0 /Users/vincent/Work/durandal-gz-swarm-sim/runs/coordinated-flight-45-contract-replay-20261010/gazebo/mock-overlay-cflightmock2/runtime-world-simclock.sdf",
+      "environment": {}
+    },
+    {
+      "pid": 39029,
+      "command": "gz sim -v 2 -g",
+      "environment": {}
+    }
+  ],
+  "conflicts": []
+}

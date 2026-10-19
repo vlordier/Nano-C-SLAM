@@ -1,0 +1,41 @@
+{
+  "processes_after_teardown": [
+    {
+      "pid": 11793,
+      "alive": false,
+      "command": ""
+    },
+    {
+      "pid": 11794,
+      "alive": false,
+      "command": ""
+    },
+    {
+      "pid": 11795,
+      "alive": false,
+      "command": ""
+    },
+    {
+      "pid": 14684,
+      "alive": false,
+      "command": ""
+    },
+    {
+      "pid": 11863,
+      "alive": false,
+      "command": ""
+    },
+    {
+      "pid": 11788,
+      "alive": false,
+      "command": ""
+    }
+  ],
+  "all_test_owned_processes_stopped": true,
+  "trial_a_session_id": "ab97b10b-13cd-47c1-9391-cf0ccddb5d38",
+  "trial_b_session_id": "1acabff6-5d16-4b7e-988c-787947f8f5b0",
+  "trial_a_domain": "42",
+  "trial_b_domain": "48",
+  "trial_a_partition": "nano_c_slam_preflight_final42_20261019",
+  "trial_b_partition": "nano_c_slam_trial_b_20261019"
+}

@@ -67,3 +67,21 @@ zero, logged `odometry_callbacks=0`, exited 1, never published enable, and
 published one all-zero cmd_vel at watchdog teardown. This is the direct
 mission-level fail-closed control; the separate coordinator no-odom control
 above verifies rejection before either child starts.
+
+## Independent fresh-session `SimMission` success trial
+
+`trial_b/trial-b-success.json` records a separately launched near-field world
+on ROS domain 48 and Gazebo partition `nano_c_slam_trial_b_20261019`. Its
+session UUID (`1acabff6-5d16-4b7e-988c-787947f8f5b0`) differs from trial A's
+(`ab97b10b-13cd-47c1-9391-cf0ccddb5d38`); the domain and partition differ too.
+The pre-launch process audit found no existing process using that domain or
+partition. Three consecutive samples at x/y = -0.5/-0.5 m and z approximately
+−0.00000085 m passed the grounded gate before `SimMission` started. The ROS
+clock advanced, the installed source hash matched the tested source, and the
+mission logged 195 odometry callbacks before exiting 0 after ordered
+WAITING/TAKEOFF/HOVER/LAND/COMPLETE statuses. All trial-owned launch, Gazebo,
+bridge, and mission PIDs were absent after teardown. Raw mission logs,
+pre/post process audits, and the world manifest are retained in `trial_b/`.
+
+This trial only checks the installed mission's odometry and flight-state path;
+it makes no mapping or SLAM claim.
