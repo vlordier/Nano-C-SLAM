@@ -1,0 +1,1 @@
+Owned PIDs from the failed trial-A launch were 69670 (ros2 launch), 69677 (Gazebo server), 69678 (parameter_bridge), 69679 (sensor_bridge), and 69746 (GUI). A post-stop PID query found none of them alive. The unrelated Durandal Gazebo processes were left running.

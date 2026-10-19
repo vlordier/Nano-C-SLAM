@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "result": "FAIL",
+  "run_id": "51750097-8aa3-47a9-b369-69f28ac7be1f",
+  "failure_gate": "collector source-identity verification after 60 of 60 messages",
+  "reason": "the coordinator output, ready file, and log sidecar were placed under the repository; source_provenance hashes untracked files, so those in-run artifacts changed the source identity during capture",
+  "source_revision": "225f2d747c19da65ad043acc83e6acf1c48a40c8",
+  "overlay_prefix": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.ZxGDQ3/install",
+  "ros_domain_id": 54,
+  "gazebo_partition": "nano_c_slam_trial_a_20261019",
+  "world_session_id": "see-prelaunch/world-session.json",
+  "coordinator_exit_code": 1,
+  "collector_exit_code": 1,
+  "mission_process_exit_observed": 130,
+  "mission_phases_observed": ["WAITING", "TAKEOFF", "HOVER"],
+  "mapping_path_complete_logged": true,
+  "mission_terminal_complete": false,
+  "mission_odometry_callbacks": 61,
+  "host_mapping_result": "not validated; collector exited before bundle creation",
+  "raw_logs": "attempt_01/run/ contains stdout/stderr and mission/collector sidecars",
+  "teardown": "SIGINT sent to the owned launch after the coordinator failure; owned Gazebo, bridge, sensor bridge, GUI and launch processes exited cleanly; no remaining test-owned PIDs"
+}

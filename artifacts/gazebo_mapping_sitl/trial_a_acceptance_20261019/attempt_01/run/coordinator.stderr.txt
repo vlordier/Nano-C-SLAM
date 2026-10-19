@@ -1,0 +1,1 @@
+Gazebo mapping run failed: collector exited with status 1
