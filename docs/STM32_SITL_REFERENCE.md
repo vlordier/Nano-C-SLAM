@@ -867,7 +867,9 @@ that build directory. The capture retained 161 records with NaN angular
 velocity. The focused publisher regression and 10 integration cases pass,
 but runtime verification of the patch remains open. Preserve this capture as
 a failed publisher-runtime check, not as evidence that the patch regressed or
-that angular telemetry is now finite.
+that angular telemetry is now finite. The world, full firmware log, odometry
+capture, commands, and machine-readable measurements are archived in
+[`artifacts/crazysim_rate_match_20261019_attempt03`](../artifacts/crazysim_rate_match_20261019_attempt03/manifest.json).
 
 ## Rate-window boundary fix and retest (2026-10-19)
 

@@ -1,0 +1,18 @@
+# Built CrazySim plugin against ~/Work/gz-macOS/ws/install Gazebo 8.14 ABI.
+# GZ_SIM_SYSTEM_PLUGIN_PATH placed the CrazySim plugin first; the odometry
+# publisher resolver selected the stock workspace plugin for this capture.
+export GZ_SIM_SYSTEM_PLUGIN_PATH=/tmp/ncs-gz-sim-odometry-build-qt/lib:/tmp/ncs-crazysim-gz-ws-build
+export GZ_SIM_RESOURCE_PATH=/tmp/ncs-crazyflie-simulation/simulator_files/gazebo/models:/tmp/ncs-crazyflie-simulation/simulator_files/gazebo/worlds
+export GZ_SIM_PHYSICS_ENGINE_PATH=/Users/vincent/Work/gz-macOS/ws/install/lib/gz-physics-7/engine-plugins
+export GZ_PARTITION=ncs-flight-patched-20261019h
+gz sim -s -r --physics-engine gz-physics-bullet-featherstone-plugin world.sdf -v 3
+
+# In Lima ncs-sitl, host gateway is required as the second argument.
+/home/vincent.guest/ncs-cf-build-final-diag/cf2 19950 192.168.5.2
+
+# Host command client, run once after firmware logs SUP: Ready to fly.
+uv run --locked python scripts/crazysim_bridge_command.py takeoff --target-height-m 2.615 --duration-s 5 --bridge-port 20850 --timeout 4
+uv run --locked python scripts/crazysim_bridge_command.py land --target-height-m 2.015 --duration-s 3 --bridge-port 20850 --timeout 4
+
+# Concurrently capture odometry during takeoff/landing.
+gz topic -e --json-output -d 12 -t /cf_0/odom > capture/odometry.jsonl

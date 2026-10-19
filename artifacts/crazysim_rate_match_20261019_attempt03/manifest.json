@@ -1,0 +1,62 @@
+{
+  "attempt": "crazysim_rate_match_20261019_attempt03",
+  "date": "2026-10-19",
+  "firmware": {
+    "repository": "vlordier/crazyflie-firmware",
+    "commit": "fc30709529ee",
+    "binary": "cf2",
+    "sha256": "8d0cc0505f72282eff5f2d57df4e5671cd92cd31354d71d79efc094a4d38dc9c",
+    "launch_arguments": ["19950", "192.168.5.2"]
+  },
+  "simulator": {
+    "gazebo_sim": "8.14.0",
+    "physics_engine": "gz-physics-bullet-featherstone-plugin",
+    "world": "world.sdf",
+    "world_partition": "ncs-flight-patched-20261019h",
+    "crazyflie_model": "crazyflie_0",
+    "imu_rate_hz": 500,
+    "firmware_udp_port": 19950,
+    "cflib_udp_port": 20850,
+    "render_parameters": {
+      "cf_name": "cf",
+      "cf_id": 0
+    },
+    "odometry_publisher_loaded": "stock workspace install plugin; patched build was not loaded"
+  },
+  "commands": [
+    {
+      "command": "takeoff",
+      "target_height_m": 2.615,
+      "duration_s": 5,
+      "firmware_result": 0
+    },
+    {
+      "command": "land",
+      "target_height_m": 2.015,
+      "duration_s": 3,
+      "firmware_result": 0
+    }
+  ],
+  "odometry_capture": {
+    "file": "capture/odometry.jsonl",
+    "duration_s": 10.13,
+    "records": 2027,
+    "height_min_m": 2.014609,
+    "height_max_m": 2.831714,
+    "height_last_m": 2.014994,
+    "longest_interval_within_0_12m_of_target_s": 0.25,
+    "angular_nan_records": 161
+  },
+  "firmware_log": {
+    "file": "firmware.log",
+    "ready_to_fly": true,
+    "imu_diagnostic_samples": 1243,
+    "takeoff_received": true,
+    "land_received": true,
+    "stabilizer_rate_warnings": 1,
+    "kalman_rate_warnings": 0,
+    "landing_timeouts": 1,
+    "supervisor_crash": false
+  },
+  "result": "Firmware-driven reference motion and landing are reproduced. Stable-flight acceptance fails; this is not Nano-C-SLAM firmware validation. Angular-velocity runtime fix is unverified because the stock odometry publisher loaded."
+}
