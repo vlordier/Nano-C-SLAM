@@ -1,0 +1,1 @@
+Both supervised children exited cleanly with return code 0, and the live runner verified that no owned child process groups remained before returning success. The Gazebo server was then stopped with Ctrl-C. Unrelated Gazebo processes were not targeted.
