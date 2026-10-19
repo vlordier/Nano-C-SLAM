@@ -130,12 +130,30 @@ def _parse_target_poses(
         log,
         re.MULTILINE,
     )
+    raw_start_lines = [
+        line
+        for line in log.splitlines()
+        if line.startswith("NANO_C_SLAM_GVSOC_SPI_MAIN:pose_dump_start ")
+    ]
+    raw_done_lines = [
+        line
+        for line in log.splitlines()
+        if line.startswith("NANO_C_SLAM_GVSOC_SPI_MAIN:pose_dump_done ")
+    ]
     records = OPTIMIZED_POSE_PATTERN.findall(log)
-    if start != [str(expected_count)] or done != [
-        (str(expected_count), str(expected_count))
-    ]:
+    raw_pose_records = [
+        line
+        for line in log.splitlines()
+        if line.startswith("NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose ")
+    ]
+    if (
+        start != [str(expected_count)]
+        or done != [(str(expected_count), str(expected_count))]
+        or len(raw_start_lines) != 1
+        or len(raw_done_lines) != 1
+    ):
         raise ValueError("target pose dump is missing or has an unexpected count")
-    if len(records) != expected_count:
+    if len(records) != expected_count or len(raw_pose_records) != expected_count:
         raise ValueError("target pose dump does not contain every pose")
     poses: list[dict[str, float | int]] = []
     for expected_id, record in enumerate(records):
@@ -172,8 +190,28 @@ def _parse_target_map_points(log: str) -> list[dict[str, float | int]]:
         log,
         re.MULTILINE,
     )
+    raw_start_lines = [
+        line
+        for line in log.splitlines()
+        if line.startswith("NANO_C_SLAM_GVSOC_SPI_MAIN:map_dump_start ")
+    ]
+    raw_done_lines = [
+        line
+        for line in log.splitlines()
+        if line.startswith("NANO_C_SLAM_GVSOC_SPI_MAIN:map_dump_done ")
+    ]
     records = MAP_POINT_PATTERN.findall(log)
-    if len(start) != 1 or start[0][1] != "1400":
+    raw_point_records = [
+        line
+        for line in log.splitlines()
+        if line.startswith("NANO_C_SLAM_GVSOC_SPI_MAIN:map_point ")
+    ]
+    if (
+        len(start) != 1
+        or start[0][1] != "1400"
+        or len(raw_start_lines) != 1
+        or len(raw_done_lines) != 1
+    ):
         raise ValueError("target map dump is missing or has an unexpected range gate")
     expected_count = int(start[0][0])
     expected_done = [(str(expected_count), str(expected_count))]
@@ -186,7 +224,7 @@ def _parse_target_map_points(log: str) -> list[dict[str, float | int]]:
         )
     if not 0 < expected_count < TARGET_MAP_CAPACITY or done != expected_done:
         raise ValueError("target map dump is incomplete or has an invalid count")
-    if len(records) != expected_count:
+    if len(records) != expected_count or len(raw_point_records) != expected_count:
         raise ValueError("target map dump does not contain every point")
     points: list[dict[str, float | int]] = []
     for expected_id, record in enumerate(records):

@@ -106,6 +106,8 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
             log.replace("x_bits=3f800000", "x_bits=7fc00000"),
             log.replace("finite=2", "finite=1"),
             log.replace("optimized_pose id=0", "missing_pose id=0"),
+            log + "NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=bad\n",
+            log + "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_dump_start count=bad\n",
         )
         for invalid_log in invalid_logs:
             with self.subTest(log=invalid_log), self.assertRaises(ValueError):
@@ -130,6 +132,8 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
             log.replace("finite=2", "finite=1"),
             log.replace("range_limit_mm=1400", "range_limit_mm=1401"),
             log.replace("map_point id=0", "missing_point id=0"),
+            log + "NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=bad\n",
+            log + "NANO_C_SLAM_GVSOC_SPI_MAIN:map_dump_done count=bad\n",
         )
         for invalid_log in invalid_logs:
             with self.subTest(log=invalid_log), self.assertRaises(ValueError):

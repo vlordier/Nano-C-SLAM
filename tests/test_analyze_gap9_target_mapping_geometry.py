@@ -13,6 +13,13 @@ from copy import deepcopy
 from pathlib import Path
 
 from scripts.analyze_gap9_target_mapping_geometry import analyze_mapping
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
+    MappingSample,
+)
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_packets import (
+    SCAN_CMD,
+    encode_mapping_samples,
+)
 
 
 def _float_bits(value: float) -> str:
@@ -20,24 +27,80 @@ def _float_bits(value: float) -> str:
     return f"{bits:08x}"
 
 
-def _target_log() -> str:
+def _target_log(
+    samples: tuple[MappingSample, ...],
+    *,
+    pose_x_offset: float = 0.0,
+    pose_yaws: dict[int, float] | None = None,
+) -> tuple[str, list[dict[str, float | int]], str, str]:
+    packets = encode_mapping_samples(samples)
+    scan_ids = [packet.pose_id for packet in packets if packet.command == SCAN_CMD]
+    response_hex = struct.pack("<9h", len(samples), 3, 21, 128, 0, 1, 1, 3, 1).hex()
+    optimized_poses: list[dict[str, float | int]] = []
     lines = [
-        "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_dump_start count=2",
-        "NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=0 "
-        f"x_bits={_float_bits(0.0)} y_bits={_float_bits(0.0)} "
-        f"z_bits={_float_bits(0.0)} finite=1",
-        "NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id=1 "
-        f"x_bits={_float_bits(1.0)} y_bits={_float_bits(0.0)} "
-        f"z_bits={_float_bits(0.1)} finite=1",
-        "NANO_C_SLAM_GVSOC_SPI_MAIN:pose_dump_done count=2 finite=2",
-        "NANO_C_SLAM_GVSOC_SPI_MAIN:map_dump_start count=2 range_limit_mm=1400",
-        "NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=0 "
-        f"x_bits={_float_bits(1.4)} y_bits={_float_bits(0.0)} finite=1",
-        "NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id=1 "
-        f"x_bits={_float_bits(1.4)} y_bits={_float_bits(0.0)} finite=1",
-        "NANO_C_SLAM_GVSOC_SPI_MAIN:map_dump_done count=2 finite=2",
+        f"NANO_C_SLAM_GVSOC_SPI_MAIN:gazebo_capture_ok packets={len(packets)} "
+        f"pose_decoded={len(samples)} pose_inserted={len(samples)} "
+        f"scans_decoded={len(scan_ids)} scans_registered={len(scan_ids)} "
+        f"constraints=2 optimize=1 poses={len(samples)} graph=3 solver_calls=1 "
+        f"has_nan=0 completed=1 response_expected_hex={response_hex}",
+        f"NANO_C_SLAM_GVSOC_SPI_MAIN:pose_dump_start count={len(samples)}",
     ]
-    return "\n".join(lines) + "\n"
+    for sample in samples:
+        target_x = sample.x_m + pose_x_offset
+        target_yaw = (pose_yaws or {}).get(sample.sample_id, sample.yaw_rad)
+        pose = {
+            "pose_id": sample.sample_id,
+            "x_m": struct.unpack("<f", struct.pack("<f", target_x))[0],
+            "y_m": struct.unpack("<f", struct.pack("<f", sample.y_m))[0],
+            "z_m": struct.unpack("<f", struct.pack("<f", target_yaw))[0],
+        }
+        optimized_poses.append(pose)
+        lines.append(
+            f"NANO_C_SLAM_GVSOC_SPI_MAIN:optimized_pose id={sample.sample_id} "
+            f"x_bits={_float_bits(target_x)} y_bits={_float_bits(sample.y_m)} "
+            f"z_bits={_float_bits(target_yaw)} finite=1"
+        )
+    lines.append(
+        f"NANO_C_SLAM_GVSOC_SPI_MAIN:pose_dump_done count={len(samples)} "
+        f"finite={len(samples)}"
+    )
+    lines.append(
+        "NANO_C_SLAM_GVSOC_SPI_MAIN:map_dump_start count=2 range_limit_mm=1400"
+    )
+    points = [
+        {
+            "point_id": point_id,
+            "x_m": struct.unpack("<f", struct.pack("<f", 1.4))[0],
+            "y_m": 0.0,
+        }
+        for point_id in range(2)
+    ]
+    lines.extend(
+        (
+            f"NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id={point['point_id']} "
+            f"x_bits={_float_bits(float(point['x_m']))} "
+            f"y_bits={_float_bits(float(point['y_m']))} finite=1"
+        )
+        for point in points
+    )
+    lines.extend(
+        (
+            "NANO_C_SLAM_GVSOC_SPI_MAIN:map_dump_done count=2 finite=2",
+            *(
+                "NANO_C_SLAM_GVSOC_SPI_MAIN:scan_busy "
+                f"index={index} pose_id={pose_id} duration_us={1000 + index}"
+                for index, pose_id in enumerate(scan_ids)
+            ),
+            "NANO_C_SLAM_SPI:stats "
+            f"rx={len(packets)} malformed=0 unknown=0 "
+            f"frames={len(samples)},{len(scan_ids)},1,0,0,0,0 "
+            f"decode_ok={len(samples)},{len(scan_ids)},0,0,0,0,0 "
+            "decode_error=0,0,0,0,0,0,0 pose_id_missing=0 "
+            f"pose_id_nonadvancing=0 optimize_responses=1",
+        )
+    )
+    marker = lines[0]
+    return "\n".join(lines) + "\n", optimized_poses, marker, response_hex
 
 
 def _write_nearfield_fixture(path: Path) -> None:
@@ -75,9 +138,20 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
         self.run_path = self.root / "run.json"
         self.target_path = self.root / "target.json"
         self.log_path = self.root / "gvsoc.log"
+        self.samples = tuple(
+            MappingSample(
+                sample_id=index,
+                timestamp_ms=index + 1,
+                x_m=index * 0.05,
+                y_m=0.0,
+                yaw_rad=0.0,
+                ranges_mm=(1000, 1000, 1000, 1000),
+                source_stamp_ns=(index + 1) * 1_000_000,
+            )
+            for index in range(20)
+        )
         _write_nearfield_fixture(self.sdf_path)
         shutil.copyfile(self.sdf_path, self.launched_sdf_path)
-        self.log_path.write_text(_target_log(), encoding="utf-8")
         self.session_path.write_text(
             json.dumps(
                 {
@@ -113,6 +187,33 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
+        self._write_run_and_target()
+
+    def _write_run_and_target(
+        self,
+        *,
+        pose_x_offset: float = 0.0,
+        pose_yaws: dict[int, float] | None = None,
+    ) -> None:
+        target_log, target_poses, marker, response_hex = _target_log(
+            self.samples, pose_x_offset=pose_x_offset, pose_yaws=pose_yaws
+        )
+        self.log_path.write_text(target_log, encoding="utf-8")
+        records = [sample.to_record() for sample in self.samples]
+        provenance = [
+            {
+                "drone_id": "cf1",
+                "range_age_ns": 0,
+                "odometry_age_ns": 0,
+                "pair_skew_ns": 0,
+                "odometry_stamp_ns": sample.source_stamp_ns,
+                "range_stamp_ns": sample.source_stamp_ns,
+                "range_sequence": sample.sample_id + 1,
+            }
+            for sample in self.samples
+        ]
+        packets = encode_mapping_samples(self.samples)
+        scan_ids = [packet.pose_id for packet in packets if packet.command == SCAN_CMD]
         self.run_path.write_text(
             json.dumps(
                 {
@@ -124,35 +225,13 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
                         "run_id": self.run_id,
                         "drone": "cf1",
                         "evidence_class": "host-execution-of-owned-gap9-mapping-core",
-                        "input_sample_count": 2,
-                        "input_samples": [
-                            "0 1 0 0 0 1000 1000 1000 1000",
-                            "1 2 1 0 0.1 1000 1000 1000 1000",
-                        ],
+                        "input_sample_count": len(records),
+                        "input_samples": records,
                         "pairing_limits": {
                             "maximum_age_ns": 100_000_000,
                             "maximum_skew_ns": 100_000_000,
                         },
-                        "input_pair_provenance": [
-                            {
-                                "drone_id": "cf1",
-                                "range_age_ns": 0,
-                                "odometry_age_ns": 0,
-                                "pair_skew_ns": 0,
-                                "odometry_stamp_ns": 1_000_000,
-                                "range_stamp_ns": 1_000_000,
-                                "range_sequence": 1,
-                            },
-                            {
-                                "drone_id": "cf1",
-                                "range_age_ns": 0,
-                                "odometry_age_ns": 0,
-                                "pair_skew_ns": 0,
-                                "odometry_stamp_ns": 2_000_000,
-                                "range_stamp_ns": 2_000_000,
-                                "range_sequence": 2,
-                            },
-                        ],
+                        "input_pair_provenance": provenance,
                     },
                     "mission_terminal": {
                         "run_id": self.run_id,
@@ -165,38 +244,82 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
+        command_counts = {
+            "pose": len(self.samples),
+            "scan": len(scan_ids),
+            "optimize": 1,
+            "pose_request": 0,
+            "check": 0,
+            "external_pose": 0,
+            "pose_update": 0,
+        }
+        decode_success = {**command_counts, "optimize": 0}
         self.target_path.write_text(
             json.dumps(
                 {
                     "status": "passed",
+                    "evidence_class": (
+                        "gvsoc-firmware-ipc-stream-of-inflight-gazebo-telemetry"
+                    ),
                     "sequence": "gazebo-live",
+                    "frame_count": len(packets),
+                    "frames": [packet.frame.hex() for packet in packets],
+                    "target_marker": marker,
                     "gazebo_source": {
                         "run_id": self.run_id,
+                        "drone": "cf1",
+                        "sample_count": len(self.samples),
                         "mission_terminal_phase": "COMPLETE",
                         "process_exit_codes": {"collector": 0, "mission": 0},
                         "run_bundle_sha256": self._sha(self.run_path),
                     },
                     "sha256": {"gvsoc_log": self._sha(self.log_path)},
-                    "target_optimized_poses": [
-                        {"pose_id": 0, "x_m": 0.0, "y_m": 0.0, "z_m": 0.0},
+                    "optimizer_response_expected_hex": response_hex,
+                    "optimizer_response_rx_hex": response_hex,
+                    "optimizer_response_status": (
+                        "captured and matched target slam_job_t"
+                    ),
+                    "mapping_outcome": (
+                        "gazebo_telemetry_streamed_over_ipc; optimizer_completed"
+                    ),
+                    "slam_job_fields": {
+                        "number_of_poses": len(self.samples),
+                        "main_graph_size": 3,
+                        "max_subgraph_size": 21,
+                        "time_ms": 128,
+                        "has_nan": 0,
+                        "main_solver_returned": 1,
+                        "successful_solver_call_count": 1,
+                        "completed_solver_iteration_count": 3,
+                        "optimization_completed": 1,
+                    },
+                    "spi_diagnostics": {
+                        "received_frames": len(packets),
+                        "malformed_frames": 0,
+                        "unknown_commands": 0,
+                        "command_frames": command_counts,
+                        "decode_success": decode_success,
+                        "decode_failure": dict.fromkeys(command_counts, 0),
+                        "missing_pose_ids": 0,
+                        "nonadvancing_pose_ids": 0,
+                        "completed_optimize_responses": 1,
+                    },
+                    "scan_busy_durations_us": [
                         {
-                            "pose_id": 1,
-                            "x_m": 1.0,
-                            "y_m": 0.0,
-                            "z_m": 0.10000000149011612,
-                        },
+                            "index": index,
+                            "pose_id": pose_id,
+                            "duration_us": 1000 + index,
+                        }
+                        for index, pose_id in enumerate(scan_ids)
                     ],
+                    "target_optimized_poses": target_poses,
                     "target_projected_map_points": [
                         {
-                            "point_id": 0,
-                            "x_m": 1.399999976158142,
+                            "point_id": point_id,
+                            "x_m": struct.unpack("<f", struct.pack("<f", 1.4))[0],
                             "y_m": 0.0,
-                        },
-                        {
-                            "point_id": 1,
-                            "x_m": 1.399999976158142,
-                            "y_m": 0.0,
-                        },
+                        }
+                        for point_id in range(2)
                     ],
                 }
             ),
@@ -217,13 +340,17 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
         report = self._analyze()
 
         self.assertEqual(report["status"], "measured-no-acceptance-threshold")
+        claims = report["validation_claims"]
+        self.assertEqual(claims["target_optimizer_health"], "validated")
+        self.assertEqual(claims["sensor_model_fidelity"], "not-validated")
+        self.assertEqual(claims["stm32_flight_firmware"], "not-validated")
         pose_error = report["pose_error"]
-        self.assertEqual(pose_error["xy_rmse_m"], 0.0)
+        self.assertAlmostEqual(pose_error["xy_rmse_m"], 0.0, places=6)
         self.assertAlmostEqual(pose_error["yaw_max_rad"], 0.0, places=8)
         self.assertEqual(pose_error["per_pose"][0]["pose_id"], 0)
         self.assertAlmostEqual(pose_error["per_pose"][1]["yaw_error_rad"], 0.0)
-        self.assertEqual(pose_error["source_xy_bounds"]["span_x_m"], 1.0)
-        self.assertEqual(pose_error["target_xy_bounds"]["span_x_m"], 1.0)
+        self.assertAlmostEqual(pose_error["source_xy_bounds"]["span_x_m"], 0.95)
+        self.assertAlmostEqual(pose_error["target_xy_bounds"]["span_x_m"], 0.95)
         map_metrics = report["target_map"]["sdf_surface_distance_m"]
         self.assertGreaterEqual(map_metrics["within_0_05m_fraction"], 0.0)
         self.assertLess(map_metrics["max"], 1e-6)
@@ -232,14 +359,19 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
         self.assertEqual(report["geometry"]["source_sdf_sha256"], self._sha_sdf())
 
     def test_yaw_error_uses_shortest_arc_across_wrap_boundary(self) -> None:
-        log = _target_log().replace(
-            f"z_bits={_float_bits(0.1)}", f"z_bits={_float_bits(-6.0)}"
+        self.samples = tuple(
+            MappingSample(
+                sample_id=sample.sample_id,
+                timestamp_ms=sample.timestamp_ms,
+                x_m=sample.x_m,
+                y_m=sample.y_m,
+                yaw_rad=3.1 if sample.sample_id == 1 else sample.yaw_rad,
+                ranges_mm=sample.ranges_mm,
+                source_stamp_ns=sample.source_stamp_ns,
+            )
+            for sample in self.samples
         )
-        self.log_path.write_text(log, encoding="utf-8")
-        target = json.loads(self.target_path.read_text())
-        target["target_optimized_poses"][1]["z_m"] = -6.0
-        target["sha256"]["gvsoc_log"] = self._sha(self.log_path)
-        self.target_path.write_text(json.dumps(target), encoding="utf-8")
+        self._write_run_and_target(pose_yaws={1: -3.0})
 
         report = self._analyze()
 
@@ -250,19 +382,7 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
         )
 
     def test_translation_is_reported_instead_of_fitted_away(self) -> None:
-        log = _target_log()
-        for original, translated in ((0.0, 0.25), (1.0, 1.25)):
-            log = log.replace(
-                f"x_bits={_float_bits(original)}",
-                f"x_bits={_float_bits(translated)}",
-                1,
-            )
-        self.log_path.write_text(log, encoding="utf-8")
-        target = json.loads(self.target_path.read_text())
-        for pose in target["target_optimized_poses"]:
-            pose["x_m"] += 0.25
-        target["sha256"]["gvsoc_log"] = self._sha(self.log_path)
-        self.target_path.write_text(json.dumps(target), encoding="utf-8")
+        self._write_run_and_target(pose_x_offset=0.25)
 
         report = self._analyze()
 
@@ -272,11 +392,13 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
             report["pose_error"]["per_pose"][0]["xy_error_m"], 0.25, places=6
         )
         self.assertAlmostEqual(
-            report["pose_error"]["target_to_source_path_length_ratio"], 1.0
+            report["pose_error"]["target_to_source_path_length_ratio"],
+            1.0,
+            places=6,
         )
 
     def test_target_map_at_firmware_capacity_is_not_claimed_complete(self) -> None:
-        lines = _target_log().splitlines()
+        lines = self.log_path.read_text(encoding="utf-8").splitlines()
         points = [
             f"NANO_C_SLAM_GVSOC_SPI_MAIN:map_point id={index} "
             f"x_bits={_float_bits(1.4)} y_bits={_float_bits(0.0)} finite=1"
@@ -313,6 +435,34 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
         self.target_path.write_text(json.dumps(target), encoding="utf-8")
 
         with self.assertRaisesRegex(ValueError, "pose coordinates must be finite"):
+            self._analyze()
+
+    def test_optimizer_report_fields_must_match_raw_target_response(self) -> None:
+        target = json.loads(self.target_path.read_text())
+        target["slam_job_fields"]["has_nan"] = 1
+        self.target_path.write_text(json.dumps(target), encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "optimizer fields differ"):
+            self._analyze()
+
+    def test_spi_diagnostics_must_match_injected_packet_counts(self) -> None:
+        target = json.loads(self.target_path.read_text())
+        target["spi_diagnostics"]["command_frames"]["pose"] -= 1
+        self.target_path.write_text(json.dumps(target), encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "SPI diagnostics differ"):
+            self._analyze()
+
+    def test_raw_spi_log_cannot_disagree_with_target_evidence_report(self) -> None:
+        log = self.log_path.read_text(encoding="utf-8")
+        self.log_path.write_text(
+            log.replace("frames=20,1,1", "frames=19,1,1"), encoding="utf-8"
+        )
+        target = json.loads(self.target_path.read_text())
+        target["sha256"]["gvsoc_log"] = self._sha(self.log_path)
+        self.target_path.write_text(json.dumps(target), encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "raw target SPI diagnostics"):
             self._analyze()
 
     def test_stale_source_pair_provenance_is_rejected(self) -> None:
@@ -409,7 +559,12 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
 
         target["gazebo_source"]["mission_terminal_phase"] = "COMPLETE"
         self.target_path.write_text(json.dumps(target), encoding="utf-8")
-        self.log_path.write_text(_target_log().replace("map_point id=1", "lost id=1"))
+        self.log_path.write_text(
+            self.log_path.read_text(encoding="utf-8").replace(
+                "map_point id=1", "lost id=1"
+            ),
+            encoding="utf-8",
+        )
         target["sha256"]["gvsoc_log"] = self._sha(self.log_path)
         self.target_path.write_text(json.dumps(target), encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "every point"):

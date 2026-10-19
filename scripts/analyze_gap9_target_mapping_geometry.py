@@ -7,17 +7,26 @@ import hashlib
 import itertools
 import json
 import math
+import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import cast
 
 from scripts.capture_gap9_gvsoc_spi_main_probe_evidence import (
+    SCAN_BUSY_PATTERN,
+    SPI_DIAGNOSTICS_PATTERN,
     TARGET_MAP_CAPACITY,
+    _decode_slam_job,
     _parse_target_map_points,
     _parse_target_poses,
 )
 from scripts.evidence_json import load_json_file
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
+    MappingSample,
+)
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_packets import (
+    SCAN_CMD,
+    encode_mapping_samples,
     samples_from_run_bundle,
 )
 
@@ -221,6 +230,206 @@ def _verify_world_binding(
         raise ValueError("unsupported world session schema")
 
 
+def _verify_target_capture(
+    target: dict[str, object],
+    target_log: str,
+    run: dict[str, object],
+    samples: tuple[MappingSample, ...],
+) -> None:
+    """Cross-check target health fields against its raw log and source packets."""
+    packets = encode_mapping_samples(samples)
+    expected_frames = [packet.frame.hex() for packet in packets]
+    expected_scans = [
+        packet.pose_id for packet in packets if packet.command == SCAN_CMD
+    ]
+    if (
+        target.get("evidence_class")
+        != "gvsoc-firmware-ipc-stream-of-inflight-gazebo-telemetry"
+        or target.get("frame_count") != len(packets)
+        or target.get("frames") != expected_frames
+    ):
+        raise ValueError("target evidence frames differ from the paired Gazebo run")
+
+    marker = target.get("target_marker")
+    marker_pattern = re.compile(
+        r"NANO_C_SLAM_GVSOC_SPI_MAIN:gazebo_capture_ok "
+        r"packets=(\d+) pose_decoded=(\d+) pose_inserted=(\d+) "
+        r"scans_decoded=(\d+) scans_registered=(\d+) constraints=(\d+) "
+        r"optimize=(\d+) poses=(\d+) graph=(\d+) solver_calls=(\d+) "
+        r"has_nan=(\d+) completed=(\d+) response_expected_hex=([0-9a-f]{36})"
+    )
+    if (
+        not isinstance(marker, str)
+        or target_log.count(marker) != 1
+        or sum(
+            line.startswith("NANO_C_SLAM_GVSOC_SPI_MAIN:gazebo_capture_ok ")
+            for line in target_log.splitlines()
+        )
+        != 1
+        or "NANO_C_SLAM_GVSOC_SPI_MAIN:run_fail" in target_log
+    ):
+        raise ValueError("target success marker is absent or duplicated in its log")
+    match = marker_pattern.fullmatch(marker)
+    if match is None:
+        raise ValueError("target success marker has an unsupported format")
+    (
+        packet_count,
+        decoded_poses,
+        inserted_poses,
+        decoded_scans,
+        registered_scans,
+        constraint_count,
+        optimize_count,
+        optimized_poses,
+        graph_size,
+        solver_calls,
+        has_nan,
+        completed,
+    ) = (int(value) for value in match.groups()[:12])
+    response_hex = match.group(13)
+    sample_count = len(samples)
+    if (
+        packet_count != len(packets)
+        or decoded_poses != sample_count
+        or inserted_poses != sample_count
+        or decoded_scans != len(expected_scans)
+        or registered_scans != len(expected_scans)
+        or constraint_count != 2
+        or optimize_count != 1
+        or optimized_poses != sample_count
+        or graph_size != 3
+        or solver_calls < 1
+        or has_nan != 0
+        or completed != 1
+    ):
+        raise ValueError("target success marker reports invalid optimizer health")
+
+    expected_job = _decode_slam_job(response_hex)
+    if target.get("optimizer_response_expected_hex") != response_hex:
+        raise ValueError("target expected response bytes differ from its marker")
+    if target.get("slam_job_fields") != expected_job:
+        raise ValueError("target optimizer fields differ from its response bytes")
+    if (
+        expected_job["number_of_poses"] != sample_count
+        or expected_job["main_graph_size"] != graph_size
+        or expected_job["has_nan"] != 0
+        or expected_job["main_solver_returned"] != 1
+        or expected_job["successful_solver_call_count"] < 1
+        or expected_job["completed_solver_iteration_count"]
+        != 3 * expected_job["successful_solver_call_count"]
+        or expected_job["optimization_completed"] != 1
+    ):
+        raise ValueError("target slam_job_t does not prove a completed finite solve")
+    if (
+        target.get("optimizer_response_rx_hex") != response_hex
+        or target.get("optimizer_response_status")
+        != "captured and matched target slam_job_t"
+        or target.get("mapping_outcome")
+        != "gazebo_telemetry_streamed_over_ipc; optimizer_completed"
+    ):
+        raise ValueError("target optimizer response capture is incomplete")
+
+    source = _mapping(target.get("gazebo_source"), "target Gazebo source")
+    run_exit_codes = run.get("process_exit_codes")
+    if (
+        source.get("drone") != run.get("drone")
+        or source.get("sample_count") != sample_count
+        or source.get("process_exit_codes") != run_exit_codes
+        or source.get("mission_terminal_phase") != "COMPLETE"
+    ):
+        raise ValueError("target source summary differs from the completed Gazebo run")
+
+    diagnostics = _mapping(target.get("spi_diagnostics"), "target SPI diagnostics")
+    expected_commands = {
+        "pose": sample_count,
+        "scan": len(expected_scans),
+        "optimize": 1,
+        "pose_request": 0,
+        "check": 0,
+        "external_pose": 0,
+        "pose_update": 0,
+    }
+    expected_success = {**expected_commands, "optimize": 0}
+    expected_failure = dict.fromkeys(expected_commands, 0)
+    if (
+        diagnostics.get("received_frames") != len(packets)
+        or diagnostics.get("malformed_frames") != 0
+        or diagnostics.get("unknown_commands") != 0
+        or diagnostics.get("command_frames") != expected_commands
+        or diagnostics.get("decode_success") != expected_success
+        or diagnostics.get("decode_failure") != expected_failure
+        or diagnostics.get("missing_pose_ids") != 0
+        or diagnostics.get("nonadvancing_pose_ids") != 0
+        or diagnostics.get("completed_optimize_responses") != 1
+    ):
+        raise ValueError("target SPI diagnostics differ from the expected source trace")
+    raw_diagnostics = list(SPI_DIAGNOSTICS_PATTERN.finditer(target_log))
+    raw_diagnostics_lines = [
+        line
+        for line in target_log.splitlines()
+        if line.startswith("NANO_C_SLAM_SPI:stats ")
+    ]
+    if len(raw_diagnostics) != 1 or len(raw_diagnostics_lines) != 1:
+        raise ValueError("target log must contain one raw SPI diagnostics record")
+    (
+        received_frames,
+        malformed_frames,
+        unknown_commands,
+        command_csv,
+        success_csv,
+        failure_csv,
+        missing_pose_ids,
+        nonadvancing_pose_ids,
+        optimize_responses,
+    ) = raw_diagnostics[0].groups()
+    raw_command_counts = [int(value) for value in command_csv.split(",")]
+    raw_success_counts = [int(value) for value in success_csv.split(",")]
+    raw_failure_counts = [int(value) for value in failure_csv.split(",")]
+    if (
+        int(received_frames) != len(packets)
+        or int(malformed_frames) != 0
+        or int(unknown_commands) != 0
+        or raw_command_counts != list(expected_commands.values())
+        or raw_success_counts != list(expected_success.values())
+        or raw_failure_counts != list(expected_failure.values())
+        or int(missing_pose_ids) != 0
+        or int(nonadvancing_pose_ids) != 0
+        or int(optimize_responses) != 1
+    ):
+        raise ValueError("raw target SPI diagnostics differ from the source trace")
+    scan_durations = target.get("scan_busy_durations_us")
+    if not isinstance(scan_durations, list) or len(scan_durations) != len(
+        expected_scans
+    ):
+        raise ValueError("target log lacks one SCAN timing per source scan")
+    raw_scan_matches = list(SCAN_BUSY_PATTERN.finditer(target_log))
+    raw_scan_lines = [
+        line
+        for line in target_log.splitlines()
+        if line.startswith("NANO_C_SLAM_GVSOC_SPI_MAIN:scan_busy ")
+    ]
+    if len(raw_scan_matches) != len(expected_scans) or len(raw_scan_lines) != len(
+        expected_scans
+    ):
+        raise ValueError("target log must contain one raw SCAN timing per source scan")
+    for index, (record, pose_id) in enumerate(
+        zip(scan_durations, expected_scans, strict=True)
+    ):
+        item = _mapping(record, f"target scan timing {index}")
+        duration = item.get("duration_us")
+        raw_index, raw_pose_id, raw_duration = raw_scan_matches[index].groups()
+        if (
+            item.get("index") != index
+            or item.get("pose_id") != pose_id
+            or isinstance(duration, bool)
+            or not isinstance(duration, int)
+            or duration < 0
+            or (int(raw_index), int(raw_pose_id), int(raw_duration))
+            != (index, pose_id, duration)
+        ):
+            raise ValueError("target scan timing differs from log or source trace")
+
+
 def analyze_mapping(
     *,
     target_report_path: Path,
@@ -278,6 +487,7 @@ def analyze_mapping(
         raise ValueError("target pose dump differs from the validated target report")
     if target.get("target_projected_map_points") != points:
         raise ValueError("target point dump differs from the validated target report")
+    _verify_target_capture(target, target_log, run, mapping_samples)
     if len(points) >= TARGET_MAP_CAPACITY:
         raise ValueError(
             "target map reached SIZE_POINTS capacity; completeness is unknown"
@@ -330,6 +540,14 @@ def analyze_mapping(
     return {
         "schema_version": 1,
         "status": "measured-no-acceptance-threshold",
+        "validation_claims": {
+            "pose_consistency": "diagnostic-no-acceptance-threshold",
+            "map_vs_world_geometry": "diagnostic-no-acceptance-threshold",
+            "target_optimizer_health": "validated",
+            "sensor_model_fidelity": "not-validated",
+            "stm32_flight_firmware": "not-validated",
+            "target_build_reproducibility": "hashes-recorded-not-rebuilt",
+        },
         "run_id": run["run_id"],
         "world_session_id": session["session_id"],
         "coordinate_convention": (
@@ -403,6 +621,9 @@ def analyze_mapping(
         "limitations": [
             "Metrics characterize one synthetic near-field run; no acceptance "
             "thresholds are declared.",
+            "The report cross-checks target frames, optimizer response, and SPI "
+            "diagnostics against the same-run log and source packets, but does "
+            "not independently rebuild the target firmware.",
             "The Gazebo sensor bridge uses idealized four-ray ranges from the "
             "simulator, not physical ToF behavior.",
             "This does not validate UWB effects or Crazyflie STM32 flight "
