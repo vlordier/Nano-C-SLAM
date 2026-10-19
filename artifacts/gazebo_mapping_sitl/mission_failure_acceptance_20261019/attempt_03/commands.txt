@@ -1,0 +1,5 @@
+# Launch used Homebrew DART 6.20.1, but the installed DART plugin expected 6.19; Gazebo did not move the Crazyflie. This is the retained failed attempt.
+NANO_C_SLAM_GZ_PARTITION=nano_c_slam_stale_odom_rerun_20261019 NANO_C_SLAM_ROS_DOMAIN_ID=61 NANO_C_SLAM_NEARFIELD_MAPPING=1 NANO_C_SLAM_FAILURE_TRUTH_ODOMETRY=1 NANO_C_SLAM_OVERLAY_SETUP="$PWD/build/gazebo-ros-overlay.bzbVoY/install/local_setup.bash" ./scripts/run_gazebo_macos.sh
+
+# Probe: failed because takeoff timed out at 0.05 m before HOVER.
+ROS_DOMAIN_ID=61 GZ_PARTITION=nano_c_slam_stale_odom_rerun_20261019 uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 python -m scripts.gazebo_failure_probe --drone cf1 --failure-mode stale-bridge-stop --output artifacts/gazebo_mapping_sitl/mission_failure_acceptance_20261019/attempt_03/probe.json --preflight-timeout 8 --mission-timeout 20 --post-exit-duration 5

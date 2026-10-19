@@ -1,0 +1,1 @@
+Owned launch 58986; Gazebo server 59032; general bridge 59033; cf1 odometry bridge 59034; truth bridge 59035; sensor bridge 59036; GUI 59352. All owned processes were absent after SIGINT teardown. Unrelated Durandal PIDs 38302 and 39029 were left running.
