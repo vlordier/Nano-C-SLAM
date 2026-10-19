@@ -42,16 +42,34 @@ def session_file_for_partition(partition: str) -> Path:
     return Path(tempfile.gettempdir()) / f"nano-c-slam-world-{key}.json"
 
 
-def publish_world_session(path: Path, *, scene: str) -> str:
+def publish_world_session(
+    path: Path, *, scene: str, world_path: Path | None = None
+) -> str:
     """Atomically publish a new launch identity before starting Gazebo."""
     if scene not in ("default", "nearfield-mapping"):
         raise ValueError("world session scene is unsupported")
+    world_identity: dict[str, str | int] = {}
+    if world_path is not None:
+        try:
+            world_bytes = world_path.read_bytes()
+        except OSError as error:
+            raise ValueError(
+                "Gazebo world SDF is unavailable for provenance"
+            ) from error
+        if not world_bytes or len(world_bytes) > 5_000_000:
+            raise ValueError("Gazebo world SDF is empty or exceeds the size bound")
+        world_identity = {
+            "world_sdf_path": str(world_path.resolve()),
+            "world_sdf_sha256": hashlib.sha256(world_bytes).hexdigest(),
+            "world_sdf_bytes": len(world_bytes),
+        }
     session_id = str(uuid.uuid4())
     payload = {
         "schema_version": WORLD_SESSION_SCHEMA_VERSION,
         "session_id": session_id,
         "scene": scene,
         "launch_pid": os.getpid(),
+        **world_identity,
     }
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary_path = path.with_name(f".{path.name}.{session_id}.tmp")

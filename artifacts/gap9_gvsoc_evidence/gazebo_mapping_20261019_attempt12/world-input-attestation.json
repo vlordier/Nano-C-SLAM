@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "session_id": "7817c1d5-ee98-4b09-84a2-bd80e2f067b1",
+  "session_sha256": "66c61c63d6672b01e268bbac782e6efea9e6e5cfe8b77a47d5bb6c3df738d15f",
+  "gazebo_server_sdf_argument": "/var/folders/y3/3sdhft5n6fx_7vbxz9gffhqr0000gn/T/nano-c-slam-ros2.7zi2TF/nano_c_slam_nearfield.sdf",
+  "world_sdf_sha256": "5d2d9cc1a54bcfc7e978225c44aff96b6c1de9e2f3a99431aadb5174681815a2",
+  "archived_sdf_sha256": "5d2d9cc1a54bcfc7e978225c44aff96b6c1de9e2f3a99431aadb5174681815a2",
+  "verified_while_server_active": true,
+  "verification_record": "The initial geometry analysis verified the launched SDF and archived SDF bytes while the Gazebo server was active; its recorded source SDF SHA-256 matches this archived copy."
+}

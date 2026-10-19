@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "status": "measured-no-acceptance-threshold",
+  "run_id": "8b86395f-d6cb-4b0c-b758-b7fb37e9550e",
+  "world_session_id": "7817c1d5-ee98-4b09-84a2-bd80e2f067b1",
+  "coordinate_convention": "Gazebo world-frame XY meters and yaw radians; GAP9 z field is planar yaw. Trajectory errors compare same-frame values without fitted alignment.",
+  "target_pose_count": 60,
+  "pose_error": {
+    "xy_rmse_m": 0.02009006604827085,
+    "xy_max_m": 0.03814866979173607,
+    "yaw_rmse_rad": 0.032191328884025885,
+    "yaw_max_rad": 0.04296291538716002,
+    "source_path_length_m": 0.633497816077085,
+    "target_path_length_m": 0.6108349353630436,
+    "target_to_source_path_length_ratio": 0.9642257950400198
+  },
+  "target_map": {
+    "point_count": 191,
+    "sdf_surface_distance_m": {
+      "median": 0.015359139442443936,
+      "p95": 0.049922823905944824,
+      "max": 0.1372866809368134,
+      "within_0_05m_fraction": 0.9528795811518325
+    },
+    "point_fraction_within_0_05m_of_model_surface": {
+      "obstacle1": 0.07329842931937172,
+      "obstacle2": 0.2356020942408377,
+      "obstacle3": 0.0,
+      "wall1": 0.0,
+      "wall2": 0.31413612565445026,
+      "wall3": 0.2513089005235602,
+      "wall4": 0.31413612565445026
+    }
+  },
+  "geometry": {
+    "source_sdf_sha256": "5d2d9cc1a54bcfc7e978225c44aff96b6c1de9e2f3a99431aadb5174681815a2",
+    "source_sdf_bytes": 32598,
+    "surface_models": [
+      "obstacle1",
+      "obstacle2",
+      "obstacle3",
+      "wall1",
+      "wall2",
+      "wall3",
+      "wall4"
+    ],
+    "point_distance_tolerance_m": 0.05,
+    "tolerance_note": "Diagnostic bucket only; not an acceptance threshold. The sensor bridge uses idealized simulator-derived four-ray ranges."
+  },
+  "sha256": {
+    "target_report": "29badbef965d489fed0e096ecfeca0e0dc40504ac07da8cf4d5faa040e56ec56",
+    "run_bundle": "a17b5e4fc3ae43013cd47174fc13710888434931e31c8adf8812e5703939b458",
+    "world_session": "66c61c63d6672b01e268bbac782e6efea9e6e5cfe8b77a47d5bb6c3df738d15f",
+    "world_input_attestation": "cb9027e2c0e05340f0ff977eb77fc77a7c724439b7cdc72165a29ec89c76730f",
+    "source_sdf": "5d2d9cc1a54bcfc7e978225c44aff96b6c1de9e2f3a99431aadb5174681815a2",
+    "target_log": "e9677b25ae2e0f567d0881bd3157b85e96ebb16d1a8f044fd1d88fd115cb4a4a"
+  },
+  "limitations": [
+    "Metrics characterize one synthetic near-field run; no acceptance thresholds are declared.",
+    "The Gazebo sensor bridge uses idealized four-ray ranges from the simulator, not physical ToF behavior.",
+    "This does not validate UWB effects or Crazyflie STM32 flight firmware in Gazebo."
+  ]
+}

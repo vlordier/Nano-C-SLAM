@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import tempfile
 import unittest
@@ -20,6 +21,30 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.world_session_model import
 
 
 class WorldSessionTests(unittest.TestCase):
+    def test_launch_manifest_hashes_the_exact_world_sdf(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            session_path = root / "session.json"
+            world_path = root / "nearfield.sdf"
+            source_bytes = b"<sdf><world name='nearfield'/></sdf>\n"
+            world_path.write_bytes(source_bytes)
+
+            publish_world_session(
+                session_path, scene="nearfield-mapping", world_path=world_path
+            )
+            session = json.loads(session_path.read_text(encoding="utf-8"))
+
+            self.assertEqual(session["world_sdf_path"], str(world_path.resolve()))
+            self.assertEqual(session["world_sdf_bytes"], len(source_bytes))
+            self.assertEqual(
+                session["world_sdf_sha256"], hashlib.sha256(source_bytes).hexdigest()
+            )
+            world_path.write_bytes(b"<sdf/>\n")
+            self.assertNotEqual(
+                session["world_sdf_sha256"],
+                hashlib.sha256(world_path.read_bytes()).hexdigest(),
+            )
+
     def test_bridge_roles_distinguish_killable_cf1_odometry_path(self) -> None:
         self.assertEqual(
             world_process_role(

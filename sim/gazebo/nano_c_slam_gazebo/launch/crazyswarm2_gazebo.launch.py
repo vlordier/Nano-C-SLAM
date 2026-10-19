@@ -139,7 +139,7 @@ def _publish_session(context: LaunchContext) -> list[LaunchDescriptionEntity]:
     session_path = session_file_for_partition(partition)
     global _WORLD_SESSION_LOCK
     _WORLD_SESSION_LOCK = acquire_world_session_lock(session_path)
-    publish_world_session(session_path, scene=scene)
+    publish_world_session(session_path, scene=scene, world_path=Path(world))
     return []
 
 
