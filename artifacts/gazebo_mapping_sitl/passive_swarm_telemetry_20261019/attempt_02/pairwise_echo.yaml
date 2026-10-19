@@ -1,0 +1,11 @@
+header:
+  stamp: {sec: 34, nanosec: 485000000}
+  frame_id: ''
+sequence: 5122
+drone_ids: [cf1, cf3, cf4]
+source_stamps:
+  - {sec: 34, nanosec: 460000000}
+  - {sec: 34, nanosec: 460000000}
+  - {sec: 34, nanosec: 480000000}
+pair_labels: [cf1:cf3, cf1:cf4, cf3:cf4]
+ranges_m: [1.0, 1.4142135381698608, 1.0]

@@ -1,0 +1,17 @@
+{
+  "schema": "nano-c-slam-passive-telemetry-attempt-v1",
+  "status": "failed",
+  "failure": "pairwise publication timestamps may be equal for multiple callbacks in one simulator tick; verifier rejected these duplicate or same-tick publications",
+  "source_revision": "24ff770",
+  "source_was_clean_at_launch": true,
+  "overlay": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.81qW5N/install",
+  "overlay_build_receipt": "../../../../build/gazebo-ros-overlay.81qW5N/build-receipt.txt",
+  "ros_domain_id": 51,
+  "gazebo_partition": "nano_c_slam_passive3_fixed_20261019",
+  "launch_processes": {"launch_session": 21080, "gazebo": 35111, "parameter_bridge": 35112, "sensor_bridge": 35113, "gazebo_gui": 35306},
+  "checker_command": "uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 -m scripts.verify_gazebo_swarm_ros --timeout 20 (outer timeout 25 s)",
+  "checker_exit_code": 1,
+  "checker_stdout": "Gazebo swarm telemetry check failed: Gazebo swarm telemetry check failed: telemetry rejected: ranges=[], pairwise=['pairwise publication timestamp did not advance', 'pairwise publication timestamp did not advance', 'pairwise publication timestamp did not advance']",
+  "one_observed_valid_snapshot": {"sequence": 5122, "source_stamps_ns": [34460000000, 34460000000, 34480000000], "pair_labels": ["cf1:cf3", "cf1:cf4", "cf3:cf4"], "ranges_m": [1.0, 1.4142135381698608, 1.0]},
+  "cleanup": "Owned launch interrupted. The launch server, Gazebo, parameter bridge and sensor bridge exited; post-run process audit found no test-owned process. Unrelated Gazebo processes were left untouched."
+}
