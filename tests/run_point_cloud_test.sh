@@ -94,6 +94,12 @@ cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
 /tmp/uwb_token_handoff_test
 
 cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
+    -Icslam-stm32-app/src \
+    tests/uwb_token_lease_test.c cslam-stm32-app/src/uwb_token_lease.c \
+    -o /tmp/uwb_token_lease_test
+/tmp/uwb_token_lease_test
+
+cc -std=gnu11 -Wall -Wextra -Werror -fsanitize=address,undefined \
     -ffunction-sections -fdata-sections \
     -Itests/stubs -Icslam-gap9-app/slam -Icslam-gap9-app/slam/rcm \
     tests/pose_graph_validation_test.c \

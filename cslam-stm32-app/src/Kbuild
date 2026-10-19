@@ -5,6 +5,7 @@ obj-y += tof_daq.o
 obj-y += tof_freshness.o
 obj-y += mission_timeout.o
 obj-y += uwb_token_handoff.o
+obj-y += uwb_token_lease.o
 obj-y += operator_heartbeat.o
 obj-y += scan.o
 obj-y += flight_commander.o
