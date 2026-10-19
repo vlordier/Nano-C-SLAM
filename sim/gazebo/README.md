@@ -254,6 +254,53 @@ NANO_C_SLAM_NEARFIELD_MAPPING=1 ./scripts/run_gazebo_macos.sh
 The launcher derives the world from the installed Crazyswarm2 SDF and keeps the
 generated file in its temporary directory. The upstream checkout is not edited.
 
+The independent geometry scenario uses different wall and obstacle positions
+and a five-waypoint asymmetric path. Build the Nano-C-SLAM ROS overlay first,
+then start a separate world with a dedicated partition and ROS domain:
+
+```sh
+cd ~/Work/Nano-C-SLAM
+export NANO_C_SLAM_OVERLAY_SETUP="$PWD/build/gazebo-ros-overlay.<id>/install/local_setup.bash"
+export NANO_C_SLAM_NEARFIELD_MAPPING=1
+export NANO_C_SLAM_NEARFIELD_VARIANT=heldout
+export NANO_C_SLAM_GZ_PARTITION=nano_c_slam_mapping_heldout
+export NANO_C_SLAM_ROS_DOMAIN_ID=69
+export GZ_DISCOVERY_MSG_PORT=45327
+export GZ_DISCOVERY_SRV_PORT=45328
+./scripts/run_gazebo_macos.sh
+```
+
+Once the server is ready, archive the exact SDF and active world session before
+running the capture. In a second terminal, source the same ROS, Crazyswarm2,
+Gazebo, and Nano-C-SLAM overlay setup files, then use the matching partition and
+domain:
+
+```sh
+cd ~/Work/Nano-C-SLAM
+source /opt/homebrew/opt/ros2-jazzy/setup.zsh
+source ~/Work/crazyswarm2_gazebo/install/local_setup.zsh
+source ~/Work/gz-macOS/ws/install/local_setup.zsh
+source "$PWD/build/gazebo-ros-overlay.<id>/install/local_setup.zsh"
+export GZ_PARTITION=nano_c_slam_mapping_heldout
+export ROS_DOMAIN_ID=69
+artifact_dir="$PWD/artifacts/gap9_gvsoc_evidence/heldout-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$artifact_dir"
+uv run --locked python -m scripts.archive_gazebo_world_evidence \
+  --partition "$GZ_PARTITION" --output-dir "$artifact_dir/world"
+uv run --no-project --python /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11 \
+  -m scripts.gazebo_gvsoc_live --mapping-route heldout-asymmetric \
+  --output "$artifact_dir/gazebo-run.json"
+```
+
+The archive command fails if the launched SDF no longer matches the session
+hash, if the session does not identify exactly one live Gazebo server, or if
+the output directory already exists. Use the archived `world/world.sdf`,
+`world/world-session.json`, and `world/world-input-attestation.json` with the
+geometry analyzer and pass `--expected-route heldout-asymmetric`; the analyzer
+checks the route recorded in the mission argv. A successful capture still
+produces measurements only. Acceptance thresholds remain unset until the
+baseline repeatability work in bead `ncs-fea.4.8` is complete.
+
 In a second terminal, run the single-drone example mission (takeoff to 0.5 m, hover for 3 seconds, then land). The mission continuously enables the simulated Crazyflie, sends vertical velocity commands through the Gazebo bridge, and requires fresh measured odometry. It holds a zero vertical command and reports failure if odometry becomes stale or inconsistent, or if takeoff or landing exceeds its timeout:
 
 ```sh

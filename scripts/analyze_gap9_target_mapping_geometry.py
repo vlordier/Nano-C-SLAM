@@ -228,7 +228,8 @@ def _verify_world_binding(
         raise ValueError("world session contains an incomplete SDF identity")
     if session_sdf_hash is not None and (
         session_sdf_hash != expected_sdf_hash
-        or session_sdf_path != str(launched_sdf_paths[0])
+        or not isinstance(session_sdf_path, str)
+        or Path(session_sdf_path).resolve() != launched_sdf_paths[0].resolve()
         or session_sdf_bytes != sdf_path.stat().st_size
     ):
         raise ValueError("world session SDF hash does not match the archived input")
