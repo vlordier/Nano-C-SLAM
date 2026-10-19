@@ -1,0 +1,11 @@
+schema: nano-c-slam-gz-dartsim-build-v1
+source: /Users/vincent/Work/gz-macOS/gz-physics
+source_revision: 189471c86fa06ffad9c9bdb199f6928eb2fc02f3
+source_status:
+dartsim_prefix: /opt/homebrew/opt/dartsim
+dartsim_version: dartsim 6.20.1 6.20.0
+cmake_version: cmake version 4.4.4
+plugin_sha256: 8ed69028505bae233d23611ece5a53d48f6a50e2ea751892ac6e1427a125ad93
+custom_engine_sha256: 8ed69028505bae233d23611ece5a53d48f6a50e2ea751892ac6e1427a125ad93
+physics_library_sha256: 37236fb1d10bd995058a77d3c4ed63a86e0abfce6114a691fdcb65f20d32d646
+engine_path: /Users/vincent/Work/Nano-C-SLAM/build/gz-physics-dartsim-rebuild/lib

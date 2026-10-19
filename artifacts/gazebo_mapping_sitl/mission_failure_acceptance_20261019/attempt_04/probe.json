@@ -1,0 +1,5320 @@
+{
+  "acceptance_checks": {
+    "at_least_two_zero_commands_after_failure": true,
+    "failure_triggered_after_hover": true,
+    "installed_mission_matches_source": true,
+    "matching_failed_status_published": true,
+    "mission_exited_nonzero": true,
+    "mission_odometry_stopped": true,
+    "no_command_publishers_before_mission": true,
+    "no_enable_true_after_failed_status": true,
+    "post_exit_odometry_observed": true,
+    "post_exit_window_met": true,
+    "simulator_clock_advanced": true,
+    "stale_odometry_failure_reason": true,
+    "three_grounded_samples": true,
+    "truth_odometry_continued_after_failure": true,
+    "velocity_controller_plugin_identity_observed": true
+  },
+  "advancing_clock_sample_count": 8980,
+  "clock_first_stamp_ns": 21886000000,
+  "clock_last_stamp_ns": 30956000000,
+  "cmd_vel_events": [
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.0223428329918534
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.061169583001174
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.1149432079982944
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.1664251249749213
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.2180034579942003
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.2660402079927735
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.3204091249790508
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.3646115829760674
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.4179314579814672
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.4666739579988644
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.514984999987064
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.564336582989199
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.618797832983546
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.6660792919865344
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.718949457979761
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.7676029999856837
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.8187235829827841
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.8630295420007315
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.912280082993675
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 1.966503916977672
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 2.0182514999760315
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 2.062095417000819
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 2.1152904579939786
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.5,
+      "received_wall_s": 2.1634519169747364
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 2.2157932079862803
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 2.2640934999799356
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 2.3115093329979572
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 2.366748916974757
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 2.4161435829882976
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 2.4653421669790987
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 2.5156764579878654
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 2.566912541980855
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 2.6169207919738255
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 2.6660904999880586
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 2.714893124997616
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 2.768775749980705
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 2.8190950419811998
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 2.8624721669766586
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 2.919722457998432
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 2.9792582919762935
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.0184346249734517
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.0606707919796463
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.1175248329818714
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.166987166972831
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.2137961669941433
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.2693011249939445
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.314329707995057
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.3649254579795524
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.4184625419729855
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.4629091669921763
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.4991237499925774
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.5175625829724595
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.5484558749885764
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.5946172080002725
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.648165708000306
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.698726791975787
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.7439294579962734
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.79836187500041
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.8474949169903994
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.8948474579956383
+    },
+    {
+      "angular_z_rad_s": 0.0,
+      "linear_x_m_s": 0.0,
+      "linear_y_m_s": 0.0,
+      "linear_z_m_s": 0.0,
+      "received_wall_s": 3.948810041998513
+    }
+  ],
+  "control_publishers_before_mission": {
+    "/cf1/cmd_vel": [],
+    "/cf1/enable": []
+  },
+  "drone": "cf1",
+  "enable_events": [
+    {
+      "data": true,
+      "received_wall_s": 1.0223021249985322
+    },
+    {
+      "data": true,
+      "received_wall_s": 1.0611497079953551
+    },
+    {
+      "data": true,
+      "received_wall_s": 1.1149110419792123
+    },
+    {
+      "data": true,
+      "received_wall_s": 1.1663971249945462
+    },
+    {
+      "data": true,
+      "received_wall_s": 1.2179745829780586
+    },
+    {
+      "data": true,
+      "received_wall_s": 1.2660142499953508
+    },
+    {
+      "data": true,
+      "received_wall_s": 1.3203847919940017
+    },
+    {
+      "data": true,
+      "received_wall_s": 1.364500457973918
+    },
+    {
+      "data": true,
+      "received_wall_s": 1.417901582986815
+    },
+    {
+      "data": true,
+      "received_wall_s": 1.4666545829968527
+    },
+    {
+      "data": true,
+      "received_wall_s": 1.5148968329885975
+    },
+    {
+      "data": true,
+      "received_wall_s": 1.5643162499764003
+    },
+    {
+      "data": true,
+      "received_wall_s": 1.61876908299746
+    },
+    {
+      "data": true,
+      "received_wall_s": 1.6660477499826811
+    },
+    {
+      "data": true,
+      "received_wall_s": 1.718826791999163
+    },
+    {
+      "data": true,
+      "received_wall_s": 1.767575041973032
+    },
+    {
+      "data": true,
+      "received_wall_s": 1.8186815419758204
+    },
+    {
+      "data": true,
+      "received_wall_s": 1.863009416993009
+    },
+    {
+      "data": true,
+      "received_wall_s": 1.9122511249734089
+    },
+    {
+      "data": true,
+      "received_wall_s": 1.966473791981116
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.0181173329765443
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.0620757500000764
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.1152572499995586
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.1634305419865996
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.215766374982195
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.264073041995289
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.311478874995373
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.3665937499899883
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.4161109579727054
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.465314207976917
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.5156447919725906
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.566892207978526
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.6168930829735473
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.6660639999900013
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.7148683329869527
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.768669207987841
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.818967499973951
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.862452666973695
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.919694999989588
+    },
+    {
+      "data": true,
+      "received_wall_s": 2.9791980419831816
+    },
+    {
+      "data": true,
+      "received_wall_s": 3.018401499983156
+    },
+    {
+      "data": true,
+      "received_wall_s": 3.0606494169915095
+    },
+    {
+      "data": true,
+      "received_wall_s": 3.117495041980874
+    },
+    {
+      "data": true,
+      "received_wall_s": 3.166958916990552
+    },
+    {
+      "data": true,
+      "received_wall_s": 3.2137703329790384
+    },
+    {
+      "data": true,
+      "received_wall_s": 3.2691574999771547
+    },
+    {
+      "data": true,
+      "received_wall_s": 3.314299666992156
+    },
+    {
+      "data": true,
+      "received_wall_s": 3.364905207999982
+    },
+    {
+      "data": true,
+      "received_wall_s": 3.418115707987454
+    }
+  ],
+  "failure_command_summary": {
+    "commands_after_failed_status": 12,
+    "enable_true_after_failed_status": 0,
+    "zero_commands_after_failed_status": 12
+  },
+  "failure_mode": "stale-bridge-stop",
+  "failure_trigger_wall_s": 2.9786706249869894,
+  "gazebo_loaded_libraries": {
+    "commands": [
+      {
+        "argv": [
+          "/bin/ps",
+          "-p",
+          "88895",
+          "-o",
+          "command="
+        ],
+        "elapsed_s": 0.003725707996636629,
+        "returncode": 0,
+        "stdout_bytes": 260,
+        "stdout_sha256": "fc33d848b9c0dda05e866ac9bf9c04bad7faa26de062cf26758f1e2ca39ddd5a"
+      },
+      {
+        "argv": [
+          "/usr/sbin/lsof",
+          "-F0",
+          "-a",
+          "-nP",
+          "-p",
+          "88895",
+          "-d",
+          "txt,mem"
+        ],
+        "elapsed_s": 0.04237999999895692,
+        "returncode": 0,
+        "stdout_bytes": 51998,
+        "stdout_sha256": "d6e11d233013a758534a58dc9f339fed95e87462fd74b90a51e9960c1dd6020b"
+      }
+    ],
+    "elapsed_s": 0.2645377079898026,
+    "executable_path": "/opt/homebrew/Cellar/ruby/4.0.7_1/bin/ruby",
+    "launch_pid": 88876,
+    "libraries": [
+      {
+        "path": "/System/Library/Frameworks/AppKit.framework/Versions/C/Resources/Assets.car",
+        "reason": null,
+        "sha256": "5c083a7946592f0b2f09440a6729889aaaa2788a6ded038de009f3aac6ceaa0d"
+      },
+      {
+        "path": "/System/Library/Frameworks/AppKit.framework/Versions/C/Resources/Common.loctable",
+        "reason": null,
+        "sha256": "11f983a7a0572ad0126767794dafa81c9bdb6126f5befd66338515a740fa8ffe"
+      },
+      {
+        "path": "/Users/vincent/Work/Nano-C-SLAM/build/gz-physics-dartsim-rebuild/custom/libnano-c-slam-dartsim-plugin.dylib",
+        "reason": null,
+        "sha256": "8ed69028505bae233d23611ece5a53d48f6a50e2ea751892ac6e1427a125ad93"
+      },
+      {
+        "path": "/Users/vincent/Work/Nano-C-SLAM/build/gz-physics-dartsim-rebuild/lib/libgz-physics7.7.8.0.dylib",
+        "reason": null,
+        "sha256": "37236fb1d10bd995058a77d3c4ed63a86e0abfce6114a691fdcb65f20d32d646"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/gz-rendering-8/engine-plugins/libgz-rendering8-ogre2.8.2.3.dylib",
+        "reason": null,
+        "sha256": "9c9315e8692468382e88264bf2178406c6c42bb812cb05856aa0329d45427da0"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/gz-sim-8/plugins/libgz-sim8-multicopter-control-system.8.14.0.dylib",
+        "reason": null,
+        "sha256": "d2791ec20f8cd8150dbffb39c58bfa5a4cd87baeda64236d6b806b18b4133568"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/gz-sim-8/plugins/libgz-sim8-multicopter-motor-model-system.8.14.0.dylib",
+        "reason": null,
+        "sha256": "26b2b4cd9e718b8724613fec0020df11c2f1c92ea3e4439faa515569df90180a"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/gz-sim-8/plugins/libgz-sim8-odometry-publisher-system.8.14.0.dylib",
+        "reason": null,
+        "sha256": "3034877dca2e200bf358fd97c9df6b39dcaaffc3c9936adb7306be0a4c13d84a"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/gz-sim-8/plugins/libgz-sim8-physics-system.8.14.0.dylib",
+        "reason": null,
+        "sha256": "918a36496fa4abf06b098241c002aed42ef9bbffc17d0ff5c64e288336d8e29a"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/gz-sim-8/plugins/libgz-sim8-scene-broadcaster-system.8.14.0.dylib",
+        "reason": null,
+        "sha256": "62b6d59327d91b154ea945a9002a5efc4ecc642848b8666d4caeecca9fee4fb7"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/gz-sim-8/plugins/libgz-sim8-sensors-system.8.14.0.dylib",
+        "reason": null,
+        "sha256": "ee3779197ea753cdfe3c43ba066cd153976faa013b9342ebd3053cda984efef7"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/gz-sim-8/plugins/libgz-sim8-user-commands-system.8.14.0.dylib",
+        "reason": null,
+        "sha256": "1c4723f629242d5537fe70e60aa055eeb5ed8b3125e0892f8df73a9cd57a60b4"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-common5-av.5.8.0.dylib",
+        "reason": null,
+        "sha256": "fd4978feded41d87cd81a2cbce35887244c39ce2571234ab6bb5a03c71d2e6f1"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-common5-events.5.8.0.dylib",
+        "reason": null,
+        "sha256": "3b1b28579ca22b7b6d62a520572b489762879c345f17084c6c4078bfa0c22c79"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-common5-geospatial.5.8.0.dylib",
+        "reason": null,
+        "sha256": "e5ccc2a7d743cfeaacf1e78ebe69ed3c1f8c5ec55c40ef3da64c3c33ae5b9f30"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-common5-graphics.5.8.0.dylib",
+        "reason": null,
+        "sha256": "2364fe9a68e2549452f39b39bde445efaafd8920debad18fbb5d8fc46df04750"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-common5-io.5.8.0.dylib",
+        "reason": null,
+        "sha256": "690539ed492fba8c47ea413b60b8a40e91cee7fe4e97cac86eb8ee29d2bca985"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-common5-profiler.5.8.0.dylib",
+        "reason": null,
+        "sha256": "b61bb1194ccf2c4e7fcdae40f2b046668a552e4eaa870d16089a5f8fddbd3148"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-common5-testing.5.8.0.dylib",
+        "reason": null,
+        "sha256": "8bdad338cc75bcb575c8f30c2b6eea2635b4e4ca884e7fb37d92c912ba4a5ad8"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-common5.5.8.0.dylib",
+        "reason": null,
+        "sha256": "188aa46af5bc0c07e0cdd9b5ae250979d3c5f451eeb943210589046f725ddbbf"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-fuel_tools9.9.1.1.dylib",
+        "reason": null,
+        "sha256": "16e634c01e16ad8dd392b24284eb53236c60cd9a39280285ff9e8a44c9cb789a"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-gui8.8.4.0.dylib",
+        "reason": null,
+        "sha256": "5e88778b263528f8973dfe733478c3f8fe7798bbbccdb51480b24c4569fcd287"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-math7.7.6.0.dylib",
+        "reason": null,
+        "sha256": "a58212c8c8f05a169a1fde1b1320746ba8f4f93ac6f31cea269a24896500e502"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-msgs10.10.3.2.dylib",
+        "reason": null,
+        "sha256": "4bbbbc9be0cfeb361a22575050b264e5e5f6b20e9224a38b15660aa0febfa254"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-physics7.7.8.0.dylib",
+        "reason": null,
+        "sha256": "2474756d379c52b480a8edc551a6f545010d1904656e9777b54899d294318712"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-plugin2-loader.2.0.4.dylib",
+        "reason": null,
+        "sha256": "c79236ab8a2cb9947a6a398b856a9c0c6d2b2a153c203a89855faceb2df9e9d9"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-plugin2.2.0.4.dylib",
+        "reason": null,
+        "sha256": "52c3fd999d2269d6b11668ed939c7be7391fb0d2f67cdf4729db726d91983209"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-rendering8.8.2.3.dylib",
+        "reason": null,
+        "sha256": "e19b8f6b69f131215640668240a495a33cd3a4d6cfeb424924a8a5dc4f40b827"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-sensors8-boundingbox_camera.8.2.2.dylib",
+        "reason": null,
+        "sha256": "3abc37572a9c4f08056e2d592f2b0c361d9887b2e5cedb0b302667fcfbec86c1"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-sensors8-camera.8.2.2.dylib",
+        "reason": null,
+        "sha256": "fa84cd95787da056c63303c10da7e1d48c847128224ff92d4ac94640695c1fdc"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-sensors8-depth_camera.8.2.2.dylib",
+        "reason": null,
+        "sha256": "dfea64dfa51b7d6eefec487f9322626b8bdc24fddd04acb9a96659731c68c141"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-sensors8-gpu_lidar.8.2.2.dylib",
+        "reason": null,
+        "sha256": "a3caca7bb8e205cf6339dd36f7f61ecaa5cbc6c580627a7147bee8cb7cc147e5"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-sensors8-lidar.8.2.2.dylib",
+        "reason": null,
+        "sha256": "d525067976d057b04b181abf17c552140151c1c8c74b5cb684f52f037e409754"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-sensors8-rendering.8.2.2.dylib",
+        "reason": null,
+        "sha256": "2428936e09b203965ee38de35845d63ef3cb54b296d9909e92aa0dafee017246"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-sensors8-rgbd_camera.8.2.2.dylib",
+        "reason": null,
+        "sha256": "33b4973d0b51c2c0455d43e07d6833b953313a2726afd02bb31668fe4c6be914"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-sensors8-segmentation_camera.8.2.2.dylib",
+        "reason": null,
+        "sha256": "de0e4b79b86127b25998189d4c14e3973a2d82970336e4d8ea6977ad0dcbe27f"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-sensors8-thermal_camera.8.2.2.dylib",
+        "reason": null,
+        "sha256": "7ddf8e5d61651f8b2bdf898daef760ad603dc384b57b37d6bcfee78aa8452f17"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-sensors8-wide_angle_camera.8.2.2.dylib",
+        "reason": null,
+        "sha256": "75dfd8c9924b3d436309c10560e32b5acff7f2e1afdfb751965d35bc5134adc7"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-sensors8.8.2.2.dylib",
+        "reason": null,
+        "sha256": "7ce20a1ce9eee79d5357a17bd1487f24a295cc076eb092ddfda7a3d52f7ae7ed"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-sim8-gui.8.14.0.dylib",
+        "reason": null,
+        "sha256": "2fb1255cca96f19daa8404cd0febae1eb2ab8f526f25dea6f81d909a3065f034"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-sim8-gz.8.14.0.dylib",
+        "reason": null,
+        "sha256": "385e0240bc0a147431bf94f880911f377bcbc3ed9fa3d652738f18bd5a3dce82"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-sim8-rendering.8.14.0.dylib",
+        "reason": null,
+        "sha256": "04b5865b52a95ce9f833e34139d810d1e8a161269378136d779858a7691d3ab0"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-sim8.8.14.0.dylib",
+        "reason": null,
+        "sha256": "5666bb90b02d906da1c63b421d464543b485a44255e236d0e937cd6ccd8781fd"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-tools2-backward.2.0.3.dylib",
+        "reason": null,
+        "sha256": "bb67025e84e4e7b3e30135cda2a127cfb5a4fde902e602c953bfe98df911631a"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-transport13-parameters.13.5.0.dylib",
+        "reason": null,
+        "sha256": "d504c6bdd747375bc0daaa0a89e8fcf1c84cbb9e50f9279fb470659b634a7094"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-transport13.13.5.0.dylib",
+        "reason": null,
+        "sha256": "716c90dfe54324bbcb0be7eec430c8990df8c22da8d66633a3894573501684c4"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libgz-utils2.2.2.1.dylib",
+        "reason": null,
+        "sha256": "90332315a9f7f386edc26024854f685f4058019e4b7d4965a42cca2ecce943e3"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libprotobuf.32.0.0.dylib",
+        "reason": null,
+        "sha256": "d6ee11963dd60cbedbbe83ebabc8dd30f89604a85be4dd2937d41ae2355dcba5"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libsdformat14.14.9.0.dylib",
+        "reason": null,
+        "sha256": "923d0143db5c01aaf30f09bc94d46992e29b34312945e3116114f61e9181f193"
+      },
+      {
+        "path": "/Users/vincent/Work/gz-macOS/ws/install/lib/libutf8_validity.32.0.0.dylib",
+        "reason": null,
+        "sha256": "11dab7e3a2bb460c78801d415ad5b24f80e69c167afe3b805b00fa1ea18462c4"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_base.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "0935f6813d258a58db3bb85d178d530bb7b5a302a5e066d659cf04cdf9708eab"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_base_cpu_detect.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "5151dc06b8bb0749d298765d494f6cb9f0373633ba923761e59f6e5cc6769512"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_city.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "d7c9590a28bcbade4ef190ef3e5ca10494a6be93fdb718c95de994b6d402fa73"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_civil_time.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "d44e2c2f4f4f479ba1b3f4717e2a896b303096a7f0d507972e72e625de535750"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_cord.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "bf41ff83b0e4b2d4d0afc70d5d6d691432e03bc4a7fbcca73cc5e8e1ce231678"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_cord_internal.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "2fa33e0e8fc5488dcdfc1231d0a56b781993ba612c92dd930b0abf3b436ca4be"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_cordz_functions.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "5848f8295e63abbf1ef5dc9e5f6bcaad92f216b1a314138348b3dfe00c4efb50"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_cordz_handle.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "441d7ee3066913caeec25b1d2b26adba01d86e275f981779fac50d1eae932a94"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_cordz_info.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "2fc35948b88919a9905bdb1a92a21be9e956706318688bb62d574c2fa5d84835"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_crc32c.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "653786450b67d247f6631c219f61fd66b64220df21005c6c89b1cf58b2081643"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_crc_cord_state.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "b502268087dbc72b8a7373c2ed0f82fed09ab2ab96573b21bb8c009a1c904932"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_crc_internal.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "aa11644842641e5aecf73aef6fdc564b3243fe3b28310611765cf53988d537a1"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_debugging_internal.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "01281f09a88794b1dd2c0e6ddf487f72b43de8042d4ffdd99744d0a739380838"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_decode_rust_punycode.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "0933f3aa5cf06090340b17d2efac596e24a1b605ad2653ec80cf9701b57a2c18"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_demangle_internal.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "a3dd12be16ba101965604049c4901d24ce5caa2b56fe381592dbe683c0913df1"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_demangle_rust.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "e2f1dc6a063517927e7e3d9b4e6d507ec052d25005ef1b66ad7c8242a7b7cddb"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_examine_stack.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "0fe53457df03ceacb78443f47848a64841c593a20ad379ca340f1c9c2bcb3d99"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_exponential_biased.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "879a00b1437013bb55a7a54f60307e2c776fb36181e1d5ef937add8e59836e62"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_flags_commandlineflag.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "77f09d65c6d22aaab1f006062068b1adbe4a8a4c9d02f4e74d716d127d7888a4"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_flags_commandlineflag_internal.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "1a90a430a02893a71c312cf25abd3c15b1127097a5affe1a2d5e65a2660d8440"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_flags_config.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "6b64d1bc6f8523076eaf97020d5c2c846807d5914abce12c3cdd0dbdd671e66a"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_flags_internal.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "a0a22e39ad39a1359524fe83c2e740fcbb5be8974e8f46cc4dfb548147d7155e"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_flags_marshalling.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "0273b1d1dd9ffed94cc475d9b4d62a675fc2902f9578d8e0f952ba4f56a93a42"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_flags_private_handle_accessor.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "75724d501c2519308bb7ec8957eed40205b84b8815849f3961168ad5e112009a"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_flags_program_name.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "bf547baa29d9a256213f0e4c553fa7221329a15a028cc727645c807861c0347b"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_flags_reflection.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "2f09f0c90ab10c9daa8d991653e033d1eeef618f222877dc5c4f64973d9cd1d6"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_graphcycles_internal.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "dac1a4a156a85218b76042b67be0af7a0ba5ce9c54b9d14b4a080959d9e3e5e5"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_hardening.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "232e5aa6f0ad4109edc57aa5f86152f278290030d118e881f5fd1c24e2df2020"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_hash.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "4c94943c376701ee401ac1b572177273cc07ed9fdc5665f18338bb1b261ccfb3"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_hashtablez_sampler.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "ddb05f6d9f74794bbb11d1f5bc15e7da424fb0d5dcc262a94666a82f1bb68b00"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_int128.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "7dd9dde64e80404474c53bb5ca1dee6b13bbfde3dcb9a85c2284579a8eb7c45f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_kernel_timeout_internal.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "6404cc3c356cc9721f34f88a9f8bb9b35b5a739e0383255c8eee74b0e08cf8a7"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_leak_check.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "97dce3e7137cf6df6c03653b8af3182fd81552e7c43b4306584fe32397f26a44"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_log_entry.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "1b7420b27f70188669ddd277de1fcd0ef46060bde504304538e477df0aef9382"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_log_globals.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "856b60d841c03e0ef72125ae2d9bbe698a9e619a12b1108ef94da9355c7e713a"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_log_internal_check_op.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "97762cd60858b2a3528a2fb28bd9286fc7ded640848a2699de92f3ba03f8ccb2"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_log_internal_conditions.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "2657f3b36c168fa6e5b58f675edeec4d3316c547f4f9792047bf9386e60dea2e"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_log_internal_fnmatch.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "dfb121122fd5b687d250aa89b492d6c8f13cd8274d611e2ce41a6cb4dcb3b81f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_log_internal_format.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "8f87ba91104ca2378142674a1b181ba6e3a068db57d605b1c43331e865ccaaa7"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_log_internal_globals.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "b4c9acf5a0b1ee2b19be0f477091405c713ccc969e418e9ed543d2c1f028ae89"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_log_internal_log_sink_set.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "ee367d82a446ae76290377984dd2532d237fb965d84c77a28655fdc0a56cd476"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_log_internal_message.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "bf727519b1db72cf15eab2c05276854078d93244ab741bbfe1f1d1d123f16620"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_log_internal_nullguard.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "c8e2340c79646a95c82006225db3bb6ef05346f106aecd0fb154650e7095139a"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_log_internal_proto.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "9e58f8dd6b7ae37cf66ab80cb42ea1fe1c73585def2e58d19d5350287b97d6f8"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_log_internal_structured_proto.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "39b4a71356e02b848a95ec8cff67410355a66125639c495a31724a475a594a7c"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_log_severity.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "6c055cd4d49dc57c6a2dc6467f2ffbb3e2edde947b299149bd5e7694cf830a11"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_log_sink.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "ddc7ead65d16058a0241115627223ab3339f512a546cd41bbc64d5e2a3ee4b0b"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_malloc_internal.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "ad397d95931a89cc77de9a5c02c8cd0c47b3847af8d7832b289abaf3e8ab9fa8"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_raw_hash_set.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "51220c9af13c02716eb881cdd08f2a9329f3c03595d83c71606d2e6a0e4b4bed"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_raw_logging_internal.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "3a3e857749d4f5988e0945dded00caddf1180b1c83103fedb3758dfa09e59055"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_source_location.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "ff821ad289dce5a14076d6ab756e73bc974bfe85d5eb74427e923f80ef7ac7e6"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_spinlock_wait.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "d69b4ce2f4953ece42f0126f64485580fccf84df297d888797cebc6122c1b7ae"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_stacktrace.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "3aa3252ee504e623d3fb2dd92906e8a924f04dc3834b7656ac6ec33b7666cb20"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_str_format_internal.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "dde08cb803046461b757b451f1b4fe18a760ae874f26c767250cbf15d5f63400"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_strerror.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "3648f22d467be8b1c2e04fbe7a10fc403f6797c2aa8998d9cccbd89f5ecf3f99"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_strings.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "efc20d130d6de52001bce402ab3459e690bd597f4c3e4868c82b03ad7acbd39a"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_strings_internal.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "be82188f12e8b2a35c94f1df852963a441ee3563192df0da9f8a5c0e2433adfb"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_symbolize.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "87a3528cb2899d86a68b19849fb52be4ed1fcbe9bf48ea47f961b94dc8078209"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_synchronization.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "89072290e199e9c67abf1cf0a2e661018468b698e5869d033318f53e19f256dc"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_throw_delegate.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "2d7fec18e992798180b5df50b1888acdf6b8b3cb3c9f4fa6041828aeb7964d64"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_time.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "9ddd1dd3d85b826b9caa9bde6c1071425e34da8d94f77d678d74bee22f72b5bc"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_time_zone.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "a44dbfe629b2e26a88890c44a136c4ffd3eec130db5b9fb4b0ddbc29f4609ad0"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_tracing_internal.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "f7659e2faa8e0dfbc02cc6c425698bdf3530a6bdcb2163fa7c97367f511af1e1"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_utf8_for_code_point.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "40c07a92a4cc6d38cfe13372f602fc562fdd042d5c7e512ad6a66dbe7dba70dd"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil/20260817.0/lib/libabsl_vlog_config_internal.2608.0.0.dylib",
+        "reason": null,
+        "sha256": "9850009aaf0ac64ddc034d7903e0367f0bcff388f8502f743a5dc0487e39bd42"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_base.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "bccabcd2b607863c93efc56b0f1618a07da449cfa124f3dbe86c7d61a8d227a0"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_city.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "12de153243e78423292c306b99456a1ba6659c50673e775714794a878184de67"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_civil_time.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "874a01fd3e6dcc8329762e41e3dbe4f6ad8267905ae0dcc288adbef01ef417ce"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_cord.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "27acb09456750241859f7a6cfd7e695fe5380573435fcc1992f454bc69f7f6e8"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_cord_internal.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "f5c139178876463d822b1bb4742a808b72c81c948cbc07e09b7fe7070d480b4f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_cordz_functions.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "eb301ac807e37f3f3415e32d88382b8b6c68ac36750fb9789c527eeb9554fa1f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_cordz_handle.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "ab2cc4b3c9996aa64a8b95fbd34e94794ee505c28674ce1afa07eac318862927"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_cordz_info.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "5875ea894316e9bc126b9d25f408329cab78ac420b4745eb6b832160cd8ac045"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_crc32c.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "906fdd531fee02ec1e311a907119b0512754402d2edfa1e197e7c2a746d6fed8"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_crc_cord_state.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "b8f507289fc0bcd93ce45e61998db8d1748526e43fdecfe0fb71e414a20a34ad"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_crc_cpu_detect.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "ad39fa3cbc3d6d540fc646619f4d361669443092c68aceffda8f1f2fca3ff674"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_crc_internal.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "b619cd80a1984706a1786e338f70579e5294494be1309c4eb4d2f9067ca23bf5"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_debugging_internal.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "42b41ef7f8e17169f64a6805117c241780be9541823008a80eea5f3e603c9dd4"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_decode_rust_punycode.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "636969eb7d38b2edde619d29a9deb4516c1c25ff79f1a794aecb2cd6c9eb7ecc"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_demangle_internal.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "f0f2dbdd465b3e973ebb28859aca72b65451421b25284a70526ac586b960d97a"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_demangle_rust.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "5a5aebdf004ecda7d68b9f5e378891f737d74719658b68302823a27ad990ac6e"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_die_if_null.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "207d0cb999de5468bbd3a89c8766efac99a65f9e832e15255d3eb5b746fd6fb8"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_examine_stack.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "b97dd032e68e055a9b4142fc95c1776d97976fc287e0dea0247089c921e8b6e8"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_exponential_biased.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "fa1153bfdb26997868644b40acc6af8c3200bf8eb5f025b26d51624f1bb38d38"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_flags_commandlineflag.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "0c1ac7692196ec57a19a64ea57991e2a3faff01a9a5cfb36cf991ac4bbbe3c3f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_flags_commandlineflag_internal.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "1e7dcae9fd33cb9e7799769d14f321f0d5ac80059bb2e97b706a4c195342032d"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_flags_config.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "0088bb2824a7a669067fe2511648de548705601a5cf950914765228fc4ede5c3"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_flags_internal.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "b41977c9f538141c1a466e6448d824f983262294065e7a0a24b30d4a00b2cc83"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_flags_marshalling.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "1f9b94175e9e01ca1303a3079c8fbc2293e4647845296e0a913c4ddae8962205"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_flags_private_handle_accessor.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "0234fd1ba38a4bb7d184a4d36b6ebbbf2d0ccc090489f6cef53f95669721e744"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_flags_program_name.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "0c206f4575646f8a2823b9fcda99aaeb9219f4e70ce1fbbe882704eeef815652"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_flags_reflection.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "a72f1ea67b21b3ed99f1deacda6b6534e4b1bbf9b456b26a04b63c99c5e1af4d"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_graphcycles_internal.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "c9bd7008408d035212127d661969a6614fb0b9152d09673d03196785f2dae8ad"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_hash.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "8286d35f6feb146c333103cc925cc68a086cf975bf1e6e812da4118bfb01aa2d"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_hashtablez_sampler.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "7b9ecafd689d95be221bc75da756cee859ef1483b26427c81cccdca219c86646"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_int128.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "9db74a3199083ba4d345515db16bc28652f81ae1ef37021d33427a8ea3e5fa3f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_kernel_timeout_internal.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "67c78993fa729da8fbb0d2eb2fb423ebe0439818ce20c15cb675e1d2ec6102b0"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_leak_check.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "18b83fd23447a17a81ebaccca5a3a33e1835b864684ec50e37bd9dd89b99a3ec"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_log_globals.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "0e5b135695d0a7bfbee3c42f5c87e2544d3d5b679354f662a4165b9a8b9c0f6f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_log_initialize.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "0ea3bbeafe407063f9ae97504584b51875cd5975f1ee7ecff68aebed9d2219da"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_log_internal_check_op.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "d281ecac09ec72f4bd6d239e8fffa8a9b0bcd2a22edf0bce0c832ec1e079549d"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_log_internal_conditions.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "629a819473f5c28a0b276361a026c3a54c11e70d15db5218e68ded2ff4f34ba7"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_log_internal_fnmatch.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "cf7b281a392fd9a8f014eb3c19db6a0ae78f5de09f0c95c959f789b15bb6b2ab"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_log_internal_format.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "5a1d4a91b5fededa3b16daecb3b961b13cd386c828ebeaed2af8989b1a0441ac"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_log_internal_globals.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "4df0c02fdb5bf37572f38585f5a8544a106c32413119971e8ab8f3a084e9fc60"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_log_internal_log_sink_set.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "7a81f2c785df122cfbc683954c92684e1bcb87e3ac47e2f531cc59715a1aaf06"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_log_internal_message.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "7dab73ff510780a58bfe5e5dcaba930fccc88ab848fb0c12f96c05af53cb8aac"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_log_internal_nullguard.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "8c89bccc781a42691608fca67fd1b5e8470425ecf84e7a363b454680b3330a43"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_log_internal_proto.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "2e939429c404ed0e832539522d53da00ca10355eb7c9f8aca05ca1ca7b28a887"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_log_internal_structured_proto.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "f586fe439e85804fd3ae5ff56c40816150c70b278c70e6186568b37d88ff24a3"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_log_severity.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "82078187019341c9ac6118743098f12cfd7b9005755c38a79abeacd7ae1d17b8"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_log_sink.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "16f547a54d2b41ecb03d039deb68f15f8d821d349354244641ca0bc4aee41292"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_low_level_hash.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "6942c07c263db5a45d5a5e007e2d0b343b388207b8a7d76f9208538bf6a3f4d9"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_malloc_internal.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "0bde26b7592f8f787f97977a2b5a7abb62c467a6e9642db88f9f057c7c95ef56"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_random_distributions.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "8b1825477780bef4679fb213ed1e0a018927d58900e8e9316ebd8b5f301254cc"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_random_internal_entropy_pool.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "26d1f02d13eeda78d7bfd7e35cfe5d8479566acb51f33e8361f7292cc72963af"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_random_internal_platform.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "14bd4a500a85893232d9d858266a567bc3956d687d54d696bdf6362ba02a2707"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_random_internal_randen.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "a407c8a44c67d7b87c9ab9c1dbe29402e3d9ea66384e4f035b653add6c7027d0"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_random_internal_randen_hwaes.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "ed572f9130ce2f0a115b7029e02854a73852ae10445a581f60d9a68d4cd6c92e"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_random_internal_randen_hwaes_impl.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "c835de3ce4446a9b03e82466a26b5efaf3812440cf10bfe59e257865c79a17f0"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_random_internal_randen_slow.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "29b3201d4a22d289e50cb3ebdbcc7861b5c06cdbb0e92dd2f34d04659e6c7979"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_random_internal_seed_material.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "8498bdf5ada6b5732166f13e1bb451169863217fd81b0f2378d7ebc6121d79e6"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_random_seed_gen_exception.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "0558d803e1d90ee14825457bc6962f2741647ff0bf2fd34f2dfbf645561b52ff"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_random_seed_sequences.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "02d5a3ecc6e00616b9c024831bf4693c711eb2a8122790793f43eb11564e5ad1"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_raw_hash_set.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "b3f7ed9c4ad24f558ade068e754d5a2062d222cf14e0579fe5b44be68aaf6a07"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_raw_logging_internal.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "9a2bf85a7ffeab8441189c35f561b4d1d590848bce53231f3bf898b15512b52b"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_spinlock_wait.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "a7edee20598262b78ac9416013d8a51249b827fb236143614fa8054f8c87b033"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_stacktrace.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "40567f1692b4a7b64cc573835e64c15f8c1364645c7b13454590cc93dba8c70c"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_status.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "4fe83bf2862a09697c6e705e5e75868c53b2310a0f05c9d2a3290e97f1230be6"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_statusor.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "3c19d9fe21c6b5bd7bc57f707a266269d35ba58caeddb507e7a7d6318c5ee74e"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_str_format_internal.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "682b129384eabb876c52d6036bca88b7a3e2400889e06470a49f04269774dc6f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_strerror.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "335d5a4397804c2dd01d8cf8ccffb4b62ca62f982c6b6a6e29a783478341e17f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_string_view.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "afedc144b8cb33d2f1ed95fd21358d8e85ff95863621ac7dc58269c3801a5919"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_strings.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "cabf2009dfcdae28857a48a35f793543147437e3213f190b4ff7f0329c1a4b4d"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_strings_internal.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "fc699af688bf480e3f035996892d7b4a846c21262b389c17c3e00d47333e5d48"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_symbolize.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "2d07e47752db3132fe985c9005df3dc5d3ccd2b94b77da7c7d09f0f121d7c4a3"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_synchronization.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "e5772103a5efe8cec0a421a75c261e0092f45b37a9ad3d5f2bcad4af3d228a7c"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_throw_delegate.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "39609c0f8300b45d46fc8522428d28a842934a14cb1f9e466b846a8c98556737"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_time.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "0af8d011394cafe64696bbaffe503407199d217c8ec6985cab6fcbdde82d90bb"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_time_zone.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "835d6e1204929a3fbbd82046a17d729ff2837a1ce126254c63f49ae3a49ee45f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_tracing_internal.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "f58f3d93ee02751f3b604efe6f45a469750ff1b986753a1e3848322997ce4c8f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_utf8_for_code_point.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "ba2424d493a75aa0a097bacab6c0315c2bcb3382d061c4dea578eac7715633d6"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/abseil@20250512.1/20250512.1/lib/libabsl_vlog_config_internal.2505.0.0.dylib",
+        "reason": null,
+        "sha256": "891d41509d4894bac12f0ed082b8248229b138d8446a32cad9a807df08c2aa5f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/aom/3.15.2/lib/libaom.3.15.2.dylib",
+        "reason": null,
+        "sha256": "67cd8b7921c0663607f44f21d26f227d8f62240845493724c1dd79b75a5e0eec"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/apache-arrow/26.0.0/lib/libarrow.2600.0.0.dylib",
+        "reason": null,
+        "sha256": "76e5621b0b45ae2dd949b12a624fe7d0e6c812c0c049e096b48889f8abd7e10c"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/apache-arrow/26.0.0/lib/libarrow_acero.2600.0.0.dylib",
+        "reason": null,
+        "sha256": "5f79c86e1a46ad022584960ceb06dfb41b405285d7ac1a50f9c7881f0d314c7f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/apache-arrow/26.0.0/lib/libarrow_compute.2600.0.0.dylib",
+        "reason": null,
+        "sha256": "dcd4e3aaf2a94c9079f85d79c9d76e9c0c0f569f06733343f06cfa70ab2f8fe7"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/apache-arrow/26.0.0/lib/libarrow_dataset.2600.0.0.dylib",
+        "reason": null,
+        "sha256": "c6c4d87f067689fcabf6599d771082fed4b8f029490d0d8d39abd76a1b2f6740"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/apache-arrow/26.0.0/lib/libparquet.2600.0.0.dylib",
+        "reason": null,
+        "sha256": "da51200944f1345b1b223a315882a3e135cbe7a46f1a433770523c3a25156615"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/assimp/6.0.5/lib/libassimp.6.0.5.dylib",
+        "reason": null,
+        "sha256": "da753af9482cb515ff60dfc6845e2ec516433a1ddc0c3dd8d4ab135a5a435cd5"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/boost/1.92.0/lib/libboost_atomic.dylib",
+        "reason": null,
+        "sha256": "cbb0ca3f0906999bfef951f408149bf581d1e3b0e184caf2f4f45696e5b2b6b0"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/boost/1.92.0/lib/libboost_chrono.dylib",
+        "reason": null,
+        "sha256": "4c802654455de23abbcb0310d874b6ba7f738a8b19f9794ab77131760040d534"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/boost/1.92.0/lib/libboost_container.dylib",
+        "reason": null,
+        "sha256": "8c83fa51d3d1cf9a173c021afe70910b9023cecdb5a8a5ead06a129a81e0ceab"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/boost/1.92.0/lib/libboost_date_time.dylib",
+        "reason": null,
+        "sha256": "757b90310013555eae7452a4999435f889246f03eda86f4847f0cfb924179ee1"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/boost/1.92.0/lib/libboost_serialization.dylib",
+        "reason": null,
+        "sha256": "83d38024bd03ebe9cdb3379a870a6398844377265526aafdc8ffb30e251cdfc7"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/boost/1.92.0/lib/libboost_thread.dylib",
+        "reason": null,
+        "sha256": "30588b0187d7e889a83b84c621024767d43b43b988c35dbc13160d9f86ea3af8"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/brotli/1.2.0/lib/libbrotlicommon.1.2.0.dylib",
+        "reason": null,
+        "sha256": "41ea919f6b53d772067477235cbe8fdf97aaad403c30a90512c6c4b17cd529ef"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/brotli/1.2.0/lib/libbrotlidec.1.2.0.dylib",
+        "reason": null,
+        "sha256": "23f7347022952e956a8fd9a045e32069c0d9adda23100af9d061502008976330"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/brotli/1.2.0/lib/libbrotlienc.1.2.0.dylib",
+        "reason": null,
+        "sha256": "6f07b64b1247ef2963b69813326a2ad363391e07b90e2dca6cf244f17176f884"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/bullet/3.25/lib/libBulletCollision.3.25.dylib",
+        "reason": null,
+        "sha256": "ce0092e23a6734f9bc8e455924b19815321a08ac8f4b2e781f1b6104fd79facd"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/bullet/3.25/lib/libBulletDynamics.3.25.dylib",
+        "reason": null,
+        "sha256": "1a01a74215f52a953072b26e73516c6951f964b9bfa3b938480df0ac6c9a579a"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/bullet/3.25/lib/libBulletSoftBody.3.25.dylib",
+        "reason": null,
+        "sha256": "8cb0f1d20a5f9dc1d3a3c677761be13f5bcfe5eccca50b8a536c17638a278cb4"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/bullet/3.25/lib/libLinearMath.3.25.dylib",
+        "reason": null,
+        "sha256": "5efedf0f0d7304e00628bef0a1254457d5f2ee0eb7e0c5c8a57f1eca7b441d75"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/c-blosc/1.21.6/lib/libblosc.1.21.6.dylib",
+        "reason": null,
+        "sha256": "c02a12c01c5ea2b6d56919479cf48ba4a193c6ead44f2103a9481f16f756739b"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/cfitsio/4.7.0/lib/libcfitsio.4.7.0.dylib",
+        "reason": null,
+        "sha256": "2c69ca314d2f7b0834a5dfb988dd932b157f5a8e992da7c241f1f7d600376064"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/console_bridge/1.0.2/lib/libconsole_bridge.1.0.dylib",
+        "reason": null,
+        "sha256": "fce9cf689bdfca8bc42bfdb7c3ec35d66810eb186d1535d552bb93056cab80de"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/dartsim/6.20.1/lib/libdart-collision-bullet.6.20.1.dylib",
+        "reason": null,
+        "sha256": "b33175c525dfbb798bbf3d9667a107074a3f9b1bdd5b2bacdc73b6763f9603f6"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/dartsim/6.20.1/lib/libdart-collision-ode.6.20.1.dylib",
+        "reason": null,
+        "sha256": "0cb08885379a86e41191bcb04834147260b661f74033448446278b6f23a6f62b"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/dartsim/6.20.1/lib/libdart-utils-urdf.6.20.1.dylib",
+        "reason": null,
+        "sha256": "89749306e1c02eeb5e0ff16537501ac4ab456494d3577633da818cef127b9ff0"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/dartsim/6.20.1/lib/libdart-utils.6.20.1.dylib",
+        "reason": null,
+        "sha256": "e6c3635077f5243fb379d31b1a22dc74a6009f26da7dc6dc5c0405b71f8d7501"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/dartsim/6.20.1/lib/libdart.6.20.1.dylib",
+        "reason": null,
+        "sha256": "d41915e7909f3874a95e8af1cd779a31b23fbd42904c207f4b7e14a9b6d41025"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/dav1d/1.5.4/lib/libdav1d.7.dylib",
+        "reason": null,
+        "sha256": "60c3a42a79582241ac77bbbba4c0137c2209204aecbc59e5d6392c2dc0a5b439"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/fcl/0.7.0_2/lib/libfcl.0.7.0.dylib",
+        "reason": null,
+        "sha256": "ad23d3a9cf676e8e9bc093b6771e35e0f3e6a37f12ae8ca874e259a2fe7c3571"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ffmpeg/9.0.2_1/lib/libavcodec.63.1.102.dylib",
+        "reason": null,
+        "sha256": "5e2bc605d66ec9b942371c44c2fe83f7ddcffc348147166a8876394bb61820fc"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ffmpeg/9.0.2_1/lib/libavdevice.63.1.102.dylib",
+        "reason": null,
+        "sha256": "8b6c736890c09f2e9d50a28843b0b6f54ede3d08cb37b7597e81e048a0b0cbef"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ffmpeg/9.0.2_1/lib/libavfilter.12.1.102.dylib",
+        "reason": null,
+        "sha256": "5702ff009d108502784190fae5b9ac1b90544e26d6eec70e25a5187c5d1ac61e"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ffmpeg/9.0.2_1/lib/libavformat.63.1.102.dylib",
+        "reason": null,
+        "sha256": "2256bc325f150c88dedcbf94fe176ed5bf2f9174a2b511e6d420de3fc096b75d"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ffmpeg/9.0.2_1/lib/libavutil.61.1.102.dylib",
+        "reason": null,
+        "sha256": "2b2fe2cdebe2cdeb70f67be69ed2b9aba686c36a577db84be761061fcedbebd6"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ffmpeg/9.0.2_1/lib/libswresample.7.1.102.dylib",
+        "reason": null,
+        "sha256": "287d38f22f66b60f7d0877bd94d3f22aa7a6bad57a8075b81ac75e316e1010b8"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ffmpeg/9.0.2_1/lib/libswscale.10.1.102.dylib",
+        "reason": null,
+        "sha256": "97e06d5a1cbbcfc133d06de01ccf0f59a79121fd8122597053bbf41604a649d4"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/fmt/12.2.0/lib/libfmt.12.2.0.dylib",
+        "reason": null,
+        "sha256": "17e8718d2cff524a1433f9fcaf4e16e26aae70ab374b5dbbceafd7b4af647f95"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/fontconfig/2.18.3/lib/libfontconfig.1.dylib",
+        "reason": null,
+        "sha256": "e1f5e06e8339b42f0e1af11cc77979ef6a8f48ffa7588e4dc243e4bd69ea656d"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/freeimage/3.18.0/lib/libfreeimage.3.18.0.dylib",
+        "reason": null,
+        "sha256": "6d266cf51f16a87f219b16a7e36162d842f0e46b5396890685cec5adcb36d6f9"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/freetype/2.15.0/lib/libfreetype.6.dylib",
+        "reason": null,
+        "sha256": "9c99ad47dbf9f90b5cc1732a58fbcf62bc7b7175f75a431ddd7207e7457e00d7"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/freexl/2.0.0/lib/libfreexl.1.dylib",
+        "reason": null,
+        "sha256": "9ba23f32e5840832fe1b549a2528230ee6a11a14e9de2e8ea577be97feac5f56"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/gdal/3.13.3_5/lib/libgdal.39.3.13.3.dylib",
+        "reason": null,
+        "sha256": "cfd0bf6ebf2a7d26459b6ca2180b3790d81f7b4e39709c2acb298b014b6f3844"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/geos/3.15.0/lib/libgeos.3.15.0.dylib",
+        "reason": null,
+        "sha256": "fb83c87fc758dd8db3b3872179b7efb08e64721eb323ea6f0784dbf238b5022d"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/geos/3.15.0/lib/libgeos_c.1.21.0.dylib",
+        "reason": null,
+        "sha256": "de49f1c3615f4a4648e4777c813ada45feca1e28501d9c9334c26e519a88bd90"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/gettext/1.0/lib/libintl.8.dylib",
+        "reason": null,
+        "sha256": "0c6d618e75fea85cc3d631e164a71766fba9341d19ce1f723300c52e63037c51"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/gflags/2.3.1/lib/libgflags.2.3.0.dylib",
+        "reason": null,
+        "sha256": "250d086291645b337defd6af5736db421b0f3cd4161daba73565de06e7d03730"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/giflib/6.1.3/lib/libgif.7.2.0.dylib",
+        "reason": null,
+        "sha256": "28c4eba8514d460ac97b132cda6c5ce1facae87af1aea43000574040123f769e"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/glib/2.90.1/lib/libglib-2.0.0.dylib",
+        "reason": null,
+        "sha256": "e26ce5eb044e7420d616faf29cd2b4956b2a692cd0540aef92c35311b4fe0959"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/glib/2.90.1/lib/libgmodule-2.0.0.dylib",
+        "reason": null,
+        "sha256": "fc03e5c25eabc8b9de341d7a4a80c178b50a949cd2ec7f32692ce93b3ecb2a8a"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/glib/2.90.1/lib/libgthread-2.0.0.dylib",
+        "reason": null,
+        "sha256": "9bf5425a252a433b99be262da0582ef8da2dd2f1fd909b114d468ad8c8b8658e"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/glog/0.7.1/lib/libglog.0.7.1.dylib",
+        "reason": null,
+        "sha256": "edfe1f1d663d360ab4fe3abb431bc1069bcd765e2699624b70619df9bbd70578"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/gmp/6.3.0/lib/libgmp.10.dylib",
+        "reason": null,
+        "sha256": "bc6145edbeca608b4fecd4440dbbd7b27cacd55cbfd2b552b8bc333febe43b35"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/gmp/6.3.0/lib/libgmpxx.4.dylib",
+        "reason": null,
+        "sha256": "85f9c1c2df8b07456b0ca126cea95a7db478ba51e5d49855a1c8a991ab8ed7c9"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/gpgme/2.2.0/lib/libgpgme.45.dylib",
+        "reason": null,
+        "sha256": "a496318cbd29d558c1b7670e7f3336e1d597c2a6d57d99e004b878c5fdd88977"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/gpgmepp/2.2.0/lib/libgpgmepp.7.2.0.dylib",
+        "reason": null,
+        "sha256": "de87ae41d77dd3de2e3a4b32c486434e0b346c49960bdcddf65b172ff8b3afd0"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/graphite2/1.3.15/lib/libgraphite2.3.3.1.dylib",
+        "reason": null,
+        "sha256": "bd58652128a60d219b01428fe26584ade017a8126ac688561c3d093b8a9ad0e9"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/gts/0.7.6_4/lib/libgts-0.7.5.dylib",
+        "reason": null,
+        "sha256": "e8507d03c0f2a7de75cf6fcaa82e0d522211735d73de91244cca92b9e2d4ca37"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/harfbuzz/14.6.0/lib/libharfbuzz-subset.0.dylib",
+        "reason": null,
+        "sha256": "fd309cc9e95e8b966a8cb18fc0ffdc21594765c9ba6c7f17d4a347e65df0edfc"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/harfbuzz/14.6.0/lib/libharfbuzz.0.dylib",
+        "reason": null,
+        "sha256": "f20dd0500aab4b9ef2e87488a7c07df455d05dac94bddc2c81268a0d05648f01"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/hdf5/2.2.0/lib/libhdf5.320.2.0.dylib",
+        "reason": null,
+        "sha256": "b96f5a824802e985198fb58fc336da80fc6a4990249f4038656b433231c7da51"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/hdf5/2.2.0/lib/libhdf5_hl.320.0.3.dylib",
+        "reason": null,
+        "sha256": "e6e540adee7e76b354bb3e620fdb9cfd5ccf1ff0f716d865b3432d213382dff2"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/highway/1.4.0/lib/libhwy.1.4.0.dylib",
+        "reason": null,
+        "sha256": "0fc277f73b3acfd30bf50ced40236b94a983a34f4bb55fa27d8932c870bfd5e8"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/imath/3.2.3/lib/libImath-3_2.30.3.2.3.dylib",
+        "reason": null,
+        "sha256": "5f8f052455e1f32fe968a0f68b8ae86e69da954ff79755f9a94ac4b424a6fd4c"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/jpeg-turbo/3.2.0/lib/libjpeg.8.3.2.dylib",
+        "reason": null,
+        "sha256": "e17205913bfdb5535bbdbc7127d0eeb0970f5e6c85f68f0c75a1e711878e1e3a"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/jpeg-xl/0.12.0_1/lib/libjxl.0.12.0.dylib",
+        "reason": null,
+        "sha256": "50ccacb1eccf7f398d556507a9181504107b6909a7e13806a37cb24866218d2d"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/jpeg-xl/0.12.0_1/lib/libjxl_cms.0.12.0.dylib",
+        "reason": null,
+        "sha256": "fc0d4d74ec3888c430545fadb8fce168cdc127aac8dd25fd981df9072cf6bb71"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/jpeg-xl/0.12.0_1/lib/libjxl_threads.0.12.0.dylib",
+        "reason": null,
+        "sha256": "8674fbeffb49093aaa280c9948f9016904b3818e6d67ed29eef8d1617fce1809"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/json-c/0.19/lib/libjson-c.5.5.0.dylib",
+        "reason": null,
+        "sha256": "3d3b13da311c2023983fc11cf63f0e2f105370b79198ebbc2db5b9cb920e3d92"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/jsoncpp/1.9.8/lib/libjsoncpp.27.dylib",
+        "reason": null,
+        "sha256": "36706a12e2aa980c58145434ed679d873f7d38f38af3d897dd5baaf1dfb91898"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/krb5/1.22.2_2/lib/libcom_err.3.0.dylib",
+        "reason": null,
+        "sha256": "cb4cf213d6e8bffe9936ead7a2465b01f65638c41e459c6c8e07195135f3940f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/krb5/1.22.2_2/lib/libgssapi_krb5.2.2.dylib",
+        "reason": null,
+        "sha256": "8b9bde83d4d86cdf12915ebc7497e828fd85662802f701e25871dd41083c6102"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/krb5/1.22.2_2/lib/libk5crypto.3.1.dylib",
+        "reason": null,
+        "sha256": "806151357254135fbaf46025efb7c71faa071fc0293f38bdd3c15a0a84bd025e"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/krb5/1.22.2_2/lib/libkrb5.3.3.dylib",
+        "reason": null,
+        "sha256": "ee449a7e874be399542d0c670bc18bbf912f9bfb3312ac392c2ee91e8be7bf91"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/krb5/1.22.2_2/lib/libkrb5support.1.1.dylib",
+        "reason": null,
+        "sha256": "13c6a12bf1aeb126f6c24f9537ef1f342e517aeb88ac95ff3954e1627dc9c1c9"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/lame/4.0/lib/libmp3lame.0.dylib",
+        "reason": null,
+        "sha256": "463453796b54698b8016af58ab86066ffbafe5229c10c500e4fe6b92d7a63934"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libaec/1.1.7/lib/libaec.0.1.7.dylib",
+        "reason": null,
+        "sha256": "1ff16e1d50c0efdfeefddee6b8462e3f30b1528818940a9b7e9f92a051647869"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libaec/1.1.7/lib/libsz.2.0.1.dylib",
+        "reason": null,
+        "sha256": "0a09955ab932b9b64a74cedaf4a6780f06f2283023049c72e0fe51b6957aaa41"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libarchive/3.8.10/lib/libarchive.13.dylib",
+        "reason": null,
+        "sha256": "9b82791dbc703904c83c97d7d3e857a9bc1738522350503a80fd7fcbcca8f1db"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libassuan/3.0.2/lib/libassuan.9.dylib",
+        "reason": null,
+        "sha256": "21b69386f11bae635b5d374e4299068718c11530be06d67b41d70c21214d283d"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libb2/0.98.1/lib/libb2.1.dylib",
+        "reason": null,
+        "sha256": "6dd3ad884f40a9137030cbf00666129d551cb6bebb17aa3c13ba7ff992615285"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libccd/2.1_1/lib/libccd.2.0.dylib",
+        "reason": null,
+        "sha256": "c5423a3fa8850181f5151f9671a1184e6d3810b72cf2f23e2de2e66096cb17e4"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libde265/1.1.3/lib/libde265.0.2.3.dylib",
+        "reason": null,
+        "sha256": "8be73fb1ba62506ec2ded3c74b0bf0ef8e94ac93e4b3138909cf8c7fd637df6a"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libdeflate/1.26/lib/libdeflate.0.dylib",
+        "reason": null,
+        "sha256": "9d9dbada77f94f88e856d42731b1dc9f0004e922aa4c441557f383b2cdf5fcb0"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libgeotiff/1.7.4/lib/libgeotiff.5.dylib",
+        "reason": null,
+        "sha256": "9b0c2787a6156fe6c7a21a281d468918f35ee38f9a1a548d4eb199af8324d13c"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libgpg-error/1.61/lib/libgpg-error.0.dylib",
+        "reason": null,
+        "sha256": "8d71d115883e68055c0f81356394bb059eefc0829d13b2dd673cba9641fc452d"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libheif/1.23.6/lib/libheif.1.23.6.dylib",
+        "reason": null,
+        "sha256": "be023e91bb7a1d75eb8cc46544897cd9342b4c1e0236f9fb323e9ef012a72253"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libkml/1.3.0_1/lib/libkmlbase.1.3.0.dylib",
+        "reason": null,
+        "sha256": "bf2680b79fe0f95eb142ea50c66d5c2e9754ec28359f23e0170583ac4ad4b716"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libkml/1.3.0_1/lib/libkmldom.1.3.0.dylib",
+        "reason": null,
+        "sha256": "cd86361853b37db0608f911c31c78c1eebab6b0644ef7ca2d7c06f4cd9a77c47"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libkml/1.3.0_1/lib/libkmlengine.1.3.0.dylib",
+        "reason": null,
+        "sha256": "855439fcd9d64d0eb5a25e560a47f583cd317b3539f40f5882d4640901e298bd"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/liblerc/4.2.0/lib/libLerc.4.dylib",
+        "reason": null,
+        "sha256": "e51334c7bff0ae09da61342517b69d9d8bed961323e47c5f45ed8fb63c4361d4"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libpng/1.6.59/lib/libpng16.16.dylib",
+        "reason": null,
+        "sha256": "ec95a41f112fac5e0b077f129bccc67acf9b5ad1a01f56cc0ecebae2a8727ff2"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libpq/18.6_1/lib/libpq.5.dylib",
+        "reason": null,
+        "sha256": "5bc129877fbe56bae84540b64907ab8e830ca6cafd4787e76ffbcd95a04b2551"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/librttopo/1.1.0/lib/librttopo.1.dylib",
+        "reason": null,
+        "sha256": "7a2b0413be19e60e324cc46230b1b7bdb444aff6df315afc5e7256bf76f8a723"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libsodium/1.0.22/lib/libsodium.26.dylib",
+        "reason": null,
+        "sha256": "92ec108bf29e234e583e1108a7184e6278906492021f8fa2df7192f247531c9f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libspatialite/5.1.0_4/lib/libspatialite.8.dylib",
+        "reason": null,
+        "sha256": "98d78f54990194a9e45cb2411f0b27f88d28b990a92ee97ecbae8cc578c4ff54"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libtiff/4.7.2/lib/libtiff.6.dylib",
+        "reason": null,
+        "sha256": "168c75754e1cb9ac3ee714103df24e35e510106cf9fe9a4499c3bcfbb330ae4c"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libtool/2.6.2/lib/libltdl.7.dylib",
+        "reason": null,
+        "sha256": "f67fb4e10755173fccd7c84d92cdcc77d1709e98de748ad6d844f4f752f898cf"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libvmaf/3.2.1/lib/libvmaf.3.dylib",
+        "reason": null,
+        "sha256": "f9ca4510cb08cca61ecd571fc417f2b4440c25555fbeefdb4b5477a35891de1c"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libvpx/1.17.0/lib/libvpx.12.dylib",
+        "reason": null,
+        "sha256": "443cd530535e976a7fe96a027f3e65acebf41a7055005732422309c207089937"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libxml2/2.15.4/lib/libxml2.16.dylib",
+        "reason": null,
+        "sha256": "bcd9f0c670d63a4bf4ed72d53ec88913c1795e65b642c1ecaa9c46288c64459a"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libyaml/0.2.5/lib/libyaml-0.2.dylib",
+        "reason": null,
+        "sha256": "8d6a60c8d8b91810f60e3fa1094d8c01fe79dad0f787fce8c1dbd59cccee99bb"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libzip/1.12.1/lib/libzip.5.6.dylib",
+        "reason": null,
+        "sha256": "3b12ecd196a1d4ade279d8b8392ad6c71c3e9ef2ff27f948f885def0bdabcac9"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/libzzip/0.13.80/lib/libzzip-0.13.0.80.dylib",
+        "reason": null,
+        "sha256": "6f8654c532d5913109facb3759ae30686c2c6dbbfb7f9dda979a9f632a38c39a"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/little-cms2/2.19.1/lib/liblcms2.2.dylib",
+        "reason": null,
+        "sha256": "faf9c8f2322a2bb47d04d3077a79cc7103fba68a186697cf91e5f6ef467d1b77"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/lz4/1.10.0/lib/liblz4.1.10.0.dylib",
+        "reason": null,
+        "sha256": "3ce8bec34557e6a5c76129cef6588dc59959caa51e1e54321f45ea7c6e528e07"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/md4c/0.6.0/lib/libmd4c.0.6.0.dylib",
+        "reason": null,
+        "sha256": "ed57c14b5540e007e3657b4b5e9bb4a173367e8f8bda2b761c90c2253e551e05"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/minizip/1.3.2_1/lib/libminizip.1.dylib",
+        "reason": null,
+        "sha256": "a6c4414bcca37e638468d7584e0290add106bb13b0c7e55c8cf2eccf51b52f0a"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/mpfr/4.2.2/lib/libmpfr.6.dylib",
+        "reason": null,
+        "sha256": "6104afef4268465921ec7b1b303c6ce979341b654ae1f6edd1310feafe715bfc"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/mpg123/1.33.7/lib/libmpg123.0.dylib",
+        "reason": null,
+        "sha256": "435f7bc76659569772b1a90b049a28fe17bc0d605525f1061f830c119807718a"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/netcdf/4.10.1_1/lib/libnetcdf.22.dylib",
+        "reason": null,
+        "sha256": "804ebf34810dd7fec8dec2f3e86d5f11b4224069a3456d58337bfd8a7369be94"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/nspr/4.40/lib/libnspr4.dylib",
+        "reason": null,
+        "sha256": "49586fab5e60aacac5066eec415e3528c89d95c9426e240d2e6e152136f14bf8"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/nspr/4.40/lib/libplc4.dylib",
+        "reason": null,
+        "sha256": "a7b2e94d119be571d130b759f4c977187fa05705846013942efe2889094f791b"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/nspr/4.40/lib/libplds4.dylib",
+        "reason": null,
+        "sha256": "f81d9f488d6dc34e640136f31b2c7cacbaaeec12135c5bed7cfbbf4f6df4e2fc"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/nss/3.131/lib/libnss3.dylib",
+        "reason": null,
+        "sha256": "75a3d6c3083247df97121b0975049a8997715c7f1c4ac4958704856a26ca0a65"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/nss/3.131/lib/libnssutil3.dylib",
+        "reason": null,
+        "sha256": "32ee4dc033cd531258471010433f900ad61d83c2f0e1ae05788a686197943238"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/nss/3.131/lib/libsmime3.dylib",
+        "reason": null,
+        "sha256": "06a435293599ddf2affa42f80149f11a00c761d8faaae8ad63b1b2d1cce827dd"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/nss/3.131/lib/libssl3.dylib",
+        "reason": null,
+        "sha256": "39fbef36cc724579ed4cf64262aec10c734bf857a679c5f663c6008b4b83d56f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/octomap/1.10.1/lib/liboctomap.1.10.1.dylib",
+        "reason": null,
+        "sha256": "dab282a4f0faf13c3d7efc27cfc568493da63f01d57dd0cad6a9e5c6169606ff"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/octomap/1.10.1/lib/liboctomath.1.10.1.dylib",
+        "reason": null,
+        "sha256": "159a9252b9e3c544546276dabdf6914f506be27ace4662923bf703b7f9d6672a"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ode/0.16.6/lib/libode.8.dylib",
+        "reason": null,
+        "sha256": "3a777ee8463a791fc481c114c4bc9743631463a2af19b16a3d19f9c20ea1ae72"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ogre2.3-with-freeimage/2.3.1_1/lib/OGRE-2.3/OGRE/Plugin_ParticleFX.2.3.1.dylib",
+        "reason": null,
+        "sha256": "21027bc42dcbbfed28a41458061dfa6bf447d6ba28656f17f13ae73fff652ecf"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ogre2.3-with-freeimage/2.3.1_1/lib/OGRE-2.3/OGRE/RenderSystem_GL3Plus.2.3.1.dylib",
+        "reason": null,
+        "sha256": "93ef33099bda132a951ac78e61530c6c01633d6070a7932f203203015aba3bb9"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ogre2.3-with-freeimage/2.3.1_1/lib/OGRE-2.3/OGRE/RenderSystem_Metal.2.3.1.dylib",
+        "reason": null,
+        "sha256": "6c9d69dc74dd7d5626a05a69b698dc311d3e99533cfe1c238f99d2d0951fb9e4"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ogre2.3-with-freeimage/2.3.1_1/lib/libOgreHlmsPbs.2.3.1.dylib",
+        "reason": null,
+        "sha256": "9126e8b5122b76f651be733840e9d6af470eebc1806fc58a17918a62680dcaac"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ogre2.3-with-freeimage/2.3.1_1/lib/libOgreHlmsUnlit.2.3.1.dylib",
+        "reason": null,
+        "sha256": "798f2536e78745b815d12b5e62698a726515c44bcb43594eeb8098f524697e9d"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ogre2.3-with-freeimage/2.3.1_1/lib/libOgreMain.2.3.1.dylib",
+        "reason": null,
+        "sha256": "c142418c5ad33c1b65395ae21f80d0d32a032b3ed08b6aee8fdfd200e5ba78a9"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ogre2.3-with-freeimage/2.3.1_1/lib/libOgreOverlay.2.3.1.dylib",
+        "reason": null,
+        "sha256": "b217ee1279637935ebae3910846945a184f421bb5d09c4a4c9dbfcec37cddeb8"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ogre2.3-with-freeimage/2.3.1_1/lib/libOgrePlanarReflections.2.3.1.dylib",
+        "reason": null,
+        "sha256": "8ea59f8bc3253c7908eeb45ad5500d50750d31e5f23a2f9c9112dd1723b0dc25"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/openexr/3.5.2/lib/libIex-3_5.34.3.5.2.dylib",
+        "reason": null,
+        "sha256": "6f1f07303956106ffbef0abc5588f9f0fa1a38fee0a004dd738570f11af41f64"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/openexr/3.5.2/lib/libIlmThread-3_5.34.3.5.2.dylib",
+        "reason": null,
+        "sha256": "46c68e23044d8ddaa44f1a030ccdd559be3db5c096387034266431b81624f358"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/openexr/3.5.2/lib/libOpenEXR-3_5.34.3.5.2.dylib",
+        "reason": null,
+        "sha256": "f95316b0362bbf526569202d0c0407727442905ad89dd23bc8282e8f0ae0e51b"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/openexr/3.5.2/lib/libOpenEXRCore-3_5.34.3.5.2.dylib",
+        "reason": null,
+        "sha256": "c1cc5e4c722c774716f716ab1456b060fdcee1af1952737594422a04952bc2a6"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/openexr/3.5.2/lib/libOpenEXRUtil-3_5.34.3.5.2.dylib",
+        "reason": null,
+        "sha256": "381d271ef2e235e0e8ec2625a5a6c655bfaf8d547530392b6e808a7b100261f2"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/openjpeg/2.5.4_1/lib/libopenjp2.2.5.4.dylib",
+        "reason": null,
+        "sha256": "c8fd43fda13bdaf36b78e570cbe69865bbbc012f7a32659aa6f77019de170968"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/openjph/0.32.0/lib/libopenjph.0.32.0.dylib",
+        "reason": null,
+        "sha256": "e3ed75fcdb86ee16e590c8322804dcbe26577ada4839957f0c2775761955753f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/openssl@4/4.0.3/lib/libcrypto.4.dylib",
+        "reason": null,
+        "sha256": "5258d66dd91140ab48fdf294c4cfd752e2d99e7f93fc620d91a2226492518d4d"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/openssl@4/4.0.3/lib/libssl.4.dylib",
+        "reason": null,
+        "sha256": "30e9143e497a5c94cf7d46ac2985da20f3a0e15097e0711e71b5dd95a537d8e0"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/opus/1.6.1/lib/libopus.0.dylib",
+        "reason": null,
+        "sha256": "d67df1a91ad4c8b9bc5b0490930d074231587bae46063165ceb8b86d7e13f5e6"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/pcre2/10.49/lib/libpcre2-16.0.dylib",
+        "reason": null,
+        "sha256": "4438addca54f891b4b11c9190a9a7f9bd65925a8146a5781f41d5a6ceed9588c"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/pcre2/10.49/lib/libpcre2-8.0.dylib",
+        "reason": null,
+        "sha256": "c3adcd954967b7e92812831fe12c614a9ca2d12221e897a87ee379df2ac004fd"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/poppler/26.10.0/lib/libpoppler.165.0.0.dylib",
+        "reason": null,
+        "sha256": "14b8c352bcca166305d85a5d17c8ff144d7feb02ddb951d56efd31c58c573a60"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/proj/9.9.0/lib/libproj.25.9.9.0.dylib",
+        "reason": null,
+        "sha256": "285f9a6df7c9f2af73905fba6342d114500ebe535891d5e2439ae1f594b1b925"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/python@3.14/3.14.8_2/Frameworks/Python.framework/Versions/3.14/Python",
+        "reason": null,
+        "sha256": "a7ae161bacac4767424fccbcb7d94a299d7c6b2972c7a2a8f6d2063bcbb02641"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/python@3.14/3.14.8_2/Frameworks/Python.framework/Versions/3.14/lib/python3.14/lib-dynload/fcntl.cpython-314-darwin.so",
+        "reason": null,
+        "sha256": "d357c8e119766df00cd94bf6222d7ef0959a5d7f8c96f01be09d9c534f92482d"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/python@3.14/3.14.8_2/Frameworks/Python.framework/Versions/3.14/lib/python3.14/lib-dynload/grp.cpython-314-darwin.so",
+        "reason": null,
+        "sha256": "e4dd51dd8f51d4ab2c2826b8b7c5162604136eb275b303f69222724f2a4ad5f8"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/qhull/2020.2/lib/libqhull_r.8.0.2.dylib",
+        "reason": null,
+        "sha256": "041acbb333d090a93dbe600e446fed99214d16e9c2d3d14142f26e162cbced7f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/qt@5/5.15.19/lib/QtCore.framework/Versions/5/QtCore",
+        "reason": null,
+        "sha256": "fb04ab1bcb5669d7e5d94ed2e2689fc5742e167a550d139905bedf76fbc9c891"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/qt@5/5.15.19/lib/QtGui.framework/Versions/5/QtGui",
+        "reason": null,
+        "sha256": "92dab8e6098700935209d591c46f6be2585f1d25d3c1f821c00f24814483f627"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/qt@5/5.15.19/lib/QtNetwork.framework/Versions/5/QtNetwork",
+        "reason": null,
+        "sha256": "e58e6ec178c36afd6bb9a6141ab3bd68d19a453777e2a321d3a72455c206a8a8"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/qt@5/5.15.19/lib/QtQml.framework/Versions/5/QtQml",
+        "reason": null,
+        "sha256": "c60700f58034b5937a4443e193957597dc1d909021530cdba65ba615e39bcc77"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/qt@5/5.15.19/lib/QtQmlModels.framework/Versions/5/QtQmlModels",
+        "reason": null,
+        "sha256": "bfee54a6acb078191fb0293e4950e622df3eb944c73bd4fd859e72a494170f0f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/qt@5/5.15.19/lib/QtQuick.framework/Versions/5/QtQuick",
+        "reason": null,
+        "sha256": "d91f82aca3a55038350fe3ea8e07c71e3173c9062ffa71027302292e31229b55"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/qt@5/5.15.19/lib/QtQuickControls2.framework/Versions/5/QtQuickControls2",
+        "reason": null,
+        "sha256": "d88d22cbb71d26bf72c4900334174443c3fae2a37a909a85addec526bfae1f34"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/qt@5/5.15.19/lib/QtQuickTemplates2.framework/Versions/5/QtQuickTemplates2",
+        "reason": null,
+        "sha256": "edd3383a38887394032ab5d0b77d79219e70280079109ea454a48bf381395e88"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/qt@5/5.15.19/lib/QtWidgets.framework/Versions/5/QtWidgets",
+        "reason": null,
+        "sha256": "7fe8e82b543f65ffd8b3007135f701fdd893111c64207df563bf835b4abd4222"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/re2/2025-11-05_2/lib/libre2.11.0.0.dylib",
+        "reason": null,
+        "sha256": "6897b2d236c45781cf190beb219431fd941bb6d3c4fc3e7156ee61042432daa8"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ros2-jazzy/26.07.31.106/lib/liboctomap.1.9.8.dylib",
+        "reason": null,
+        "sha256": "b334699bebb6a6ce11f722d0f8bce3c312a4dc22cbe970f8995e34baca063227"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ros2-jazzy/26.07.31.106/lib/liboctomath.1.9.8.dylib",
+        "reason": null,
+        "sha256": "0003ce5c4ee29b16ce1c86bdf6502907577898da38616437d7f15bb53aca7d6c"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ros2-jazzy/26.07.31.106/lib/liburdfdom_model.4.0.dylib",
+        "reason": null,
+        "sha256": "9fd375c820b122d9768e1e152072e9a3abc6ab6369967845f0994f09d713ab3d"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ros2-jazzy/26.07.31.106/lib/liburdfdom_model_state.4.0.dylib",
+        "reason": null,
+        "sha256": "2440b369886e2f4ab651ebc3a67f487590d51594c7a115a2360cc46d613e221f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ros2-jazzy/26.07.31.106/lib/liburdfdom_sensor.4.0.dylib",
+        "reason": null,
+        "sha256": "f18d13b0679e699fbc52c82081e173739deb090770befa78c40c2007d195afe3"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ros2-jazzy/26.07.31.106/lib/liburdfdom_world.4.0.dylib",
+        "reason": null,
+        "sha256": "c5eae1f50a480db91c0c3f2ef27ef421a7fd18e1e6200dd3d9f77974ce8a0586"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ruby/4.0.7_1/lib/libruby.4.0.dylib",
+        "reason": null,
+        "sha256": "ef4cfe369c568f05db0195c1dfac0f67306abe517854fb759433233202595316"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ruby/4.0.7_1/lib/ruby/4.0.0/arm64-darwin25/cgi/escape.bundle",
+        "reason": null,
+        "sha256": "c43412cb1bf90d49c59561719f47f163a055c8ef8972b127262a4faa1fc5e57e"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ruby/4.0.7_1/lib/ruby/4.0.0/arm64-darwin25/date_core.bundle",
+        "reason": null,
+        "sha256": "cf511e70389c3e72d1192f990257096c1e1d1970e4d6a8229dd7f56b37b5bc7a"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ruby/4.0.7_1/lib/ruby/4.0.0/arm64-darwin25/enc/encdb.bundle",
+        "reason": null,
+        "sha256": "b4ce6de6a6546165dfb8f5bc0ea74bc1c2d22c66cd9d3c521c867ca7bc1470be"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ruby/4.0.7_1/lib/ruby/4.0.0/arm64-darwin25/enc/trans/transdb.bundle",
+        "reason": null,
+        "sha256": "3ae85d7e68b8280797a3d5d3a75e839a253123bad5ccbcaaee16783578e5b9d2"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ruby/4.0.7_1/lib/ruby/4.0.0/arm64-darwin25/erb/escape.bundle",
+        "reason": null,
+        "sha256": "7093af48dd7a9df9f317d38a0f89bdf335012df508c472d121bbb54f88295760"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ruby/4.0.7_1/lib/ruby/4.0.0/arm64-darwin25/monitor.bundle",
+        "reason": null,
+        "sha256": "7b69f6a0ae31fbddbb1aa412aa38798777efcd5467520f7c7d262cdd3bfbbcb0"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ruby/4.0.7_1/lib/ruby/4.0.0/arm64-darwin25/psych.bundle",
+        "reason": null,
+        "sha256": "a15a75c6394504393c3eeca0874b4b962916b6d054fc2c7057f43c8c82eb9d7e"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ruby/4.0.7_1/lib/ruby/4.0.0/arm64-darwin25/strscan.bundle",
+        "reason": null,
+        "sha256": "f2989bc6bdc8ebfe6c3a06429b5344985f3656a4961444fb61f4e53562bd5c47"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/ruby/4.0.7_1/lib/ruby/gems/4.0.0/extensions/arm64-darwin-25/4.0.0/fiddle-1.1.8/fiddle.bundle",
+        "reason": null,
+        "sha256": "66a5d37523f1e8d60dbab4378ae8671b0e562bfc5bce55ecb558db0b917bfebe"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/sfcgal/2.3.0_1/lib/libSFCGAL.2.3.0.dylib",
+        "reason": null,
+        "sha256": "1a3fa8d9dc510695499e1b2b42116d5056f416566a4559f3f664b4078d40e574"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/simdjson/5.0.5/lib/libsimdjson.34.0.0.dylib",
+        "reason": null,
+        "sha256": "b21c6d4c4bd2a1ed3f43b4ca519a08b16d3f0be70b9584ec53236f9672c98d0f"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/snappy/1.3.1/lib/libsnappy.1.3.1.dylib",
+        "reason": null,
+        "sha256": "edd2354aa23aac274c790a68a12a7bb1949ab4e2d362a69e26fcd6d2fef180c8"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/sqlite/3.54.1/lib/libsqlite3.3.54.1.dylib",
+        "reason": null,
+        "sha256": "996baaf61d06ff542bf73a2455027af5ed1af6b2065581bd4deba96a9a018a92"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/svt-av1/4.2.0/lib/libSvtAv1Enc.4.2.0.dylib",
+        "reason": null,
+        "sha256": "bac7066bcd47c31971f61e57cdd0eccabb2ec2ef3ca5aa1e08bd5ca51cd54608"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/thrift/0.25.0_1/lib/libthrift-0.25.0.dylib",
+        "reason": null,
+        "sha256": "7810392467b5674d709933af0326d0c449fd392157b9ef1432fc24a0d21265d1"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/tinyxml2/11.0.0/lib/libtinyxml2.11.0.0.dylib",
+        "reason": null,
+        "sha256": "a5b210cdf6cfd87e9bb21ff218b7aed357f74b75f5d43f6857d184224db0ea3c"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/unixodbc/2.3.14/lib/libodbc.2.dylib",
+        "reason": null,
+        "sha256": "166255bddda858903beb2d0da6024d073b56b9a2fcf1aefa4a70d598b1b1fc20"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/unixodbc/2.3.14/lib/libodbcinst.2.dylib",
+        "reason": null,
+        "sha256": "9a2a471dc6570e000b8b523d412fa98d029f9858a7c9949da38e7b9cdf05de13"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/urdfdom/6.0.1/lib/liburdfdom_model.6.0.1.dylib",
+        "reason": null,
+        "sha256": "a496deb3fb43cba943a55da9a18c91c96e407db619d0ad212f6adf195524faeb"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/urdfdom/6.0.1/lib/liburdfdom_sensor.6.0.1.dylib",
+        "reason": null,
+        "sha256": "5c52fa426355f52352918c1c7eff37b636eec4f73382bd4d00c42478f99b5ad4"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/urdfdom/6.0.1/lib/liburdfdom_world.6.0.1.dylib",
+        "reason": null,
+        "sha256": "57c2a16360bd80442a406337e0903b12a831766de3c547ccbccb1f9d5fef201c"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/uriparser/1.0.2/lib/liburiparser.1.2.2.dylib",
+        "reason": null,
+        "sha256": "48da38d52592771b7c31ae93383ae997127595bb053a69879e5cb3e58a8d8633"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/utf8proc/2.12.0/lib/libutf8proc.3.3.0.dylib",
+        "reason": null,
+        "sha256": "3e2ded621558d88ae1e4baacf07b5f427af3a7c728cb8120b305410cc8952db9"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/webp/1.6.0/lib/libsharpyuv.0.1.2.dylib",
+        "reason": null,
+        "sha256": "755e13860aa122e98f1be1bb7d5fcf47b496ae27d5787fe783af3909721d2321"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/webp/1.6.0/lib/libwebp.7.2.0.dylib",
+        "reason": null,
+        "sha256": "f42f3e0687cf1f7fd5a42c608152e0d4187540ac2e6675cb8af297e7befc4258"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/x264/r3222/lib/libx264.165.dylib",
+        "reason": null,
+        "sha256": "4e91cf8ccca2b56cf75244da2fcf618680476956ae87488794bdd5791f47231d"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/x265/4.3/lib/libx265.217.dylib",
+        "reason": null,
+        "sha256": "b3a50884e2d9cecf57fd29c4fba2c4e47b37cd7b4d7ff5d920919efca038d9ae"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/xerces-c/3.3.0/lib/libxerces-c-3.3.dylib",
+        "reason": null,
+        "sha256": "780a5f515ca5ea674fb7e299fa096dc9a32f22b5424bd578ff161248a822aef2"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/xz/5.8.4/lib/liblzma.5.dylib",
+        "reason": null,
+        "sha256": "41cdf225f3e10fb54f952c8eca11c8a847d095470540dc42736ae7bd761beaa4"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/zeromq/4.3.5_2/lib/libzmq.5.dylib",
+        "reason": null,
+        "sha256": "8f84f995de26db9ed3011fa1eea3cb095b04f1ff89b08ab76cd828df4d049fdb"
+      },
+      {
+        "path": "/opt/homebrew/Cellar/zstd/1.5.7_1/lib/libzstd.1.5.7.dylib",
+        "reason": null,
+        "sha256": "e2847c4613b386683c234913ae3b7b04299254096caf7616e3b3cd9bb97a39ab"
+      },
+      {
+        "path": "/usr/lib/dyld",
+        "reason": null,
+        "sha256": "373fce2b3689c2113d5341a6bba735e9f970401ba64896c0a6379680192f1cdf"
+      },
+      {
+        "path": "/usr/lib/libobjc-trampolines.dylib",
+        "reason": null,
+        "sha256": "0838245e8d8d7aeb8fb87db088a68445ff964d6da70581efcc5aa9ef69ac5ea7"
+      }
+    ],
+    "observed_at_utc": "2026-10-19T07:05:37.964292Z",
+    "observer": "lsof -F0 -a -nP -p PID -d txt,mem",
+    "pid": 88895,
+    "reason": null,
+    "session_id": "fc9ae9e4-3d95-4901-ad48-e01a827e8791",
+    "status": "observed"
+  },
+  "grounded_preflight_samples": [
+    {
+      "received_wall_s": 0.05879883299348876,
+      "stamp_ns": 21880000000,
+      "vx_m_s": 0.0,
+      "vy_m_s": 0.0,
+      "vz_m_s": 0.0,
+      "x_m": -0.5,
+      "y_m": -0.5,
+      "z_m": -8.466971613205199e-07
+    },
+    {
+      "received_wall_s": 0.06120583298616111,
+      "stamp_ns": 21900000000,
+      "vx_m_s": 0.0,
+      "vy_m_s": 0.0,
+      "vz_m_s": 0.0,
+      "x_m": -0.5,
+      "y_m": -0.5,
+      "z_m": -8.466971613205199e-07
+    },
+    {
+      "received_wall_s": 0.08032062498386949,
+      "stamp_ns": 21920000000,
+      "vx_m_s": 0.0,
+      "vy_m_s": 0.0,
+      "vz_m_s": 0.0,
+      "x_m": -0.5,
+      "y_m": -0.5,
+      "z_m": -8.466971613205199e-07
+    }
+  ],
+  "injected_failure": "SIGINT sent to the launch-recorded /cf1/odom-only ros_gz_bridge after HOVER; Gazebo truth odometry remains bridged on a separate read-only ROS topic",
+  "injection_received_wall_s": null,
+  "mission_command": [
+    "/opt/homebrew/opt/ros2-jazzy/bin/ros2",
+    "run",
+    "nano_c_slam_gazebo",
+    "sim_mission",
+    "--ros-args",
+    "-p",
+    "use_sim_time:=True",
+    "-p",
+    "drone_name:=cf1",
+    "-p",
+    "run_id:=008e32dd-c504-4cca-b1bc-00f70f696ee7",
+    "-p",
+    "hover_duration_s:=20.0"
+  ],
+  "mission_exit_code": 1,
+  "mission_exit_wall_s": 4.11824179199175,
+  "mission_started_wall_s": 0.08047316697775386,
+  "mission_status_events": [
+    {
+      "altitude_m": null,
+      "drone_name": "cf1",
+      "failure_reason": null,
+      "landing_height_m": 0.1,
+      "landing_stable_since_s": null,
+      "mapping_path_complete": false,
+      "mapping_path_requested": false,
+      "odometry_stamp_s": null,
+      "phase": "WAITING",
+      "received_wall_s": 0.9556524169747718,
+      "run_id": "008e32dd-c504-4cca-b1bc-00f70f696ee7",
+      "schema_version": 2,
+      "sequence": 0,
+      "sim_time_s": 0.0
+    },
+    {
+      "altitude_m": -8.466971613205199e-07,
+      "drone_name": "cf1",
+      "failure_reason": null,
+      "landing_height_m": 0.1,
+      "landing_stable_since_s": null,
+      "mapping_path_complete": false,
+      "mapping_path_requested": false,
+      "odometry_stamp_s": 22.84,
+      "phase": "TAKEOFF",
+      "received_wall_s": 1.0225815000012517,
+      "run_id": "008e32dd-c504-4cca-b1bc-00f70f696ee7",
+      "schema_version": 2,
+      "sequence": 1,
+      "sim_time_s": 22.856
+    },
+    {
+      "altitude_m": 0.5115207686705036,
+      "drone_name": "cf1",
+      "failure_reason": null,
+      "landing_height_m": 0.1,
+      "landing_stable_since_s": null,
+      "mapping_path_complete": false,
+      "mapping_path_requested": false,
+      "odometry_stamp_s": 24.04,
+      "phase": "HOVER",
+      "received_wall_s": 2.215744082990568,
+      "run_id": "008e32dd-c504-4cca-b1bc-00f70f696ee7",
+      "schema_version": 2,
+      "sequence": 2,
+      "sim_time_s": 24.052
+    },
+    {
+      "altitude_m": 0.5806223654013136,
+      "drone_name": "cf1",
+      "failure_reason": "odometry data is stale",
+      "landing_height_m": 0.1,
+      "landing_stable_since_s": null,
+      "mapping_path_complete": false,
+      "mapping_path_requested": false,
+      "odometry_stamp_s": 24.8,
+      "phase": "FAILED",
+      "received_wall_s": 3.462882957974216,
+      "run_id": "008e32dd-c504-4cca-b1bc-00f70f696ee7",
+      "schema_version": 2,
+      "sequence": 3,
+      "sim_time_s": 25.302
+    }
+  ],
+  "mission_stderr_path": "artifacts/gazebo_mapping_sitl/mission_failure_acceptance_20261019/attempt_04/probe.mission.stderr.log",
+  "mission_stdout_path": "artifacts/gazebo_mapping_sitl/mission_failure_acceptance_20261019/attempt_04/probe.mission.stdout.log",
+  "odometry_messages_at_bridge_stop": 147,
+  "passed": true,
+  "post_exit_observation_observed_s": 5.002810040983604,
+  "post_exit_observation_requested_s": 5.0,
+  "post_exit_odometry": {
+    "altitude_first_m": 0.5806580238293281,
+    "altitude_last_m": 0.5812435918497955,
+    "altitude_max_m": 0.5812435918497955,
+    "altitude_min_m": 0.5806554074597341,
+    "first_stamp_ns": 25960000000,
+    "last_stamp_ns": 30940000000,
+    "max_abs_vertical_velocity_m_s": 0.00023092912218854295,
+    "motion_classification": "held near a steady altitude during the observed window",
+    "sample_count": 250,
+    "samples": [
+      {
+        "received_wall_s": 4.124977624975145,
+        "stamp_ns": 25960000000,
+        "vx_m_s": 0.0,
+        "vy_m_s": 0.0,
+        "vz_m_s": 0.0,
+        "x_m": -0.5000000000045945,
+        "y_m": -0.4999999999138681,
+        "z_m": 0.5806580238293281
+      },
+      {
+        "received_wall_s": 4.142635291995248,
+        "stamp_ns": 25980000000,
+        "vx_m_s": 0.0,
+        "vy_m_s": 0.0,
+        "vz_m_s": 0.0,
+        "x_m": -0.5000000000045945,
+        "y_m": -0.4999999999138681,
+        "z_m": 0.5806580238293281
+      },
+      {
+        "received_wall_s": 4.161124791979091,
+        "stamp_ns": 26000000000,
+        "vx_m_s": 0.0,
+        "vy_m_s": 0.0,
+        "vz_m_s": 0.0,
+        "x_m": -0.5000000000045945,
+        "y_m": -0.4999999999138681,
+        "z_m": 0.5806580238293281
+      },
+      {
+        "received_wall_s": 4.179929041973082,
+        "stamp_ns": 26020000000,
+        "vx_m_s": 0.0,
+        "vy_m_s": 0.0,
+        "vz_m_s": 0.0,
+        "x_m": -0.5000000000045945,
+        "y_m": -0.4999999999138681,
+        "z_m": 0.5806580238293281
+      },
+      {
+        "received_wall_s": 4.202704957977403,
+        "stamp_ns": 26040000000,
+        "vx_m_s": 0.0,
+        "vy_m_s": 0.0,
+        "vz_m_s": 0.0,
+        "x_m": -0.5000000000045945,
+        "y_m": -0.4999999999138681,
+        "z_m": 0.5806580238293281
+      },
+      {
+        "received_wall_s": 4.222871416975977,
+        "stamp_ns": 26060000000,
+        "vx_m_s": 0.0,
+        "vy_m_s": 0.0,
+        "vz_m_s": 0.0,
+        "x_m": -0.5000000000045945,
+        "y_m": -0.4999999999138681,
+        "z_m": 0.5806580238293281
+      },
+      {
+        "received_wall_s": 4.240411957987817,
+        "stamp_ns": 26080000000,
+        "vx_m_s": 0.0,
+        "vy_m_s": 0.0,
+        "vz_m_s": 0.0,
+        "x_m": -0.5000000000045945,
+        "y_m": -0.4999999999138681,
+        "z_m": 0.5806580238293281
+      },
+      {
+        "received_wall_s": 4.264726791996509,
+        "stamp_ns": 26100000000,
+        "vx_m_s": 0.0,
+        "vy_m_s": 0.0,
+        "vz_m_s": 0.0,
+        "x_m": -0.5000000000045945,
+        "y_m": -0.4999999999138681,
+        "z_m": 0.5806580238293281
+      },
+      {
+        "received_wall_s": 4.283681166998576,
+        "stamp_ns": 26120000000,
+        "vx_m_s": 1.5132652707099947e-08,
+        "vy_m_s": 3.794226671201279e-07,
+        "vz_m_s": -0.00010162803772204459,
+        "x_m": -0.49999999985308247,
+        "y_m": -0.4999999961205319,
+        "z_m": 0.5806570075489476
+      },
+      {
+        "received_wall_s": 4.302852499997243,
+        "stamp_ns": 26140000000,
+        "vx_m_s": 0.0,
+        "vy_m_s": 0.0,
+        "vz_m_s": 0.0,
+        "x_m": -0.49999999985308247,
+        "y_m": -0.4999999961205319,
+        "z_m": 0.5806570075489476
+      },
+      {
+        "received_wall_s": 4.323537249991205,
+        "stamp_ns": 26160000000,
+        "vx_m_s": 0.0,
+        "vy_m_s": 0.0,
+        "vz_m_s": 0.0,
+        "x_m": -0.49999999985308247,
+        "y_m": -0.4999999961205319,
+        "z_m": 0.5806570075489476
+      },
+      {
+        "received_wall_s": 4.341819791996386,
+        "stamp_ns": 26180000000,
+        "vx_m_s": 0.0,
+        "vy_m_s": 0.0,
+        "vz_m_s": 0.0,
+        "x_m": -0.5000000102409923,
+        "y_m": -0.4999999488146215,
+        "z_m": 0.5806559907431914
+      },
+      {
+        "received_wall_s": 4.3609302080003545,
+        "stamp_ns": 26200000000,
+        "vx_m_s": 0.0,
+        "vy_m_s": 0.0,
+        "vz_m_s": 0.0,
+        "x_m": -0.5000000102409923,
+        "y_m": -0.4999999488146215,
+        "z_m": 0.5806559907431914
+      },
+      {
+        "received_wall_s": 4.382487333001336,
+        "stamp_ns": 26220000000,
+        "vx_m_s": 2.9434004990640216e-06,
+        "vy_m_s": -8.23214994960986e-06,
+        "vz_m_s": -7.492997129527215e-06,
+        "x_m": -0.49999995738836267,
+        "y_m": -0.5000000757601311,
+        "z_m": 0.5806554187963394
+      },
+      {
+        "received_wall_s": 4.40122383297421,
+        "stamp_ns": 26240000000,
+        "vx_m_s": -3.72408648106933e-07,
+        "vy_m_s": 4.817608465620411e-06,
+        "vz_m_s": -1.1336439485353153e-06,
+        "x_m": -0.499999961112418,
+        "y_m": -0.500000027584083,
+        "z_m": 0.5806554074597341
+      },
+      {
+        "received_wall_s": 4.423589749989333,
+        "stamp_ns": 26260000000,
+        "vx_m_s": -2.654205558765333e-06,
+        "vy_m_s": 8.161369690418481e-06,
+        "vz_m_s": 1.2703480871156152e-05,
+        "x_m": -0.5000000527074465,
+        "y_m": -0.4999997499870214,
+        "z_m": 0.5806556088763448
+      },
+      {
+        "received_wall_s": 4.440959707979346,
+        "stamp_ns": 26280000000,
+        "vx_m_s": 4.792351311356642e-06,
+        "vy_m_s": -1.6243584805958376e-05,
+        "vz_m_s": 2.4862372149875603e-05,
+        "x_m": -0.499999981963453,
+        "y_m": -0.49999999690207997,
+        "z_m": 0.580656090366892
+      },
+      {
+        "received_wall_s": 4.462438916991232,
+        "stamp_ns": 26300000000,
+        "vx_m_s": -1.0182904468745623e-06,
+        "vy_m_s": 2.889288203605166e-06,
+        "vz_m_s": 4.992077435130515e-05,
+        "x_m": -0.4999999637842266,
+        "y_m": -0.500000061942414,
+        "z_m": 0.5806568312050501
+      },
+      {
+        "received_wall_s": 4.483020374987973,
+        "stamp_ns": 26320000000,
+        "vx_m_s": -4.175040902413962e-06,
+        "vy_m_s": 1.2972021054043051e-05,
+        "vz_m_s": 5.031101947512e-05,
+        "x_m": -0.5000000781460942,
+        "y_m": -0.4999997163942227,
+        "z_m": 0.5806578589049595
+      },
+      {
+        "received_wall_s": 4.502636749995872,
+        "stamp_ns": 26340000000,
+        "vx_m_s": 6.644779410828917e-06,
+        "vy_m_s": -2.6601823737132573e-05,
+        "vz_m_s": 7.530446392337142e-05,
+        "x_m": -0.5000000017214615,
+        "y_m": -0.5000000359523488,
+        "z_m": 0.5806592432749478
+      },
+      {
+        "received_wall_s": 4.522354499989888,
+        "stamp_ns": 26360000000,
+        "vx_m_s": -6.207617102538454e-07,
+        "vy_m_s": 2.0115740551278778e-06,
+        "vz_m_s": 0.00010842013081446792,
+        "x_m": -0.4999999687927441,
+        "y_m": -0.5000001637263732,
+        "z_m": 0.5806608578111596
+      },
+      {
+        "received_wall_s": 4.541938749986002,
+        "stamp_ns": 26380000000,
+        "vx_m_s": -6.060407361352151e-06,
+        "vy_m_s": 2.0544520272424296e-05,
+        "vz_m_s": 8.78224538767567e-05,
+        "x_m": -0.5000001122799596,
+        "y_m": -0.49999967796834865,
+        "z_m": 0.5806626236373478
+      },
+      {
+        "received_wall_s": 4.565209832973778,
+        "stamp_ns": 26400000000,
+        "vx_m_s": 7.768606760827447e-06,
+        "vy_m_s": -3.4175053575106554e-05,
+        "vz_m_s": 0.00011337961345543252,
+        "x_m": -0.5000000221169508,
+        "y_m": -0.5000001067724538,
+        "z_m": 0.5806650401000768
+      },
+      {
+        "received_wall_s": 4.580809916980797,
+        "stamp_ns": 26420000000,
+        "vx_m_s": -1.7552232541258782e-06,
+        "vy_m_s": 6.0094158208762e-06,
+        "vz_m_s": 0.00014485096780062295,
+        "x_m": -0.4999999817916477,
+        "y_m": -0.5000002699377377,
+        "z_m": 0.5806675988544713
+      },
+      {
+        "received_wall_s": 4.602010167000117,
+        "stamp_ns": 26440000000,
+        "vx_m_s": -6.13151207694834e-06,
+        "vy_m_s": 1.85945842312808e-05,
+        "vz_m_s": 0.00014580481224025195,
+        "x_m": -0.5000001294805524,
+        "y_m": -0.49999979129121036,
+        "z_m": 0.5806704281969054
+      },
+      {
+        "received_wall_s": 4.624562249984592,
+        "stamp_ns": 26460000000,
+        "vx_m_s": 5.7906209071359266e-06,
+        "vy_m_s": -2.9045302151194883e-05,
+        "vz_m_s": 0.00015420654742923995,
+        "x_m": -0.5000000631262306,
+        "y_m": -0.5000001799788641,
+        "z_m": 0.5806734849720517
+      },
+      {
+        "received_wall_s": 4.6400618749903515,
+        "stamp_ns": 26480000000,
+        "vx_m_s": -2.5573264924065987e-06,
+        "vy_m_s": 4.924497245846065e-06,
+        "vz_m_s": 0.00021118412908627065,
+        "x_m": -0.5000000554427456,
+        "y_m": -0.5000002852607965,
+        "z_m": 0.5806767102803442
+      },
+      {
+        "received_wall_s": 4.665615457983222,
+        "stamp_ns": 26500000000,
+        "vx_m_s": -4.691272635468918e-06,
+        "vy_m_s": 1.3779508945808337e-05,
+        "vz_m_s": 0.00015035358534964315,
+        "x_m": -0.5000001792370515,
+        "y_m": -0.49999990249692355,
+        "z_m": 0.5806798512936805
+      },
+      {
+        "received_wall_s": 4.680630707996897,
+        "stamp_ns": 26520000000,
+        "vx_m_s": 3.900936934353993e-06,
+        "vy_m_s": -2.4383428738488407e-05,
+        "vz_m_s": 0.00018318876873610568,
+        "x_m": -0.5000001423970992,
+        "y_m": -0.5000002007898495,
+        "z_m": 0.5806831942744936
+      },
+      {
+        "received_wall_s": 4.700007082981756,
+        "stamp_ns": 26540000000,
+        "vx_m_s": -2.619182960229963e-06,
+        "vy_m_s": 4.46726215830256e-06,
+        "vz_m_s": 0.00016641249055874643,
+        "x_m": -0.500000148243919,
+        "y_m": -0.500000296423822,
+        "z_m": 0.5806863647124321
+      },
+      {
+        "received_wall_s": 4.724731457972666,
+        "stamp_ns": 26560000000,
+        "vx_m_s": -2.995034612136765e-06,
+        "vy_m_s": 9.292377197434525e-06,
+        "vz_m_s": 9.768260143638262e-05,
+        "x_m": -0.5000002485267429,
+        "y_m": -0.4999999892181461,
+        "z_m": 0.5806891390501587
+      },
+      {
+        "received_wall_s": 4.7452361669857055,
+        "stamp_ns": 26580000000,
+        "vx_m_s": 2.3588048061781895e-06,
+        "vy_m_s": -1.5794553863015098e-05,
+        "vz_m_s": 0.00012551708032594073,
+        "x_m": -0.5000002317740851,
+        "y_m": -0.5000002139299634,
+        "z_m": 0.580692804010507
+      },
+      {
+        "received_wall_s": 4.7655631249945145,
+        "stamp_ns": 26600000000,
+        "vx_m_s": -3.015953100768591e-06,
+        "vy_m_s": 4.584793461460756e-06,
+        "vz_m_s": 0.00023092912218854295,
+        "x_m": -0.5000002487998362,
+        "y_m": -0.5000002629012695,
+        "z_m": 0.580696050463499
+      },
+      {
+        "received_wall_s": 4.784719957999187,
+        "stamp_ns": 26620000000,
+        "vx_m_s": -2.8244667191367796e-06,
+        "vy_m_s": 8.903219377810064e-06,
+        "vz_m_s": 0.00011919703821916842,
+        "x_m": -0.5000003306809011,
+        "y_m": -0.4999999902017777,
+        "z_m": 0.5806987419756017
+      },
+      {
+        "received_wall_s": 4.805669499997748,
+        "stamp_ns": 26640000000,
+        "vx_m_s": 2.2243085054259596e-06,
+        "vy_m_s": -1.8159831466522024e-05,
+        "vz_m_s": 0.00014280185291856376,
+        "x_m": -0.5000003100720509,
+        "y_m": -0.5000002378484398,
+        "z_m": 0.5807017818039119
+      },
+      {
+        "received_wall_s": 4.822671457979595,
+        "stamp_ns": 26660000000,
+        "vx_m_s": -3.520176971266019e-06,
+        "vy_m_s": 9.824455543254538e-06,
+        "vz_m_s": 0.000208862811264195,
+        "x_m": -0.5000003350539951,
+        "y_m": -0.5000002282239372,
+        "z_m": 0.5807048631871521
+      },
+      {
+        "received_wall_s": 4.84465091698803,
+        "stamp_ns": 26680000000,
+        "vx_m_s": -2.638151502350643e-06,
+        "vy_m_s": 7.64518268733492e-06,
+        "vz_m_s": 0.00014897374931655523,
+        "x_m": -0.5000004035514065,
+        "y_m": -0.49999998555846265,
+        "z_m": 0.5807075761595595
+      },
+      {
+        "received_wall_s": 4.867188541975338,
+        "stamp_ns": 26700000000,
+        "vx_m_s": 2.1791877770157072e-06,
+        "vy_m_s": -1.8177660619638666e-05,
+        "vz_m_s": 0.00013165397738804248,
+        "x_m": -0.5000003763729466,
+        "y_m": -0.500000251392902,
+        "z_m": 0.5807099590795943
+      },
+      {
+        "received_wall_s": 4.883135374984704,
+        "stamp_ns": 26720000000,
+        "vx_m_s": -3.4192259375045925e-06,
+        "vy_m_s": 1.2749993587846678e-05,
+        "vz_m_s": 0.00016891150226426742,
+        "x_m": -0.5000004014532232,
+        "y_m": -0.5000002068567739,
+        "z_m": 0.5807128344755431
+      },
+      {
+        "received_wall_s": 4.901277791999746,
+        "stamp_ns": 26740000000,
+        "vx_m_s": -1.1811852362280001e-06,
+        "vy_m_s": 4.4677958481167745e-06,
+        "vz_m_s": 5.130601942821394e-05,
+        "x_m": -0.5000004505600852,
+        "y_m": -0.5000000042321517,
+        "z_m": 0.5807145000029487
+      },
+      {
+        "received_wall_s": 4.944782374979695,
+        "stamp_ns": 26760000000,
+        "vx_m_s": 2.60445533428555e-06,
+        "vy_m_s": -2.0073183005923637e-05,
+        "vz_m_s": 0.00014987878065464405,
+        "x_m": -0.5000004259533396,
+        "y_m": -0.5000002849186733,
+        "z_m": 0.580717903313355
+      },
+      {
+        "received_wall_s": 4.946014291985193,
+        "stamp_ns": 26780000000,
+        "vx_m_s": -3.5831196803595747e-06,
+        "vy_m_s": 1.369020106101363e-05,
+        "vz_m_s": 0.00017279395620982464,
+        "x_m": -0.5000004572060952,
+        "y_m": -0.5000001908172549,
+        "z_m": 0.5807203825589445
+      },
+      {
+        "received_wall_s": 4.966302624990931,
+        "stamp_ns": 26800000000,
+        "vx_m_s": -1.0867444287389756e-06,
+        "vy_m_s": 4.263716639362346e-06,
+        "vz_m_s": 4.881409185270955e-05,
+        "x_m": -0.5000005049132517,
+        "y_m": -0.49999999246954113,
+        "z_m": 0.5807219654020874
+      },
+      {
+        "received_wall_s": 4.985037332982756,
+        "stamp_ns": 26820000000,
+        "vx_m_s": 2.3340742558619006e-06,
+        "vy_m_s": -1.6886037643478118e-05,
+        "vz_m_s": 0.00010732035307802744,
+        "x_m": -0.5000004760245902,
+        "y_m": -0.5000002730993043,
+        "z_m": 0.5807249721734601
+      },
+      {
+        "received_wall_s": 5.00546437498997,
+        "stamp_ns": 26840000000,
+        "vx_m_s": -3.4388007566128866e-06,
+        "vy_m_s": 1.4205781440723464e-05,
+        "vz_m_s": 0.00011922209241522214,
+        "x_m": -0.5000005050203699,
+        "y_m": -0.5000002005943357,
+        "z_m": 0.5807276077386455
+      },
+      {
+        "received_wall_s": 5.023064624983817,
+        "stamp_ns": 26860000000,
+        "vx_m_s": -9.742614899992764e-07,
+        "vy_m_s": 3.999763378347573e-06,
+        "vz_m_s": 6.0622072641360175e-05,
+        "x_m": -0.5000005535582579,
+        "y_m": -0.4999999844684162,
+        "z_m": 0.5807294117104597
+      },
+      {
+        "received_wall_s": 5.042187582992483,
+        "stamp_ns": 26880000000,
+        "vx_m_s": 2.1435545786488284e-06,
+        "vy_m_s": -1.7358019595172116e-05,
+        "vz_m_s": 0.00010789673059323162,
+        "x_m": -0.5000005203511366,
+        "y_m": -0.5000002926379197,
+        "z_m": 0.5807321797510718
+      },
+      {
+        "received_wall_s": 5.061920416977955,
+        "stamp_ns": 26900000000,
+        "vx_m_s": -3.0891566065554807e-06,
+        "vy_m_s": 1.3256156088287203e-05,
+        "vz_m_s": 0.00010843392152678306,
+        "x_m": -0.5000005498129101,
+        "y_m": -0.5000002232280789,
+        "z_m": 0.5807347199159547
+      },
+      {
+        "received_wall_s": 5.08050604199525,
+        "stamp_ns": 26920000000,
+        "vx_m_s": -1.467788204560542e-06,
+        "vy_m_s": 5.367799013457814e-06,
+        "vz_m_s": 0.00014770097103189794,
+        "x_m": -0.5000005993255623,
+        "y_m": -0.4999999936114453,
+        "z_m": 0.5807372860391151
+      },
+      {
+        "received_wall_s": 5.104757666995283,
+        "stamp_ns": 26940000000,
+        "vx_m_s": 2.016269731447705e-06,
+        "vy_m_s": -1.8048025039124302e-05,
+        "vz_m_s": 0.00011106141423913895,
+        "x_m": -0.5000005642233821,
+        "y_m": -0.5000003165683086,
+        "z_m": 0.5807394996780123
+      },
+      {
+        "received_wall_s": 5.120540416974109,
+        "stamp_ns": 26960000000,
+        "vx_m_s": -3.209896204908033e-06,
+        "vy_m_s": 1.4895208283102114e-05,
+        "vz_m_s": 0.00011274793460233382,
+        "x_m": -0.5000005981578443,
+        "y_m": -0.5000002134771597,
+        "z_m": 0.5807421356886476
+      },
+      {
+        "received_wall_s": 5.140000041981693,
+        "stamp_ns": 26980000000,
+        "vx_m_s": -1.3485259360316413e-06,
+        "vy_m_s": 3.812381723292311e-06,
+        "vz_m_s": 0.00015390567567147005,
+        "x_m": -0.5000006456486557,
+        "y_m": -0.49999999600307893,
+        "z_m": 0.5807448102113305
+      },
+      {
+        "received_wall_s": 5.166675707994727,
+        "stamp_ns": 27000000000,
+        "vx_m_s": 1.4016147666044277e-06,
+        "vy_m_s": -1.3584964645009485e-05,
+        "vz_m_s": 8.980184141831686e-05,
+        "x_m": -0.5000006155728522,
+        "y_m": -0.5000003054103644,
+        "z_m": 0.5807469832768399
+      },
+      {
+        "received_wall_s": 5.181272457994055,
+        "stamp_ns": 27020000000,
+        "vx_m_s": -3.861947923088772e-06,
+        "vy_m_s": 1.8725108938448084e-05,
+        "vz_m_s": 0.00014196257576910197,
+        "x_m": -0.5000006558691421,
+        "y_m": -0.5000001666977534,
+        "z_m": 0.580749962575211
+      },
+      {
+        "received_wall_s": 5.200646291981684,
+        "stamp_ns": 27040000000,
+        "vx_m_s": -1.4094413923685947e-06,
+        "vy_m_s": 3.85429250248413e-06,
+        "vz_m_s": 0.00015724743741086464,
+        "x_m": -0.5000006950221618,
+        "y_m": -0.4999999969131678,
+        "z_m": 0.5807524429775346
+      },
+      {
+        "received_wall_s": 5.222327041992685,
+        "stamp_ns": 27060000000,
+        "vx_m_s": 1.428824058411552e-06,
+        "vy_m_s": -1.4089605478573666e-05,
+        "vz_m_s": 0.00010415158590084349,
+        "x_m": -0.5000006639257387,
+        "y_m": -0.5000003276544078,
+        "z_m": 0.5807549110517292
+      },
+      {
+        "received_wall_s": 5.23979137497372,
+        "stamp_ns": 27080000000,
+        "vx_m_s": -4.51494067951598e-06,
+        "vy_m_s": 2.091636617971969e-05,
+        "vz_m_s": 0.00018207187121634637,
+        "x_m": -0.5000007096341784,
+        "y_m": -0.5000001566526174,
+        "z_m": 0.5807577814228294
+      },
+      {
+        "received_wall_s": 5.265544750000117,
+        "stamp_ns": 27100000000,
+        "vx_m_s": -9.213205436231846e-07,
+        "vy_m_s": 2.904381061669478e-06,
+        "vz_m_s": 0.00010515856866349398,
+        "x_m": -0.5000007445841801,
+        "y_m": -0.49999999586171584,
+        "z_m": 0.580759877843479
+      },
+      {
+        "received_wall_s": 5.285262207995402,
+        "stamp_ns": 27120000000,
+        "vx_m_s": 1.2975501116676918e-06,
+        "vy_m_s": -1.432570207315604e-05,
+        "vz_m_s": 0.00013042582452129086,
+        "x_m": -0.50000071273186,
+        "y_m": -0.5000003504317315,
+        "z_m": 0.5807630022197704
+      },
+      {
+        "received_wall_s": 5.303082957980223,
+        "stamp_ns": 27140000000,
+        "vx_m_s": -3.999050660337281e-06,
+        "vy_m_s": 1.7756885440803527e-05,
+        "vz_m_s": 0.0001414869662251835,
+        "x_m": -0.5000007616289739,
+        "y_m": -0.500000165453301,
+        "z_m": 0.5807654621303261
+      },
+      {
+        "received_wall_s": 5.325292916997569,
+        "stamp_ns": 27160000000,
+        "vx_m_s": -6.09705190308475e-07,
+        "vy_m_s": -6.783949076529998e-07,
+        "vz_m_s": 0.00016714475342408374,
+        "x_m": -0.5000007938583827,
+        "y_m": -0.5000000398094839,
+        "z_m": 0.5807681613757341
+      },
+      {
+        "received_wall_s": 5.342957791988738,
+        "stamp_ns": 27180000000,
+        "vx_m_s": 9.389657275937399e-07,
+        "vy_m_s": -9.803231907083268e-06,
+        "vz_m_s": 7.638602018941016e-05,
+        "x_m": -0.5000007660771941,
+        "y_m": -0.5000003148865718,
+        "z_m": 0.580770194070608
+      },
+      {
+        "received_wall_s": 5.360396707983455,
+        "stamp_ns": 27200000000,
+        "vx_m_s": -3.7169143490069662e-06,
+        "vy_m_s": 1.7098803233731455e-05,
+        "vz_m_s": 0.00012541950148539326,
+        "x_m": -0.5000008144210589,
+        "y_m": -0.500000155199909,
+        "z_m": 0.5807731072600788
+      },
+      {
+        "received_wall_s": 5.385761082987301,
+        "stamp_ns": 27220000000,
+        "vx_m_s": -3.236565572603546e-07,
+        "vy_m_s": -1.909939260735287e-06,
+        "vz_m_s": 0.00016322097327041814,
+        "x_m": -0.5000008419344538,
+        "y_m": -0.5000000441858072,
+        "z_m": 0.5807757428091344
+      },
+      {
+        "received_wall_s": 5.4055088329769205,
+        "stamp_ns": 27240000000,
+        "vx_m_s": 9.508249347565156e-07,
+        "vy_m_s": -9.780466013506912e-06,
+        "vz_m_s": 7.48712074767312e-05,
+        "x_m": -0.5000008130086563,
+        "y_m": -0.5000003261330573,
+        "z_m": 0.580777732211771
+      },
+      {
+        "received_wall_s": 5.420207707997179,
+        "stamp_ns": 27260000000,
+        "vx_m_s": -3.5356080801928514e-06,
+        "vy_m_s": 1.777447157623583e-05,
+        "vz_m_s": 0.00012417252539833023,
+        "x_m": -0.5000008600836532,
+        "y_m": -0.5000001468681053,
+        "z_m": 0.5807806031215974
+      },
+      {
+        "received_wall_s": 5.444561416981742,
+        "stamp_ns": 27280000000,
+        "vx_m_s": 4.178629855246404e-08,
+        "vy_m_s": -3.3121281885728367e-06,
+        "vz_m_s": 0.00010047061340517005,
+        "x_m": -0.5000008850495893,
+        "y_m": -0.500000040739633,
+        "z_m": 0.5807829867394269
+      },
+      {
+        "received_wall_s": 5.464712707995204,
+        "stamp_ns": 27300000000,
+        "vx_m_s": 8.43803917023251e-07,
+        "vy_m_s": -9.271790336594948e-06,
+        "vz_m_s": 7.455997757714185e-05,
+        "x_m": -0.500000856283447,
+        "y_m": -0.5000003509730202,
+        "z_m": 0.5807852178925692
+      },
+      {
+        "received_wall_s": 5.481098207994364,
+        "stamp_ns": 27320000000,
+        "vx_m_s": -3.7717669266361735e-06,
+        "vy_m_s": 2.0970372664848048e-05,
+        "vz_m_s": 0.00013554999326562033,
+        "x_m": -0.5000009072055538,
+        "y_m": -0.5000001203100765,
+        "z_m": 0.5807881918754502
+      },
+      {
+        "received_wall_s": 5.500232332997257,
+        "stamp_ns": 27340000000,
+        "vx_m_s": -5.159879247467481e-08,
+        "vy_m_s": -4.3796297667214156e-06,
+        "vz_m_s": 0.00015007819939647467,
+        "x_m": -0.5000009245199043,
+        "y_m": -0.5000000663859199,
+        "z_m": 0.5807905647752168
+      },
+      {
+        "received_wall_s": 5.524957082991023,
+        "stamp_ns": 27360000000,
+        "vx_m_s": 1.1794220384236113e-06,
+        "vy_m_s": -1.4035113397181971e-05,
+        "vz_m_s": 0.0001379686778000861,
+        "x_m": -0.5000008967331749,
+        "y_m": -0.5000003783277382,
+        "z_m": 0.5807930605076103
+      },
+      {
+        "received_wall_s": 5.544185041973833,
+        "stamp_ns": 27380000000,
+        "vx_m_s": -3.357728655488169e-06,
+        "vy_m_s": 1.7381928252481284e-05,
+        "vz_m_s": 0.0001115822763677334,
+        "x_m": -0.5000009513493286,
+        "y_m": -0.5000001271219101,
+        "z_m": 0.580795556325709
+      },
+      {
+        "received_wall_s": 5.5667269169935025,
+        "stamp_ns": 27400000000,
+        "vx_m_s": -4.1501897144868494e-07,
+        "vy_m_s": -2.185147899363133e-06,
+        "vz_m_s": 0.00016253912412611524,
+        "x_m": -0.5000009725458889,
+        "y_m": -0.5000000579549483,
+        "z_m": 0.5807979302351518
+      },
+      {
+        "received_wall_s": 5.585884499974782,
+        "stamp_ns": 27420000000,
+        "vx_m_s": 7.754606796866967e-07,
+        "vy_m_s": -8.652946415413396e-06,
+        "vz_m_s": 8.752470122146646e-05,
+        "x_m": -0.5000009417496978,
+        "y_m": -0.5000003647789418,
+        "z_m": 0.5808002915054591
+      },
+      {
+        "received_wall_s": 5.5997584169963375,
+        "stamp_ns": 27440000000,
+        "vx_m_s": -3.473351167591566e-06,
+        "vy_m_s": 1.6528784875254994e-05,
+        "vz_m_s": 0.00011094672912682487,
+        "x_m": -0.500000996645399,
+        "y_m": -0.5000001420809932,
+        "z_m": 0.5808028992565426
+      },
+      {
+        "received_wall_s": 5.6238305419974495,
+        "stamp_ns": 27460000000,
+        "vx_m_s": 3.9803104161797966e-08,
+        "vy_m_s": -5.870509826068448e-06,
+        "vz_m_s": 0.0001983110252335372,
+        "x_m": -0.5000010139459964,
+        "y_m": -0.5000001088621762,
+        "z_m": 0.5808056257585533
+      },
+      {
+        "received_wall_s": 5.64179862497258,
+        "stamp_ns": 27480000000,
+        "vx_m_s": 6.655260144673208e-07,
+        "vy_m_s": -8.684956051007316e-06,
+        "vz_m_s": 9.957488432845486e-05,
+        "x_m": -0.5000009862340761,
+        "y_m": -0.5000003861644166,
+        "z_m": 0.5808078518931933
+      },
+      {
+        "received_wall_s": 5.660655457992107,
+        "stamp_ns": 27500000000,
+        "vx_m_s": -3.991616994683478e-06,
+        "vy_m_s": 2.0035387478579706e-05,
+        "vz_m_s": 0.00012251553958436863,
+        "x_m": -0.5000010524419886,
+        "y_m": -0.5000000938429765,
+        "z_m": 0.5808105659663972
+      },
+      {
+        "received_wall_s": 5.680282791989157,
+        "stamp_ns": 27520000000,
+        "vx_m_s": 5.280137051408043e-07,
+        "vy_m_s": -7.348347477681282e-06,
+        "vz_m_s": 0.00014848325798842954,
+        "x_m": -0.5000010634345095,
+        "y_m": -0.5000000782473089,
+        "z_m": 0.5808129167770645
+      },
+      {
+        "received_wall_s": 5.70385904199793,
+        "stamp_ns": 27540000000,
+        "vx_m_s": 9.039558150085396e-07,
+        "vy_m_s": -8.587337296026761e-06,
+        "vz_m_s": 6.19566256430426e-05,
+        "x_m": -0.5000010305360424,
+        "y_m": -0.5000003787485721,
+        "z_m": 0.5808147609957985
+      },
+      {
+        "received_wall_s": 5.724217999988468,
+        "stamp_ns": 27560000000,
+        "vx_m_s": -3.6690366392612296e-06,
+        "vy_m_s": 2.0544587067434774e-05,
+        "vz_m_s": 0.00012542620990344867,
+        "x_m": -0.500001085391949,
+        "y_m": -0.5000001282302566,
+        "z_m": 0.5808178912363704
+      },
+      {
+        "received_wall_s": 5.74290691697388,
+        "stamp_ns": 27580000000,
+        "vx_m_s": 4.969944201516094e-07,
+        "vy_m_s": -1.0358893467197022e-05,
+        "vz_m_s": 0.00017983973041825469,
+        "x_m": -0.5000010965700235,
+        "y_m": -0.5000001385759276,
+        "z_m": 0.5808205839749808
+      },
+      {
+        "received_wall_s": 5.764367457974004,
+        "stamp_ns": 27600000000,
+        "vx_m_s": 8.242691232861688e-07,
+        "vy_m_s": -9.901059209889838e-06,
+        "vz_m_s": 9.077140995490829e-05,
+        "x_m": -0.5000010731217669,
+        "y_m": -0.500000404628732,
+        "z_m": 0.5808225161419572
+      },
+      {
+        "received_wall_s": 5.784612874995219,
+        "stamp_ns": 27620000000,
+        "vx_m_s": -2.8992570101678523e-06,
+        "vy_m_s": 1.662363279878675e-05,
+        "vz_m_s": 0.00010348362952385822,
+        "x_m": -0.5000011299920807,
+        "y_m": -0.5000001302933039,
+        "z_m": 0.5808255010650116
+      },
+      {
+        "received_wall_s": 5.804824791994179,
+        "stamp_ns": 27640000000,
+        "vx_m_s": 2.921075390619214e-07,
+        "vy_m_s": -9.585567849259287e-06,
+        "vz_m_s": 0.00018312462365410766,
+        "x_m": -0.5000011437586623,
+        "y_m": -0.5000001319176545,
+        "z_m": 0.5808282479791252
+      },
+      {
+        "received_wall_s": 5.822602166997967,
+        "stamp_ns": 27660000000,
+        "vx_m_s": 3.454558365685706e-07,
+        "vy_m_s": -4.659986763117009e-06,
+        "vz_m_s": 5.2494848587119866e-05,
+        "x_m": -0.5000011213582414,
+        "y_m": -0.5000003914592873,
+        "z_m": 0.58083020286864
+      },
+      {
+        "received_wall_s": 5.840605832985602,
+        "stamp_ns": 27680000000,
+        "vx_m_s": -3.202299007843868e-06,
+        "vy_m_s": 1.7573721638702275e-05,
+        "vz_m_s": 0.00011673208201382083,
+        "x_m": -0.5000011806326384,
+        "y_m": -0.500000116597417,
+        "z_m": 0.5808333321768404
+      },
+      {
+        "received_wall_s": 5.866423291998217,
+        "stamp_ns": 27700000000,
+        "vx_m_s": 8.206318937273654e-07,
+        "vy_m_s": -1.3668867303370634e-05,
+        "vz_m_s": 0.00018174236335003486,
+        "x_m": -0.5000011885184225,
+        "y_m": -0.5000001683657219,
+        "z_m": 0.5808361965747683
+      },
+      {
+        "received_wall_s": 5.8818311669747345,
+        "stamp_ns": 27720000000,
+        "vx_m_s": -3.545299720853734e-08,
+        "vy_m_s": -6.797107433717068e-06,
+        "vz_m_s": 0.00014196702088606973,
+        "x_m": -0.5000011729780129,
+        "y_m": -0.5000004097738193,
+        "z_m": 0.5808387708227941
+      },
+      {
+        "received_wall_s": 5.900223832984921,
+        "stamp_ns": 27740000000,
+        "vx_m_s": -2.9948547270185213e-06,
+        "vy_m_s": 1.6811763990036228e-05,
+        "vz_m_s": 0.00011450418129952391,
+        "x_m": -0.5000012321476612,
+        "y_m": -0.5000001063135125,
+        "z_m": 0.5808411917642321
+      },
+      {
+        "received_wall_s": 5.923969416995533,
+        "stamp_ns": 27760000000,
+        "vx_m_s": 7.024421455928558e-07,
+        "vy_m_s": -1.2414721582490969e-05,
+        "vz_m_s": 0.00021672717379842764,
+        "x_m": -0.5000012332732803,
+        "y_m": -0.5000001826323462,
+        "z_m": 0.5808438717127076
+      },
+      {
+        "received_wall_s": 5.948379707988352,
+        "stamp_ns": 27780000000,
+        "vx_m_s": 1.213493783006727e-07,
+        "vy_m_s": -4.259060598562131e-06,
+        "vz_m_s": 6.3821549326185e-05,
+        "x_m": -0.5000012163454033,
+        "y_m": -0.5000004023059748,
+        "z_m": 0.5808457766957764
+      },
+      {
+        "received_wall_s": 5.963653541984968,
+        "stamp_ns": 27800000000,
+        "vx_m_s": -3.18822055257349e-06,
+        "vy_m_s": 1.718306056960217e-05,
+        "vz_m_s": 0.00011266612943676127,
+        "x_m": -0.5000012819079636,
+        "y_m": -0.5000001043089444,
+        "z_m": 0.5808486752978632
+      },
+      {
+        "received_wall_s": 5.9819038749847095,
+        "stamp_ns": 27820000000,
+        "vx_m_s": 1.1725870380198976e-06,
+        "vy_m_s": -1.311938534098559e-05,
+        "vz_m_s": 0.00012498182483543872,
+        "x_m": -0.5000012845971533,
+        "y_m": -0.5000001635121412,
+        "z_m": 0.5808513122768189
+      },
+      {
+        "received_wall_s": 6.001352166989818,
+        "stamp_ns": 27840000000,
+        "vx_m_s": -1.0762890654428206e-07,
+        "vy_m_s": -6.315028072624591e-06,
+        "vz_m_s": 0.00013880851617164915,
+        "x_m": -0.5000012699524292,
+        "y_m": -0.5000003971745227,
+        "z_m": 0.580853824035557
+      },
+      {
+        "received_wall_s": 6.02187333299662,
+        "stamp_ns": 27860000000,
+        "vx_m_s": -2.9550584016304962e-06,
+        "vy_m_s": 1.7626013998189025e-05,
+        "vz_m_s": 0.00012522749556507934,
+        "x_m": -0.5000013283682723,
+        "y_m": -0.5000000866526342,
+        "z_m": 0.5808563276277553
+      },
+      {
+        "received_wall_s": 6.044213582994416,
+        "stamp_ns": 27880000000,
+        "vx_m_s": 1.0305390826759166e-06,
+        "vy_m_s": -1.6635428996132626e-05,
+        "vz_m_s": 0.00020020049560049748,
+        "x_m": -0.500001325316922,
+        "y_m": -0.5000002117528987,
+        "z_m": 0.5808589612765641
+      },
+      {
+        "received_wall_s": 6.0625058329897,
+        "stamp_ns": 27900000000,
+        "vx_m_s": -5.391840039240152e-07,
+        "vy_m_s": -2.1041187465758066e-06,
+        "vz_m_s": 0.00011239319945363791,
+        "x_m": -0.5000013184495612,
+        "y_m": -0.5000004039206118,
+        "z_m": 0.5808613271762803
+      },
+      {
+        "received_wall_s": 6.083383124991087,
+        "stamp_ns": 27920000000,
+        "vx_m_s": -2.049965592259757e-06,
+        "vy_m_s": 1.3137874569805339e-05,
+        "vz_m_s": 8.657196778305073e-05,
+        "x_m": -0.5000013714083954,
+        "y_m": -0.5000001002248753,
+        "z_m": 0.5808635501639905
+      },
+      {
+        "received_wall_s": 6.101923207985237,
+        "stamp_ns": 27940000000,
+        "vx_m_s": 1.3476068488030557e-06,
+        "vy_m_s": -1.766306292586383e-05,
+        "vz_m_s": 0.00013639749938236016,
+        "x_m": -0.5000013691352274,
+        "y_m": -0.5000002259098161,
+        "z_m": 0.5808664147436087
+      },
+      {
+        "received_wall_s": 6.122927666991018,
+        "stamp_ns": 27960000000,
+        "vx_m_s": 1.2322459566156228e-07,
+        "vy_m_s": -4.037901911308293e-06,
+        "vz_m_s": 6.28739429029378e-05,
+        "x_m": -0.5000013568688184,
+        "y_m": -0.5000004052966277,
+        "z_m": 0.5808680401800684
+      },
+      {
+        "received_wall_s": 6.1396077499957755,
+        "stamp_ns": 27980000000,
+        "vx_m_s": -2.949740609132179e-06,
+        "vy_m_s": 1.7047455794542687e-05,
+        "vz_m_s": 0.00012426231398687614,
+        "x_m": -0.5000014249076427,
+        "y_m": -0.5000000610931689,
+        "z_m": 0.5808712793032551
+      },
+      {
+        "received_wall_s": 6.165705749997869,
+        "stamp_ns": 28000000000,
+        "vx_m_s": 1.4707342185254937e-06,
+        "vy_m_s": -1.7418753433036773e-05,
+        "vz_m_s": 0.00014865685242491095,
+        "x_m": -0.5000014172303182,
+        "y_m": -0.5000002090373394,
+        "z_m": 0.5808737671067735
+      },
+      {
+        "received_wall_s": 6.1848736249958165,
+        "stamp_ns": 28020000000,
+        "vx_m_s": 2.3699345128660633e-07,
+        "vy_m_s": -4.531248395751067e-06,
+        "vz_m_s": 6.25792240164703e-05,
+        "x_m": -0.5000014017057864,
+        "y_m": -0.5000003944450709,
+        "z_m": 0.5808753857816598
+      },
+      {
+        "received_wall_s": 6.202538416982861,
+        "stamp_ns": 28040000000,
+        "vx_m_s": -3.1900484536408442e-06,
+        "vy_m_s": 1.7279419686900377e-05,
+        "vz_m_s": 0.0001232804616817502,
+        "x_m": -0.5000014769226252,
+        "y_m": -0.500000041901311,
+        "z_m": 0.5808787269698207
+      },
+      {
+        "received_wall_s": 6.219811166985892,
+        "stamp_ns": 28060000000,
+        "vx_m_s": 2.0308037418700024e-06,
+        "vy_m_s": -1.8533042780283673e-05,
+        "vz_m_s": 0.00013543137337872874,
+        "x_m": -0.5000014620360712,
+        "y_m": -0.500000211072111,
+        "z_m": 0.5808811996215681
+      },
+      {
+        "received_wall_s": 6.240725999989081,
+        "stamp_ns": 28080000000,
+        "vx_m_s": -2.996060751744165e-07,
+        "vy_m_s": -2.3926027308368107e-06,
+        "vz_m_s": 0.00010071147457788448,
+        "x_m": -0.5000014455952275,
+        "y_m": -0.5000004149504368,
+        "z_m": 0.5808834494588823
+      },
+      {
+        "received_wall_s": 6.260252707987092,
+        "stamp_ns": 28100000000,
+        "vx_m_s": -2.301520424438282e-06,
+        "vy_m_s": 1.3264358408460539e-05,
+        "vz_m_s": 0.00010113878009698581,
+        "x_m": -0.500001511462107,
+        "y_m": -0.5000000789957217,
+        "z_m": 0.5808860883549922
+      },
+      {
+        "received_wall_s": 6.285942707996583,
+        "stamp_ns": 28120000000,
+        "vx_m_s": 2.1381840704579773e-06,
+        "vy_m_s": -2.208956441734252e-05,
+        "vz_m_s": 0.00017766935044964306,
+        "x_m": -0.5000014965047692,
+        "y_m": -0.5000002735943992,
+        "z_m": 0.5808888868354734
+      },
+      {
+        "received_wall_s": 6.305126957973698,
+        "stamp_ns": 28140000000,
+        "vx_m_s": -1.4060269531741652e-06,
+        "vy_m_s": 1.3558589240716097e-06,
+        "vz_m_s": 0.00015441483530788773,
+        "x_m": -0.5000014992066545,
+        "y_m": -0.5000003925728311,
+        "z_m": 0.5808914540297893
+      },
+      {
+        "received_wall_s": 6.322761957999319,
+        "stamp_ns": 28160000000,
+        "vx_m_s": -1.6652407161019712e-06,
+        "vy_m_s": 1.0043252344045103e-05,
+        "vz_m_s": 7.699024290944673e-05,
+        "x_m": -0.5000015508658521,
+        "y_m": -0.5000001111171123,
+        "z_m": 0.5808934991629643
+      },
+      {
+        "received_wall_s": 6.341024541994557,
+        "stamp_ns": 28180000000,
+        "vx_m_s": 1.4147817899623458e-06,
+        "vy_m_s": -1.7914055740549137e-05,
+        "vz_m_s": 0.00012695047096015905,
+        "x_m": -0.5000015440774582,
+        "y_m": -0.5000002813893752,
+        "z_m": 0.5808964452831371
+      },
+      {
+        "received_wall_s": 6.366711082984693,
+        "stamp_ns": 28200000000,
+        "vx_m_s": -1.6012836340043954e-06,
+        "vy_m_s": 2.285836379072977e-06,
+        "vz_m_s": 0.00016566371988194938,
+        "x_m": -0.5000015507708035,
+        "y_m": -0.5000003919938887,
+        "z_m": 0.5808991190103786
+      },
+      {
+        "received_wall_s": 6.381630124989897,
+        "stamp_ns": 28220000000,
+        "vx_m_s": -2.200543786201908e-06,
+        "vy_m_s": 1.3821811798079824e-05,
+        "vz_m_s": 0.00011423943184892369,
+        "x_m": -0.5000016027696733,
+        "y_m": -0.5000000830316588,
+        "z_m": 0.5809013951493628
+      },
+      {
+        "received_wall_s": 6.403136832988821,
+        "stamp_ns": 28240000000,
+        "vx_m_s": 1.2774877467981613e-06,
+        "vy_m_s": -1.6873296593398312e-05,
+        "vz_m_s": 0.00011338170616584907,
+        "x_m": -0.500001591689122,
+        "y_m": -0.5000002922051342,
+        "z_m": 0.5809040568785645
+      },
+      {
+        "received_wall_s": 6.422026332991663,
+        "stamp_ns": 28260000000,
+        "vx_m_s": -1.1819887086628236e-06,
+        "vy_m_s": -2.4484417067076285e-07,
+        "vz_m_s": 0.00016561760566745874,
+        "x_m": -0.5000015963002099,
+        "y_m": -0.500000392496401,
+        "z_m": 0.5809064735761664
+      },
+      {
+        "received_wall_s": 6.442427374975523,
+        "stamp_ns": 28280000000,
+        "vx_m_s": -2.455966488317829e-06,
+        "vy_m_s": 1.434293658991763e-05,
+        "vz_m_s": 0.00012630396768518307,
+        "x_m": -0.5000016533825257,
+        "y_m": -0.5000000709881991,
+        "z_m": 0.5809089943351721
+      },
+      {
+        "received_wall_s": 6.46750937498291,
+        "stamp_ns": 28300000000,
+        "vx_m_s": 1.438827202233113e-06,
+        "vy_m_s": -1.834853400999963e-05,
+        "vz_m_s": 0.00012431832431426527,
+        "x_m": -0.5000016396925474,
+        "y_m": -0.5000003095696587,
+        "z_m": 0.58091175079954
+      },
+      {
+        "received_wall_s": 6.4827133329818025,
+        "stamp_ns": 28320000000,
+        "vx_m_s": -1.6719389612122404e-06,
+        "vy_m_s": 4.17292184146153e-06,
+        "vz_m_s": 0.0001497192781942591,
+        "x_m": -0.5000016501922602,
+        "y_m": -0.5000003601401528,
+        "z_m": 0.5809141228884186
+      },
+      {
+        "received_wall_s": 6.501536916999612,
+        "stamp_ns": 28340000000,
+        "vx_m_s": -1.4977986069455167e-06,
+        "vy_m_s": 8.94151777401651e-06,
+        "vz_m_s": 8.669285495050182e-05,
+        "x_m": -0.5000017012177497,
+        "y_m": -0.5000000730717321,
+        "z_m": 0.580916343986505
+      },
+      {
+        "received_wall_s": 6.520995082973968,
+        "stamp_ns": 28360000000,
+        "vx_m_s": 1.4389028259246403e-06,
+        "vy_m_s": -1.6526829747909484e-05,
+        "vz_m_s": 0.00010948973002693194,
+        "x_m": -0.5000016868843833,
+        "y_m": -0.5000002841981542,
+        "z_m": 0.580918921256737
+      },
+      {
+        "received_wall_s": 6.540056999976514,
+        "stamp_ns": 28380000000,
+        "vx_m_s": -2.151049983642281e-06,
+        "vy_m_s": 7.723495934791008e-06,
+        "vz_m_s": 0.00013445374972089326,
+        "x_m": -0.5000016996654097,
+        "y_m": -0.5000003440685091,
+        "z_m": 0.580921613480338
+      },
+      {
+        "received_wall_s": 6.566321957972832,
+        "stamp_ns": 28400000000,
+        "vx_m_s": -1.5111713146498504e-06,
+        "vy_m_s": 9.297108325494441e-06,
+        "vz_m_s": 7.28323912640511e-05,
+        "x_m": -0.5000017464160448,
+        "y_m": -0.5000000789837878,
+        "z_m": 0.5809234277598045
+      },
+      {
+        "received_wall_s": 6.5842710829747375,
+        "stamp_ns": 28420000000,
+        "vx_m_s": 1.8964489108638166e-06,
+        "vy_m_s": -2.0756281069208912e-05,
+        "vz_m_s": 0.00013283541011834286,
+        "x_m": -0.5000017302679892,
+        "y_m": -0.500000305425696,
+        "z_m": 0.5809263388057125
+      },
+      {
+        "received_wall_s": 6.6006010829878505,
+        "stamp_ns": 28440000000,
+        "vx_m_s": -1.6021931359452033e-06,
+        "vy_m_s": 3.1556446997096408e-06,
+        "vz_m_s": 0.00015987018621986825,
+        "x_m": -0.5000017392803031,
+        "y_m": -0.500000364902825,
+        "z_m": 0.5809286706964611
+      },
+      {
+        "received_wall_s": 6.619746207987191,
+        "stamp_ns": 28460000000,
+        "vx_m_s": -1.4957035450772034e-06,
+        "vy_m_s": 1.0047205432402327e-05,
+        "vz_m_s": 8.683108933855226e-05,
+        "x_m": -0.5000017915035285,
+        "y_m": -0.5000000475455401,
+        "z_m": 0.5809308839309892
+      },
+      {
+        "received_wall_s": 6.643453791999491,
+        "stamp_ns": 28480000000,
+        "vx_m_s": 1.8676083252069341e-06,
+        "vy_m_s": -2.196961466854776e-05,
+        "vz_m_s": 0.0001367450588386503,
+        "x_m": -0.5000017713422165,
+        "y_m": -0.5000003168211918,
+        "z_m": 0.5809337496882904
+      },
+      {
+        "received_wall_s": 6.665771791973384,
+        "stamp_ns": 28500000000,
+        "vx_m_s": -1.92507362651888e-06,
+        "vy_m_s": 5.765226832955055e-06,
+        "vz_m_s": 0.00015206314589949374,
+        "x_m": -0.5000017842255784,
+        "y_m": -0.500000355283173,
+        "z_m": 0.5809361531904776
+      },
+      {
+        "received_wall_s": 6.682388874993194,
+        "stamp_ns": 28520000000,
+        "vx_m_s": -1.4820375202114316e-06,
+        "vy_m_s": 9.143374338999365e-06,
+        "vz_m_s": 8.934666143250886e-05,
+        "x_m": -0.5000018369255267,
+        "y_m": -0.5000000434269748,
+        "z_m": 0.5809384322819567
+      },
+      {
+        "received_wall_s": 6.700994332990376,
+        "stamp_ns": 28540000000,
+        "vx_m_s": 1.3626277990453955e-06,
+        "vy_m_s": -1.6435637132507527e-05,
+        "vz_m_s": 0.00010156782796159666,
+        "x_m": -0.5000018185705695,
+        "y_m": -0.5000003105453122,
+        "z_m": 0.5809412367780158
+      },
+      {
+        "received_wall_s": 6.725865499989595,
+        "stamp_ns": 28560000000,
+        "vx_m_s": -2.75820388214267e-06,
+        "vy_m_s": 1.032617862272203e-05,
+        "vz_m_s": 0.00019259491627023737,
+        "x_m": -0.5000018391474447,
+        "y_m": -0.5000003045087499,
+        "z_m": 0.5809440610941433
+      },
+      {
+        "received_wall_s": 6.745238207979128,
+        "stamp_ns": 28580000000,
+        "vx_m_s": -1.528172503961425e-06,
+        "vy_m_s": 8.454286007296828e-06,
+        "vz_m_s": 0.00011615516617157207,
+        "x_m": -0.5000018847999291,
+        "y_m": -0.5000000428658546,
+        "z_m": 0.5809463711107569
+      },
+      {
+        "received_wall_s": 6.762683874985669,
+        "stamp_ns": 28600000000,
+        "vx_m_s": 1.943143401470473e-06,
+        "vy_m_s": -2.269740549471673e-05,
+        "vz_m_s": 0.00015312724382301633,
+        "x_m": -0.5000018603103703,
+        "y_m": -0.5000003586010369,
+        "z_m": 0.580949188577371
+      },
+      {
+        "received_wall_s": 6.782938249991275,
+        "stamp_ns": 28620000000,
+        "vx_m_s": -2.675189903149815e-06,
+        "vy_m_s": 8.728494674129323e-06,
+        "vz_m_s": 0.00019203807844830333,
+        "x_m": -0.5000018840317576,
+        "y_m": -0.5000003190707021,
+        "z_m": 0.5809516232748547
+      },
+      {
+        "received_wall_s": 6.804247457999736,
+        "stamp_ns": 28640000000,
+        "vx_m_s": -1.4711356721601932e-06,
+        "vy_m_s": 8.558018801587896e-06,
+        "vz_m_s": 0.00010224174538204832,
+        "x_m": -0.5000019292502205,
+        "y_m": -0.5000000642057811,
+        "z_m": 0.5809537866292904
+      },
+      {
+        "received_wall_s": 6.822429874999216,
+        "stamp_ns": 28660000000,
+        "vx_m_s": 1.4668613021986056e-06,
+        "vy_m_s": -1.6966209679988334e-05,
+        "vz_m_s": 0.00011265682204926407,
+        "x_m": -0.5000019060891251,
+        "y_m": -0.5000003613216372,
+        "z_m": 0.5809566878022763
+      },
+      {
+        "received_wall_s": 6.840543124999385,
+        "stamp_ns": 28680000000,
+        "vx_m_s": -2.1224679783071317e-06,
+        "vy_m_s": 9.247504965699234e-06,
+        "vz_m_s": 9.977282273391757e-05,
+        "x_m": -0.5000019284027002,
+        "y_m": -0.5000003397660688,
+        "z_m": 0.5809590706355076
+      },
+      {
+        "received_wall_s": 6.861509957991075,
+        "stamp_ns": 28700000000,
+        "vx_m_s": -1.3580164385281459e-06,
+        "vy_m_s": 8.532300686999058e-06,
+        "vz_m_s": 0.00011268657159020247,
+        "x_m": -0.5000019747055391,
+        "y_m": -0.5000000673199286,
+        "z_m": 0.5809614382325814
+      },
+      {
+        "received_wall_s": 6.880053291999502,
+        "stamp_ns": 28720000000,
+        "vx_m_s": 1.3268792961523008e-06,
+        "vy_m_s": -1.7758744362058006e-05,
+        "vz_m_s": 0.00012346474089194474,
+        "x_m": -0.5000019517182663,
+        "y_m": -0.5000003779572564,
+        "z_m": 0.580964288767492
+      },
+      {
+        "received_wall_s": 6.899739082989981,
+        "stamp_ns": 28740000000,
+        "vx_m_s": -3.102883435978121e-06,
+        "vy_m_s": 1.108387311860131e-05,
+        "vz_m_s": 0.00018508775172598258,
+        "x_m": -0.5000019815886224,
+        "y_m": -0.5000003073346935,
+        "z_m": 0.5809666368587649
+      },
+      {
+        "received_wall_s": 6.919853542000055,
+        "stamp_ns": 28760000000,
+        "vx_m_s": -1.2310430430474202e-06,
+        "vy_m_s": 7.612162241797761e-06,
+        "vz_m_s": 0.0001478864494694548,
+        "x_m": -0.5000020232248815,
+        "y_m": -0.5000000546534925,
+        "z_m": 0.5809692132348734
+      },
+      {
+        "received_wall_s": 6.944227499974659,
+        "stamp_ns": 28780000000,
+        "vx_m_s": 1.5385429243192211e-06,
+        "vy_m_s": -1.8032070612468305e-05,
+        "vz_m_s": 0.00011075133118452754,
+        "x_m": -0.5000019964550378,
+        "y_m": -0.5000003628445305,
+        "z_m": 0.5809714236248069
+      },
+      {
+        "received_wall_s": 6.96160383298411,
+        "stamp_ns": 28800000000,
+        "vx_m_s": -3.0012628961377196e-06,
+        "vy_m_s": 1.5886286261880733e-05,
+        "vz_m_s": 0.00013740437817081738,
+        "x_m": -0.5000020265150299,
+        "y_m": -0.5000002742241461,
+        "z_m": 0.5809741751152926
+      },
+      {
+        "received_wall_s": 6.986253957991721,
+        "stamp_ns": 28820000000,
+        "vx_m_s": -6.058330501900614e-07,
+        "vy_m_s": 3.147898711133523e-06,
+        "vz_m_s": 0.00010200114315442495,
+        "x_m": -0.5000020586427353,
+        "y_m": -0.5000000659340714,
+        "z_m": 0.5809764542707567
+      },
+      {
+        "received_wall_s": 6.999772749986732,
+        "stamp_ns": 28840000000,
+        "vx_m_s": 9.716375202428343e-07,
+        "vy_m_s": -1.3033106806866434e-05,
+        "vz_m_s": 8.896439697550876e-05,
+        "x_m": -0.5000020362941058,
+        "y_m": -0.5000003679385688,
+        "z_m": 0.580978864662562
+      },
+      {
+        "received_wall_s": 7.0199679999786895,
+        "stamp_ns": 28860000000,
+        "vx_m_s": -3.1927049168869384e-06,
+        "vy_m_s": 1.7256655811922253e-05,
+        "vz_m_s": 0.0001399661273095777,
+        "x_m": -0.5000020720373778,
+        "y_m": -0.5000002497116103,
+        "z_m": 0.5809818055478635
+      },
+      {
+        "received_wall_s": 7.044653291988652,
+        "stamp_ns": 28880000000,
+        "vx_m_s": -6.955234672966404e-07,
+        "vy_m_s": 4.227936624938849e-06,
+        "vz_m_s": 6.425193062560653e-05,
+        "x_m": -0.5000021007494662,
+        "y_m": -0.5000000678933486,
+        "z_m": 0.5809834683854065
+      },
+      {
+        "received_wall_s": 7.062666707992321,
+        "stamp_ns": 28900000000,
+        "vx_m_s": 1.1988531464902643e-06,
+        "vy_m_s": -1.696363819952597e-05,
+        "vz_m_s": 0.0001261697492954764,
+        "x_m": -0.5000020791295604,
+        "y_m": -0.5000004038416489,
+        "z_m": 0.5809867654750589
+      },
+      {
+        "received_wall_s": 7.08156224997947,
+        "stamp_ns": 28920000000,
+        "vx_m_s": -3.6042913941675235e-06,
+        "vy_m_s": 1.907993928842898e-05,
+        "vz_m_s": 0.0001627296529690613,
+        "x_m": -0.5000021190206669,
+        "y_m": -0.5000002406817184,
+        "z_m": 0.5809894070736222
+      },
+      {
+        "received_wall_s": 7.100653166999109,
+        "stamp_ns": 28940000000,
+        "vx_m_s": -7.311800877586922e-07,
+        "vy_m_s": 3.873017781308263e-06,
+        "vz_m_s": 0.00010078507658458093,
+        "x_m": -0.500002147062179,
+        "y_m": -0.5000000684835836,
+        "z_m": 0.5809914168348298
+      },
+      {
+        "received_wall_s": 7.12447224999778,
+        "stamp_ns": 28960000000,
+        "vx_m_s": 9.588268987294845e-07,
+        "vy_m_s": -1.43684906696297e-05,
+        "vz_m_s": 0.00011228767228742514,
+        "x_m": -0.5000021257238791,
+        "y_m": -0.5000003856254779,
+        "z_m": 0.5809941604554245
+      },
+      {
+        "received_wall_s": 7.139803416997893,
+        "stamp_ns": 28980000000,
+        "vx_m_s": -3.873684141759906e-06,
+        "vy_m_s": 1.9608545825310825e-05,
+        "vz_m_s": 0.00017338426317643605,
+        "x_m": -0.5000021686991075,
+        "y_m": -0.5000002192989897,
+        "z_m": 0.58099689785618
+      },
+      {
+        "received_wall_s": 7.166470541997114,
+        "stamp_ns": 29000000000,
+        "vx_m_s": -1.3090492822308748e-07,
+        "vy_m_s": -1.1002089705924214e-06,
+        "vz_m_s": 0.00011151897938878544,
+        "x_m": -0.5000021910486958,
+        "y_m": -0.5000000907541987,
+        "z_m": 0.5809992521673737
+      },
+      {
+        "received_wall_s": 7.184177666989854,
+        "stamp_ns": 29020000000,
+        "vx_m_s": 8.489012531108586e-07,
+        "vy_m_s": -1.4573218957318935e-05,
+        "vz_m_s": 0.00012184729344491794,
+        "x_m": -0.5000021683866882,
+        "y_m": -0.5000004170361435,
+        "z_m": 0.5810018096674775
+      },
+      {
+        "received_wall_s": 7.205293916980736,
+        "stamp_ns": 29040000000,
+        "vx_m_s": -3.1968404653907505e-06,
+        "vy_m_s": 1.730702991087861e-05,
+        "vz_m_s": 0.00012033850210861491,
+        "x_m": -0.5000022111503627,
+        "y_m": -0.5000002300694202,
+        "z_m": 0.5810041120382404
+      },
+      {
+        "received_wall_s": 7.223881499987328,
+        "stamp_ns": 29060000000,
+        "vx_m_s": -2.3858141163947402e-08,
+        "vy_m_s": -1.455193554092804e-06,
+        "vz_m_s": 0.00010979296348648711,
+        "x_m": -0.5000022367572682,
+        "y_m": -0.5000000694173912,
+        "z_m": 0.5810065416887321
+      },
+      {
+        "received_wall_s": 7.242866999993566,
+        "stamp_ns": 29080000000,
+        "vx_m_s": 1.2683007103362001e-06,
+        "vy_m_s": -1.7847832619515584e-05,
+        "vz_m_s": 0.00013421584726522434,
+        "x_m": -0.5000022085473602,
+        "y_m": -0.5000004287105555,
+        "z_m": 0.581009090506689
+      },
+      {
+        "received_wall_s": 7.2621680419833865,
+        "stamp_ns": 29100000000,
+        "vx_m_s": -3.7446553917357802e-06,
+        "vy_m_s": 2.1750989010744957e-05,
+        "vz_m_s": 0.00013474860786200522,
+        "x_m": -0.5000022566730896,
+        "y_m": -0.5000001901969232,
+        "z_m": 0.5810115490001678
+      },
+      {
+        "received_wall_s": 7.281874207983492,
+        "stamp_ns": 29120000000,
+        "vx_m_s": -4.320274596506464e-07,
+        "vy_m_s": 7.443981451075564e-07,
+        "vz_m_s": 0.000151223206317029,
+        "x_m": -0.5000022801652858,
+        "y_m": -0.5000000512260584,
+        "z_m": 0.5810139297650527
+      },
+      {
+        "received_wall_s": 7.303087457985384,
+        "stamp_ns": 29140000000,
+        "vx_m_s": 1.0934737666029446e-06,
+        "vy_m_s": -1.4187193244814993e-05,
+        "vz_m_s": 0.00011474730871994681,
+        "x_m": -0.5000022506245977,
+        "y_m": -0.5000004057020312,
+        "z_m": 0.5810164592613563
+      },
+      {
+        "received_wall_s": 7.322743083001114,
+        "stamp_ns": 29160000000,
+        "vx_m_s": -4.2607240897390085e-06,
+        "vy_m_s": 2.3396127246489605e-05,
+        "vz_m_s": 0.00016638951865787955,
+        "x_m": -0.5000023006183183,
+        "y_m": -0.5000001697609158,
+        "z_m": 0.581019153778031
+      },
+      {
+        "received_wall_s": 7.340701666980749,
+        "stamp_ns": 29180000000,
+        "vx_m_s": 1.036642672979925e-07,
+        "vy_m_s": -4.8668115770881995e-06,
+        "vz_m_s": 0.00014337740983782086,
+        "x_m": -0.5000023209590114,
+        "y_m": -0.5000000859213142,
+        "z_m": 0.58102175396976
+      },
+      {
+        "received_wall_s": 7.367597249976825,
+        "stamp_ns": 29200000000,
+        "vx_m_s": 1.1527726182596056e-06,
+        "vy_m_s": -1.4074266813921318e-05,
+        "vz_m_s": 0.00011743340367746411,
+        "x_m": -0.5000022937464168,
+        "y_m": -0.5000004062290212,
+        "z_m": 0.581024091150122
+      },
+      {
+        "received_wall_s": 7.379955457989126,
+        "stamp_ns": 29220000000,
+        "vx_m_s": -3.20493126014678e-06,
+        "vy_m_s": 1.7253829945892433e-05,
+        "vz_m_s": 0.0001166999677379541,
+        "x_m": -0.5000023431044104,
+        "y_m": -0.5000001896099179,
+        "z_m": 0.5810268299564271
+      },
+      {
+        "received_wall_s": 7.404773999995086,
+        "stamp_ns": 29240000000,
+        "vx_m_s": 1.003662738059088e-07,
+        "vy_m_s": -3.812674841271116e-06,
+        "vz_m_s": 0.00010475656592177599,
+        "x_m": -0.5000023665007455,
+        "y_m": -0.5000000880844053,
+        "z_m": 0.581029317191977
+      },
+      {
+        "received_wall_s": 7.423734832991613,
+        "stamp_ns": 29260000000,
+        "vx_m_s": 7.699319679697719e-07,
+        "vy_m_s": -9.584109256163387e-06,
+        "vz_m_s": 7.75854328589689e-05,
+        "x_m": -0.5000023384258978,
+        "y_m": -0.5000004099513429,
+        "z_m": 0.5810316403482894
+      },
+      {
+        "received_wall_s": 7.442837291979231,
+        "stamp_ns": 29280000000,
+        "vx_m_s": -3.836430826930292e-06,
+        "vy_m_s": 2.057892357761604e-05,
+        "vz_m_s": 0.00014064502095574902,
+        "x_m": -0.5000023925280808,
+        "y_m": -0.5000001857954742,
+        "z_m": 0.5810347287680987
+      },
+      {
+        "received_wall_s": 7.462407624989282,
+        "stamp_ns": 29300000000,
+        "vx_m_s": -2.756266431189201e-07,
+        "vy_m_s": -1.4607820191185877e-06,
+        "vz_m_s": 0.00015483891511979873,
+        "x_m": -0.5000024098653929,
+        "y_m": -0.500000110268174,
+        "z_m": 0.5810370497346884
+      },
+      {
+        "received_wall_s": 7.482362041977467,
+        "stamp_ns": 29320000000,
+        "vx_m_s": 8.582282432859233e-07,
+        "vy_m_s": -1.4213028241622075e-05,
+        "vz_m_s": 0.0001414649863653535,
+        "x_m": -0.5000023850365911,
+        "y_m": -0.5000004311367954,
+        "z_m": 0.5810397408672844
+      },
+      {
+        "received_wall_s": 7.503805249987636,
+        "stamp_ns": 29340000000,
+        "vx_m_s": -3.287809070480249e-06,
+        "vy_m_s": 1.7071487659960803e-05,
+        "vz_m_s": 0.00011376396835853743,
+        "x_m": -0.5000024405930138,
+        "y_m": -0.5000001889337927,
+        "z_m": 0.5810422892097971
+      },
+      {
+        "received_wall_s": 7.521172874985496,
+        "stamp_ns": 29360000000,
+        "vx_m_s": -2.729677677134634e-07,
+        "vy_m_s": -1.7978127898703891e-06,
+        "vz_m_s": 0.0001650383273461077,
+        "x_m": -0.500002458953699,
+        "y_m": -0.5000001135812061,
+        "z_m": 0.5810447008050725
+      },
+      {
+        "received_wall_s": 7.541061374999117,
+        "stamp_ns": 29380000000,
+        "vx_m_s": 7.450030521418154e-07,
+        "vy_m_s": -1.0048388030581038e-05,
+        "vz_m_s": 8.857203566981837e-05,
+        "x_m": -0.5000024324470078,
+        "y_m": -0.5000004190131301,
+        "z_m": 0.5810469673859995
+      },
+      {
+        "received_wall_s": 7.55984320800053,
+        "stamp_ns": 29400000000,
+        "vx_m_s": -3.988028605943184e-06,
+        "vy_m_s": 2.2159720854546748e-05,
+        "vz_m_s": 0.00015061901735013706,
+        "x_m": -0.5000024890719134,
+        "y_m": -0.5000001614971739,
+        "z_m": 0.5810499945910396
+      },
+      {
+        "received_wall_s": 7.583958582981722,
+        "stamp_ns": 29420000000,
+        "vx_m_s": 4.197432088645404e-07,
+        "vy_m_s": -7.693781496833827e-06,
+        "vz_m_s": 0.0001390400691087769,
+        "x_m": -0.500002499284243,
+        "y_m": -0.5000001522514336,
+        "z_m": 0.5810523992414385
+      },
+      {
+        "received_wall_s": 7.602667416998884,
+        "stamp_ns": 29440000000,
+        "vx_m_s": 7.202849585020009e-07,
+        "vy_m_s": -9.439593138365005e-06,
+        "vz_m_s": 7.525405429700638e-05,
+        "x_m": -0.5000024771099072,
+        "y_m": -0.500000424759143,
+        "z_m": 0.5810542742997543
+      },
+      {
+        "received_wall_s": 7.621031041984679,
+        "stamp_ns": 29460000000,
+        "vx_m_s": -2.605629502261905e-06,
+        "vy_m_s": 1.5766765418293516e-05,
+        "vz_m_s": 9.956999190348876e-05,
+        "x_m": -0.5000025264990524,
+        "y_m": -0.5000001977935071,
+        "z_m": 0.5810572779393088
+      },
+      {
+        "received_wall_s": 7.6450502919906285,
+        "stamp_ns": 29480000000,
+        "vx_m_s": 2.8677827596938894e-07,
+        "vy_m_s": -9.226421432400719e-06,
+        "vz_m_s": 0.00018856786886925245,
+        "x_m": -0.5000025391380424,
+        "y_m": -0.5000001931485469,
+        "z_m": 0.5810600432900009
+      },
+      {
+        "received_wall_s": 7.664317082992056,
+        "stamp_ns": 29500000000,
+        "vx_m_s": 4.1724458404121837e-07,
+        "vy_m_s": -8.616981308666796e-06,
+        "vz_m_s": 0.00011352736398096962,
+        "x_m": -0.5000025207211822,
+        "y_m": -0.5000004510553318,
+        "z_m": 0.5810623020129106
+      },
+      {
+        "received_wall_s": 7.684213832981186,
+        "stamp_ns": 29520000000,
+        "vx_m_s": -3.3086515793424054e-06,
+        "vy_m_s": 1.8608824380854558e-05,
+        "vz_m_s": 0.00012439467978147205,
+        "x_m": -0.5000025740028919,
+        "y_m": -0.5000001849776504,
+        "z_m": 0.5810648025628006
+      },
+      {
+        "received_wall_s": 7.704312249989016,
+        "stamp_ns": 29540000000,
+        "vx_m_s": 3.8039588513768356e-07,
+        "vy_m_s": -1.0417918407453627e-05,
+        "vz_m_s": 0.0001867302295319924,
+        "x_m": -0.5000025852349096,
+        "y_m": -0.5000002026601565,
+        "z_m": 0.58106754640403
+      },
+      {
+        "received_wall_s": 7.724799499992514,
+        "stamp_ns": 29560000000,
+        "vx_m_s": 2.6867467530538746e-07,
+        "vy_m_s": -4.493745137438128e-06,
+        "vz_m_s": 4.953518601160539e-05,
+        "x_m": -0.5000025674948445,
+        "y_m": -0.5000004261589392,
+        "z_m": 0.5810692726156536
+      },
+      {
+        "received_wall_s": 7.742679666989716,
+        "stamp_ns": 29580000000,
+        "vx_m_s": -3.0168570782733843e-06,
+        "vy_m_s": 1.6983689042062763e-05,
+        "vz_m_s": 0.00010946274342346475,
+        "x_m": -0.5000026276606928,
+        "y_m": -0.5000001500154937,
+        "z_m": 0.5810723352036615
+      },
+      {
+        "received_wall_s": 7.761940999975195,
+        "stamp_ns": 29600000000,
+        "vx_m_s": 3.9522733601008334e-07,
+        "vy_m_s": -9.661279119870222e-06,
+        "vz_m_s": 0.00022026988251447932,
+        "x_m": -0.5000026305358818,
+        "y_m": -0.5000002048748537,
+        "z_m": 0.5810749053118813
+      },
+      {
+        "received_wall_s": 7.780654499976663,
+        "stamp_ns": 29620000000,
+        "vx_m_s": 2.895517475131604e-07,
+        "vy_m_s": -4.106454798914567e-06,
+        "vz_m_s": 3.70281320960631e-05,
+        "x_m": -0.50000261196976,
+        "y_m": -0.5000004188298833,
+        "z_m": 0.5810763747480241
+      },
+      {
+        "received_wall_s": 7.805053624993889,
+        "stamp_ns": 29640000000,
+        "vx_m_s": -2.8379668797125898e-06,
+        "vy_m_s": 1.7235327029663776e-05,
+        "vz_m_s": 0.0001111588247945651,
+        "x_m": -0.5000026725117315,
+        "y_m": -0.500000140333911,
+        "z_m": 0.5810797106637114
+      },
+      {
+        "received_wall_s": 7.823407624993706,
+        "stamp_ns": 29660000000,
+        "vx_m_s": 1.294902450304735e-06,
+        "vy_m_s": -1.4294731313254538e-05,
+        "vz_m_s": 0.00012472085311948685,
+        "x_m": -0.5000026699644329,
+        "y_m": -0.5000002233900078,
+        "z_m": 0.5810823364390072
+      },
+      {
+        "received_wall_s": 7.841393082984723,
+        "stamp_ns": 29680000000,
+        "vx_m_s": 2.384673829373268e-07,
+        "vy_m_s": -4.608340072271489e-06,
+        "vz_m_s": 5.061013754246561e-05,
+        "x_m": -0.5000026531118972,
+        "y_m": -0.5000004398888905,
+        "z_m": 0.581083969283138
+      },
+      {
+        "received_wall_s": 7.861468124989187,
+        "stamp_ns": 29700000000,
+        "vx_m_s": -2.9476617572851653e-06,
+        "vy_m_s": 1.7793325095343397e-05,
+        "vz_m_s": 0.00012586966342781306,
+        "x_m": -0.50000271907629,
+        "y_m": -0.500000126709706,
+        "z_m": 0.581087373194118
+      },
+      {
+        "received_wall_s": 7.8828192919900175,
+        "stamp_ns": 29720000000,
+        "vx_m_s": 1.0964190843198784e-06,
+        "vy_m_s": -1.4406239382933403e-05,
+        "vz_m_s": 0.0001641128981131328,
+        "x_m": -0.5000027151647397,
+        "y_m": -0.5000002308898555,
+        "z_m": 0.5810897769181389
+      },
+      {
+        "received_wall_s": 7.903070041997125,
+        "stamp_ns": 29740000000,
+        "vx_m_s": -4.117267691614711e-07,
+        "vy_m_s": -5.384115046882038e-06,
+        "vz_m_s": 0.00015206019814121332,
+        "x_m": -0.5000027054058183,
+        "y_m": -0.5000004569592156,
+        "z_m": 0.5810924280348976
+      },
+      {
+        "received_wall_s": 7.928285957983462,
+        "stamp_ns": 29760000000,
+        "vx_m_s": -2.9052568869094674e-06,
+        "vy_m_s": 1.7747417611367536e-05,
+        "vz_m_s": 0.00012547842374286588,
+        "x_m": -0.500002761028513,
+        "y_m": -0.50000014730648,
+        "z_m": 0.5810948113676454
+      },
+      {
+        "received_wall_s": 7.94007558299927,
+        "stamp_ns": 29780000000,
+        "vx_m_s": 1.1723300350494587e-06,
+        "vy_m_s": -1.748788207243423e-05,
+        "vz_m_s": 0.00020064207794407538,
+        "x_m": -0.5000027562064469,
+        "y_m": -0.5000002824206511,
+        "z_m": 0.5810974508546324
+      },
+      {
+        "received_wall_s": 7.96481216698885,
+        "stamp_ns": 29800000000,
+        "vx_m_s": -3.441396525041785e-07,
+        "vy_m_s": -2.635799814192475e-06,
+        "vz_m_s": 0.00010027990287534002,
+        "x_m": -0.5000027462129668,
+        "y_m": -0.5000004806040279,
+        "z_m": 0.5810996994449759
+      },
+      {
+        "received_wall_s": 7.983242124988465,
+        "stamp_ns": 29820000000,
+        "vx_m_s": -2.2469823749941736e-06,
+        "vy_m_s": 1.3961661808746854e-05,
+        "vz_m_s": 9.924274197563071e-05,
+        "x_m": -0.5000028021081021,
+        "y_m": -0.5000001670363325,
+        "z_m": 0.5811021789653346
+      },
+      {
+        "received_wall_s": 8.004256541986251,
+        "stamp_ns": 29840000000,
+        "vx_m_s": 9.410254843818665e-07,
+        "vy_m_s": -1.6241212899763664e-05,
+        "vz_m_s": 0.00019826933659246115,
+        "x_m": -0.5000028000947672,
+        "y_m": -0.5000002851018202,
+        "z_m": 0.5811047869723157
+      },
+      {
+        "received_wall_s": 8.02328574997955,
+        "stamp_ns": 29860000000,
+        "vx_m_s": -4.205984816053074e-07,
+        "vy_m_s": -3.100146537440436e-06,
+        "vz_m_s": 0.0001115838813428578,
+        "x_m": -0.5000027907967846,
+        "y_m": -0.5000004966280435,
+        "z_m": 0.5811071317313968
+      },
+      {
+        "received_wall_s": 8.042003332986496,
+        "stamp_ns": 29880000000,
+        "vx_m_s": -2.8176226620832783e-06,
+        "vy_m_s": 1.8236724963701768e-05,
+        "vz_m_s": 0.00012411402181692228,
+        "x_m": -0.5000028519639687,
+        "y_m": -0.5000001407732638,
+        "z_m": 0.5811097261174035
+      },
+      {
+        "received_wall_s": 8.060611749999225,
+        "stamp_ns": 29900000000,
+        "vx_m_s": 1.4856370328473174e-06,
+        "vy_m_s": -1.739124787239538e-05,
+        "vz_m_s": 0.00015033066594323893,
+        "x_m": -0.5000028430073634,
+        "y_m": -0.5000002815724989,
+        "z_m": 0.5811122362197593
+      },
+      {
+        "received_wall_s": 8.08349166699918,
+        "stamp_ns": 29920000000,
+        "vx_m_s": -5.003324260067793e-07,
+        "vy_m_s": -2.2219804178885927e-06,
+        "vz_m_s": 0.0001021936497796209,
+        "x_m": -0.5000028348106869,
+        "y_m": -0.500000473797618,
+        "z_m": 0.581114521292219
+      },
+      {
+        "received_wall_s": 8.102172416984104,
+        "stamp_ns": 29940000000,
+        "vx_m_s": -2.1764688492362356e-06,
+        "vy_m_s": 1.4309112577875002e-05,
+        "vz_m_s": 0.00010182832429363065,
+        "x_m": -0.5000028924379196,
+        "y_m": -0.5000001499549842,
+        "z_m": 0.5811170608379248
+      },
+      {
+        "received_wall_s": 8.121557291975478,
+        "stamp_ns": 29960000000,
+        "vx_m_s": 1.3051065191230616e-06,
+        "vy_m_s": -1.733955152414799e-05,
+        "vz_m_s": 0.0001262953185563128,
+        "x_m": -0.5000028852179497,
+        "y_m": -0.5000003054340212,
+        "z_m": 0.5811199907071916
+      },
+      {
+        "received_wall_s": 8.140505832998315,
+        "stamp_ns": 29980000000,
+        "vx_m_s": -5.009159292847219e-07,
+        "vy_m_s": -2.8609215870126746e-06,
+        "vz_m_s": 0.00010176236435579202,
+        "x_m": -0.5000028824779821,
+        "y_m": -0.5000004676611315,
+        "z_m": 0.5811220202508439
+      },
+      {
+        "received_wall_s": 8.167692207993241,
+        "stamp_ns": 30000000000,
+        "vx_m_s": -1.8467961270373072e-06,
+        "vy_m_s": 1.33747803340349e-05,
+        "vz_m_s": 0.00010115315216427097,
+        "x_m": -0.5000029413066873,
+        "y_m": -0.5000001158077406,
+        "z_m": 0.5811247935953098
+      },
+      {
+        "received_wall_s": 8.182485457975417,
+        "stamp_ns": 30020000000,
+        "vx_m_s": 1.2951149059665773e-06,
+        "vy_m_s": -1.780026944125276e-05,
+        "vz_m_s": 0.0001260173823968777,
+        "x_m": -0.5000029309226883,
+        "y_m": -0.5000003032868425,
+        "z_m": 0.581127579500105
+      },
+      {
+        "received_wall_s": 8.200333791988669,
+        "stamp_ns": 30040000000,
+        "vx_m_s": -1.2563764510922529e-06,
+        "vy_m_s": -6.822537918502856e-07,
+        "vz_m_s": 0.00016581414297403742,
+        "x_m": -0.5000029375174028,
+        "y_m": -0.5000004084883896,
+        "z_m": 0.5811299986651821
+      },
+      {
+        "received_wall_s": 8.219490874995245,
+        "stamp_ns": 30060000000,
+        "vx_m_s": -2.0215198620352314e-06,
+        "vy_m_s": 1.3201511234066666e-05,
+        "vz_m_s": 0.00010078001386024026,
+        "x_m": -0.5000029894778454,
+        "y_m": -0.5000000981496551,
+        "z_m": 0.5811322635559638
+      },
+      {
+        "received_wall_s": 8.244870249996893,
+        "stamp_ns": 30080000000,
+        "vx_m_s": 1.339069707275641e-06,
+        "vy_m_s": -1.6621989316537396e-05,
+        "vz_m_s": 0.00011239464234089412,
+        "x_m": -0.5000029789168707,
+        "y_m": -0.500000284768442,
+        "z_m": 0.5811350293340095
+      },
+      {
+        "received_wall_s": 8.263592999981483,
+        "stamp_ns": 30100000000,
+        "vx_m_s": -1.0968987239282526e-06,
+        "vy_m_s": 2.685302480785809e-06,
+        "vz_m_s": 0.00010096426775066045,
+        "x_m": -0.5000029802031802,
+        "y_m": -0.5000004038634576,
+        "z_m": 0.581137424275207
+      },
+      {
+        "received_wall_s": 8.28075079197879,
+        "stamp_ns": 30120000000,
+        "vx_m_s": -1.5493642581996682e-06,
+        "vy_m_s": 9.198085624504339e-06,
+        "vz_m_s": 7.49512407096236e-05,
+        "x_m": -0.500003034762008,
+        "y_m": -0.5000001000942151,
+        "z_m": 0.5811396672661351
+      },
+      {
+        "received_wall_s": 8.301766916993074,
+        "stamp_ns": 30140000000,
+        "vx_m_s": 1.711772067115821e-06,
+        "vy_m_s": -1.8296689423788124e-05,
+        "vz_m_s": 0.0001238857983056443,
+        "x_m": -0.5000030212550232,
+        "y_m": -0.5000002994012409,
+        "z_m": 0.5811425337692269
+      },
+      {
+        "received_wall_s": 8.32058612498804,
+        "stamp_ns": 30160000000,
+        "vx_m_s": -1.05846495551386e-06,
+        "vy_m_s": -5.53185687128449e-07,
+        "vz_m_s": 0.0001627062303238932,
+        "x_m": -0.5000030229666678,
+        "y_m": -0.5000004012343306,
+        "z_m": 0.5811449086912177
+      },
+      {
+        "received_wall_s": 8.34429908299353,
+        "stamp_ns": 30180000000,
+        "vx_m_s": -2.4876337433264514e-06,
+        "vy_m_s": 1.4112322528454282e-05,
+        "vz_m_s": 0.00013624519474638377,
+        "x_m": -0.500003080626428,
+        "y_m": -0.5000000919605093,
+        "z_m": 0.5811475055463073
+      },
+      {
+        "received_wall_s": 8.363728166994406,
+        "stamp_ns": 30200000000,
+        "vx_m_s": 1.995077646032693e-06,
+        "vy_m_s": -2.2028570713089275e-05,
+        "vz_m_s": 0.0001456578350181725,
+        "x_m": -0.5000030600895238,
+        "y_m": -0.5000003481359768,
+        "z_m": 0.5811500751317307
+      },
+      {
+        "received_wall_s": 8.382348416984314,
+        "stamp_ns": 30220000000,
+        "vx_m_s": -1.4713333327927106e-06,
+        "vy_m_s": 2.340927164831233e-06,
+        "vz_m_s": 0.00015853453258114915,
+        "x_m": -0.5000030672969198,
+        "y_m": -0.500000417944079,
+        "z_m": 0.5811523908165018
+      },
+      {
+        "received_wall_s": 8.40023649999057,
+        "stamp_ns": 30240000000,
+        "vx_m_s": -1.3867495767691549e-06,
+        "vy_m_s": 9.301070613063195e-06,
+        "vz_m_s": 7.337950781368885e-05,
+        "x_m": -0.5000031185802717,
+        "y_m": -0.5000001120826324,
+        "z_m": 0.5811544537801719
+      },
+      {
+        "received_wall_s": 8.425109457981307,
+        "stamp_ns": 30260000000,
+        "vx_m_s": 1.990593141277585e-06,
+        "vy_m_s": -2.1750229098384286e-05,
+        "vz_m_s": 0.00013484637154997854,
+        "x_m": -0.5000030988866409,
+        "y_m": -0.5000003601153401,
+        "z_m": 0.5811574029971164
+      },
+      {
+        "received_wall_s": 8.442757291981252,
+        "stamp_ns": 30280000000,
+        "vx_m_s": -1.864385297601362e-06,
+        "vy_m_s": 5.27721451674745e-06,
+        "vz_m_s": 0.00015056348752970597,
+        "x_m": -0.5000031104689788,
+        "y_m": -0.5000004077515111,
+        "z_m": 0.5811597803140123
+      },
+      {
+        "received_wall_s": 8.463035624998156,
+        "stamp_ns": 30300000000,
+        "vx_m_s": -1.4975138808011282e-06,
+        "vy_m_s": 9.988924184119148e-06,
+        "vz_m_s": 8.889200217604125e-05,
+        "x_m": -0.50000316394384,
+        "y_m": -0.5000000831475594,
+        "z_m": 0.581162044826946
+      },
+      {
+        "received_wall_s": 8.481168124999385,
+        "stamp_ns": 30320000000,
+        "vx_m_s": 1.8232156632560307e-06,
+        "vy_m_s": -2.168897772510818e-05,
+        "vz_m_s": 0.0001397817142674922,
+        "x_m": -0.5000031450725708,
+        "y_m": -0.5000003401242962,
+        "z_m": 0.5811648481792313
+      },
+      {
+        "received_wall_s": 8.503574082977138,
+        "stamp_ns": 30340000000,
+        "vx_m_s": -2.356374608063629e-06,
+        "vy_m_s": 7.131708075375436e-06,
+        "vz_m_s": 0.00019397007295210477,
+        "x_m": -0.5000031620617731,
+        "y_m": -0.5000003612383339,
+        "z_m": 0.5811675597920613
+      },
+      {
+        "received_wall_s": 8.521687332977308,
+        "stamp_ns": 30360000000,
+        "vx_m_s": -1.4593989091019524e-06,
+        "vy_m_s": 9.437426618531774e-06,
+        "vz_m_s": 7.800346878019372e-05,
+        "x_m": -0.5000032035242431,
+        "y_m": -0.500000104025552,
+        "z_m": 0.5811693694884817
+      },
+      {
+        "received_wall_s": 8.540038332983386,
+        "stamp_ns": 30380000000,
+        "vx_m_s": 1.464313982611607e-06,
+        "vy_m_s": -1.9121513186223282e-05,
+        "vz_m_s": 0.0001297020633159866,
+        "x_m": -0.5000031903462546,
+        "y_m": -0.5000003505812638,
+        "z_m": 0.5811726238836249
+      },
+      {
+        "received_wall_s": 8.56013920798432,
+        "stamp_ns": 30400000000,
+        "vx_m_s": -2.1458903561222402e-06,
+        "vy_m_s": 7.36232413657219e-06,
+        "vz_m_s": 0.00014355146427271138,
+        "x_m": -0.5000032077828649,
+        "y_m": -0.5000003638082665,
+        "z_m": 0.5811751074143005
+      },
+      {
+        "received_wall_s": 8.585168499994325,
+        "stamp_ns": 30420000000,
+        "vx_m_s": -7.097193589932123e-07,
+        "vy_m_s": 3.995362177571834e-06,
+        "vz_m_s": 3.879436776416807e-05,
+        "x_m": -0.5000032559737502,
+        "y_m": -0.5000000982492222,
+        "z_m": 0.5811770399796937
+      },
+      {
+        "received_wall_s": 8.604859707993455,
+        "stamp_ns": 30440000000,
+        "vx_m_s": 1.5757811570795194e-06,
+        "vy_m_s": -1.7176191187320312e-05,
+        "vz_m_s": 0.00011462117057618631,
+        "x_m": -0.5000032409833624,
+        "y_m": -0.500000337619325,
+        "z_m": 0.581180246861744
+      },
+      {
+        "received_wall_s": 8.620457832992543,
+        "stamp_ns": 30460000000,
+        "vx_m_s": -3.063193062980613e-06,
+        "vy_m_s": 1.0768866722555946e-05,
+        "vz_m_s": 0.00019119368484846994,
+        "x_m": -0.5000032651975789,
+        "y_m": -0.5000003161054837,
+        "z_m": 0.5811830567930186
+      },
+      {
+        "received_wall_s": 8.642992124980083,
+        "stamp_ns": 30480000000,
+        "vx_m_s": -8.212277830604738e-07,
+        "vy_m_s": 4.4051934488696866e-06,
+        "vz_m_s": 5.065033867837199e-05,
+        "x_m": -0.5000033078309736,
+        "y_m": -0.5000000931556849,
+        "z_m": 0.5811848227066201
+      },
+      {
+        "received_wall_s": 8.663287541974569,
+        "stamp_ns": 30500000000,
+        "vx_m_s": 2.0918144876191486e-06,
+        "vy_m_s": -1.970002392360501e-05,
+        "vz_m_s": 0.00013675955291649375,
+        "x_m": -0.5000032814511931,
+        "y_m": -0.5000003829131298,
+        "z_m": 0.5811880768281388
+      },
+      {
+        "received_wall_s": 8.681152874982217,
+        "stamp_ns": 30520000000,
+        "vx_m_s": -2.9891784168574266e-06,
+        "vy_m_s": 9.423245359795403e-06,
+        "vz_m_s": 0.0001862206693439067,
+        "x_m": -0.5000033081019885,
+        "y_m": -0.5000003320169099,
+        "z_m": 0.5811904393506924
+      },
+      {
+        "received_wall_s": 8.699633124982938,
+        "stamp_ns": 30540000000,
+        "vx_m_s": -1.5516307904514546e-06,
+        "vy_m_s": 8.325120765170478e-06,
+        "vz_m_s": 9.884501998857001e-05,
+        "x_m": -0.5000033575744931,
+        "y_m": -0.5000000801082292,
+        "z_m": 0.5811925306922062
+      },
+      {
+        "received_wall_s": 8.720738207979593,
+        "stamp_ns": 30560000000,
+        "vx_m_s": 1.8653868958414982e-06,
+        "vy_m_s": -1.7465619290627453e-05,
+        "vz_m_s": 0.00010929029477431241,
+        "x_m": -0.5000033259992366,
+        "y_m": -0.50000038986993,
+        "z_m": 0.58119534088262
+      },
+      {
+        "received_wall_s": 8.740654749999521,
+        "stamp_ns": 30580000000,
+        "vx_m_s": -3.3759503098626425e-06,
+        "vy_m_s": 1.0667871233107483e-05,
+        "vz_m_s": 0.00021971366005273788,
+        "x_m": -0.5000033561624961,
+        "y_m": -0.500000324728346,
+        "z_m": 0.5811979048923279
+      },
+      {
+        "received_wall_s": 8.764152207993902,
+        "stamp_ns": 30600000000,
+        "vx_m_s": -6.51954445529015e-07,
+        "vy_m_s": 3.915187216152132e-06,
+        "vz_m_s": 3.696935958987949e-05,
+        "x_m": -0.500003393827275,
+        "y_m": -0.5000001114121017,
+        "z_m": 0.5811993710476886
+      },
+      {
+        "received_wall_s": 8.77985079199425,
+        "stamp_ns": 30620000000,
+        "vx_m_s": 1.8234389232461815e-06,
+        "vy_m_s": -1.8108954881493663e-05,
+        "vz_m_s": 0.00011144717313825389,
+        "x_m": -0.5000033656522488,
+        "y_m": -0.5000004229084941,
+        "z_m": 0.58120270832081
+      },
+      {
+        "received_wall_s": 8.805757750000339,
+        "stamp_ns": 30640000000,
+        "vx_m_s": -3.743986437769364e-06,
+        "vy_m_s": 1.4904247183079492e-05,
+        "vz_m_s": 0.00021399233189327735,
+        "x_m": -0.5000033992563285,
+        "y_m": -0.5000003221312306,
+        "z_m": 0.5812053505219847
+      },
+      {
+        "received_wall_s": 8.824759457987966,
+        "stamp_ns": 30660000000,
+        "vx_m_s": -8.072996562352652e-07,
+        "vy_m_s": 4.494263248388149e-06,
+        "vz_m_s": 5.1207980972632463e-05,
+        "x_m": -0.5000034384530481,
+        "y_m": -0.5000000991305545,
+        "z_m": 0.5812069997104007
+      },
+      {
+        "received_wall_s": 8.840208874986274,
+        "stamp_ns": 30680000000,
+        "vx_m_s": 1.6996922350453716e-06,
+        "vy_m_s": -1.7850144436549784e-05,
+        "vz_m_s": 0.00011528461285657097,
+        "x_m": -0.5000034127965984,
+        "y_m": -0.5000004162614158,
+        "z_m": 0.5812102014540059
+      },
+      {
+        "received_wall_s": 8.864141499972902,
+        "stamp_ns": 30700000000,
+        "vx_m_s": -2.9308974712737873e-06,
+        "vy_m_s": 1.4380803082687927e-05,
+        "vz_m_s": 0.00011608657044038639,
+        "x_m": -0.500003444719258,
+        "y_m": -0.5000003213216037,
+        "z_m": 0.5812129212616811
+      },
+      {
+        "received_wall_s": 8.879800791997695,
+        "stamp_ns": 30720000000,
+        "vx_m_s": -1.228202689644745e-06,
+        "vy_m_s": 3.8138162727815077e-06,
+        "vz_m_s": 0.00015700293851199422,
+        "x_m": -0.500003488172601,
+        "y_m": -0.5000001104126313,
+        "z_m": 0.5812156556261706
+      },
+      {
+        "received_wall_s": 8.906292832980398,
+        "stamp_ns": 30740000000,
+        "vx_m_s": 1.7339527969308275e-06,
+        "vy_m_s": -1.8230441750332586e-05,
+        "vz_m_s": 0.0001297542559818378,
+        "x_m": -0.5000034584420372,
+        "y_m": -0.5000004399680629,
+        "z_m": 0.58121811875455
+      },
+      {
+        "received_wall_s": 8.933228624984622,
+        "stamp_ns": 30760000000,
+        "vx_m_s": -3.6219910647283924e-06,
+        "vy_m_s": 1.675668898143411e-05,
+        "vz_m_s": 0.00015569924927169283,
+        "x_m": -0.5000034957519379,
+        "y_m": -0.5000003105957358,
+        "z_m": 0.5812207228667411
+      },
+      {
+        "received_wall_s": 8.939665749989217,
+        "stamp_ns": 30780000000,
+        "vx_m_s": -8.319512716611698e-07,
+        "vy_m_s": 2.9006884856558386e-06,
+        "vz_m_s": 0.0001048183180063072,
+        "x_m": -0.5000035360676237,
+        "y_m": -0.5000001101843792,
+        "z_m": 0.5812230714884469
+      },
+      {
+        "received_wall_s": 8.967029708001064,
+        "stamp_ns": 30800000000,
+        "vx_m_s": 1.2644754325981429e-06,
+        "vy_m_s": -1.3463679634593195e-05,
+        "vz_m_s": 0.00010373075472678322,
+        "x_m": -0.5000035068864099,
+        "y_m": -0.5000004354929046,
+        "z_m": 0.5812257935177819
+      },
+      {
+        "received_wall_s": 8.981784916977631,
+        "stamp_ns": 30820000000,
+        "vx_m_s": -4.061606983712021e-06,
+        "vy_m_s": 1.756822474373989e-05,
+        "vz_m_s": 0.00016750015647028555,
+        "x_m": -0.5000035492853419,
+        "y_m": -0.500000299086619,
+        "z_m": 0.5812285112353548
+      },
+      {
+        "received_wall_s": 9.0005799169885,
+        "stamp_ns": 30840000000,
+        "vx_m_s": -8.486723597061123e-07,
+        "vy_m_s": 1.5484315917500117e-06,
+        "vz_m_s": 0.00016770230873040017,
+        "x_m": -0.5000035834621429,
+        "y_m": -0.5000001474439799,
+        "z_m": 0.5812312174159842
+      },
+      {
+        "received_wall_s": 9.024993207975058,
+        "stamp_ns": 30860000000,
+        "vx_m_s": 1.103203057356217e-06,
+        "vy_m_s": -1.310970911258628e-05,
+        "vz_m_s": 0.00010109616150512008,
+        "x_m": -0.5000035566000072,
+        "y_m": -0.5000004478898165,
+        "z_m": 0.5812334942385007
+      },
+      {
+        "received_wall_s": 9.040599916974315,
+        "stamp_ns": 30880000000,
+        "vx_m_s": -3.986536854345086e-06,
+        "vy_m_s": 1.8542613669337195e-05,
+        "vz_m_s": 0.00016256642172153627,
+        "x_m": -0.5000035997434721,
+        "y_m": -0.5000002935769917,
+        "z_m": 0.5812361337527329
+      },
+      {
+        "received_wall_s": 9.065838457987411,
+        "stamp_ns": 30900000000,
+        "vx_m_s": -6.113168128552121e-07,
+        "vy_m_s": 5.295005799861889e-07,
+        "vz_m_s": 0.00016323153690417266,
+        "x_m": -0.5000036289176293,
+        "y_m": -0.5000001514079743,
+        "z_m": 0.5812387661421492
+      },
+      {
+        "received_wall_s": 9.084029041987378,
+        "stamp_ns": 30920000000,
+        "vx_m_s": 9.266156467027786e-07,
+        "vy_m_s": -1.4071433189805573e-05,
+        "vz_m_s": 0.00012428273315441942,
+        "x_m": -0.5000036051208313,
+        "y_m": -0.500000463943686,
+        "z_m": 0.5812412472690132
+      },
+      {
+        "received_wall_s": 9.101159416983137,
+        "stamp_ns": 30940000000,
+        "vx_m_s": -3.353862676154296e-06,
+        "vy_m_s": 1.7494532009910564e-05,
+        "vz_m_s": 0.00012246951715963418,
+        "x_m": -0.5000036499928497,
+        "y_m": -0.5000002697190138,
+        "z_m": 0.5812435918497955
+      }
+    ]
+  },
+  "post_exit_odometry_source": "/nano_c_slam_failure_probe/cf1/odom_truth",
+  "run_id": "008e32dd-c504-4cca-b1bc-00f70f696ee7",
+  "runtime_identity": {
+    "gazebo_executable": "/Users/vincent/Work/gz-macOS/ws/install/bin/gz",
+    "gazebo_partition": "nano_c_slam_stale_odom_custom_20261019",
+    "gazebo_version_output": "Gazebo Sim, version 8.14.0\nCopyright (C) 2018 Open Source Robotics Foundation.\nReleased under the Apache 2.0 License.",
+    "installed_mission_path": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.GegXU1/install/nano_c_slam_gazebo/lib/python3.11/site-packages/nano_c_slam_gazebo/sim_mission.py",
+    "installed_mission_sha256": "e6e3ea265f7dd1f6bed949734e8377abe4372ec113179829e0873bff09ef2c94",
+    "mission_source_sha256": "e6e3ea265f7dd1f6bed949734e8377abe4372ec113179829e0873bff09ef2c94",
+    "nano_c_slam_package_prefix": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.GegXU1/install/nano_c_slam_gazebo",
+    "overlay_build_receipt": "/Users/vincent/Work/Nano-C-SLAM/build/gazebo-ros-overlay.GegXU1/build-receipt.txt",
+    "overlay_build_receipt_sha256": "c99b249f66d91b6f244cc578b560749967ca412a98c108f5fe7587bc482b9891",
+    "overlay_source_revision": "40362f5067c70b8da6fe0613a6eccd29f37fb782",
+    "overlay_source_snapshot_sha256": "966849064a79122543b3fb75bda6334ff3516198e80e3b77c7e6ed12f65118fa",
+    "rmw_implementation": null,
+    "ros2_executable": "/opt/homebrew/opt/ros2-jazzy/bin/ros2",
+    "ros_domain_id": "64",
+    "source_revision": "40362f5067c70b8da6fe0613a6eccd29f37fb782",
+    "source_status": [
+      " M sim/gazebo/README.md",
+      " M sim/gazebo/nano_c_slam_gazebo/launch/crazyswarm2_gazebo.launch.py",
+      "?? artifacts/gazebo_mapping_sitl/mission_failure_acceptance_20261019/attempt_04/"
+    ]
+  },
+  "schema_version": 1,
+  "status_errors": [],
+  "stopped_odometry_bridge_pid": 88897,
+  "truth_odometry_sample_count": 454
+}

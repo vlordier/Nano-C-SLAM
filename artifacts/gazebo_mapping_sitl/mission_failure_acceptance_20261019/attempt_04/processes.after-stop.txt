@@ -1,0 +1,5 @@
+# Process audit after Nano-C-SLAM Gazebo launch teardown
+# No Nano-C-SLAM launch, bridge, mission, or Gazebo process remained.
+38302 gz sim -v 2 -s --seed 0 /Users/vincent/Work/durandal-gz-swarm-sim/runs/coordinated-flight-45-contract-replay-20261010/gazebo/mock-overlay-cflightmock2/runtime-world-simclock.sdf
+39029 gz sim -v 2 -g
+# Both Durandal Gazebo processes were unrelated and left untouched.
