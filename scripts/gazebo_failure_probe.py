@@ -17,6 +17,7 @@ import json
 import math
 import os
 import shutil
+import signal
 import subprocess
 import sys
 import time
@@ -208,16 +209,93 @@ def _git_output(*arguments: str) -> str:
     return result.stdout
 
 
+def _cf1_odometry_bridge_pid() -> int:
+    """Resolve only the odometry bridge owned by the current launch session."""
+    session_module = importlib.import_module("nano_c_slam_gazebo.world_session_model")
+    session_path = session_module.session_file_for_partition(
+        os.environ.get("GZ_PARTITION", "")
+    )
+    try:
+        session = json.loads(session_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise RuntimeError("cannot read the current Gazebo world session") from error
+    processes = session.get("processes") if isinstance(session, dict) else None
+    if not isinstance(processes, list):
+        raise RuntimeError("world session has no process inventory")
+    matches = [
+        process
+        for process in processes
+        if isinstance(process, dict) and process.get("role") == "cf1-odometry-bridge"
+    ]
+    if len(matches) != 1:
+        raise RuntimeError(
+            "world session must identify exactly one cf1 odometry bridge"
+        )
+    process = matches[0]
+    pid = process.get("pid")
+    argv = process.get("argv")
+    if (
+        isinstance(pid, bool)
+        or not isinstance(pid, int)
+        or pid <= 0
+        or not isinstance(argv, list)
+        or not all(isinstance(argument, str) for argument in argv)
+        or "parameter_bridge" not in " ".join(argv)
+        or "nano_c_slam_cf1_odom_bridge" not in " ".join(argv)
+    ):
+        raise RuntimeError("world session odometry bridge identity is malformed")
+    return pid
+
+
+def _stop_owned_cf1_odometry_bridge(pid: int, timeout_s: float = 5.0) -> None:
+    """Stop a launch-recorded bridge after verifying its live process command."""
+    ps = shutil.which("ps")
+    if ps is None:
+        raise RuntimeError("ps is unavailable; refusing to signal odometry bridge")
+    result = subprocess.run(  # noqa: S603 - resolved system ps, fixed arguments.
+        [ps, "-p", str(pid), "-o", "command="],
+        capture_output=True,
+        check=False,
+        text=True,
+        timeout=3,
+    )
+    command = result.stdout.strip()
+    if (
+        result.returncode != 0
+        or "parameter_bridge" not in command
+        or "nano_c_slam_cf1_odom_bridge" not in command
+    ):
+        raise RuntimeError("live PID no longer matches the owned cf1 odometry bridge")
+    os.kill(pid, signal.SIGINT)
+    deadline = time.monotonic() + timeout_s
+    while time.monotonic() < deadline:
+        result = subprocess.run(  # noqa: S603 - resolved system ps, fixed arguments.
+            [ps, "-p", str(pid), "-o", "stat="],
+            capture_output=True,
+            check=False,
+            text=True,
+            timeout=3,
+        )
+        state = result.stdout.strip()
+        if result.returncode != 0 or not state or state.startswith("Z"):
+            return
+        time.sleep(0.05)
+    raise TimeoutError("cf1 odometry bridge did not stop after SIGINT")
+
+
 def capture(
     *,
     drone: str,
     output: Path,
+    failure_mode: str,
     preflight_timeout_s: float,
     mission_timeout_s: float,
     post_exit_duration_s: float,
     hover_injection_delay_s: float,
 ) -> dict[str, object]:
     """Run the bounded failure experiment and return its retained evidence."""
+    if failure_mode not in {"nonfinite", "stale-bridge-stop"}:
+        raise ValueError("failure_mode must be nonfinite or stale-bridge-stop")
     rclpy = importlib.import_module("rclpy")
     node_type = importlib.import_module("rclpy.node").Node
     qos_module = importlib.import_module("rclpy.qos")
@@ -237,19 +315,32 @@ def capture(
             super().__init__("nano_c_slam_failure_probe")
             self.started_wall_s = time.monotonic()
             self.odometry: list[dict[str, float | int]] = []
+            self.truth_odometry: list[dict[str, float | int]] = []
             self.status_events: list[dict[str, object]] = []
             self.commands: list[dict[str, float]] = []
             self.enables: list[dict[str, bool]] = []
             self.status_errors: list[str] = []
             self.clock_stamps_ns: list[int] = []
             self.injection_wall_s: float | None = None
+            self.bridge_stop_wall_s: float | None = None
+            self.odometry_count_at_bridge_stop: int | None = None
+            self.stopped_bridge_pid: int | None = None
             self.hover_wall_s: float | None = None
-            self._odometry_publisher = self.create_publisher(
-                odometry_type, f"/{drone}/odom", 10
+            self._odometry_publisher = (
+                self.create_publisher(odometry_type, f"/{drone}/odom", 10)
+                if failure_mode == "nonfinite"
+                else None
             )
             self.create_subscription(
                 odometry_type, f"/{drone}/odom", self._on_odometry, 10
             )
+            if failure_mode == "stale-bridge-stop":
+                self.create_subscription(
+                    odometry_type,
+                    "/nano_c_slam_failure_probe/cf1/odom_truth",
+                    self._on_truth_odometry,
+                    10,
+                )
             self.create_subscription(clock_message_type, "/clock", self._on_clock, 10)
             self.create_subscription(
                 string_type, f"/{drone}/mission_status", self._on_status, status_qos
@@ -268,13 +359,21 @@ def capture(
             )
 
         def _on_odometry(self, message: _OdometryMessage) -> None:
+            self._store_odometry(self.odometry, message)
+
+        def _on_truth_odometry(self, message: _OdometryMessage) -> None:
+            self._store_odometry(self.truth_odometry, message)
+
+        def _store_odometry(
+            self, destination: list[dict[str, float | int]], message: _OdometryMessage
+        ) -> None:
             header = message.header
             pose = message.pose
             twist = message.twist
             stamp = header.stamp
             position = pose.pose.position
             velocity = twist.twist.linear
-            self.odometry.append(
+            destination.append(
                 {
                     "received_wall_s": time.monotonic() - self.started_wall_s,
                     "stamp_ns": _stamp_ns(stamp),
@@ -325,6 +424,8 @@ def capture(
             )
 
         def inject_nonfinite_odometry(self) -> None:
+            if self._odometry_publisher is None:
+                raise RuntimeError("non-finite injection publisher is unavailable")
             if not self.odometry:
                 raise RuntimeError("cannot inject failure without observed odometry")
             source = self.odometry[-1]
@@ -353,6 +454,13 @@ def capture(
         "one /{drone}/odom sample with NaN x after run-bound HOVER; "
         "the mission rejects non-finite position"
     )
+    failure_trigger_wall_s: float | None = None
+    if failure_mode == "stale-bridge-stop":
+        failure_injection_description = (
+            "SIGINT sent to the launch-recorded /{drone}/odom-only ros_gz_bridge "
+            "after HOVER; Gazebo truth odometry remains bridged on a separate "
+            "read-only ROS topic"
+        )
     deadline = time.monotonic() + preflight_timeout_s + mission_timeout_s
     mission_started_wall_s: float | None = None
     post_exit_observed_duration_s: float | None = None
@@ -399,7 +507,10 @@ def capture(
                     and node.clock_stamps_ns[-1] > node.clock_stamps_ns[-2]
                     and node.clock_stamps_ns[-2] > node.clock_stamps_ns[-3]
                 )
-                if len(preflight_samples) >= 3 and clock_advances:
+                truth_ready = failure_mode != "stale-bridge-stop" or bool(
+                    node.truth_odometry
+                )
+                if len(preflight_samples) >= 3 and clock_advances and truth_ready:
                     if control_publishers_before_mission is None:
                         control_publishers_before_mission = {
                             f"/{drone}/cmd_vel": [
@@ -453,10 +564,18 @@ def capture(
                 process is not None
                 and process.poll() is None
                 and node.hover_wall_s is not None
-                and node.injection_wall_s is None
+                and failure_trigger_wall_s is None
                 and now - node.hover_wall_s >= hover_injection_delay_s
             ):
-                node.inject_nonfinite_odometry()
+                if failure_mode == "nonfinite":
+                    node.inject_nonfinite_odometry()
+                    failure_trigger_wall_s = node.injection_wall_s
+                else:
+                    node.stopped_bridge_pid = _cf1_odometry_bridge_pid()
+                    _stop_owned_cf1_odometry_bridge(node.stopped_bridge_pid)
+                    node.odometry_count_at_bridge_stop = len(node.odometry)
+                    node.bridge_stop_wall_s = time.monotonic()
+                    failure_trigger_wall_s = node.bridge_stop_wall_s
 
             if process is not None and process_exit_wall_s is None:
                 exit_code = process.poll()
@@ -495,9 +614,12 @@ def capture(
         if rclpy.ok():
             rclpy.shutdown()
 
+    post_exit_source = (
+        node.truth_odometry if failure_mode == "stale-bridge-stop" else node.odometry
+    )
     post_exit_samples = [
         sample
-        for sample in node.odometry
+        for sample in post_exit_source
         if process_exit_wall_s is not None
         and sample["received_wall_s"] >= process_exit_wall_s - node.started_wall_s
     ]
@@ -542,6 +664,18 @@ def capture(
         for event in failed_events
         if event.get("run_id") == run_id and event.get("drone_name") == drone
     ]
+    matching_failed_wall_s = (
+        float(matching_failed_events[-1]["received_wall_s"])
+        if matching_failed_events
+        else None
+    )
+    enable_true_after_failed_status = sum(
+        1
+        for event in node.enables
+        if event["data"]
+        and matching_failed_wall_s is not None
+        and float(event["received_wall_s"]) >= matching_failed_wall_s
+    )
     acceptance_checks = {
         "three_grounded_samples": len(preflight_samples) >= 3,
         "simulator_clock_advanced": (
@@ -553,11 +687,12 @@ def capture(
             control_publishers_before_mission is not None
             and not any(control_publishers_before_mission.values())
         ),
-        "failure_was_injected_after_hover": (
-            node.injection_wall_s is not None and node.hover_wall_s is not None
+        "failure_triggered_after_hover": (
+            failure_trigger_wall_s is not None and node.hover_wall_s is not None
         ),
         "matching_failed_status_published": bool(matching_failed_events),
         "mission_exited_nonzero": exit_code != 0,
+        "no_enable_true_after_failed_status": enable_true_after_failed_status == 0,
         "at_least_two_zero_commands_after_failure": (
             len(zero_commands_after_failure) >= 2
         ),
@@ -574,10 +709,32 @@ def capture(
             _velocity_controller_plugin(gazebo_loaded_libraries) is not None
         ),
     }
+    if failure_mode == "stale-bridge-stop":
+        acceptance_checks.update(
+            {
+                "stale_odometry_failure_reason": any(
+                    event.get("failure_reason") == "odometry data is stale"
+                    for event in matching_failed_events
+                ),
+                "mission_odometry_stopped": (
+                    node.odometry_count_at_bridge_stop is not None
+                    and len(node.odometry) - node.odometry_count_at_bridge_stop <= 1
+                ),
+                "truth_odometry_continued_after_failure": sum(
+                    1
+                    for sample in node.truth_odometry
+                    if failure_trigger_wall_s is not None
+                    and float(sample["received_wall_s"])
+                    >= failure_trigger_wall_s - node.started_wall_s
+                )
+                >= 3,
+            }
+        )
     result: dict[str, object] = {
         "schema_version": 1,
         "run_id": run_id,
         "drone": drone,
+        "failure_mode": failure_mode,
         "runtime_identity": runtime_identity,
         "gazebo_loaded_libraries": gazebo_loaded_libraries,
         "mission_command": [
@@ -596,6 +753,14 @@ def capture(
             "hover_duration_s:=20.0",
         ],
         "injected_failure": failure_injection_description.format(drone=drone),
+        "failure_trigger_wall_s": (
+            failure_trigger_wall_s - node.started_wall_s
+            if failure_trigger_wall_s is not None
+            else None
+        ),
+        "stopped_odometry_bridge_pid": node.stopped_bridge_pid,
+        "odometry_messages_at_bridge_stop": node.odometry_count_at_bridge_stop,
+        "truth_odometry_sample_count": len(node.truth_odometry),
         "injection_received_wall_s": (
             node.injection_wall_s - node.started_wall_s
             if node.injection_wall_s is not None
@@ -632,14 +797,13 @@ def capture(
         "failure_command_summary": {
             "commands_after_failed_status": len(commands_after_failure),
             "zero_commands_after_failed_status": len(zero_commands_after_failure),
-            "enable_true_after_failed_status": sum(
-                1
-                for event in node.enables
-                if event["data"]
-                and failed_wall_s is not None
-                and event["received_wall_s"] + node.started_wall_s >= failed_wall_s
-            ),
+            "enable_true_after_failed_status": enable_true_after_failed_status,
         },
+        "post_exit_odometry_source": (
+            "/nano_c_slam_failure_probe/cf1/odom_truth"
+            if failure_mode == "stale-bridge-stop"
+            else f"/{drone}/odom"
+        ),
         "post_exit_odometry": {
             "sample_count": len(post_exit_samples),
             "first_stamp_ns": post_exit_samples[0]["stamp_ns"]
@@ -711,7 +875,6 @@ def _cli_summary(result: dict[str, object]) -> dict[str, object]:
         "passed": result.get("passed"),
         "mission_exit_code": result.get("mission_exit_code"),
         "acceptance_checks": result.get("acceptance_checks"),
-        "gui_process_audit_after_stop": result.get("gui_process_audit_after_stop"),
         "post_exit_motion": post_exit.get("motion_classification"),
         "post_exit_sample_count": post_exit.get("sample_count"),
         "post_exit_altitude_min_m": post_exit.get("altitude_min_m"),
@@ -719,31 +882,6 @@ def _cli_summary(result: dict[str, object]) -> dict[str, object]:
         "post_exit_max_abs_vertical_velocity_m_s": post_exit.get(
             "max_abs_vertical_velocity_m_s"
         ),
-    }
-
-
-def _gui_process_audit(partition: str | None) -> dict[str, object]:
-    """Record whether a Gazebo GUI is still running after world teardown."""
-    ps = shutil.which("ps")
-    if ps is None:
-        return {"available": False, "matching_processes": []}
-    result = subprocess.run(  # noqa: S603 - executable is resolved from PATH.
-        [ps, "-axo", "pid=,command="],
-        capture_output=True,
-        check=False,
-        text=True,
-        timeout=5,
-    )
-    matches = []
-    for line in result.stdout.splitlines():
-        if not ("gz sim" in line or "gz-gui" in line or "gazebo_gui" in line):
-            continue
-        if partition and partition in line:
-            matches.append(line.strip())
-    return {
-        "available": result.returncode == 0,
-        "returncode": result.returncode,
-        "matching_processes": matches,
     }
 
 
@@ -765,6 +903,12 @@ def _classify_post_exit_motion(
 def main(args: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--drone", default="cf1")
+    parser.add_argument(
+        "--failure-mode",
+        choices=("nonfinite", "stale-bridge-stop"),
+        default="nonfinite",
+        help="Failure trigger; stale mode requires failure_truth_odometry:=true",
+    )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--preflight-timeout", type=float, default=15.0)
     parser.add_argument("--mission-timeout", type=float, default=45.0)
@@ -786,6 +930,7 @@ def main(args: list[str] | None = None) -> int:
         result = capture(
             drone=options.drone,
             output=options.output,
+            failure_mode=options.failure_mode,
             preflight_timeout_s=options.preflight_timeout,
             mission_timeout_s=options.mission_timeout,
             post_exit_duration_s=options.post_exit_duration,
@@ -812,9 +957,6 @@ def main(args: list[str] | None = None) -> int:
             encoding="utf-8",
         )
         parser.exit(1, f"Gazebo failure probe failed: {error}\n")
-    result["gui_process_audit_after_stop"] = _gui_process_audit(
-        os.environ.get("GZ_PARTITION")
-    )
     print(
         json.dumps(
             _cli_summary({**result, "output": str(options.output)}), sort_keys=True
