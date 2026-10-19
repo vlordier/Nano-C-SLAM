@@ -1,0 +1,65 @@
+Host: macOS, Gazebo Sim 8.14.0 from /Users/vincent/Work/gz-macOS/ws/install.
+Firmware: Lima VM ncs-sitl, Ubuntu ARM64, one diagnostic cf2 process.
+World: this directory's world.sdf; standard Crazyflie model, 200-Hz odometry,
+500-Hz IMU; patched odometry plugin; Bullet Featherstone physics.
+
+Build compact full-rate sampler:
+source /Users/vincent/Work/gz-macOS/ws/install/setup.zsh
+clang++ -std=c++17 -O2 -Wall -Wextra -Werror \
+  scripts/crazysim_flight_sampler.cc \
+  -o /tmp/ncs-crazysim-flight-sampler-json-wait \
+  $(pkg-config --cflags --libs gz-transport13 gz-msgs10)
+
+Start sampler first (same GZ_PARTITION/GZ_IP as Gazebo):
+GZ_PARTITION=ncs-flight-discovery-wait-20261020 GZ_IP=127.0.0.1 \
+  /tmp/ncs-crazysim-flight-sampler-json-wait 18 \
+  artifacts/crazysim_motor_mapping_20261020_attempt07/capture
+
+Then launch Gazebo:
+source /Users/vincent/Work/gz-macOS/ws/install/setup.zsh
+export GZ_PARTITION=ncs-flight-discovery-wait-20261020 GZ_IP=127.0.0.1
+export GZ_SIM_RESOURCE_PATH=/tmp/ncs-crazysim-thrust-mapping/simulator_files/gazebo/models:/tmp/ncs-crazysim-thrust-mapping
+export GZ_SIM_SYSTEM_PLUGIN_PATH=/tmp/ncs-crazysim-thrust-install/lib:/Users/vincent/Work/gz-macOS/ws/install/lib
+export GZ_SIM_PHYSICS_ENGINE_PATH=/Users/vincent/Work/gz-macOS/ws/install/lib/gz-physics-7/engine-plugins
+export NCS_CRAZYSIM_TRACE_MOTOR=1
+gz sim --physics-engine gz-physics-bullet-featherstone-plugin -r -s --seed 0 \
+  artifacts/crazysim_motor_mapping_20261020_attempt07/world.sdf
+
+Launch firmware and preserve its status:
+limactl shell ncs-sitl bash -lc 'set +e; \
+  /home/vincent.guest/ncs-cf-build-final-diag/cf2 19950 192.168.5.2 & \
+  child=$!; printf "%s\n" "$child" > /tmp/ncs-discovery-wait-cf2.pid; \
+  wait "$child"; result=$?; printf "FIRMWARE_EXIT_STATUS=%s\n" "$result"; \
+  exit "$result"'
+
+After SUP: Ready to fly, send commands (both ACK result 0):
+uv run --locked python scripts/crazysim_bridge_command.py takeoff \
+  --target-height-m 2.615 --duration-s 5 --timeout 4
+sleep 6
+uv run --locked python scripts/crazysim_bridge_command.py land \
+  --target-height-m 2.015 --duration-s 3 --timeout 4
+
+Before shutdown, verify exactly one guest cf2 process; send SIGTERM to the PID
+in /tmp/ncs-discovery-wait-cf2.pid and record its 143 exit. Stop Gazebo with
+Ctrl-C; its exit was 0. Guest process count after shutdown was zero.
+
+Strict checker used the positive JSONL capture above and negative-control
+capture in ../crazysim_motor_mapping_20261020_attempt03, with hover target
+2.615 m and process counts 1/1. Exact machine-readable output is paired-check.json;
+it exits 1. No thresholds were changed.
+
+Exact paired checker invocation (exit 1, strict thresholds unchanged):
+uv run --locked python scripts/check_crazysim_flight.py \
+  --odometry artifacts/crazysim_motor_mapping_20261020_attempt07/capture/odometry.jsonl \
+  --imu artifacts/crazysim_motor_mapping_20261020_attempt07/capture/imu.jsonl \
+  --world-stats artifacts/crazysim_motor_mapping_20261020_attempt07/capture/world-stats.jsonl \
+  --motors artifacts/crazysim_motor_mapping_20261020_attempt07/capture/motors.jsonl \
+  --firmware-log artifacts/crazysim_motor_mapping_20261020_attempt07/firmware-positive.log \
+  --plugin-log artifacts/crazysim_motor_mapping_20261020_attempt07/gazebo.log \
+  --negative-control-odometry artifacts/crazysim_motor_mapping_20261020_attempt03/capture/odometry.txt \
+  --negative-control-motors artifacts/crazysim_motor_mapping_20261020_attempt03/capture/motors.txt \
+  --negative-control-log artifacts/crazysim_motor_mapping_20261020_attempt03/negative-control.log \
+  --firmware-process-count 1 --negative-control-firmware-process-count 1 \
+  --firmware-exit-code 143 --gazebo-exit-code 0 \
+  --negative-control-firmware-exit-code 143 --negative-control-gazebo-exit-code 130 \
+  --hover-target-z 2.615

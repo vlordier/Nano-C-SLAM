@@ -20,6 +20,7 @@
     "gazebo_gz_ip": "127.0.0.1",
     "sampler_gz_ip": "127.0.0.1",
     "firmware_process_count_before_stop": 1,
+    "firmware_process_count_after_stop": 0,
     "firmware_process_exit_code": 143,
     "gazebo_process_exit_code": 130,
     "launch_command_capture": "incomplete; exact Gazebo invocation was not persisted at capture time"

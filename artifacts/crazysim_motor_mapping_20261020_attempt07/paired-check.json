@@ -1,0 +1,11 @@
+{
+  "passed": false,
+  "errors": [
+    "odometry: stale sample gap 0.050s exceeds 0.020s",
+    "firmware reported estimator/rate/crash failure",
+    "firmware exited with status 143",
+    "negative-control firmware exited with status 143",
+    "negative-control Gazebo exited with status 130",
+    "stable hover lasted 0.27s; requires 5.00s"
+  ]
+}

@@ -52,16 +52,16 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
         imu = json.dumps(
             {
                 "header": {"stamp": {"sec": "12", "nsec": 750_000_000}},
-                "linear_acceleration": {"x": 0, "y": 0, "z": 9.81},
-                "angular_velocity": {"x": 0.1, "y": 0.2, "z": 0.3},
+                "linearAcceleration": {"x": 0, "y": 0, "z": 9.81},
+                "angularVelocity": {"x": 0.1, "y": 0.2, "z": 0.3},
             }
         )
         motors = json.dumps({"velocity": [1000, 1100, 1200, 1300]})
         world_stats = json.dumps(
             {
-                "sim_time": {"sec": "12", "nsec": 500_000_000},
-                "real_time": {"sec": "12", "nsec": 250_000_000},
-                "real_time_factor": 1.1,
+                "simTime": {"sec": "12", "nsec": 500_000_000},
+                "realTime": {"sec": "12", "nsec": 250_000_000},
+                "realTimeFactor": 1.1,
             }
         )
 
@@ -78,6 +78,13 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
             parse_world_stats(world_stats)[0].real_time_factor,
             1.1,
         )
+        subsecond_odometry = json.dumps(
+            {
+                **json.loads(odometry),
+                "header": {"stamp": {"nsec": "5000000"}},
+            }
+        )
+        self.assertEqual(parse_odometry(subsecond_odometry)[0].time_s, 0.005)
 
     def test_protobuf_text_timestamps_default_omitted_nanoseconds_to_zero(self) -> None:
         odometry = """header {

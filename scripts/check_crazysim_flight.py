@@ -101,9 +101,10 @@ def _json_number(value: object, default: float = 0.0) -> float:
 
 
 def _json_timestamp(message: dict[str, Any], field: str = "header") -> float | None:
-    stamp = _object(_object(message.get(field)).get("stamp"))
-    if "sec" not in stamp:
+    stamp_value = _object(message.get(field)).get("stamp")
+    if not isinstance(stamp_value, dict):
         return None
+    stamp = stamp_value
     return _json_number(stamp.get("sec")) + _json_number(stamp.get("nsec")) / 1e9
 
 
@@ -208,8 +209,20 @@ def parse_imu_vectors(text: str) -> list[tuple[Vector3, Vector3]]:
         for message in json_messages:
             if _json_timestamp(message) is None:
                 continue
-            acceleration = _json_vector(message, "linear_acceleration", "xyz")
-            angular = _json_vector(message, "angular_velocity", "xyz")
+            acceleration = _json_vector(
+                message,
+                "linear_acceleration"
+                if "linear_acceleration" in message
+                else "linearAcceleration",
+                "xyz",
+            )
+            angular = _json_vector(
+                message,
+                "angular_velocity"
+                if "angular_velocity" in message
+                else "angularVelocity",
+                "xyz",
+            )
             vectors.append(
                 (
                     (acceleration[0], acceleration[1], acceleration[2]),
@@ -256,8 +269,10 @@ def parse_world_stats(text: str) -> list[WorldStatsSample]:
     if json_messages is not None:
         samples: list[WorldStatsSample] = []
         for message in json_messages:
-            sim_time = _json_timestamp({"header": {"stamp": message.get("sim_time")}})
-            real_time = _json_timestamp({"header": {"stamp": message.get("real_time")}})
+            sim_stamp = message.get("sim_time", message.get("simTime"))
+            real_stamp = message.get("real_time", message.get("realTime"))
+            sim_time = _json_timestamp({"header": {"stamp": sim_stamp}})
+            real_time = _json_timestamp({"header": {"stamp": real_stamp}})
             if sim_time is None or real_time is None:
                 continue
             samples.append(
@@ -265,7 +280,8 @@ def parse_world_stats(text: str) -> list[WorldStatsSample]:
                     sim_time_s=sim_time,
                     real_time_s=real_time,
                     real_time_factor=_json_number(
-                        message.get("real_time_factor"), math.nan
+                        message.get("real_time_factor", message.get("realTimeFactor")),
+                        math.nan,
                     ),
                 )
             )

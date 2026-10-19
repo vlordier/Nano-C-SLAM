@@ -116,10 +116,12 @@ seams still need to be ported behind explicit simulated-device adapters.
 
 ## Reproduction state
 
-**Current status: diagnostic upstream CrazySim firmware can rise under Gazebo
-motor output, but it does not yet pass a stable flight.** Older attempts below
-that reported no motor output are retained as historical failures; the
-single-process live retest near the end of this document supersedes them.
+**Current status: upstream CrazySim SITL firmware produces firmware-attributed
+motor output and acknowledged takeoff/landing, but stable flight has not
+passed.** The latest full-rate paired capture is attempt07: Gazebo altitude
+rose from 2.014 m to 2.908 m and returned to 2.015 m, but hover lasted only
+0.27 s. Older attempts below that reported no motor output remain historical
+failures; attempt07 is the latest flight and cadence evidence.
 
 ### Model-consistent motor mapping and strict paired run (2026-10-20)
 
@@ -944,11 +946,17 @@ signals. Keep the registered acceptance limits unchanged.
 ## Low-overhead sampler and firmware-output attribution (2026-10-19)
 
 `scripts/crazysim_flight_sampler.cc` provides a bounded observer for the
-existing strict flight gate. It subscribes to `/cf_0/odom` at 100 Hz,
-`/cf_0/imu` and `/cf_0/command/motor_speed` at 50 Hz, and world statistics at
-2 Hz. It writes protobuf text into four new files under the requested output
-directory and refuses to overwrite an existing capture. Build it against the
-same Gazebo Transport and Messages libraries as the installed Gazebo:
+existing strict flight gate. For the current 200-Hz odometry and 500-Hz IMU
+world, it subscribes to `/cf_0/odom` at 200 Hz,
+`/cf_0/imu` and `/cf_0/command/motor_speed` at 500 Hz, and world statistics at
+10 Hz. Earlier sampler versions capped these streams at 100/50/50/2 Hz, which
+made their timestamp gaps unsuitable for diagnosing full source cadence. The
+current capture records compact protobuf JSONL in four new files and refuses
+to overwrite an existing capture. It waits up to 15 seconds for correctly
+typed publishers, so the sampler can start before Gazebo without losing the
+world's initial statistics. The checker accepts the protobuf JSON camelCase
+field names emitted by Gazebo. Build the sampler against the same Gazebo
+Transport and Messages libraries as the installed Gazebo:
 
 ```sh
 clang++ -std=c++17 -O2 scripts/crazysim_flight_sampler.cc \
@@ -965,6 +973,26 @@ returned no publishers when the server used `GZ_IP=127.0.0.1` and the sampler
 left `GZ_IP` unset. The sampler now prints its effective partition, `GZ_IP`,
 each subscription result, publisher message type and address, and a per-topic
 zero-callback diagnostic.
+
+The compact JSONL capture retained full timestamps without disturbing
+simulation speed: RTF was 0.998 and the largest IMU gap was 22 ms. Starting
+the sampler before Gazebo aligned the odometry and stats intervals (99.3%
+coverage). The paired capture is archived in
+[`artifacts/crazysim_motor_mapping_20261020_attempt07`](../artifacts/crazysim_motor_mapping_20261020_attempt07/manifest.json).
+It still fails flight acceptance: maximum odometry gap 50 ms versus the
+registered 20-ms limit, stabilizer warning at 502/500 Hz, Kalman warning at
+98/100 Hz, and only 0.27 seconds of stable hover. The motor-disconnected
+negative control stays grounded with zero motors and reports a disconnected
+bridge, though both deliberately signalled shutdown statuses still fail the
+strict process-exit check. This separates the remaining control/odometry
+problem from the old sampler's deliberate 50-Hz IMU cap; it does not establish
+stable flight or Nano firmware execution.
+
+The firmware's `NCS_STAB` trace uses RTOS ticks and does not yet include a
+Gazebo timestamp. Its estimated altitude therefore cannot be compared directly
+with the odometry clock; the next controller investigation must first correlate
+those clocks, then align command, setpoint, estimated state, thrust, PWM and
+rotor speed. That work is tracked in bead `ncs-fea.5.8.2.7`.
 
 A synchronized run using the diagnostic `cf2` build and trace-enabled
 CrazySim plugin received TAKEOFF_2 and LAND_2 (both acknowledged with result

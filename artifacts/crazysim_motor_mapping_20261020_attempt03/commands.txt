@@ -2,7 +2,8 @@ Negative run used Gazebo Harmonic 8.14.0 with Bullet Featherstone and the
 same model-matched plugin, patched odometry publisher, sampler, and firmware
 binary as attempt02. GZ_PARTITION=ncs-flight-motor-map-negative-20261020 and
 GZ_IP=127.0.0.1 were set for Gazebo and sampler. The environment included
-NCS_CRAZYSIM_DISABLE_ACTUATORS=1. One cf2 process was observed before stop.
+NCS_CRAZYSIM_DISABLE_ACTUATORS=1. One cf2 process was observed before stop;
+the post-stop guest process check found zero cf2 processes.
 TAKEOFF_2 and LAND_2 were both acknowledged (result 0). The plugin logged the
 disconnected bridge; all 2,248 motor components were zero and altitude remained
 2.014993906 m. Exact Gazebo launch command was not persisted; see manifest.

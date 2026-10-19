@@ -2,7 +2,8 @@ Environment captured from the run:
   Gazebo Harmonic 8.14.0, native macOS; Bullet Featherstone physics.
   GZ_PARTITION=ncs-flight-motor-map-clean-20261020
   GZ_IP=127.0.0.1 for Gazebo and the sampler.
-  One cf2 firmware process was checked before stopping the run.
+  One cf2 firmware process was checked before stopping; the post-stop guest
+  process check found zero cf2 processes.
 
 The launch sequence used the attempt's world.sdf, model-matched CrazySim plugin,
 patched Gazebo odometry publisher, and scripts/crazysim_flight_sampler.cc with a

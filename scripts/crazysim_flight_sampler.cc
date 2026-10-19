@@ -19,6 +19,7 @@
 #include <gz/transport/Node.hh>
 #include <gz/transport/Publisher.hh>
 #include <gz/transport/SubscribeOptions.hh>
+#include <google/protobuf/util/json_util.h>
 
 namespace {
 volatile std::sig_atomic_t running = 1;
@@ -32,12 +33,20 @@ void stop(int) {
 }
 
 template <typename Message>
-std::function<void(const Message &)> textRecorder(std::ofstream &output,
-                                                  std::mutex &outputMutex,
-                                                  std::atomic<std::uint64_t> &count) {
+std::function<void(const Message &)> jsonRecorder(
+    std::ofstream &output, std::mutex &outputMutex,
+    std::atomic<std::uint64_t> &count) {
     return [&output, &outputMutex, &count](const Message &message) {
+        std::string serialized;
+        const auto status =
+            google::protobuf::util::MessageToJsonString(message, &serialized);
+        if (!status.ok()) {
+            std::cerr << "failed to encode sampled protobuf as JSON: "
+                      << status.message() << '\n';
+            return;
+        }
         std::lock_guard<std::mutex> lock(outputMutex);
-        output << message.DebugString() << '\n';
+        output << serialized << '\n';
         count.fetch_add(1, std::memory_order_relaxed);
     };
 }
@@ -59,14 +68,31 @@ template <typename Message>
 bool subscribeAndReport(gz::transport::Node &node, const std::string &topic,
                         const std::string &label,
                         std::function<void(const Message &)> callback,
-                        const gz::transport::SubscribeOptions &options) {
+                        const gz::transport::SubscribeOptions &options,
+                        const std::chrono::steady_clock::time_point &deadline) {
     const bool subscribed = node.Subscribe<Message>(topic, std::move(callback), options);
     std::vector<gz::transport::MessagePublisher> publishers;
     std::vector<gz::transport::MessagePublisher> subscribers;
-    const bool discovered = node.TopicInfo(topic, publishers, subscribers);
     const auto messageType = Message().GetTypeName();
     const std::string expectedType(messageType.data(), messageType.size());
     std::size_t matchingPublishers = 0;
+    bool discovered = false;
+    do {
+        publishers.clear();
+        subscribers.clear();
+        discovered = node.TopicInfo(topic, publishers, subscribers);
+        matchingPublishers = 0;
+        for (const auto &publisher : publishers) {
+            if (publisher.MsgTypeName() == expectedType) {
+                ++matchingPublishers;
+            }
+        }
+        if (!subscribed || matchingPublishers > 0 ||
+            std::chrono::steady_clock::now() >= deadline) {
+            break;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    } while (true);
     std::cerr << "topic=" << label << " name=" << topic
               << " subscribed=" << (subscribed ? "yes" : "no")
               << " discovered=" << (discovered ? "yes" : "no")
@@ -74,14 +100,14 @@ bool subscribeAndReport(gz::transport::Node &node, const std::string &topic,
     for (const auto &publisher : publishers) {
         std::cerr << " [type=" << publisher.MsgTypeName()
                   << " addr=" << publisher.Addr() << ']';
-        if (publisher.MsgTypeName() == expectedType) {
-            ++matchingPublishers;
-        }
     }
     std::cerr << " expected_type=" << expectedType
               << " matching_publishers=" << matchingPublishers;
+    if (matchingPublishers == 0) {
+        std::cerr << " publisher_discovery=timed_out";
+    }
     std::cerr << '\n';
-    return subscribed;
+    return subscribed && discovered && matchingPublishers > 0;
 }
 } // namespace
 
@@ -114,10 +140,10 @@ int main(int argc, char **argv) {
     std::mutex imuMutex;
     std::mutex motorMutex;
     std::mutex worldStatsMutex;
-    if (!prepareOutput(outputDir / "odometry.txt", odometryOutput) ||
-        !prepareOutput(outputDir / "imu.txt", imuOutput) ||
-        !prepareOutput(outputDir / "motors.txt", motorOutput) ||
-        !prepareOutput(outputDir / "world-stats.txt", worldStatsOutput)) {
+    if (!prepareOutput(outputDir / "odometry.jsonl", odometryOutput) ||
+        !prepareOutput(outputDir / "imu.jsonl", imuOutput) ||
+        !prepareOutput(outputDir / "motors.jsonl", motorOutput) ||
+        !prepareOutput(outputDir / "world-stats.jsonl", worldStatsOutput)) {
         return 2;
     }
 
@@ -129,31 +155,34 @@ int main(int argc, char **argv) {
     std::cerr << "transport partition=" << node.Options().Partition()
               << " GZ_IP=" << (gazeboIp == nullptr ? "unset" : gazeboIp) << '\n';
     gz::transport::SubscribeOptions odometryOptions;
-    odometryOptions.SetMsgsPerSec(100);
+    odometryOptions.SetMsgsPerSec(200);
     gz::transport::SubscribeOptions imuOptions;
-    imuOptions.SetMsgsPerSec(50);
+    imuOptions.SetMsgsPerSec(500);
     gz::transport::SubscribeOptions motorOptions;
-    motorOptions.SetMsgsPerSec(50);
+    motorOptions.SetMsgsPerSec(500);
     gz::transport::SubscribeOptions worldStatsOptions;
-    worldStatsOptions.SetMsgsPerSec(2);
+    worldStatsOptions.SetMsgsPerSec(10);
+    const auto publisherDiscoveryDeadline =
+        std::chrono::steady_clock::now() + std::chrono::seconds(15);
 
     const bool odometrySubscribed = subscribeAndReport<gz::msgs::Odometry>(
         node, "/cf_0/odom", "odometry",
-        textRecorder<gz::msgs::Odometry>(odometryOutput, odometryMutex,
+        jsonRecorder<gz::msgs::Odometry>(odometryOutput, odometryMutex,
                                          odometryCount),
-        odometryOptions);
+        odometryOptions, publisherDiscoveryDeadline);
     const bool imuSubscribed = subscribeAndReport<gz::msgs::IMU>(
         node, "/cf_0/imu", "imu",
-        textRecorder<gz::msgs::IMU>(imuOutput, imuMutex, imuCount), imuOptions);
+        jsonRecorder<gz::msgs::IMU>(imuOutput, imuMutex, imuCount), imuOptions,
+        publisherDiscoveryDeadline);
     const bool motorSubscribed = subscribeAndReport<gz::msgs::Actuators>(
         node, "/cf_0/command/motor_speed", "motor",
-        textRecorder<gz::msgs::Actuators>(motorOutput, motorMutex, motorCount),
-        motorOptions);
+        jsonRecorder<gz::msgs::Actuators>(motorOutput, motorMutex, motorCount),
+        motorOptions, publisherDiscoveryDeadline);
     const bool worldStatsSubscribed = subscribeAndReport<gz::msgs::WorldStatistics>(
         node, "/world/crazysim_default/stats", "world_stats",
-        textRecorder<gz::msgs::WorldStatistics>(worldStatsOutput, worldStatsMutex,
+        jsonRecorder<gz::msgs::WorldStatistics>(worldStatsOutput, worldStatsMutex,
                                                 worldStatsCount),
-        worldStatsOptions);
+        worldStatsOptions, publisherDiscoveryDeadline);
     const bool subscribed = odometrySubscribed && imuSubscribed && motorSubscribed &&
                             worldStatsSubscribed;
     if (!subscribed) {
@@ -161,8 +190,8 @@ int main(int argc, char **argv) {
         return 3;
     }
 
-    std::cerr << "sampling CrazySim odometry (100 Hz), IMU (50 Hz), motors "
-                 "(50 Hz), and world stats (2 Hz) for "
+    std::cerr << "sampling CrazySim odometry (200 Hz), IMU (500 Hz), motors "
+                 "(500 Hz), and world stats (10 Hz) as compact JSONL for "
               << durationSeconds << " seconds\n";
     const auto deadline =
         std::chrono::steady_clock::now() + std::chrono::seconds(durationSeconds);

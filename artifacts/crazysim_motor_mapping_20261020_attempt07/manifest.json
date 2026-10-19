@@ -1,0 +1,76 @@
+{
+  "attempt": "CrazySim full-rate compact capture, sampler-before-server attempt 07",
+  "date": "2026-10-20",
+  "valid_for_flight_acceptance": false,
+  "scope": "Upstream Crazyflie SITL firmware under Gazebo Harmonic. This is not Nano-C-SLAM firmware, mapping, swarm, or hardware validation.",
+  "sources": {
+    "firmware_commit": "f42b903610e8b4ea1796ba6eba4b1c92cde70766",
+    "firmware_binary_sha256": "8d0cc0505f72282eff5f2d57df4e5671cd92cd31354d71d79efc094a4d38dc9c",
+    "crazysim_plugin_commit": "36594bc335102a435d2290621586d2ed5ea6ea43",
+    "plugin_binary_sha256": "6f5c6a68bf6b0509232c5860cb9c975831c1997bd3a3daef383450e1a41b6c2c",
+    "gz_sim_odometry_patch_commit": "b25695048c8da5e9e185acdeb6b2f3e43c87bb22",
+    "sampler_source": "scripts/crazysim_flight_sampler.cc",
+    "sampler_source_sha256": "d46f8d1ee9fae3554ee68036a5237877a73385d7f85cf3234408bdb189bb933e",
+    "sampler_binary_sha256": "056af898037559cf28fb5bd59445d6c79c62d9b19a530c2fb4d37908d11aedf0",
+    "checker_source": "scripts/check_crazysim_flight.py",
+    "checker_source_sha256": "0bc51a4011a87d6466a5bd7fe128a1b73ce33be0bada26757740767abcc78581",
+    "sampler_compile_flags": "clang++ -std=c++17 -O2 -Wall -Wextra -Werror"
+  },
+  "runtime": {
+    "gazebo_sim_version": "8.14.0",
+    "physics_engine": "gz-physics-bullet-featherstone-plugin",
+    "partition": "ncs-flight-discovery-wait-20261020",
+    "GZ_IP": "127.0.0.1",
+    "sampler_started_before_gazebo": true,
+    "publisher_discovery_deadline_s": 15,
+    "firmware_process_count_before_stop": 1,
+    "firmware_process_count_after_stop": 0,
+    "firmware_process_exit_code": 143,
+    "gazebo_process_exit_code": 0,
+    "shutdown_note": "Firmware SIGTERM was intentional and reported as 143; the strict checker requires zero exit."
+  },
+  "model_motor_parameters": {
+    "motorConstant": 1.7965e-8,
+    "maxRotVelocity": 3052,
+    "matches_all_four_rotor_plugins": true
+  },
+  "capture": {
+    "duration_s": 18,
+    "format": "compact Protobuf JSONL",
+    "sample_limits_hz": {"odometry": 200, "imu": 500, "motors": 500, "world_stats": 10},
+    "sampler_callback_counts": {"odometry": 2216, "imu": 5345, "motor_messages": 6432, "world_stats": 139},
+    "parsed_counts": {"odometry": 2216, "imu": 5345, "motor_components": 25728, "world_stats": 139},
+    "z_min_m": 2.014225006,
+    "z_max_m": 2.908208132,
+    "z_end_m": 2.014993668,
+    "hover_target_m": 2.615,
+    "longest_stable_hover_s": 0.27,
+    "max_motor_speed_rad_s": 2777.921,
+    "max_odometry_gap_s": 0.050,
+    "max_imu_gap_s": 0.022,
+    "world_stats_coverage": 0.992654,
+    "aggregate_real_time_factor": 0.998240,
+    "firmware_acknowledged_takeoff_and_land": true,
+    "firmware_motor_output_attributed_by_plugin": true,
+    "firmware_diagnostic_clock": "RTOS ticks; not synchronized to Gazebo sim time",
+    "firmware_altitude_trace_comparable_to_gazebo": false
+  },
+  "strict_pair": {
+    "negative_control_artifacts": "../crazysim_motor_mapping_20261020_attempt03",
+    "checker_exit_code": 1,
+    "checker_result": "paired-check.json",
+    "remaining_failures": [
+      "odometry gap 0.050 s exceeds the unchanged 0.020-s limit",
+      "firmware rate/estimator warning (stabilizer 502/500 Hz; Kalman 98/100 Hz)",
+      "stable hover 0.27 s is below the unchanged 5.0-s requirement",
+      "firmware exits 143 and negative-control exits 143/130"
+    ],
+    "passing_checks": [
+      "finite and timestamped odometry, IMU and motor samples",
+      "IMU gap, world-stat coverage and aggregate RTF",
+      "firmware-attributed nonzero motor output",
+      "takeoff and landing acknowledgements",
+      "negative control remains grounded with zero motors and a disconnected bridge"
+    ]
+  }
+}
