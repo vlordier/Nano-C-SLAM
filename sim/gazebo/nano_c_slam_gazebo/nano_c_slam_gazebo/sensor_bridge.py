@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import time
 from collections.abc import Sequence
 
@@ -40,6 +41,9 @@ class SensorBridge(Node):
         self._positions: dict[str, tuple[float, float, float]] = {}
         self._odometry_stamps_s: dict[str, float] = {}
         self._odometry_source_stamps: dict[str, object] = {}
+        self._deferred_odometry: dict[
+            str, tuple[tuple[float, float, float], float, object]
+        ] = {}
         self._pairwise_sequence = 0
         self._last_odometry_warning_s = float("-inf")
         self._range_sequences = dict.fromkeys(self._drone_names, 0)
@@ -52,6 +56,7 @@ class SensorBridge(Node):
         self._uwb_publisher = self.create_publisher(
             StampedPairwiseRanges, "/nano_c_slam/sim/uwb_pairwise_range_m", 10
         )
+        self.create_timer(0.01, self._clock_callback)
 
         for name in self._drone_names:
             self.create_subscription(
@@ -104,12 +109,29 @@ class SensorBridge(Node):
         stamp = msg.header.stamp
         try:
             now_s = self.get_clock().now().nanoseconds / 1e9
+            stamp_s = odometry_stamp_seconds(stamp.sec, stamp.nanosec)
+            if stamp_s - now_s > 1e-6:
+                if stamp_s - now_s > MAX_ODOMETRY_SKEW_S:
+                    raise ValueError("odometry timestamp is ahead of simulation time")
+                coordinates = (position.x, position.y, position.z)
+                if not all(math.isfinite(value) for value in coordinates):
+                    raise ValueError(f"position for {drone} must be finite")
+                previous_stamp_s = max(
+                    self._odometry_stamps_s.get(drone, float("-inf")),
+                    self._deferred_odometry.get(
+                        drone, ((0.0, 0.0, 0.0), float("-inf"), None)
+                    )[1],
+                )
+                if stamp_s < previous_stamp_s:
+                    raise ValueError(f"odometry timestamp moved backwards for {drone}")
+                self._deferred_odometry[drone] = (coordinates, stamp_s, stamp)
+                return
             update = update_odometry_cache(
                 self._positions,
                 self._odometry_stamps_s,
                 drone=drone,
                 position=(position.x, position.y, position.z),
-                stamp_s=odometry_stamp_seconds(stamp.sec, stamp.nanosec),
+                stamp_s=stamp_s,
                 drone_names=self._drone_names,
                 now_s=now_s,
                 max_age_s=MAX_ODOMETRY_AGE_S,
@@ -121,7 +143,51 @@ class SensorBridge(Node):
         self._positions = update.positions
         self._odometry_stamps_s = update.timestamps_s
         self._odometry_source_stamps[drone] = stamp
-        distances = update.distances_m
+        self._publish_pairwise_ranges(update.distances_m)
+        self._drain_deferred_odometry(now_s)
+
+    def _clock_callback(self) -> None:
+        self._drain_deferred_odometry(self.get_clock().now().nanoseconds / 1e9)
+
+    def _drain_deferred_odometry(self, now_s: float) -> None:
+        """Apply clock-ready samples in source-time order after fresh callbacks."""
+        ready = sorted(
+            (
+                (stamp_s, drone, position, source_stamp)
+                for drone, (
+                    position,
+                    stamp_s,
+                    source_stamp,
+                ) in self._deferred_odometry.items()
+                if stamp_s <= now_s + 1e-6
+            ),
+            key=lambda item: (item[0], item[1]),
+        )
+        for stamp_s, drone, position, source_stamp in ready:
+            del self._deferred_odometry[drone]
+            try:
+                update = update_odometry_cache(
+                    self._positions,
+                    self._odometry_stamps_s,
+                    drone=drone,
+                    position=position,
+                    stamp_s=stamp_s,
+                    drone_names=self._drone_names,
+                    now_s=now_s,
+                    max_age_s=MAX_ODOMETRY_AGE_S,
+                    max_skew_s=MAX_ODOMETRY_SKEW_S,
+                )
+            except ValueError as error:
+                self._warn_invalid_odometry(str(error))
+                continue
+            self._positions = update.positions
+            self._odometry_stamps_s = update.timestamps_s
+            self._odometry_source_stamps[drone] = source_stamp
+            self._publish_pairwise_ranges(update.distances_m)
+
+    def _publish_pairwise_ranges(
+        self, distances: tuple[tuple[str, str, float], ...] | None
+    ) -> None:
         if distances is None:
             return
         output = StampedPairwiseRanges()

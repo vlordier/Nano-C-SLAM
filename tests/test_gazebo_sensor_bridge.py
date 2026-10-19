@@ -28,10 +28,16 @@ class _Logger:
 
 
 class _Clock:
+    def __init__(self) -> None:
+        self.nanoseconds = 10_000_000_000
+
     def now(self) -> types.SimpleNamespace:
         return types.SimpleNamespace(
-            nanoseconds=10_000_000_000,
-            to_msg=lambda: types.SimpleNamespace(sec=10, nanosec=0),
+            nanoseconds=self.nanoseconds,
+            to_msg=lambda: types.SimpleNamespace(
+                sec=self.nanoseconds // 1_000_000_000,
+                nanosec=self.nanoseconds % 1_000_000_000,
+            ),
         )
 
 
@@ -95,10 +101,13 @@ class SensorBridgeOdometryTests(unittest.TestCase):
         bridge._odometry_source_stamps = {
             "cf1": types.SimpleNamespace(sec=10, nanosec=0)
         }
+        bridge._deferred_odometry = {}
         bridge._pairwise_sequence = 0
         bridge._uwb_publisher = _Publisher()
         bridge._last_odometry_warning_s = float("-inf")
-        bridge.get_clock = lambda: _Clock()
+        clock = _Clock()
+        bridge.get_clock = lambda: clock
+        bridge._test_clock = clock
         bridge.get_logger = lambda: logger
         logger = _Logger()
         return bridge
@@ -142,6 +151,27 @@ class SensorBridgeOdometryTests(unittest.TestCase):
         self.assertEqual(bridge._uwb_publisher.messages, [])
         self.assertEqual(bridge._positions, {"cf1": (0.0, 0.0, 0.0)})
         self.assertEqual(bridge._odometry_stamps_s, {"cf1": 10.0})
+
+    def test_bounded_future_sample_waits_for_clock_then_publishes(self) -> None:
+        bridge = self._bridge()
+
+        bridge._odom_callback(self._message(3.0, nanosec=50_000_000), "cf3")
+
+        self.assertEqual(bridge._positions, {"cf1": (0.0, 0.0, 0.0)})
+        self.assertEqual(bridge._uwb_publisher.messages, [])
+        self.assertIn("cf3", bridge._deferred_odometry)
+
+        bridge._test_clock.nanoseconds = 10_050_000_000
+        bridge._clock_callback()
+
+        self.assertEqual(len(bridge._uwb_publisher.messages), 1)
+        message = bridge._uwb_publisher.messages[0]
+        self.assertEqual(message.ranges_m, [3.0])
+        self.assertEqual(
+            [(stamp.sec, stamp.nanosec) for stamp in message.source_stamps],
+            [(10, 0), (10, 50_000_000)],
+        )
+        self.assertEqual(bridge._deferred_odometry, {})
 
 
 if __name__ == "__main__":

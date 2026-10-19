@@ -25,6 +25,9 @@ class GazeboGvsocLiveCliTests(unittest.TestCase):
         self.assertIn("15a06f08-657e-4012-922e-4ca35f7dda22", commands.gazebo)
         self.assertIn("--stream-socket", commands.gazebo)
         self.assertEqual(options.mission_timeout, 600.0)
+        self.assertEqual(options.mission_hover_duration, 120.0)
+        hover_index = commands.gazebo.index("--mission-hover-duration")
+        self.assertEqual(commands.gazebo[hover_index + 1], "120.0")
         mission_timeout_index = commands.gazebo.index("--timeout")
         self.assertEqual(commands.gazebo[mission_timeout_index + 1], "600.0")
         self.assertEqual(
@@ -49,6 +52,7 @@ class GazeboGvsocLiveCliTests(unittest.TestCase):
                 ["--output", output, "--samples", "61"],
                 ["--output", output, "--timeout", "nan"],
                 ["--output", output, "--mission-timeout", "0"],
+                ["--output", output, "--mission-hover-duration", "nan"],
             ):
                 with self.subTest(arguments=arguments), self.assertRaises(SystemExit):
                     _parse_args(arguments)
@@ -63,6 +67,17 @@ class GazeboGvsocLiveCliTests(unittest.TestCase):
 
         route_index = commands.gazebo.index("--mapping-route")
         self.assertEqual(commands.gazebo[route_index + 1], "heldout-asymmetric")
+
+    def test_forwards_requested_mission_hover_duration(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "live.json"
+            options = _parse_args(
+                ["--output", str(output), "--mission-hover-duration", "5"]
+            )
+            commands, *_ = _commands(options, "15a06f08-657e-4012-922e-4ca35f7dda22")
+
+        hover_index = commands.gazebo.index("--mission-hover-duration")
+        self.assertEqual(commands.gazebo[hover_index + 1], "5.0")
 
 
 if __name__ == "__main__":

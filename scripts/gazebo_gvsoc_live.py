@@ -45,6 +45,12 @@ def _parse_args(args: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--timeout", type=float, default=600.0)
     parser.add_argument("--stream-timeout", type=float, default=15.0)
     parser.add_argument(
+        "--mission-hover-duration",
+        type=float,
+        default=LIVE_MISSION_HOVER_SECONDS,
+        help="simulated seconds to hover after mapping before landing",
+    )
+    parser.add_argument(
         "--output",
         type=Path,
         default=Path(tempfile.gettempdir()) / "nano-c-slam-gazebo-gvsoc-live.json",
@@ -73,6 +79,7 @@ def _parse_args(args: list[str] | None) -> argparse.Namespace:
         (options.mission_timeout, "mission timeout"),
         (options.timeout, "live run timeout"),
         (options.stream_timeout, "stream timeout"),
+        (options.mission_hover_duration, "mission hover duration"),
     ):
         if not math.isfinite(value) or value <= 0:
             parser.error(f"{label} must be finite and positive")
@@ -147,7 +154,7 @@ def _commands(
         "--stream-timeout",
         str(options.stream_timeout),
         "--mission-hover-duration",
-        str(LIVE_MISSION_HOVER_SECONDS),
+        str(options.mission_hover_duration),
         "--output",
         str(output),
         "--binary",
