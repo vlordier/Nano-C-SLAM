@@ -833,6 +833,42 @@ disconnected-actuator checks unchanged. Nano STM32 task execution, ToF/UWB
 adapters, and map-to-Gazebo geometry comparison remain separate, unpassed
 gates.
 
+## Correctly rendered direct-world retest (2026-10-19)
+
+A second direct-world retest isolated two setup errors that had made the
+earlier manual run inconclusive. Rendering `model.sdf.jinja` without
+`cf_name="cf"` and `cf_id=0` left `<cfPrefix>` empty; the plugin then
+subscribed to `/_0/imu` instead of `/cf_0/imu`. The firmware therefore
+completed its UDP handshake but received no IMU and stayed in sensor
+calibration. Rendering with `imu_rate=500`, `cffirm_udp_port=19950`,
+`cflib_udp_port=20850`, `cf_name="cf"`, and `cf_id=0` exposed the expected
+`/cf_0/imu` and `/cf_0/command/motor_speed` topics. The Linux firmware also
+needs the Lima host gateway as its second argument: `cf2 19950 192.168.5.2`.
+Passing only `19950` leaves its destination at `INADDR_ANY` and does not
+establish the cross-VM link.
+
+With those settings, firmware build `fc30709529ee` (diagnostic binary SHA-256
+`8d0cc0505f72282eff5f2d57df4e5671cd92cd31354d71d79efc094a4d38dc9c`) logged
+`SUP: Ready to fly`, received TAKEOFF_2 and LAND_2, and returned result byte
+zero for both bounded commands. A 10.13-second Gazebo odometry capture
+contained 2,027 records. Altitude ranged from 2.0146 to 2.8317 m and ended at
+2.0150 m after commands for 2.615 m takeoff and 2.015 m landing. The longest
+continuous interval within 0.12 m of the takeoff target was 0.25 seconds.
+Firmware logs contained one 502-Hz stabilizer-rate warning and one landing
+timeout, with no `SUP: Crashed` message. This proves the corrected setup can
+run the upstream reference firmware and produce motor-driven Gazebo motion;
+it does not pass the stable-flight gate and is not Nano-C-SLAM firmware.
+
+The matched Gazebo 8.14 CrazySim bridge was rebuilt against the local workspace
+ABI. However, `lsof` showed that this capture still loaded the installed stock
+odometry publisher, not the patched binary from
+`/tmp/ncs-gz-sim-odometry-build-qt`; the SDF plugin resolver did not prefer
+that build directory. The capture retained 161 records with NaN angular
+velocity. The focused publisher regression and 10 integration cases pass,
+but runtime verification of the patch remains open. Preserve this capture as
+a failed publisher-runtime check, not as evidence that the patch regressed or
+that angular telemetry is now finite.
+
 ## Rate-window boundary fix and retest (2026-10-19)
 
 The prior 502/500 stabilizer warning prompted a trace of
