@@ -13,6 +13,7 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
         _, errors = validate_capture(
             odometry_text=capture.odometry,
             imu_text=capture.imu,
+            world_stats_text=capture.world_stats,
             motor_text=capture.motors,
             firmware_log=capture.firmware_log,
             plugin_log=capture.plugin_log,
@@ -31,6 +32,7 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
         summary, errors = validate_capture(
             odometry_text=capture.odometry,
             imu_text=capture.imu,
+            world_stats_text=capture.world_stats,
             motor_text=capture.motors,
             firmware_log=capture.firmware_log,
             plugin_log=capture.plugin_log,
@@ -49,6 +51,7 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
         self.assertAlmostEqual(summary.max_altitude_m, 2.4)
         self.assertGreaterEqual(summary.hover_duration_s, 5.0)
         self.assertEqual(summary.negative_control_drift_m, 0.0)
+        self.assertAlmostEqual(summary.aggregate_real_time_factor, 1.0)
 
     def test_nonfinite_odometry_is_rejected(self) -> None:
         capture = passing_capture()
@@ -70,6 +73,7 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
         _, exit_errors = validate_capture(
             odometry_text=capture.odometry,
             imu_text=capture.imu,
+            world_stats_text=capture.world_stats,
             motor_text=capture.motors,
             firmware_log=capture.firmware_log,
             plugin_log=capture.plugin_log,
@@ -85,6 +89,30 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
 
         self.assertIn("firmware reported estimator/rate/crash failure", errors)
         self.assertIn("firmware exited with status 1", exit_errors)
+
+    def test_slow_and_incompletely_observed_simulation_are_rejected(self) -> None:
+        slow_stats = "".join(
+            f"sim_time {{ sec: {second} nsec: 0 }}\n"
+            f"real_time {{ sec: {second * 2} nsec: 0 }}\n"
+            f"iterations: {second * 1000}\nreal_time_factor: 0.5\n\n"
+            for second in range(10)
+        )
+        slow_errors = self._validate(world_stats=slow_stats)
+        self.assertTrue(
+            any(
+                "aggregate Gazebo real-time factor is 0.500" in error
+                for error in slow_errors
+            )
+        )
+
+        short_stats = "".join(
+            f"sim_time {{ sec: {second} nsec: 0 }}\n"
+            f"real_time {{ sec: {second} nsec: 0 }}\n"
+            f"iterations: {second * 1000}\nreal_time_factor: 1.0\n\n"
+            for second in range(1, 9)
+        )
+        coverage_errors = self._validate(world_stats=short_stats)
+        self.assertTrue(any("cover only" in error for error in coverage_errors))
 
     def test_stale_imu_and_missing_landing_command_are_rejected(self) -> None:
         capture = passing_capture()

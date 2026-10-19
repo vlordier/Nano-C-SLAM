@@ -493,7 +493,11 @@ cleanup explicit and record any forced termination.
 
 `scripts/check_crazysim_flight.py` checks paired positive-flight and
 disconnected-actuator captures. It requires timestamped odometry at 50 Hz or
-faster, IMU at 20 Hz or faster, finite telemetry and actuator values, a spawn
+faster, IMU at 20 Hz or faster, and Gazebo `/stats` covering at least 95% of
+the odometry interval. It computes aggregate RTF from the first and last
+sim-time and wall-time stamps and requires 0.95–1.05; the 5% bound keeps the
+firmware's wall-clock scheduler and Gazebo's simulation clock close enough for
+rate comparisons. It also requires finite telemetry and actuator values, a spawn
 height within 0.10 m of the raised platform, at least 0.30 m of climb, five
 continuous seconds within 0.12 m of the requested hover altitude while upright
 and below 0.5 rad/s angular speed, and a landing within 0.10 m of platform
@@ -504,9 +508,32 @@ and successful process exit codes. The
 negative capture must explicitly identify a disconnected actuator bridge,
 stay within 0.10 m of its starting height, and contain only zero motor output.
 
-Run it against saved `gz topic -e` captures and complete firmware/plugin logs:
-while the firmware is running, count the processes whose executable is `cf2`
-and whose first argument is the firmware UDP port (19951 in this setup):
+Run it against saved `gz topic -e` captures and complete firmware/plugin logs.
+Do not echo `/stats` continuously in Gazebo 8: it publishes at the physics
+update rate and the text subscriber can perturb simulation timing. Build the
+small typed sampler instead; Gazebo Transport throttles the subscription to at
+most one callback per second. Install the matching Gazebo `pkg-config` files
+first (set `PKG_CONFIG_PATH` if they are outside the default search path):
+
+```sh
+clang++ -std=c++17 -O2 scripts/crazysim_world_stats_sampler.cc \
+  -o /tmp/crazysim_world_stats_sampler \
+  $(pkg-config --cflags --libs gz-transport13 gz-msgs10)
+```
+
+Start it with the same `GZ_PARTITION` and network environment as Gazebo, for
+the duration of each run. It writes typed protobuf text at 1 Hz and exits
+nonzero if it captured fewer than two samples:
+
+```sh
+GZ_PARTITION=ncs-flight /tmp/crazysim_world_stats_sampler 120 \
+  > flight-world-stats.txt
+```
+
+The gate rejects partial clock coverage rather than pairing separate idle
+timing data. While the firmware is running, count the processes whose
+executable is `cf2` and whose first argument is the firmware UDP port (19951
+in this setup):
 
 ```sh
 ssh -F ~/.lima/ncs-sitl/ssh.config lima-ncs-sitl \
@@ -518,6 +545,7 @@ Record that count for each run and pass it to the gate:
 ```sh
 uv run --locked python scripts/check_crazysim_flight.py \
   --odometry flight-odometry.txt --imu flight-imu.txt \
+  --world-stats flight-world-stats.txt \
   --motors flight-motors.txt --firmware-log flight-firmware.log \
   --plugin-log flight-gazebo.log \
   --negative-control-odometry disconnected-odometry.txt \

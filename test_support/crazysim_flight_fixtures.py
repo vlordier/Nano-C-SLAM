@@ -13,6 +13,7 @@ SAMPLE_PERIOD_S = 0.01
 class FlightCapture:
     odometry: str
     imu: str
+    world_stats: str
     motors: str
     firmware_log: str
     plugin_log: str
@@ -51,6 +52,23 @@ def _imu(time_s: float, *, acceleration_z: str = "9.80665") -> str:
     )
 
 
+def _world_stats(sim_time_s: float, real_time_s: float) -> str:
+    sim_sec = int(sim_time_s)
+    sim_nsec = round((sim_time_s - sim_sec) * 1_000_000_000)
+    real_sec = int(real_time_s)
+    real_nsec = round((real_time_s - real_sec) * 1_000_000_000)
+    factor = 1.0 if real_time_s == 0 else sim_time_s / real_time_s
+    return (
+        "sim_time {\n"
+        f"  sec: {sim_sec}\n  nsec: {sim_nsec}\n"
+        "}\nreal_time {\n"
+        f"  sec: {real_sec}\n  nsec: {real_nsec}\n"
+        "}\niterations: "
+        f"{int(sim_time_s * 1000)}\nreal_time_factor: {factor:.6f}\n"
+        "step_size { nsec: 1000000 }\n\n"
+    )
+
+
 def _flight_z(time_s: float) -> float:
     if time_s < 1.0:
         return GROUND_Z_M + (HOVER_Z_M - GROUND_Z_M) * time_s
@@ -69,6 +87,9 @@ def passing_capture() -> FlightCapture:
         for index in range(count)
     )
     imu = "".join(_imu(index * SAMPLE_PERIOD_S) for index in range(count))
+    world_stats = "".join(
+        _world_stats(float(index), float(index)) for index in range(10)
+    )
     motors = "".join(
         "\n".join(f"velocity: {1800 if 100 <= index < 800 else 0}" for _ in range(4))
         + "\n\n"
@@ -91,6 +112,7 @@ def passing_capture() -> FlightCapture:
     return FlightCapture(
         odometry=odometry,
         imu=imu,
+        world_stats=world_stats,
         motors=motors,
         firmware_log=firmware_log,
         plugin_log="TRACE_MOTOR_NONZERO 20000,20000,20000,20000",

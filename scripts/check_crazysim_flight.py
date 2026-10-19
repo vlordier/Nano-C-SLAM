@@ -24,6 +24,9 @@ MAX_HOVER_ANGULAR_RATE_RAD_S = 0.5
 MAX_SENSOR_GAP_S = 0.05
 MAX_MOTOR_SPEED_RAD_S = 3052.0
 MIN_SENSOR_SAMPLES = 5
+MIN_AGGREGATE_REAL_TIME_FACTOR = 0.95
+MAX_AGGREGATE_REAL_TIME_FACTOR = 1.05
+MIN_WORLD_STATS_COVERAGE = 0.95
 
 _NUMBER = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?|[-+]?(?:nan|inf)"
 _FIELD = re.compile(rf"\b([xyzw]):\s*({_NUMBER})", re.IGNORECASE)
@@ -41,6 +44,13 @@ class OdometrySample:
 
 
 @dataclass(frozen=True)
+class WorldStatsSample:
+    sim_time_s: float
+    real_time_s: float
+    real_time_factor: float
+
+
+@dataclass(frozen=True)
 class CaptureSummary:
     odometry_samples: int
     sensor_samples: int
@@ -49,6 +59,7 @@ class CaptureSummary:
     max_motor_speed_rad_s: float
     hover_duration_s: float
     negative_control_drift_m: float
+    aggregate_real_time_factor: float
 
 
 def _messages(text: str) -> list[str]:
@@ -131,6 +142,30 @@ def parse_motor_components(text: str) -> list[float]:
     ]
 
 
+def parse_world_stats(text: str) -> list[WorldStatsSample]:
+    """Read sim and wall-clock timestamps from Gazebo WorldStatistics text."""
+    number = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?|[-+]?(?:nan|inf)"
+    pattern = re.compile(
+        rf"sim_time\s*\{{\s*sec:\s*(-?\d+)\s*nsec:\s*(-?\d+)\s*\}}\s*"
+        rf"real_time\s*\{{\s*sec:\s*(-?\d+)\s*nsec:\s*(-?\d+)\s*\}}\s*"
+        rf"iterations:\s*(\d+)\s*real_time_factor:\s*({number})",
+        re.IGNORECASE,
+    )
+    samples: list[WorldStatsSample] = []
+    for match in pattern.finditer(text):
+        sim_sec, sim_nsec, real_sec, real_nsec = (
+            int(value) for value in match.groups()[:4]
+        )
+        samples.append(
+            WorldStatsSample(
+                sim_time_s=sim_sec + sim_nsec / 1_000_000_000,
+                real_time_s=real_sec + real_nsec / 1_000_000_000,
+                real_time_factor=float(match.group(6)),
+            )
+        )
+    return samples
+
+
 def _has_hover(
     samples: list[OdometrySample], target_z_m: float, tolerance_m: float
 ) -> float:
@@ -191,6 +226,7 @@ def validate_capture(
     *,
     odometry_text: str,
     imu_text: str,
+    world_stats_text: str,
     motor_text: str,
     firmware_log: str,
     plugin_log: str,
@@ -210,6 +246,7 @@ def validate_capture(
     samples = parse_odometry(odometry_text)
     imu_times = parse_imu_timestamps(imu_text)
     imu_vectors = parse_imu_vectors(imu_text)
+    world_stats = parse_world_stats(world_stats_text)
     motors = parse_motor_components(motor_text)
     negative_samples = parse_odometry(negative_control_odometry_text)
     negative_motors = parse_motor_components(negative_control_motor_text)
@@ -223,6 +260,56 @@ def validate_capture(
         max_gap_s=0.02,
     )
     _check_timestamps(imu_times, "IMU", errors, max_gap_s=MAX_SENSOR_GAP_S)
+
+    aggregate_real_time_factor = math.nan
+    if len(world_stats) < 2:
+        errors.append("world stats: at least two timestamped samples are required")
+    elif samples:
+        sim_times = [sample.sim_time_s for sample in world_stats]
+        real_times = [sample.real_time_s for sample in world_stats]
+        if any(
+            not math.isfinite(value)
+            for sample in world_stats
+            for value in (
+                sample.sim_time_s,
+                sample.real_time_s,
+                sample.real_time_factor,
+            )
+        ):
+            errors.append("world stats contain NaN or infinite values")
+        if any(later <= earlier for earlier, later in itertools.pairwise(sim_times)):
+            errors.append(
+                "world stats simulation timestamps are not strictly increasing"
+            )
+        if any(later <= earlier for earlier, later in itertools.pairwise(real_times)):
+            errors.append(
+                "world stats wall-clock timestamps are not strictly increasing"
+            )
+        sim_span = sim_times[-1] - sim_times[0]
+        real_span = real_times[-1] - real_times[0]
+        odometry_span = samples[-1].time_s - samples[0].time_s
+        if sim_span <= 0.0 or real_span <= 0.0 or odometry_span <= 0.0:
+            errors.append("world stats and odometry must cover a positive time span")
+        else:
+            coverage = sim_span / odometry_span
+            if coverage < MIN_WORLD_STATS_COVERAGE:
+                errors.append(
+                    "world stats cover only "
+                    f"{coverage:.1%} of the positive odometry interval; "
+                    f"requires at least {MIN_WORLD_STATS_COVERAGE:.0%}"
+                )
+            aggregate_real_time_factor = sim_span / real_span
+            if not (
+                MIN_AGGREGATE_REAL_TIME_FACTOR
+                <= aggregate_real_time_factor
+                <= MAX_AGGREGATE_REAL_TIME_FACTOR
+            ):
+                errors.append(
+                    "aggregate Gazebo real-time factor is "
+                    f"{aggregate_real_time_factor:.3f}; requires "
+                    f"[{MIN_AGGREGATE_REAL_TIME_FACTOR:.2f}, "
+                    f"{MAX_AGGREGATE_REAL_TIME_FACTOR:.2f}]"
+                )
 
     numeric_values = [
         value
@@ -383,6 +470,7 @@ def validate_capture(
             max_motor_speed_rad_s=max(motors),
             hover_duration_s=hover_duration,
             negative_control_drift_m=negative_drift,
+            aggregate_real_time_factor=aggregate_real_time_factor,
         ),
         [],
     )
@@ -392,6 +480,7 @@ def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--odometry", required=True, type=Path)
     parser.add_argument("--imu", required=True, type=Path)
+    parser.add_argument("--world-stats", required=True, type=Path)
     parser.add_argument("--motors", required=True, type=Path)
     parser.add_argument("--firmware-log", required=True, type=Path)
     parser.add_argument("--plugin-log", required=True, type=Path)
@@ -415,6 +504,7 @@ def main() -> int:
     summary, errors = validate_capture(
         odometry_text=args.odometry.read_text(encoding="utf-8"),
         imu_text=args.imu.read_text(encoding="utf-8"),
+        world_stats_text=args.world_stats.read_text(encoding="utf-8"),
         motor_text=args.motors.read_text(encoding="utf-8"),
         firmware_log=args.firmware_log.read_text(encoding="utf-8"),
         plugin_log=args.plugin_log.read_text(encoding="utf-8"),
