@@ -135,7 +135,14 @@ def target_control(gvsoc: GvsocProxy) -> int:
             ],
         }
     elif sequence == "capacity-mapping":
-        frames = list(make_mapping_trace(260, scan_interval=2, stationary=True))
+        frames = list(
+            make_mapping_trace(
+                260,
+                scan_interval=2,
+                periodic=True,
+                scans_after_poses=True,
+            )
+        )
         result = {
             "sequence": sequence,
             "pre_cs_dummy_clock_cycles": 8,

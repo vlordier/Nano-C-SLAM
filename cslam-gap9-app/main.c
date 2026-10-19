@@ -205,6 +205,9 @@ void slam_loop() {
 #ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
                 uint64_t scan_busy_duration_us =
                     pi_time_get_us() - scan_busy_started_us;
+#endif
+                set_cf_gpio(0); // GAP9 free
+#ifdef NANO_C_SLAM_GVSOC_SPI_MAIN_PROBE
                 printf("NANO_C_SLAM_GVSOC_SPI_MAIN:scan_busy index=%d "
                        "pose_id=%d duration_us=%llu\n",
                        scan_packets_decoded - 1, scan_pose_id,
@@ -218,7 +221,6 @@ void slam_loop() {
                     printf("Int scan %d rcv! %d poses\n\n", scan_pose_id,
                            pcl_get_pose_count());
                 // print_poses();
-                set_cf_gpio(0); // GAP9 free
             }
             break;
         }

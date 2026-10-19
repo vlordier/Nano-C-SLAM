@@ -74,7 +74,8 @@ def capture_evidence(
             make_mapping_trace(
                 260 if sequence != "mapping" else 60,
                 scan_interval=2 if sequence == "capacity-mapping" else 20,
-                stationary=sequence == "capacity-mapping",
+                periodic=sequence == "capacity-mapping",
+                scans_after_poses=sequence == "capacity-mapping",
             )
         )
         expected_commands = [
@@ -334,9 +335,10 @@ def capture_evidence(
         )
         if sequence == "capacity-mapping":
             limitations.append(
-                "Fills the point-cloud 100-scan anchor storage limit. The "
-                "stationary synthetic trace accepted no loop closures, so it "
-                "does not exercise the 50-constraint limit or validate mapping."
+                "Fills the point-cloud 100-scan anchor and 50-constraint "
+                "limits with a repeated synthetic two-pose pattern. This "
+                "proves capacity-path execution, not map accuracy or a "
+                "representative flight trajectory."
             )
 
     return {
@@ -351,7 +353,7 @@ def capture_evidence(
                 else (
                     "gvsoc-production-mapping-spi2-ingress"
                     if sequence == "mapping"
-                    else "gvsoc-production-scan-anchor-capacity-ingress-spi2"
+                    else "gvsoc-production-scan-and-constraint-capacity-spi2"
                 )
             )
         ),

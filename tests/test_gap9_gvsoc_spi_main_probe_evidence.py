@@ -266,7 +266,9 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
     def test_accepts_scan_anchor_capacity_without_claiming_optimizer_coverage(
         self,
     ) -> None:
-        frames = make_mapping_trace(260, scan_interval=2, stationary=True)
+        frames = make_mapping_trace(
+            260, scan_interval=2, periodic=True, scans_after_poses=True
+        )
         commands = [
             "POSE_BAD_CHECKSUM"
             if index == 0
@@ -287,18 +289,18 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
                         for command, frame in zip(commands, frames, strict=True)
                     ],
                     "control_phase": "optimizer_response_captured",
-                    "response_rx_hex": "00" * 18,
+                    "response_rx_hex": "040133000300840200000100330099000100",
                 }
             ),
             encoding="utf-8",
         )
-        response = "00" * 18
+        response = "040133000300840200000100330099000100"
         marker = (
             "NANO_C_SLAM_GVSOC_SPI_MAIN:capacity_ingress_ok packets=393 "
             "pose_decoded=260 pose_inserted=260 bad_pose_checksum=1 "
-            "scans_decoded=131 scans_registered=100 constraints=0 "
-            "optimizer_edges=0 optimize=1 poses=0 graph=0 "
-            f"solver_calls=0 time_ms=0 has_nan=0 completed=0 "
+            "scans_decoded=131 scans_registered=100 constraints=50 "
+            "optimizer_edges=50 optimize=1 poses=260 graph=51 "
+            f"solver_calls=51 time_ms=644 has_nan=0 completed=1 "
             f"response_expected_hex={response}"
         )
         stats = (
@@ -316,14 +318,12 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
 
         self.assertEqual(report["sequence"], "capacity-mapping")
         self.assertEqual(report["frame_count"], 393)
-        self.assertIsNone(report["optimizer_time_ms"])
-        self.assertIsNone(report["optimizer_graph_size"])
-        self.assertEqual(
-            report["mapping_outcome"], "no_loop_closures; optimizer_not_started"
-        )
+        self.assertEqual(report["optimizer_time_ms"], 644)
+        self.assertEqual(report["optimizer_graph_size"], 51)
+        self.assertEqual(report["mapping_outcome"], "optimizer_completed")
         self.assertEqual(
             report["evidence_class"],
-            "gvsoc-production-scan-anchor-capacity-ingress-spi2",
+            "gvsoc-production-scan-and-constraint-capacity-spi2",
         )
         self.assertEqual(report["scan_busy_max_us"], 1130)
         self.assertTrue(

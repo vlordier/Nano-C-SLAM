@@ -394,17 +394,19 @@ done
 
 ### Scan-anchor capacity timing probe
 
-The `393`-command production-main probe sends 260 valid poses, 131 SCAN
-commands, and OPTIMIZE. Its stationary synthetic observations exercise 100
-unique scan anchors and then the full-anchor lookup path. This trace accepts no
-ICP loop closures, so it does not exercise the configured 50-constraint limit
-or produce a map; the separate maximum-pose trace exercises a completed solve
-with 12 constraints. A test-only `scan_busy` record uses PMSIS `pi_time_get_us()`
-around `add_scan_pose_id()`, covering anchor lookup, constraint search, and any
-synchronous ICP. Evidence checks all 131 indices and pose IDs against the
-injected trace and records each duration plus the maximum. This tests firmware
-computational timing in GVSOC; it does not validate STM32 electrical
-observation of the busy pin.
+The `393`-command production-main probe sends one bad-checksum frame, 260 valid
+poses, 131 SCAN commands, and OPTIMIZE. It queues every POSE before SCAN so each
+forward 20-pose ICP window is populated when evaluated. The poses repeat a
+non-degenerate two-pose pattern at 10 mm drift per pair; scan anchors use even
+pose IDs, giving identical local scan-window geometry. This exercises 100
+unique scan anchors and fills all 50 internal constraints. The target reports a
+51-node optimizer graph, 51 successful solver calls, and 644 ms elapsed. The
+test-only `scan_busy` record uses PMSIS `pi_time_get_us()` around
+`add_scan_pose_id()`, covering anchor lookup, constraint search, and synchronous
+ICP. Evidence checks all 131 indices and pose IDs against the injected trace
+and records each duration plus the maximum. This is capacity-path evidence in
+GVSOC; it does not establish map accuracy or STM32 electrical observation of
+the busy pin.
 
 ```sh
 DOCKER_HOST=ssh://colima-act-ci \
@@ -426,10 +428,11 @@ uv run --locked python -m scripts.capture_gap9_gvsoc_spi_main_probe_evidence \
   --log "${TMPDIR:-/tmp}/nano-c-slam-gvsoc-capacity-map/gvsoc.log" \
   --source cslam-gap9-app/main.c \
   --source cslam-gap9-app/point-cloud/point_cloud.c \
+  --source cslam-gap9-app/slam/config_size.h \
   --source scripts/gvsoc_spi_slave_probe_control.py \
   --source scripts/gap9_gvsoc_spi_probe_protocol.py \
   --source scripts/capture_gap9_gvsoc_spi_main_probe_evidence.py \
-  --output artifacts/gap9_gvsoc_evidence/capacity_ingress.json
+  --output artifacts/gap9_gvsoc_evidence/capacity_mapping.json
 ```
 
 With `NANO_C_SLAM_SPI_DIAGNOSTICS` enabled, each completed OPTIMIZE command
