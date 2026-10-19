@@ -114,18 +114,48 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
             json.dumps(
                 {
                     "run_id": self.run_id,
+                    "drone": "cf1",
                     "scene": "nearfield-mapping",
                     "gazebo_world_session_id": self.session_id,
                     "capture_report": {
                         "run_id": self.run_id,
+                        "drone": "cf1",
+                        "evidence_class": "host-execution-of-owned-gap9-mapping-core",
+                        "input_sample_count": 2,
                         "input_samples": [
                             "0 1 0 0 0 1000 1000 1000 1000",
                             "1 2 1 0 0.1 1000 1000 1000 1000",
                         ],
+                        "pairing_limits": {
+                            "maximum_age_ns": 100_000_000,
+                            "maximum_skew_ns": 100_000_000,
+                        },
+                        "input_pair_provenance": [
+                            {
+                                "drone_id": "cf1",
+                                "range_age_ns": 0,
+                                "odometry_age_ns": 0,
+                                "pair_skew_ns": 0,
+                                "odometry_stamp_ns": 1_000_000,
+                                "range_stamp_ns": 1_000_000,
+                                "range_sequence": 1,
+                            },
+                            {
+                                "drone_id": "cf1",
+                                "range_age_ns": 0,
+                                "odometry_age_ns": 0,
+                                "pair_skew_ns": 0,
+                                "odometry_stamp_ns": 2_000_000,
+                                "range_stamp_ns": 2_000_000,
+                                "range_sequence": 2,
+                            },
+                        ],
                     },
                     "mission_terminal": {
                         "run_id": self.run_id,
+                        "drone_name": "cf1",
                         "phase": "COMPLETE",
+                        "mapping_path_complete": True,
                     },
                     "process_exit_codes": {"collector": 0, "mission": 0},
                 }
@@ -279,7 +309,18 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
         target["gazebo_source"]["run_bundle_sha256"] = self._sha(self.run_path)
         self.target_path.write_text(json.dumps(target), encoding="utf-8")
 
-        with self.assertRaisesRegex(ValueError, "nonfinite coordinates"):
+        with self.assertRaisesRegex(ValueError, "pose coordinates must be finite"):
+            self._analyze()
+
+    def test_stale_source_pair_provenance_is_rejected(self) -> None:
+        run = json.loads(self.run_path.read_text())
+        run["capture_report"]["input_pair_provenance"][1]["odometry_stamp_ns"] = 1
+        self.run_path.write_text(json.dumps(run), encoding="utf-8")
+        target = json.loads(self.target_path.read_text())
+        target["gazebo_source"]["run_bundle_sha256"] = self._sha(self.run_path)
+        self.target_path.write_text(json.dumps(target), encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "stale or mismatched"):
             self._analyze()
 
     def test_mixed_run_or_world_identity_is_rejected(self) -> None:

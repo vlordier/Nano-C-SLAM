@@ -17,6 +17,9 @@ from scripts.capture_gap9_gvsoc_spi_main_probe_evidence import (
     _parse_target_poses,
 )
 from scripts.evidence_json import load_json_file
+from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_packets import (
+    samples_from_run_bundle,
+)
 
 EXPECTED_MODELS = frozenset(
     {"wall1", "wall2", "wall3", "wall4", "obstacle1", "obstacle2", "obstacle3"}
@@ -232,23 +235,13 @@ def analyze_mapping(
         or run.get("scene") != "nearfield-mapping"
     ):
         raise ValueError("run bundle is incomplete or does not match target evidence")
-    sample_strings = capture.get("input_samples")
-    if not isinstance(sample_strings, list) or not sample_strings:
-        raise ValueError("run bundle has no source pose samples")
-    source_poses: list[tuple[float, float, float]] = []
-    for index, sample in enumerate(sample_strings):
-        if not isinstance(sample, str):
-            raise ValueError("source pose sample must use the text record format")
-        fields = sample.split()
-        if len(fields) != 9 or fields[0] != str(index):
-            raise ValueError("source pose IDs must be contiguous and complete")
-        try:
-            pose = (float(fields[2]), float(fields[3]), float(fields[4]))
-        except ValueError as error:
-            raise ValueError("source pose sample has malformed coordinates") from error
-        if not all(map(math.isfinite, pose)):
-            raise ValueError("source pose sample has nonfinite coordinates")
-        source_poses.append(pose)
+    run_id = run.get("run_id")
+    if not isinstance(run_id, str):
+        raise ValueError("run bundle has no run ID")
+    _, mapping_samples = samples_from_run_bundle(run, expected_run_id=run_id)
+    source_poses = [
+        (sample.x_m, sample.y_m, sample.yaw_rad) for sample in mapping_samples
+    ]
     if len(source_poses) < 2:
         raise ValueError("at least two matched poses are required")
     poses = _parse_target_poses(target_log, expected_count=len(source_poses))
