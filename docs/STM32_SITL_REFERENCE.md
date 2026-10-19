@@ -131,7 +131,7 @@ non-void function.
 
 With the Gazebo plugin and model running, the firmware logged `Connection
 established with gazebo`, `Software-in-the-Loop Simulator is up and running!`,
-and `Self test passed [OK]` after the plugin answered its UDP handshake. That
+and `SYS: Self test passed!` after the plugin answered its UDP handshake. That
 proves a guest-to-host request and host-to-guest reply. A high-level takeoff
 CRTP packet sent through the plugin did not produce flight: all four
 `/cf_0/command/motor_speed` values remained zero and odometry showed the model
