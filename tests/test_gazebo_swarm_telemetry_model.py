@@ -8,6 +8,7 @@ import unittest
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.swarm_telemetry_model import (
     StampSpan,
     analyze_pairwise_snapshot,
+    pairwise_source_stamps_advanced,
     validate_pairwise_snapshot,
     validate_stamped_ranges,
 )
@@ -35,6 +36,14 @@ class SwarmTelemetryModelTests(unittest.TestCase):
             pair_labels=["cf1:cf3", "cf1:cf4", "cf3:cf4"],
             ranges_m=[1.0, 2.0, 5**0.5],
         )
+
+    def test_pairwise_source_time_counts_only_new_nonregressing_snapshots(self) -> None:
+        first = (10, 10, 10)
+        self.assertTrue(pairwise_source_stamps_advanced(None, first))
+        self.assertFalse(pairwise_source_stamps_advanced(first, first))
+        self.assertTrue(pairwise_source_stamps_advanced(first, (10, 11, 10)))
+        with self.assertRaisesRegex(ValueError, "regressed"):
+            pairwise_source_stamps_advanced(first, (10, 9, 10))
 
     def test_accepts_ranges_from_correct_namespace(self) -> None:
         message = types.SimpleNamespace(

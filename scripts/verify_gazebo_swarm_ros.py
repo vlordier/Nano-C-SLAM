@@ -22,6 +22,7 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.swarm_telemetry_model import (
     StampSpan,
     analyze_pairwise_snapshot,
+    pairwise_source_stamps_advanced,
     stamp_ns,
     validate_stamped_ranges,
 )
@@ -101,6 +102,8 @@ def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, obj
             self.clock_errors: list[str] = []
             self.pairwise_first_stamp_ns: int | None = None
             self.pairwise_last_stamp_ns: int | None = None
+            self.pairwise_observed_stamp_ns: int | None = None
+            self.pairwise_source_stamps_ns: tuple[int, ...] | None = None
             self.pairwise_first_sequence: int | None = None
             self.pairwise_last_sequence: int | None = None
             self.pairwise_count = 0
@@ -205,6 +208,14 @@ def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, obj
                     and evidence.sequence <= self.pairwise_last_sequence
                 ):
                     raise ValueError("pairwise sequence did not advance")
+                if (
+                    self.pairwise_observed_stamp_ns is not None
+                    and evidence.publication_stamp_ns < self.pairwise_observed_stamp_ns
+                ):
+                    raise ValueError("pairwise publication timestamp regressed")
+                source_advanced = pairwise_source_stamps_advanced(
+                    self.pairwise_source_stamps_ns, evidence.source_stamps_ns
+                )
             except (ValueError, AttributeError, TypeError, OverflowError) as error:
                 if "exact pairwise source odometry is unavailable" in str(error):
                     self.pending_pairwise.append(message)
@@ -214,19 +225,15 @@ def verify(timeout_s: float, *, require_mission_commands: bool) -> dict[str, obj
                 if self.pairwise_count or not transient_clock_error:
                     self.pairwise_errors.append(str(error))
                 return
-            if (
-                self.pairwise_last_stamp_ns is not None
-                and evidence.publication_stamp_ns <= self.pairwise_last_stamp_ns
-            ):
-                self.pairwise_errors.append(
-                    "pairwise publication timestamp did not advance"
-                )
+            self.pairwise_last_sequence = evidence.sequence
+            self.pairwise_observed_stamp_ns = evidence.publication_stamp_ns
+            self.pairwise_source_stamps_ns = evidence.source_stamps_ns
+            if not source_advanced:
                 return
             if self.pairwise_first_stamp_ns is None:
                 self.pairwise_first_stamp_ns = evidence.publication_stamp_ns
                 self.pairwise_first_sequence = evidence.sequence
             self.pairwise_last_stamp_ns = evidence.publication_stamp_ns
-            self.pairwise_last_sequence = evidence.sequence
             self.pairwise_count += 1
             source_age_min = min(evidence.source_age_ns)
             source_age_max = max(evidence.source_age_ns)

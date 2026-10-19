@@ -128,6 +128,24 @@ def validate_pairwise_snapshot(
     return evidence.sequence, evidence.published_ranges_m
 
 
+def pairwise_source_stamps_advanced(
+    previous: tuple[int, ...] | None,
+    current: tuple[int, ...],
+) -> bool:
+    """Accept a new snapshot only when source time advances without regression."""
+    if previous is None:
+        return True
+    if len(previous) != len(current) or any(
+        current_stamp < previous_stamp
+        for previous_stamp, current_stamp in zip(previous, current, strict=True)
+    ):
+        raise ValueError("pairwise source timestamps regressed")
+    return any(
+        current_stamp > previous_stamp
+        for previous_stamp, current_stamp in zip(previous, current, strict=True)
+    )
+
+
 def analyze_pairwise_snapshot(
     message: object,
     *,
