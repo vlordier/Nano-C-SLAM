@@ -1,0 +1,255 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-10-19T11:46:36.167221Z",
+  "baseline_count": 5,
+  "common_sdf_sha256": "5d2d9cc1a54bcfc7e978225c44aff96b6c1de9e2f3a99431aadb5174681815a2",
+  "route": "square",
+  "claim_boundary": "Five runs characterize one idealized synthetic near-field scene; they do not validate physical ToF/UWB behavior, STM32 flight firmware, or real-world mapping accuracy.",
+  "runs": [
+    {
+      "artifact": "gap9_gvsoc_evidence/gazebo_mapping_20261019_attempt12",
+      "run_id": "8b86395f-d6cb-4b0c-b758-b7fb37e9550e",
+      "world_session_id": "7817c1d5-ee98-4b09-84a2-bd80e2f067b1",
+      "sdf_sha256": "5d2d9cc1a54bcfc7e978225c44aff96b6c1de9e2f3a99431aadb5174681815a2",
+      "host_sample_count": 60,
+      "target_pose_count": 60,
+      "target_map_point_count": 191.0,
+      "mission_phase": "COMPLETE",
+      "mapping_route": "square",
+      "response_rx_hex": "3c0003001500830000000100030009000100",
+      "pose_xy_rmse_m": 0.02009006604827085,
+      "pose_xy_max_m": 0.03814866979173607,
+      "pose_yaw_rmse_rad": 0.032191328884025885,
+      "pose_yaw_max_rad": 0.04296291538716002,
+      "map_surface_median_m": 0.015359139442443936,
+      "map_surface_p95_m": 0.049922823905944824,
+      "map_surface_max_m": 0.1372866809368134,
+      "map_fraction_within_0_05m": 0.9528795811518325,
+      "model_coverage_within_0_05m": {
+        "obstacle1": 0.07329842931937172,
+        "obstacle2": 0.2356020942408377,
+        "obstacle3": 0.0,
+        "wall1": 0.0,
+        "wall2": 0.31413612565445026,
+        "wall3": 0.2513089005235602,
+        "wall4": 0.31413612565445026
+      }
+    },
+    {
+      "artifact": "gap9_gvsoc_evidence/gazebo_mapping_20261019_attempt14",
+      "run_id": "db260b0f-447e-4dcf-a177-a93dac8cec61",
+      "world_session_id": "87453b72-e5b0-4cb1-87ce-63b3fe7570cd",
+      "sdf_sha256": "5d2d9cc1a54bcfc7e978225c44aff96b6c1de9e2f3a99431aadb5174681815a2",
+      "host_sample_count": 60,
+      "target_pose_count": 60,
+      "target_map_point_count": 190.0,
+      "mission_phase": "COMPLETE",
+      "mapping_route": "square",
+      "response_rx_hex": "3c0003001500830000000100030009000100",
+      "pose_xy_rmse_m": 0.020929769732422603,
+      "pose_xy_max_m": 0.03975485154446262,
+      "pose_yaw_rmse_rad": 0.03249363279468105,
+      "pose_yaw_max_rad": 0.0452354531591439,
+      "map_surface_median_m": 0.015802836418151944,
+      "map_surface_p95_m": 0.04521751403808594,
+      "map_surface_max_m": 0.14146502614021306,
+      "map_fraction_within_0_05m": 0.9631578947368421,
+      "model_coverage_within_0_05m": {
+        "obstacle1": 0.07368421052631578,
+        "obstacle2": 0.23157894736842105,
+        "obstacle3": 0.0,
+        "wall1": 0.0,
+        "wall2": 0.3157894736842105,
+        "wall3": 0.2578947368421053,
+        "wall4": 0.3157894736842105
+      }
+    },
+    {
+      "artifact": "gap9_gvsoc_evidence/gazebo_mapping_20261019_attempt15",
+      "run_id": "8a4bf4c4-de73-4b27-bb6c-7d9a7fd73c86",
+      "world_session_id": "bd2011a4-5f31-4487-99b6-e678143680c7",
+      "sdf_sha256": "5d2d9cc1a54bcfc7e978225c44aff96b6c1de9e2f3a99431aadb5174681815a2",
+      "host_sample_count": 60,
+      "target_pose_count": 60,
+      "target_map_point_count": 189.0,
+      "mission_phase": "COMPLETE",
+      "mapping_route": "square",
+      "response_rx_hex": "3c0003001500830000000100030009000100",
+      "pose_xy_rmse_m": 0.020959997027600062,
+      "pose_xy_max_m": 0.03988317224120029,
+      "pose_yaw_rmse_rad": 0.03295928891715061,
+      "pose_yaw_max_rad": 0.04628342195141544,
+      "map_surface_median_m": 0.01572427749633798,
+      "map_surface_p95_m": 0.0456351637840271,
+      "map_surface_max_m": 0.1308641910552979,
+      "map_fraction_within_0_05m": 0.9629629629629629,
+      "model_coverage_within_0_05m": {
+        "obstacle1": 0.06878306878306878,
+        "obstacle2": 0.2328042328042328,
+        "obstacle3": 0.0,
+        "wall1": 0.0,
+        "wall2": 0.31746031746031744,
+        "wall3": 0.25925925925925924,
+        "wall4": 0.31746031746031744
+      }
+    },
+    {
+      "artifact": "gap9_gvsoc_evidence/gazebo_mapping_20261019_attempt16",
+      "run_id": "03155b66-80db-483b-8040-bda96494e872",
+      "world_session_id": "361c46fa-36cf-466d-abf9-90a8a1b79f89",
+      "sdf_sha256": "5d2d9cc1a54bcfc7e978225c44aff96b6c1de9e2f3a99431aadb5174681815a2",
+      "host_sample_count": 60,
+      "target_pose_count": 60,
+      "target_map_point_count": 190.0,
+      "mission_phase": "COMPLETE",
+      "mapping_route": "square",
+      "response_rx_hex": "3c0003001500830000000100030009000100",
+      "pose_xy_rmse_m": 0.021436974837401257,
+      "pose_xy_max_m": 0.040691182141609016,
+      "pose_yaw_rmse_rad": 0.03354123853003081,
+      "pose_yaw_max_rad": 0.047360967160316125,
+      "map_surface_median_m": 0.015931582450866788,
+      "map_surface_p95_m": 0.048737406730651855,
+      "map_surface_max_m": 0.13176189661026005,
+      "map_fraction_within_0_05m": 0.9578947368421052,
+      "model_coverage_within_0_05m": {
+        "obstacle1": 0.06842105263157895,
+        "obstacle2": 0.23157894736842105,
+        "obstacle3": 0.0,
+        "wall1": 0.0,
+        "wall2": 0.3157894736842105,
+        "wall3": 0.2578947368421053,
+        "wall4": 0.3157894736842105
+      }
+    },
+    {
+      "artifact": "gap9_gvsoc_evidence/gazebo_mapping_20261019_attempt17",
+      "run_id": "d40c82db-d5af-46ec-82e9-7a9630dc13ce",
+      "world_session_id": "835f0620-f953-4cd7-891c-062eab021116",
+      "sdf_sha256": "5d2d9cc1a54bcfc7e978225c44aff96b6c1de9e2f3a99431aadb5174681815a2",
+      "host_sample_count": 60,
+      "target_pose_count": 60,
+      "target_map_point_count": 192.0,
+      "mission_phase": "COMPLETE",
+      "mapping_route": "square",
+      "response_rx_hex": "3c0003001500830000000100030009000100",
+      "pose_xy_rmse_m": 0.020317617439036772,
+      "pose_xy_max_m": 0.03748901011404748,
+      "pose_yaw_rmse_rad": 0.03160409720232034,
+      "pose_yaw_max_rad": 0.04476781725693213,
+      "map_surface_median_m": 0.014504733035802575,
+      "map_surface_p95_m": 0.04823226801507278,
+      "map_surface_max_m": 0.13417907357215886,
+      "map_fraction_within_0_05m": 0.953125,
+      "model_coverage_within_0_05m": {
+        "obstacle1": 0.06770833333333333,
+        "obstacle2": 0.22395833333333334,
+        "obstacle3": 0.0,
+        "wall1": 0.0,
+        "wall2": 0.3125,
+        "wall3": 0.2604166666666667,
+        "wall4": 0.3125
+      }
+    }
+  ],
+  "aggregate": {
+    "pose_xy_rmse_m": {
+      "min": 0.02009006604827085,
+      "max": 0.021436974837401257,
+      "mean": 0.02074688501694631,
+      "sample_sd": 0.0005410104711536292
+    },
+    "pose_xy_max_m": {
+      "min": 0.03748901011404748,
+      "max": 0.040691182141609016,
+      "mean": 0.039193377166611094,
+      "sample_sd": 0.0013257800547246173
+    },
+    "pose_yaw_rmse_rad": {
+      "min": 0.03160409720232034,
+      "max": 0.03354123853003081,
+      "mean": 0.032557917265641736,
+      "sample_sd": 0.0007376164585290157
+    },
+    "pose_yaw_max_rad": {
+      "min": 0.04296291538716002,
+      "max": 0.047360967160316125,
+      "mean": 0.045322114982993524,
+      "sample_sd": 0.0016554159796196546
+    },
+    "map_surface_median_m": {
+      "min": 0.014504733035802575,
+      "max": 0.015931582450866788,
+      "mean": 0.015464513768720645,
+      "sample_sd": 0.0005771428261411163
+    },
+    "map_surface_p95_m": {
+      "min": 0.04521751403808594,
+      "max": 0.049922823905944824,
+      "mean": 0.0475490352947565,
+      "sample_sd": 0.0020379402297576394
+    },
+    "map_surface_max_m": {
+      "min": 0.1308641910552979,
+      "max": 0.14146502614021306,
+      "mean": 0.13511137366294865,
+      "sample_sd": 0.004336692334777803
+    },
+    "map_fraction_within_0_05m": {
+      "min": 0.9528795811518325,
+      "max": 0.9631578947368421,
+      "mean": 0.9580040351387485,
+      "sample_sd": 0.0050306608062321385
+    },
+    "target_map_point_count": {
+      "min": 189.0,
+      "max": 192.0,
+      "mean": 190.4,
+      "sample_sd": 1.140175425099138
+    },
+    "model_coverage_within_0_05m": {
+      "obstacle1": {
+        "min": 0.06770833333333333,
+        "max": 0.07368421052631578,
+        "mean": 0.07037901891873372,
+        "sample_sd": 0.002870561746566917
+      },
+      "obstacle2": {
+        "min": 0.22395833333333334,
+        "max": 0.2356020942408377,
+        "mean": 0.2311045110230492,
+        "sample_sd": 0.004319587486062034
+      },
+      "obstacle3": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "sample_sd": 0.0
+      },
+      "wall1": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0,
+        "sample_sd": 0.0
+      },
+      "wall2": {
+        "min": 0.3125,
+        "max": 0.31746031746031744,
+        "mean": 0.31513507809663777,
+        "sample_sd": 0.0018844593273408233
+      },
+      "wall3": {
+        "min": 0.2513089005235602,
+        "max": 0.2604166666666667,
+        "mean": 0.25735486002673935,
+        "sample_sd": 0.0035404080486134337
+      },
+      "wall4": {
+        "min": 0.3125,
+        "max": 0.31746031746031744,
+        "mean": 0.31513507809663777,
+        "sample_sd": 0.0018844593273408233
+      }
+    }
+  }
+}
