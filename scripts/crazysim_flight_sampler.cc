@@ -155,7 +155,9 @@ int main(int argc, char **argv) {
     std::cerr << "transport partition=" << node.Options().Partition()
               << " GZ_IP=" << (gazeboIp == nullptr ? "unset" : gazeboIp) << '\n';
     gz::transport::SubscribeOptions odometryOptions;
-    odometryOptions.SetMsgsPerSec(200);
+    // The publisher emits 200 Hz. Do not throttle at the subscriber boundary:
+    // transport scheduling can otherwise turn a nominal 200-Hz cap into
+    // periodic 50-ms holes that look like stale firmware feedback.
     gz::transport::SubscribeOptions imuOptions;
     imuOptions.SetMsgsPerSec(500);
     gz::transport::SubscribeOptions motorOptions;
@@ -190,8 +192,9 @@ int main(int argc, char **argv) {
         return 3;
     }
 
-    std::cerr << "sampling CrazySim odometry (200 Hz), IMU (500 Hz), motors "
-                 "(500 Hz), and world stats (10 Hz) as compact JSONL for "
+    std::cerr << "sampling CrazySim odometry (publisher 200 Hz, uncapped), IMU "
+                 "(500 Hz), motors (500 Hz), and world stats (10 Hz) as "
+                 "compact JSONL for "
               << durationSeconds << " seconds\n";
     const auto deadline =
         std::chrono::steady_clock::now() + std::chrono::seconds(durationSeconds);

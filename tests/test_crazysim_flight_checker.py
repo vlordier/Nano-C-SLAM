@@ -226,6 +226,16 @@ real_time_factor: 1.0
         self.assertTrue(any("IMU: stale sample gap" in error for error in errors))
         self.assertIn("firmware did not receive LAND_2", errors)
 
+    def test_stale_odometry_is_rejected_at_registered_20ms_limit(self) -> None:
+        capture = passing_capture()
+        samples = capture.odometry.split("\n\n")
+        # Remove four consecutive nominal 200-Hz messages: the resulting
+        # 25-ms interval must fail the strict odometry freshness requirement.
+        stale_odometry = "\n\n".join(samples[:1] + samples[6:])
+        errors = self._validate(odometry=stale_odometry)
+
+        self.assertTrue(any("odometry: stale sample gap" in error for error in errors))
+
     def test_negative_control_must_be_grounded_and_explicitly_disconnected(
         self,
     ) -> None:
