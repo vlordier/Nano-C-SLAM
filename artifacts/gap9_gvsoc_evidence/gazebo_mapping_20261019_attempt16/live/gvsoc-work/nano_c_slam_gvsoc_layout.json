@@ -1,0 +1,12 @@
+{
+  "sections": [
+    {
+      "name": "rom",
+      "template": "rom",
+      "properties": {
+        "binary": "/Users/vincent/Work/Nano-C-SLAM/cslam-gap9-app/BUILD-gvsoc-spi-main-probe/nano_c_slam_gvsoc_spi_main_probe",
+        "boot": true
+      }
+    }
+  ]
+}
