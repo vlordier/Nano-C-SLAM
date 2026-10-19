@@ -651,3 +651,21 @@ it does not explain or fix the observed Kalman shortfall (95–98/100 Hz),
 non-finite angular odometry, short hover, or landing timeout. The firmware
 flight bead remains open, and no Nano-C-SLAM STM32 application or mapping
 validation is claimed.
+
+## Kalman prediction phase correction (2026-10-19)
+
+Follow-up inspection found that `estimator_kalman.c` advanced each prediction
+deadline from the actual task wake time (`now + 10 ms`). Any late wake therefore
+shifted every future prediction, accumulating scheduler jitter as rate loss.
+Crazyflie commit `fadd9ede` replaces this with a wrap-safe periodic deadline
+that advances from the previous scheduled deadline and skips missed periods
+without issuing catch-up bursts. Seven focused Unity tests pass for exact and
+late wakeups, missed periods, `uint32_t` wraparound, future deadlines, and a zero
+interval.
+
+This is a code-level phase-drift correction, not yet a demonstrated flight
+fix. The exact commit has not completed a `cf2` build or Gazebo retest: Lima
+returned guest I/O errors, and fetching the pinned FreeRTOS submodule failed
+with an `fsync` I/O error. The previous measured 95–98/100-Hz Kalman rate,
+non-finite angular odometry, short hover, and landing timeout remain the
+acceptance baseline until a clean build and paired capture are available.
