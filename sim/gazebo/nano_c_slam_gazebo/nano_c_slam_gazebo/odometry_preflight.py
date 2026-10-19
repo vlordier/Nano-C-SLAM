@@ -65,8 +65,14 @@ class GroundedOdometryPreflight:
         if not all(math.isfinite(value) for value in values):
             self.failure_reason = "odometry preflight received a non-finite value"
             return False
-        if sample.stamp_s <= 0 or sample.sim_time_s <= 0:
-            self.failure_reason = "simulation clock or odometry stamp has not started"
+        if sample.stamp_s <= 0:
+            self.failure_reason = "odometry stamp has not started"
+            return False
+        if sample.sim_time_s <= 0:
+            # /odom can arrive before the first /clock sample reaches this node.
+            # Ignore that sample and wait for fresh odometry after clock startup;
+            # the caller's bounded wall timeout still fails closed if /clock never
+            # starts.
             return False
         age_s = sample.sim_time_s - sample.stamp_s
         if age_s < -MAX_FUTURE_SKEW_S or age_s > MAX_SAMPLE_AGE_S:

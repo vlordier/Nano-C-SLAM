@@ -34,6 +34,27 @@ class GroundedOdometryPreflightTests(unittest.TestCase):
         self.assertTrue(gate.observe(_sample(2)))
         self.assertTrue(validate_odometry_preflight(gate.to_report())["passed"])
 
+    def test_uninitialized_clock_sample_does_not_poison_preflight(self) -> None:
+        gate = GroundedOdometryPreflight()
+        first_odom_before_clock = OdometrySample(10.0, 1.25, -0.4, 0.05, 0.0, 100.0)
+
+        self.assertFalse(gate.observe(first_odom_before_clock))
+        self.assertIsNone(gate.failure_reason)
+        self.assertEqual(gate.samples, [])
+
+        for index in range(3):
+            self.assertEqual(gate.observe(_sample(index)), index == 2)
+
+        self.assertTrue(gate.passed)
+        self.assertTrue(validate_odometry_preflight(gate.to_report())["passed"])
+
+    def test_invalid_odometry_stamp_still_fails_before_clock_start(self) -> None:
+        gate = GroundedOdometryPreflight()
+
+        self.assertFalse(gate.observe(OdometrySample(0.0, 0.0, 0.0, 0.0, 0.0, 1.0)))
+
+        self.assertIn("stamp has not started", gate.failure_reason or "")
+
     def test_rejects_airborne_nonfinite_stale_future_and_reordered_samples(
         self,
     ) -> None:
