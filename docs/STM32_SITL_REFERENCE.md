@@ -686,3 +686,43 @@ latest Gazebo run does not include these exact fixes. Lima's guest shell
 continues to fail with I/O errors, so the previous invalid-estimator state,
 short hover, non-finite odometry, and landing timeout remain the latest runtime
 evidence. Stable flight and Nano firmware execution are still unvalidated.
+
+## CRTP receive-queue backpressure and retest (2026-10-19)
+
+After restoring the Lima guest and cloning the pushed Crazyflie branch with its
+submodules, the exact `17cdadfe` default `cf2` runtime reproducibly aborted in
+`socketlink.c`: a zero-timeout `xQueueSend()` assertion fired when the CRTP
+delivery queue filled. Crazyflie commit `3e848afb` changes this send to wait
+for queue space (`portMAX_DELAY`) instead of crashing the UDP reader. The
+change is pushed to `vlordier/crazyflie-firmware`, branch
+`codex/sitl-imu-wakeup`. A clean default `cf2` build of that exact commit
+completed; its binary SHA-256 is
+`3e80e806e4f048105fd55ca98017db4496b8f1153d2e0f73f0c283db25550536`.
+
+A separate diagnostic binary used temporary task-priority overrides and a
+500-Hz loop/filter configuration (binary SHA-256
+`df6cb48ebdb1ecf4675d9c2a83cb1b7a581bfbed20f0ed57ab4d2728bbc4673c`). It
+started the sensor and stabilizer path, logged `GYro Bias found` and `SUP:
+Ready to fly`, accepted TAKEOFF_2/LAND_2, and emitted finite nonzero motor
+commands. Captured Gazebo odometry rose from the 2.040-m platform to 2.970 m
+and returned to 2.015 m after LAND_2. This demonstrates a live reference
+firmware-to-Gazebo actuator path for this diagnostic setup.
+
+It is explicitly a **failed flight-gate run**, not flight validation. Only
+4,674 of 5,823 odometry samples were fully finite; angular odometry first
+became nonfinite at simulation time 28.225 s. The longest interval in the
+requested 2.40-m hover envelope was 0.325 s, versus the required five seconds.
+The firmware still reported stabilizer rate around 485/500 Hz and Kalman
+prediction around 97–98/100 Hz. This capture omitted synchronized IMU and world
+statistics, the plugin's motor-attribution trace, and the disconnected-actuator
+negative control, so the strict checker cannot pass it. Temporary scheduling
+and rate overrides were diagnostic only and are not the clean default build.
+
+The next concrete blocker is to locate the first nonfinite estimator/control
+value under timestamped raw IMU and setpoint tracing while retaining the
+discovery that queue overflow can crash the exact firmware. Fix the measured
+source cause, then produce paired strict-gate captures using one identified
+firmware binary: stable finite hover and commanded landing, plus a disconnected
+actuator run that stays on the platform with zero motor output. Even those
+reference-SITL results would not prove that Nano-C-SLAM's STM32 application or
+GAP9 mapping runs in Gazebo.
