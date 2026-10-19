@@ -922,3 +922,27 @@ evidence, so do not call the combined gate passed.
 
 These captures use the upstream Crazyflie SITL reference application; they do
 not execute Nano-C-SLAM's STM32 app and do not validate mapping.
+
+## Automatic firmware-to-Gazebo IMU rate matching (2026-10-19)
+
+Earlier matched-rate experiments required editing a generated world by hand,
+so future runs could silently return to a 1-kHz Gazebo IMU with a 500-Hz
+firmware loop. CrazySim fork commit `1e6d1262` adds a validated `--imu-rate`
+generator option to both Crazyflie model templates. The three Gazebo launchers
+now read `CRAZYSIM_RATE_MAIN_LOOP` from the firmware build's `CMakeCache.txt`
+and pass it to the generator; `NCS_CRAZYSIM_IMU_RATE` is an explicit override.
+The existing 1000-Hz default remains for builds without the CMake setting.
+The corresponding SITL firmware fork commit `f42b9036` pins that CrazySim
+revision on `codex/sitl-imu-wakeup`.
+
+Six focused tests pass for the two generated models at 500 and 1000 Hz, invalid
+rate rejection, CMake-cache selection, override precedence and fallback. In
+the Lima guest, with the actual 500-Hz diagnostic build cache and no override,
+the launch resolver selected `500`; the forked Jinja generator emitted valid
+SDF whose IMU `update_rate` parsed as `500`. The test suite, Bash syntax checks,
+ShellCheck on the new resolver, Ruff check/format for the test, and
+`git diff --check` passed. This removes a configuration footgun. It does not
+show that Gazebo delivered 500 IMU callbacks per wall-clock second, that the
+firmware supervisor met its timing bound, or that flight is stable. The latest
+flight evidence above remains a failed gate; the first retest should use the
+new pinned launcher path and synchronized low-overhead capture.
