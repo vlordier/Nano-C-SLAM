@@ -1019,7 +1019,7 @@ relative quaternion and computes its angle with `atan2`, including a zero
 rotation / non-positive timestep guard. Its regression uses the actual
 consecutive orientations from attempt01: the previous `AxisAngle` result is
 non-finite, while the replacement result is finite and near zero. The
-odometry-publisher integration target builds and passes all nine cases on the
+odometry-publisher integration target builds and passes all ten cases on the
 local Gazebo workspace when configured with that workspace's install prefix.
 The change has not yet been loaded for a fresh CrazySim capture, so the
 runtime finite-state gate remains open; this does not resolve the separate
