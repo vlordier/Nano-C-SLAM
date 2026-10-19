@@ -566,7 +566,19 @@ update. The flight mission defers future-dated samples by at most 0.25 simulatio
 seconds until the clock catches up; it does not use those samples to update
 position or issue a new command. Larger future skew and the existing stale-data
 deadline still fail closed. The pairwise-range sensor bridge drops future-dated
-sets instead of publishing them.
+samples outside its 0.1 s synchronization window. A future sample inside that
+window is held outside the accepted odometry cache and reconsidered on each
+simulation-clock timer tick; pairwise ranges publish only after `/clock` reaches
+the source stamp and the complete swarm snapshot passes age/skew validation.
+
+The live GAP9 runner keeps the existing 120 s simulated post-path hover by
+default. For a bounded local evidence run, `--mission-hover-duration` can lower
+that interval, but it must leave enough time for the collector to receive all
+60 telemetry samples before landing. GVSOC runs the real firmware main loop,
+which remains active after mapping. The supervisor ends that process only after
+the host controller has clocked and captured the 18-byte optimizer response;
+the firmware `gazebo_capture_ok` marker and full mapping evidence are then
+validated before the combined run is accepted.
 On Linux, use the ROS and workspace setup paths from the Linux
 section and replace the Python path with `/usr/bin/python3`.
 
