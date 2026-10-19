@@ -19,7 +19,7 @@ updating this inventory and its test expectation.
 | Task symbol | Entry source | Creation | Purpose and blocking dependencies |
 | --- | --- | --- | --- |
 | mission_task | cslam-stm32-app/app_main.c | Static task, priority 2, stack allocation 2000 | Waits for ToF readiness, fresh sensor frames, and operator heartbeat; initializes the estimator; gates takeoff; forwards pose and scan records over CRTP; enforces mission timeout and landing. Depends on ToF status, FreeRTOS semaphores/queue, estimator, radio/CRTP, and GAP9 SPI. |
-| tof_task | cslam-stm32-app/src/tof_daq.c | Static task, priority 3, stack allocation 500 | Initializes and polls four 8x8 ToF matrices sequentially, tracks per-sensor freshness, and signals acquisition semaphores. Depends on VL53L5CX, I2C, sensor power/address selection, and the deck platform. |
+| tof_task | cslam-stm32-app/src/tof_daq.c | Static task, priority 3, stack allocation 500 | Initializes and polls four 8x8 ToF matrices sequentially, tracks per-sensor freshness, and signals acquisition semaphores. Current implementation depends on VL53L5CX, I2C, sensor power/address selection, and the deck platform. VL53L9CX is a planned additional source with a separate interface qualification; see [VL53L9CX integration](VL53L9CX_INTEGRATION.md). |
 | flight_task | cslam-stm32-app/src/flight_commander.c | Static task, priority 2, stack allocation 1000 | Runs the Nano exploration controller, requests high-level takeoff/landing, and submits low-level velocity setpoints. Depends on Crazyflie estimator/logging/commander APIs, ToF freshness and matrix data, and upstream stabilization and motor-mixing tasks. |
 | uwb_ranging_task | cslam-stm32-app/src/uwb_ranging.c | Dynamic xTaskCreate, priority 4, stack 5 * configMINIMAL_STACK_SIZE | Owns token scheduling, UWB ranging, scan exchange, pose updates, and GAP9 optimization exchange. Depends on UWB transceiver/API, radio-address-based node identity, FreeRTOS queues, estimator, and GAP9 SPI. |
 
@@ -132,3 +132,12 @@ after that should the project choose between adapting that firmware interface,
 migrating the simulator environment, or implementing a narrower native
 FreeRTOS/device port. Do not call the existing ROS-controlled flight firmware
 validation.
+
+## Additional ToF source
+
+The existing VL53L5CX matrix implementation is not a generic ToF driver. The
+requested VL53L9CX has a distinct data shape and output interfaces; its
+electrical route, data rate, official driver, and map integration are tracked
+in `ncs-fea.5.9` and its children. The first firmware flight can validate the
+flight loop with a simulated source matching the existing VL53L5CX contract,
+but that does not close VL53L9CX integration or dual-sensor mapping.
