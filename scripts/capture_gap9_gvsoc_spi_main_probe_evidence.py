@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 from typing import cast
 
+from scripts.evidence_json import load_json_file
 from scripts.gap9_gvsoc_spi_probe_protocol import (
     SCAN_CMD,
     make_mapping_trace,
@@ -403,10 +404,7 @@ def capture_evidence(
     if defects:
         raise ValueError("invalid GVSOC configuration: " + "; ".join(defects))
 
-    try:
-        host_transfer = json.loads(host_transfer_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as error:
-        raise ValueError(f"cannot read host transfer record: {error}") from error
+    host_transfer = load_json_file(host_transfer_path, label="host transfer record")
     if not isinstance(host_transfer, dict):
         raise ValueError("host transfer record must be a JSON object")
     frames = host_transfer.get("frames")
@@ -438,14 +436,13 @@ def capture_evidence(
     elif sequence in {"gazebo-capture", "gazebo-live"}:
         if gazebo_run_bundle_path is None:
             raise ValueError(f"{sequence} evidence requires the source run bundle")
-        try:
-            loaded_bundle = json.loads(
-                gazebo_run_bundle_path.read_text(encoding="utf-8")
-            )
-        except (OSError, json.JSONDecodeError) as error:
-            raise ValueError(
-                f"cannot read source Gazebo run bundle: {error}"
-            ) from error
+        loaded_bundle = load_json_file(
+            gazebo_run_bundle_path, label="source Gazebo run bundle"
+        )
+        if not isinstance(loaded_bundle, dict) or not all(
+            isinstance(key, str) for key in loaded_bundle
+        ):
+            raise ValueError("source Gazebo run bundle must be a JSON object")
         host_run_id = host_transfer.get("run_id")
         if not isinstance(host_run_id, str) or not host_run_id:
             raise ValueError("host transfer must identify its Gazebo source run")

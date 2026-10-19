@@ -16,6 +16,7 @@ from scripts.capture_gap9_gvsoc_spi_main_probe_evidence import (
     _parse_target_map_points,
     _parse_target_poses,
 )
+from scripts.evidence_json import load_json_file
 
 EXPECTED_MODELS = frozenset(
     {"wall1", "wall2", "wall3", "wall4", "obstacle1", "obstacle2", "obstacle3"}
@@ -199,16 +200,13 @@ def analyze_mapping(
     sdf_path: Path,
 ) -> dict[str, object]:
     """Produce diagnostic geometry metrics without silently choosing a pass bar."""
-    try:
-        target = json.loads(target_report_path.read_text(encoding="utf-8"))
-        target_log = target_log_path.read_text(encoding="utf-8")
-        run = json.loads(run_bundle_path.read_text(encoding="utf-8"))
-        session = json.loads(session_path.read_text(encoding="utf-8"))
-        world_attestation = json.loads(
-            world_attestation_path.read_text(encoding="utf-8")
-        )
-    except (OSError, json.JSONDecodeError) as error:
-        raise ValueError(f"cannot read mapping evidence input: {error}") from error
+    target = load_json_file(target_report_path, label="target report")
+    target_log = target_log_path.read_text(encoding="utf-8")
+    run = load_json_file(run_bundle_path, label="run bundle")
+    session = load_json_file(session_path, label="world session")
+    world_attestation = load_json_file(
+        world_attestation_path, label="world input attestation"
+    )
     target = _mapping(target, "target report")
     run = _mapping(run, "run bundle")
     session = _mapping(session, "world session")
