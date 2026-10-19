@@ -242,7 +242,7 @@ def validate_odometry_timestamps(
         raise ValueError("odometry timestamps must be finite")
     oldest_stamp_s = min(stamps)
     newest_stamp_s = max(stamps)
-    if newest_stamp_s - now_s > max_skew_s:
+    if newest_stamp_s - now_s > 1e-6:
         raise OdometrySynchronizationError(
             "odometry timestamp is ahead of simulation time"
         )

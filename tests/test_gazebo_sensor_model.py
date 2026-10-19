@@ -173,10 +173,10 @@ class PairwiseRangeTests(unittest.TestCase):
         )
         skew_boundary = update_odometry_cache(
             {"cf1": (0.0, 0.0, 0.0)},
-            {"cf1": 10.0},
+            {"cf1": 9.9},
             drone="cf3",
             position=(1.0, 0.0, 0.0),
-            stamp_s=10.1,
+            stamp_s=10.0,
             drone_names=("cf1", "cf3"),
             now_s=10.0,
         )
@@ -224,6 +224,7 @@ class PairwiseRangeTests(unittest.TestCase):
         cases = (
             ({"cf1": 9.4, "cf3": 10.0}, 10.0, "stale"),
             ({"cf1": 9.8, "cf3": 10.0}, 10.0, "synchronized"),
+            ({"cf1": 10.0, "cf3": 10.05}, 10.0, "ahead"),
             ({"cf1": 10.0, "cf3": 10.2}, 10.0, "ahead"),
             ({"cf1": 9.9, "cf3": math.nan}, 10.0, "finite"),
         )

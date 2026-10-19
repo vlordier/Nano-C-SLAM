@@ -561,6 +561,12 @@ Nano-C-SLAM interface/mission and Crazyswarm2 Gazebo packages. The coordinator
 compares these identities before and after capture and refuses to publish a
 passing report if any change during the run. Earlier schema-v1 reports remain
 useful run evidence but are historical and lack complete tool/overlay binding.
+Gazebo can deliver an odometry message just before the corresponding `/clock`
+update. The flight mission defers future-dated samples by at most 0.25 simulation
+seconds until the clock catches up; it does not use those samples to update
+position or issue a new command. Larger future skew and the existing stale-data
+deadline still fail closed. The pairwise-range sensor bridge drops future-dated
+sets instead of publishing them.
 On Linux, use the ROS and workspace setup paths from the Linux
 section and replace the Python path with `/usr/bin/python3`.
 

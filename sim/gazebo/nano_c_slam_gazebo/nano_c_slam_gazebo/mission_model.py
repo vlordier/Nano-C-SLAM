@@ -13,6 +13,7 @@ from typing import Any
 SUPPORTED_DRONE_NAMES = ("cf1", "cf3", "cf4")
 MISSION_STATUS_QOS_DEPTH = 4096
 MAX_ODOMETRY_FUTURE_SKEW_S = 0.1
+MAX_ODOMETRY_CLOCK_RACE_S = 0.25
 
 
 class MissionPhase(Enum):
@@ -573,6 +574,14 @@ def validate_mission_odometry(
         raise ValueError("odometry timestamp is ahead of simulation time")
     if now_s - stamp_s > max_age_s:
         raise ValueError("odometry data is stale")
+
+
+def is_bounded_odometry_clock_race(stamp_s: float, now_s: float) -> bool:
+    """Return whether a future sample can wait for the next Gazebo clock tick."""
+    if not math.isfinite(stamp_s) or not math.isfinite(now_s):
+        return False
+    future_skew_s = stamp_s - now_s
+    return future_skew_s > 1e-6 and future_skew_s <= MAX_ODOMETRY_CLOCK_RACE_S + 1e-9
 
 
 class MissionSequence:

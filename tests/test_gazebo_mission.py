@@ -18,6 +18,7 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mission_model import (
     create_mapping_start_altitude_limit,
     create_mission_config,
     create_run_id,
+    is_bounded_odometry_clock_race,
     mission_exit_code,
     summarize_swarm_process_outcomes,
     validate_drone_name,
@@ -36,6 +37,14 @@ from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.swarm_geometry import (
 
 
 class MissionSequenceTests(unittest.TestCase):
+    def test_classifies_only_bounded_odometry_clock_races_for_deferral(self) -> None:
+        self.assertTrue(is_bounded_odometry_clock_race(10.15, 10.0))
+        self.assertTrue(is_bounded_odometry_clock_race(10.25, 10.0))
+        self.assertTrue(is_bounded_odometry_clock_race(10.05, 10.0))
+        self.assertFalse(is_bounded_odometry_clock_race(10.0000005, 10.0))
+        self.assertFalse(is_bounded_odometry_clock_race(10.251, 10.0))
+        self.assertFalse(is_bounded_odometry_clock_race(float("nan"), 10.0))
+
     def test_validates_drone_name_before_constructing_topics(self) -> None:
         self.assertEqual(validate_drone_name("cf3"), "cf3")
         self.assertEqual(

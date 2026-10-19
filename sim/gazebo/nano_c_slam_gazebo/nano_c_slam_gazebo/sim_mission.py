@@ -24,6 +24,7 @@ from .mission_model import (
     create_mapping_start_altitude_limit,
     create_mission_config,
     create_run_id,
+    is_bounded_odometry_clock_race,
     mission_exit_code,
     validate_drone_name,
     validate_mission_odometry,
@@ -71,6 +72,7 @@ class SimMission(Node):
         self._position_xy_m: tuple[float, float] | None = None
         self._odometry_stamp_s: float | None = None
         self._odometry_message_count = 0
+        self._deferred_clock_race_odometry_count = 0
         self._startup_started_wall_s = time.monotonic()
         self._odometry_startup_timeout_s = float(
             self.get_parameter("odometry_startup_timeout_s").value
@@ -134,6 +136,14 @@ class SimMission(Node):
         stamp = message.header.stamp
         candidate_stamp_s = float(stamp.sec) + float(stamp.nanosec) / 1e9
         now_s = self.get_clock().now().nanoseconds / 1e9
+        if is_bounded_odometry_clock_race(candidate_stamp_s, now_s):
+            self._deferred_clock_race_odometry_count += 1
+            if self._deferred_clock_race_odometry_count == 1:
+                self.get_logger().warning(
+                    "Deferring odometry until the Gazebo clock catches up: "
+                    f"stamp={candidate_stamp_s:.6f}, clock={now_s:.6f}"
+                )
+            return
         try:
             validate_mission_odometry(
                 candidate_position,
@@ -243,7 +253,9 @@ class SimMission(Node):
         self.get_logger().info(
             f"{self._drone_name} mission readiness: "
             f"odometry_callbacks={self._odometry_message_count}, "
-            f"odometry_stamp_s={self._odometry_stamp_s}"
+            f"odometry_stamp_s={self._odometry_stamp_s}, "
+            "deferred_clock_race_odometry="
+            f"{self._deferred_clock_race_odometry_count}"
         )
         altitude = (
             "unknown" if self._altitude_m is None else f"{self._altitude_m:.3f} m"

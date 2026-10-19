@@ -38,6 +38,9 @@ class _Logger:
     def error(self, _message: str) -> None:
         pass
 
+    def warning(self, _message: str) -> None:
+        pass
+
 
 class _Node:
     def __init__(self, _name: str) -> None:
@@ -215,6 +218,50 @@ class SimMissionStartupTests(unittest.TestCase):
         self.assertTrue(node.timers[1].canceled)
         self.assertEqual(node._enable_publisher.messages, [])
         self.assertEqual(node._publisher.messages[-1].linear.z, 0.0)
+
+    def test_bounded_future_odometry_waits_for_clock_without_advancing_mission(
+        self,
+    ) -> None:
+        node = self.module.SimMission()
+        now_ns = [1_000_000_000]
+        node.get_clock = lambda: types.SimpleNamespace(
+            now=lambda: types.SimpleNamespace(nanoseconds=now_ns[0])
+        )
+        future_message = odometry_message(x=4.0, z=0.0, sec=1, nanosec=150_000_000)
+
+        node.subscriptions[0].callback(future_message)
+        node._step()
+
+        self.assertEqual(node._sequence.phase.name, "WAITING")
+        self.assertEqual(node._odometry_message_count, 0)
+        self.assertIsNone(node._altitude_m)
+        self.assertIsNone(node._odometry_stamp_s)
+        self.assertEqual(node._publisher.messages, [])
+        self.assertEqual(node._enable_publisher.messages, [])
+
+        now_ns[0] = 1_150_000_000
+        node.subscriptions[0].callback(future_message)
+        node._step()
+
+        self.assertEqual(node._sequence.phase.name, "TAKEOFF")
+        self.assertEqual(node._odometry_message_count, 1)
+        self.assertEqual(node._odometry_stamp_s, 1.15)
+        self.assertEqual(node._publisher.messages[-1].linear.z, 0.5)
+
+    def test_excessively_future_odometry_still_fails_closed(self) -> None:
+        node = self.module.SimMission()
+        now_ns = [1_000_000_000]
+        node.get_clock = lambda: types.SimpleNamespace(
+            now=lambda: types.SimpleNamespace(nanoseconds=now_ns[0])
+        )
+
+        node.subscriptions[0].callback(
+            odometry_message(x=0.0, z=0.0, sec=1, nanosec=300_000_000)
+        )
+
+        self.assertEqual(node._sequence.phase.name, "FAILED")
+        self.assertEqual(node._odometry_message_count, 0)
+        self.assertEqual(node._enable_publisher.messages, [])
 
     def test_failure_repeats_zero_commands_until_bounded_terminal_drain_ends(
         self,
