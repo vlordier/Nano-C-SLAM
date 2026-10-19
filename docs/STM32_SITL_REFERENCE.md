@@ -1000,3 +1000,27 @@ Both matched-rate attempts still fail stable-flight acceptance. The next
 capture needs line-buffered firmware logs, plugin motor attribution, exact
 process/exit evidence, and lower observer overhead while retaining the same
 finite-state, timing, hover and landing thresholds.
+
+## Gazebo odometry quaternion roundoff regression (2026-10-19)
+
+Inspection of matched-rate attempt01 showed that all 205 non-finite records
+were limited to `twist.angular`; position, orientation, and linear velocity
+remained finite. The first affected message was at simulation time 37.925 s.
+Its quaternion and the preceding orientation produce a relative quaternion
+with `w` slightly above 1 due to floating-point roundoff. Gazebo Harmonic's
+`OdometryPublisher::CalculateAngularVelocity` called `Quaternion::AxisAngle`,
+whose `acos(w)` then returned NaN. This attributes the captured angular NaNs
+to the Gazebo odometry publisher; it does not establish that firmware state was
+non-finite. CrazySim forwards pose to the firmware localization packet and
+does not forward the odometry angular velocity there.
+
+An isolated worktree of `gz-sim` now has a focused change that normalizes the
+relative quaternion and computes its angle with `atan2`, including a zero
+rotation / non-positive timestep guard. Its regression uses the actual
+consecutive orientations from attempt01: the previous `AxisAngle` result is
+non-finite, while the replacement result is finite and near zero. The
+odometry-publisher integration target builds and passes all nine cases on the
+local Gazebo workspace when configured with that workspace's install prefix.
+The change has not yet been loaded for a fresh CrazySim capture, so the
+runtime finite-state gate remains open; this does not resolve the separate
+firmware cadence, hover, landing, Nano firmware, or mapping failures.
