@@ -530,6 +530,24 @@ Kalman-rate warnings, nonfinite angular odometry, and less than 0.5 s in the
 hover envelope. Treat both as failed diagnostic runs; do not use them to
 justify widening rate thresholds.
 
+The pushed branch was then cloned cleanly and its `cf2` target compiled with
+the Python 3.12.15 interpreter installed by `uv`; the clean binary SHA-256 was
+`7207929f6b4c8e1041c895b5bcfba3a579531a68d4e84af51787e10e1211d6d7`. A
+separate, uncommitted diagnostic build raised the socket, CRTP RX, sensor, and
+Kalman tasks to priority 5, selected the 500-Hz stabilizer loop, and used
+500-Hz SITL filter settings. Its binary SHA-256 was
+`164ebf5b15b8e351112a386e9a739d735f70c42364759474cb4546dda93cb330`. It
+reached `Ready to fly`; one `cf2` process drove finite nonzero motor messages
+and Gazebo RTF aggregated to `0.998`. However, the stabilizer reported
+`464 Hz; expected 500 Hz`, Kalman remained at 95–98 Hz, and the 4,889-pose
+capture had only 4,478 fully finite samples. Altitude peaked at 2.944 m from
+2.040 m and returned to 2.040 m, but it stayed in the 2.40-m hover envelope
+for only 0.325 s (0.505 s around 2.64 m). Angular odometry became nonfinite
+after the flight, and the firmware logged `Landing timeout, disarming`.
+Because aggregate RTF was within the gate, this run rules out low average RTF
+as the sole cause of the Kalman and stabilizer warnings. The diagnostic
+priority/configuration edits were not committed or pushed.
+
 This closes one concrete cause of excess stabilizer wakeups only. The
 reference still needs a synchronized, clean positive capture with finite
 estimator/odometry state, at least five seconds of stable hover, and a
