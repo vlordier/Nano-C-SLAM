@@ -129,6 +129,11 @@ uv run --locked python -m unittest tests.test_gazebo_sensor_model tests.test_gaz
 
 The Linux instructions above are the supported upstream path. On macOS, use the Gazebo Harmonic build already installed at `~/Work/gz-macOS/ws/install`; it provides the working native Gazebo server and desktop GUI. ROS 2 Jazzy still comes from the Homebrew tap and needs Python 3.11. The helper temporarily exposes the older Abseil ABI required by the prebuilt ROS bridge, then restores Homebrew when Gazebo exits. Do not run Homebrew upgrades while the helper is running.
 
+Only one `run_gazebo_macos.sh` launch may be active at a time because the
+Abseil compatibility link is shared through Homebrew's global `opt` directory.
+The launcher rejects a second invocation while that link points into another
+Nano-C-SLAM launch's temporary directory; wait for the active launch to exit.
+
 Install Python 3.11.9 from [python.org](https://www.python.org/downloads/release/python-3119/) (the final 3.11 macOS installer), then install the ROS 2 Jazzy formula and its dependencies as described by [idesign0/homebrew-ros2](https://github.com/idesign0/homebrew-ros2). The Homebrew formula's Python is not compatible with the prebuilt ROS bindings; use the python.org interpreter below. Install the remaining libraries and the historical Abseil bottle:
 
 ```sh

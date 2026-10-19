@@ -10,9 +10,50 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 LAUNCHER = REPO_ROOT / "scripts/run_gazebo_macos.sh"
+ABSEIL_GUARD = REPO_ROOT / "scripts/check_gazebo_abseil_opt.sh"
 
 
 class GazeboLauncherInterfaceGuardTests(unittest.TestCase):
+    def test_rejects_a_second_launch_without_changing_the_active_abseil_link(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            active_launch = root / "nano-c-slam-ros2.active" / "abseil"
+            active_launch.mkdir(parents=True)
+            homebrew_opt = root / "opt/abseil"
+            homebrew_opt.parent.mkdir()
+            homebrew_opt.symlink_to(active_launch, target_is_directory=True)
+
+            result = subprocess.run(  # noqa: S603 - fixed repository helper and temporary path.
+                ["/bin/bash", str(ABSEIL_GUARD), str(homebrew_opt)],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("Another Nano-C-SLAM Gazebo launch", result.stderr)
+            self.assertEqual(homebrew_opt.resolve(), active_launch.resolve())
+
+    def test_allows_a_normal_homebrew_formula_link(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            formula = root / "Cellar/abseil/1.0.0"
+            formula.mkdir(parents=True)
+            homebrew_opt = root / "opt/abseil"
+            homebrew_opt.parent.mkdir()
+            homebrew_opt.symlink_to(formula, target_is_directory=True)
+
+            result = subprocess.run(  # noqa: S603 - fixed repository helper and temporary path.
+                ["/bin/bash", str(ABSEIL_GUARD), str(homebrew_opt)],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+
     def _run_preflight(
         self, *, command_status: int, output: str
     ) -> subprocess.CompletedProcess[str]:

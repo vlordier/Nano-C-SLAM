@@ -31,6 +31,7 @@ if [[ -e "$abseil_opt" && ! -L "$abseil_opt" ]]; then
     echo "Expected Homebrew's Abseil opt path to be a symlink: $abseil_opt" >&2
     exit 1
 fi
+"$repo_root/scripts/check_gazebo_abseil_opt.sh" "$abseil_opt"
 
 temporary_dir="$(mktemp -d "${TMPDIR:-/tmp}/nano-c-slam-ros2.XXXXXX")"
 abseil_original_target="$(readlink "$abseil_opt" 2>/dev/null || true)"
