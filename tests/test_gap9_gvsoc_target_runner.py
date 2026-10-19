@@ -121,7 +121,9 @@ class GvsocTargetRunnerTests(unittest.TestCase):
                 sys.executable,
                 "-u",
                 "-c",
-                "import time; print('mapping-finished'); time.sleep(5)",
+                "import sys,time; sys.stdout.write('mapping-'); "
+                "sys.stdout.flush(); time.sleep(0.1); print('finished'); "
+                "time.sleep(5)",
             ]
             stdout_bytes = io.BytesIO()
             with patch("sys.argv", args), patch("sys.stdout") as stdout:
@@ -148,6 +150,22 @@ class GvsocTargetRunnerTests(unittest.TestCase):
             with patch("sys.argv", args), patch("sys.stdout") as stdout:
                 stdout.buffer = io.BytesIO()
                 self.assertEqual(main(), 3)
+
+    def test_empty_completion_marker_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            args = [
+                "run",
+                "--log",
+                str(Path(temporary_directory) / "target.log"),
+                "--completion-marker",
+                "",
+                "--",
+                sys.executable,
+                "-c",
+                "pass",
+            ]
+            with patch("sys.argv", args), self.assertRaises(SystemExit):
+                main()
 
     def test_source_receipt_binds_successful_target_to_recursive_snapshot(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:

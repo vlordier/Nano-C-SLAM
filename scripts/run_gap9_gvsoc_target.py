@@ -45,6 +45,8 @@ def main() -> int:
     command = args.command[1:] if args.command[:1] == ["--"] else args.command
     if not command:
         parser.error("a target command is required after --")
+    if args.completion_marker == "":
+        parser.error("--completion-marker must not be empty")
     if (args.source_root is None) != (args.source_receipt is None):
         parser.error("--source-root and --source-receipt must be supplied together")
     if (args.stdout_log is None) != (args.stderr_log is None):
@@ -148,27 +150,36 @@ def _wait_for_target(
     """Wait for process exit or stop a persistent target after its proof marker."""
     deadline = time.monotonic() + timeout_s
     marker_bytes = completion_marker.encode() if completion_marker else None
-    while True:
-        result_code = process.poll()
-        if result_code is not None:
-            if (
-                marker_bytes is not None
-                and output_path is not None
-                and marker_bytes not in output_path.read_bytes()
-            ):
-                return result_code or 3
-            return result_code
-        if (
-            marker_bytes is not None
-            and output_path is not None
-            and marker_bytes in output_path.read_bytes()
-        ):
-            _terminate_process_group(process)
-            return 0
-        remaining_s = deadline - time.monotonic()
-        if remaining_s <= 0:
-            raise subprocess.TimeoutExpired(process.args, timeout_s)
-        time.sleep(min(0.05, remaining_s))
+    marker_seen = marker_bytes is None
+    marker_tail = b""
+    if marker_bytes is None or output_path is None:
+        log_stream = contextlib.nullcontext(None)
+    else:
+        log_stream = output_path.open("rb")
+    with log_stream as stream:
+        while True:
+            if marker_bytes is not None and stream is not None:
+                new_output = stream.read()
+                marker_window = marker_tail + new_output
+                marker_seen = marker_seen or marker_bytes in marker_window
+                marker_tail = (
+                    marker_window[-(len(marker_bytes) - 1) :]
+                    if len(marker_bytes) > 1
+                    else b""
+                )
+            result_code = process.poll()
+            if marker_seen and marker_bytes is not None:
+                if result_code is None:
+                    _terminate_process_group(process)
+                return 0
+            if result_code is not None:
+                if marker_bytes is not None and not marker_seen:
+                    return result_code or 3
+                return result_code
+            remaining_s = deadline - time.monotonic()
+            if remaining_s <= 0:
+                raise subprocess.TimeoutExpired(process.args, timeout_s)
+            time.sleep(min(0.05, remaining_s))
 
 
 def _utc_now() -> str:
