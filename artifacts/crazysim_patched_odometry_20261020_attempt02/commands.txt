@@ -1,0 +1,41 @@
+# Source pins
+# gz-sim: /tmp/ncs-gz-sim-odometry, commit b25695048c8da5e9e185acdeb6b2f3e43c87bb22
+# CrazySim: /tmp/ncs-crazyflie-simulation, commit 1e6d1262bccf20beb90be1db524ac5151973b11b
+# firmware: Lima checkout codex/sitl-imu-wakeup, commit f42b903610e8b4ea1796ba6eba4b1c92cde70766
+
+# The copied Gazebo 8.14 odometry plugin must use the shared workspace's
+# gz-sim and protobuf dylibs. Do not replace files in the shared install.
+mkdir -p /tmp/ncs-gz-patched-odom-runtime
+cp /tmp/ncs-gz-sim-odometry-build-qt/lib/libgz-sim8-odometry-publisher-system.8.14.0.dylib \
+  /tmp/ncs-gz-patched-odom-runtime/libncs-patched-odometry-publisher.dylib
+install_name_tool -id @rpath/libncs-patched-odometry-publisher.dylib \
+  /tmp/ncs-gz-patched-odom-runtime/libncs-patched-odometry-publisher.dylib
+install_name_tool -delete_rpath /tmp/ncs-gz-sim-odometry-build-qt/lib \
+  /tmp/ncs-gz-patched-odom-runtime/libncs-patched-odometry-publisher.dylib
+install_name_tool -change @rpath/libgz-sim8.8.dylib \
+  /Users/vincent/Work/gz-macOS/ws/install/lib/libgz-sim8.8.dylib \
+  /tmp/ncs-gz-patched-odom-runtime/libncs-patched-odometry-publisher.dylib
+install_name_tool -change @rpath/libprotobuf.32.0.0.dylib \
+  /Users/vincent/Work/gz-macOS/ws/install/lib/libprotobuf.32.0.0.dylib \
+  /tmp/ncs-gz-patched-odom-runtime/libncs-patched-odometry-publisher.dylib
+
+# The archived world uses an absolute plugin filename to guarantee that the
+# corrected copy is loaded. Gazebo 8.14 executable is explicit to avoid 8.15.
+GZ_SIM_SYSTEM_PLUGIN_PATH=/tmp/ncs-gz-sim-odometry-build-qt/lib:/tmp/ncs-crazysim-gz-ws-build
+GZ_SIM_RESOURCE_PATH=/tmp/ncs-crazyflie-simulation/simulator_files/gazebo/models:/tmp/ncs-crazyflie-simulation/simulator_files/gazebo/worlds
+GZ_SIM_PHYSICS_ENGINE_PATH=/Users/vincent/Work/gz-macOS/ws/install/lib/gz-physics-7/engine-plugins
+GZ_PARTITION=ncs-flight-patched-20261020f
+/Users/vincent/Work/gz-macOS/ws/install/bin/gz sim -s -r \
+  --physics-engine gz-physics-bullet-featherstone-plugin world.sdf -v 3
+
+# Firmware and host commands. Both high-level packets returned ACK result 0.
+/home/vincent.guest/ncs-cf-build-final-diag/cf2 19950 192.168.5.2
+uv run --locked python scripts/crazysim_bridge_command.py takeoff \
+  --target-height-m 2.615 --duration-s 5 --bridge-port 20850 --timeout 4
+uv run --locked python scripts/crazysim_bridge_command.py land \
+  --target-height-m 2.015 --duration-s 3 --bridge-port 20850 --timeout 4
+
+# Capture 3,200 timestamped odometry messages during the firmware run.
+GZ_PARTITION=ncs-flight-patched-20261020f \
+  /Users/vincent/Work/gz-macOS/ws/install/bin/gz topic -e --json-output \
+  -n 3200 -t /cf_0/odom >capture/odometry.jsonl

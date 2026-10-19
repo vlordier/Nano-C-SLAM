@@ -1,0 +1,50 @@
+{
+  "attempt": "crazysim patched odometry sampler attempt 03",
+  "date": "2026-10-20",
+  "sources": {
+    "firmware_commit": "f42b903610e8b4ea1796ba6eba4b1c92cde70766",
+    "firmware_binary_sha256": "8d0cc0505f72282eff5f2d57df4e5671cd92cd31354d71d79efc094a4d38dc9c",
+    "crazysim_commit": "1e6d1262bccf20beb90be1db524ac5151973b11b",
+    "gz_sim_patch_commit": "b25695048c8da5e9e185acdeb6b2f3e43c87bb22"
+  },
+  "runtime": {
+    "gazebo_sim_version": "8.14.0",
+    "partition": "ncs-flight-patched-20261020g",
+    "patched_odometry_plugin_loaded": true,
+    "plugin_load_evidence": "lsof showed the temporary patched odometry dylib; CrazySim bridge dylib also loaded",
+    "motor_trace": "TRACE_MOTOR_NONZERO NCS_SITL_ACTUATOR source=firmware ratio=35999,35999,35999,35999 omega_rad_s=2056.69,2056.69,2056.69,2056.69"
+  },
+  "sampler": {
+    "binary": "/tmp/ncs-crazysim-flight-sampler-live",
+    "duration_s": 20,
+    "reported_counts": {
+      "odometry": 0,
+      "imu": 0,
+      "motor": 0,
+      "world_stats": 0
+    },
+    "exit_code": 4,
+    "transport_topics_visible_to_gz_topic_cli": [
+      "/cf_0/odom",
+      "/cf_0/imu",
+      "/cf_0/command/motor_speed",
+      "/world/crazysim_default/stats"
+    ],
+    "diagnosis": "unresolved; do not treat the empty files as telemetry evidence"
+  },
+  "firmware": {
+    "ready_to_fly": true,
+    "takeoff_trace_count": 1,
+    "land_trace_count": 1,
+    "stabilizer_rate_warning_count": 1,
+    "kalman_rate_warning_count": 130,
+    "landing_timeout_count": 1,
+    "supervisor_crash_count": 0
+  },
+  "acceptance": {
+    "odometry_runtime_patch_loaded": true,
+    "strict_paired_checker_run": false,
+    "flight_gate_passed": false,
+    "reason": "No sampler callbacks; this attempt does not have analyzable synchronized telemetry or exit status."
+  }
+}

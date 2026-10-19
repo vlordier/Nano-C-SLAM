@@ -1,0 +1,20 @@
+# Gazebo 8.14 and the temporary patched odometry dylib were started as
+# documented in ../crazysim_patched_odometry_20261020_attempt02/commands.txt.
+# This run used GZ_PARTITION=ncs-flight-patched-20261020g and
+# NCS_CRAZYSIM_TRACE_MOTOR=1.
+
+# Typed C++ sampler; it created all four files but received no callbacks.
+DYLD_LIBRARY_PATH=/Users/vincent/Work/gz-macOS/ws/install/lib \
+GZ_PARTITION=ncs-flight-patched-20261020g \
+  /tmp/ncs-crazysim-flight-sampler-live 20 capture
+# Result: captured odometry=0 imu=0 motor=0 world_stats=0; exit 4.
+# In the same server/partition, gz topic -l showed all four expected topics.
+
+# One cf2 process was launched in Lima with the explicit host gateway.
+/home/vincent.guest/ncs-cf-build-final-diag/cf2 19950 192.168.5.2
+
+# Both commands returned firmware_ack with firmware_result=0.
+uv run --locked python scripts/crazysim_bridge_command.py takeoff \
+  --target-height-m 2.615 --duration-s 5 --bridge-port 20850 --timeout 4
+uv run --locked python scripts/crazysim_bridge_command.py land \
+  --target-height-m 2.015 --duration-s 3 --bridge-port 20850 --timeout 4

@@ -1,0 +1,65 @@
+{
+  "attempt": "crazysim patched odometry attempt 02",
+  "date": "2026-10-20",
+  "runtime": {
+    "gazebo_sim_version": "8.14.0",
+    "gazebo_executable": "/Users/vincent/Work/gz-macOS/ws/install/bin/gz",
+    "physics_engine": "gz-physics-bullet-featherstone-plugin",
+    "partition": "ncs-flight-patched-20261020f",
+    "patched_odometry_plugin_loaded": true,
+    "plugin_load_evidence": "lsof on Gazebo PID showed /private/tmp/ncs-gz-patched-odom-runtime/libncs-patched-odometry-publisher.dylib",
+    "shared_gazebo_install_modified": false
+  },
+  "sources": {
+    "gz_sim": {
+      "commit": "b25695048c8da5e9e185acdeb6b2f3e43c87bb22",
+      "branch": "codex/ncs-odometry-angular-finite"
+    },
+    "crazysim": {
+      "commit": "1e6d1262bccf20beb90be1db524ac5151973b11b"
+    },
+    "firmware": {
+      "commit": "f42b903610e8b4ea1796ba6eba4b1c92cde70766",
+      "binary_sha256": "8d0cc0505f72282eff5f2d57df4e5671cd92cd31354d71d79efc094a4d38dc9c"
+    },
+    "crazysim_plugin_sha256": "258406d680f3164624c698800a668be9923abe6706abc2f65d05c0d2834cff45",
+    "patched_odometry_runtime_copy_sha256": "d747ef2ebd8a8d500ba5fc9700997cbec660906ce63ff06f42d2cb2b0d8ce9ef"
+  },
+  "capture": {
+    "topic": "/cf_0/odom",
+    "format": "Gazebo Transport JSON Lines",
+    "record_count": 3200,
+    "first_sim_time_s": 127.87,
+    "last_sim_time_s": 143.865,
+    "span_s": 15.995000000000005,
+    "all_pose_and_twist_values_finite": true,
+    "non_finite_record_count": 0,
+    "altitude_min_m": 2.0148673057556152,
+    "altitude_max_m": 3.0964066982269287,
+    "altitude_end_m": 2.6359751224517822,
+    "hover_target_m": 2.615,
+    "longest_stable_hover_s": 0.2050000000000125,
+    "max_angular_speed_rad_s": 6.148983836276504
+  },
+  "firmware": {
+    "ready_to_fly": true,
+    "takeoff_trace_count": 1,
+    "land_trace_count": 1,
+    "stabilizer_rate_warning_count": 1,
+    "kalman_rate_warning_count": 18,
+    "landing_timeout_count": 1,
+    "supervisor_crash_count": 0
+  },
+  "acceptance": {
+    "odometry_publisher_finite_output": true,
+    "stable_flight_gate_passed": false,
+    "strict_paired_checker_run": false,
+    "missing_evidence": [
+      "IMU capture",
+      "motor capture",
+      "world-stat capture",
+      "disconnected-actuator run",
+      "firmware and Gazebo exit statuses"
+    ]
+  }
+}

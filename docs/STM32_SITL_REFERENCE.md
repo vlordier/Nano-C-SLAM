@@ -577,7 +577,8 @@ and successful process exit codes. The
 negative capture must explicitly identify a disconnected actuator bridge,
 stay within 0.10 m of its starting height, and contain only zero motor output.
 
-Run it against saved `gz topic -e` captures and complete firmware/plugin logs.
+Run it against saved `gz topic -e` captures in protobuf text or
+`--json-output` format and complete firmware/plugin logs.
 Do not echo `/stats` continuously in Gazebo 8: it publishes at the physics
 update rate and the text subscriber can perturb simulation timing. Build the
 small typed sampler instead; Gazebo Transport throttles the subscription to at
@@ -1052,13 +1053,43 @@ to the Gazebo odometry publisher; it does not establish that firmware state was
 non-finite. CrazySim forwards pose to the firmware localization packet and
 does not forward the odometry angular velocity there.
 
-An isolated worktree of `gz-sim` now has a focused change that normalizes the
+An isolated worktree of `gz-sim` has a focused change that normalizes the
 relative quaternion and computes its angle with `atan2`, including a zero
 rotation / non-positive timestep guard. Its regression uses the actual
 consecutive orientations from attempt01: the previous `AxisAngle` result is
 non-finite, while the replacement result is finite and near zero. The
 odometry-publisher integration target builds and passes all ten cases on the
 local Gazebo workspace when configured with that workspace's install prefix.
-The change has not yet been loaded for a fresh CrazySim capture, so the
-runtime finite-state gate remains open; this does not resolve the separate
-firmware cadence, hover, landing, Nano firmware, or mapping failures.
+
+On 2026-10-20, a copied build plugin was loaded in a fresh CrazySim reference
+run. The first load attempt exposed a duplicate protobuf descriptor because
+the copied dylib retained its build-tree rpath; a temporary runtime copy with
+that rpath removed and Gazebo dependencies pinned to the workspace install
+loaded without changing the shared installation. `lsof` confirmed both the
+patched odometry dylib and the CrazySim bridge from their intended paths. The
+3,200-message JSON odometry capture has 15.995 s of strictly timestamped data,
+all pose/twist values finite, and no angular-velocity NaNs. This closes the
+publisher's runtime finite-output check.
+
+The firmware still does not pass flight acceptance: altitude was 2.0149 to
+3.0964 m and ended at 2.6360 m, the longest target-hover interval was 0.205 s,
+and peak angular speed was 6.149 rad/s. The firmware received TAKEOFF_2 and
+LAND_2 (ACK result 0 for both), but logged one 502-Hz stabilizer warning, 18
+Kalman cadence warnings, and one landing timeout; it did not log a supervisor
+crash. The strict paired checker was not run because this attempt lacks
+synchronized IMU, motor, world-stat, disconnected-actuator, and process-exit
+captures. Raw files and hashes are in
+[`artifacts/crazysim_patched_odometry_20261020_attempt02`](../artifacts/crazysim_patched_odometry_20261020_attempt02/manifest.json).
+This fixes the odometry NaN symptom only; it does not resolve controller
+stability, firmware cadence, Nano firmware execution, or mapping validation.
+
+A follow-up 20-second run used the repository's typed C++ sampler. The patched
+odometry dylib and CrazySim bridge loaded, and the plugin traced four nonzero
+motor ratios originating from firmware. However, the sampler exited with zero
+callbacks for odometry, IMU, motors, and world statistics even though `gz topic
+-l` showed all four published topics on the same partition. Do not use its
+empty output files as telemetry. The firmware again accepted takeoff and land,
+reported one stabilizer-rate warning, 130 Kalman-rate warnings, and one landing
+timeout without a supervisor crash. The reason this C++ subscriber receives no
+callbacks is unresolved. This diagnostic is archived separately in
+[`artifacts/crazysim_patched_odometry_20261020_attempt03`](../artifacts/crazysim_patched_odometry_20261020_attempt03/manifest.json).
