@@ -616,7 +616,7 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
         ]
         self.log_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
-        with self.assertRaisesRegex(ValueError, "lacks production SPI receive"):
+        with self.assertRaisesRegex(ValueError, "exactly one production SPI"):
             self._capture()
 
     def test_rejects_incomplete_host_full_duplex_transfer(self) -> None:
@@ -667,6 +667,50 @@ class Gap9GvsocSpiMainProbeEvidenceTests(unittest.TestCase):
         self.log_path.write_text(log.replace("frames=61,4,1", "frames=60,4,1"))
 
         with self.assertRaisesRegex(ValueError, "diagnostics differ"):
+            self._capture()
+
+    def test_rejects_duplicate_success_markers_and_diagnostics(self) -> None:
+        self._write_mapping_evidence()
+        log = self.log_path.read_text(encoding="utf-8")
+        marker = next(
+            line for line in log.splitlines() if ":mapping_ok packets=" in line
+        )
+        self.log_path.write_text(log + marker + "\n", encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "exactly one validated full-mapping"):
+            self._capture()
+
+        self._write_mapping_evidence()
+        log = self.log_path.read_text(encoding="utf-8")
+        diagnostics = next(
+            line
+            for line in log.splitlines()
+            if line.startswith("NANO_C_SLAM_SPI:stats")
+        )
+        self.log_path.write_text(log + diagnostics + "\n", encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "exactly one production SPI"):
+            self._capture()
+
+    def test_rejects_target_failure_marker_even_when_success_marker_is_present(
+        self,
+    ) -> None:
+        self._write_mapping_evidence()
+        with self.log_path.open("a", encoding="utf-8") as log_file:
+            log_file.write("NANO_C_SLAM_GVSOC_SPI_MAIN:run_fail reason=probe_error\n")
+
+        with self.assertRaisesRegex(ValueError, "reported failure"):
+            self._capture()
+
+    def test_rejects_host_response_when_target_reports_tx_was_skipped(self) -> None:
+        self._write_mapping_evidence(
+            struct.pack("<9h", 60, 3, 21, 128, 0, 1, 3, 9, 1).hex()
+        )
+        with self.log_path.open("a", encoding="utf-8") as log_file:
+            log_file.write(
+                "NANO_C_SLAM_GVSOC_SPI_MAIN:response_phase=skipped "
+                "reason=GVSOC_slave_TX_not_validated\n"
+            )
+
+        with self.assertRaisesRegex(ValueError, "disagree with the target response"):
             self._capture()
 
 

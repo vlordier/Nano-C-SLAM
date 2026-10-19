@@ -544,6 +544,8 @@ def capture_evidence(
         log = log_path.read_text(encoding="utf-8")
     except OSError as error:
         raise ValueError(f"cannot read GVSOC log: {error}") from error
+    if "NANO_C_SLAM_GVSOC_SPI_MAIN:run_fail" in log:
+        raise ValueError("GVSOC production-main target reported failure")
     if sequence in {"pose-request", "pose-request-boundaries"}:
         return _capture_pose_request_evidence(
             config_path=config_path,
@@ -565,12 +567,11 @@ def capture_evidence(
     marker_optimizer_fields: dict[str, int] = {}
     target_poses: list[dict[str, float | int]] | None = None
     if sequence == "pose-scan":
-        if TARGET_MARKER not in log:
+        if log.count(TARGET_MARKER) != 1:
             raise ValueError(
-                "GVSOC log lacks the target-side production-main success marker"
+                "GVSOC log must contain exactly one target-side production-main "
+                "success marker"
             )
-        if "NANO_C_SLAM_GVSOC_SPI_MAIN:run_fail" in log:
-            raise ValueError("GVSOC production-main target reported failure")
         target_marker = TARGET_MARKER
         response_expected_hex = None
         limitations = [
@@ -691,9 +692,12 @@ def capture_evidence(
                     "duration_us": int(duration_text),
                 }
             )
-        match = mapping_pattern.search(log)
-        if match is None:
-            raise ValueError("GVSOC log lacks the validated full-mapping marker")
+        mapping_matches = list(mapping_pattern.finditer(log))
+        if len(mapping_matches) != 1:
+            raise ValueError(
+                "GVSOC log must contain exactly one validated full-mapping marker"
+            )
+        match = mapping_matches[0]
         target_marker = match.group(0)
         if sequence in {"gazebo-capture", "gazebo-live"}:
             if sequence == "gazebo-live":
@@ -793,9 +797,13 @@ def capture_evidence(
             if marker_graph != 3 or marker_calls < 1:
                 raise ValueError("mapping marker reports an invalid optimizer result")
             optimizer_graph_size = marker_graph
-        diagnostics_match = SPI_DIAGNOSTICS_PATTERN.search(log)
-        if diagnostics_match is None:
-            raise ValueError("GVSOC log lacks production SPI receive diagnostics")
+        diagnostics_matches = list(SPI_DIAGNOSTICS_PATTERN.finditer(log))
+        if len(diagnostics_matches) != 1:
+            raise ValueError(
+                "GVSOC log must contain exactly one production SPI receive "
+                "diagnostic record"
+            )
+        diagnostics_match = diagnostics_matches[0]
         (
             received_frames,
             malformed_frames,
@@ -816,7 +824,27 @@ def capture_evidence(
             or len(decode_failure) != len(COMMAND_NAMES)
         ):
             raise ValueError("GVSOC SPI diagnostics have an invalid command vector")
-        target_response_was_skipped = "response_phase=skipped" in log
+        skipped_response_lines = [
+            line
+            for line in log.splitlines()
+            if line.startswith("NANO_C_SLAM_GVSOC_SPI_MAIN:response_phase=")
+        ]
+        if any(
+            line != "NANO_C_SLAM_GVSOC_SPI_MAIN:response_phase=skipped"
+            and not re.fullmatch(
+                r"NANO_C_SLAM_GVSOC_SPI_MAIN:response_phase=skipped "
+                r"reason=[A-Za-z0-9_]+",
+                line,
+            )
+            for line in skipped_response_lines
+        ):
+            raise ValueError("GVSOC log contains an unknown optimizer response phase")
+        target_response_was_skipped = bool(skipped_response_lines)
+        response_rx_hex = host_transfer.get("response_rx_hex")
+        if target_response_was_skipped != (response_rx_hex is None):
+            raise ValueError(
+                "host optimizer response bytes disagree with the target response phase"
+            )
         expected_diagnostics.update(
             {
                 "missing_pose_ids": 0,
@@ -879,7 +907,6 @@ def capture_evidence(
                 "identical sequence-less commands."
             ),
         }
-        response_rx_hex = host_transfer.get("response_rx_hex")
         if response_rx_hex is None:
             if "response_phase=skipped" not in log:
                 raise ValueError("missing SPI TX bytes without an explicit target skip")
