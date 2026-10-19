@@ -19,6 +19,7 @@ from scripts.capture_gap9_gvsoc_spi_main_probe_evidence import (
     _decode_slam_job,
     _parse_target_map_points,
     _parse_target_poses,
+    validate_config,
 )
 from scripts.evidence_json import load_json_file
 from sim.gazebo.nano_c_slam_gazebo.nano_c_slam_gazebo.mapping_model import (
@@ -232,6 +233,7 @@ def _verify_world_binding(
 
 def _verify_target_capture(
     target: dict[str, object],
+    host_transfer: dict[str, object],
     target_log: str,
     run: dict[str, object],
     samples: tuple[MappingSample, ...],
@@ -249,6 +251,33 @@ def _verify_target_capture(
         or target.get("frames") != expected_frames
     ):
         raise ValueError("target evidence frames differ from the paired Gazebo run")
+    expected_host_frames = [
+        {
+            "sequence": packet.sequence,
+            "command": packet.command,
+            "pose_id": packet.pose_id,
+            "source_stamp_ns": packet.source_stamp_ns,
+            "frame_tx_hex": packet.frame.hex(),
+            "length": len(packet.frame),
+        }
+        for packet in packets
+    ]
+    expected_transfer_lengths = [
+        {"master_tx_bytes": len(packet.frame), "master_rx_bytes": len(packet.frame)}
+        for packet in packets
+    ]
+    response_hex = target.get("optimizer_response_expected_hex")
+    if (
+        host_transfer.get("sequence") != "gazebo-live"
+        or host_transfer.get("run_id") != run.get("run_id")
+        or host_transfer.get("drone_id") != run.get("drone")
+        or host_transfer.get("pre_cs_dummy_clock_cycles") != 8
+        or host_transfer.get("frames") != expected_host_frames
+        or host_transfer.get("command_transfer_lengths") != expected_transfer_lengths
+        or host_transfer.get("control_phase") != "optimizer_response_captured"
+        or host_transfer.get("response_rx_hex") != response_hex
+    ):
+        raise ValueError("host SPI transfer differs from the paired Gazebo run")
 
     marker = target.get("target_marker")
     marker_pattern = re.compile(
@@ -434,6 +463,9 @@ def analyze_mapping(
     *,
     target_report_path: Path,
     target_log_path: Path,
+    target_elf_path: Path,
+    gvsoc_config_path: Path,
+    host_transfer_path: Path,
     run_bundle_path: Path,
     session_path: Path,
     world_attestation_path: Path,
@@ -442,12 +474,14 @@ def analyze_mapping(
     """Produce diagnostic geometry metrics without silently choosing a pass bar."""
     target = load_json_file(target_report_path, label="target report")
     target_log = target_log_path.read_text(encoding="utf-8")
+    host_transfer = load_json_file(host_transfer_path, label="host transfer")
     run = load_json_file(run_bundle_path, label="run bundle")
     session = load_json_file(session_path, label="world session")
     world_attestation = load_json_file(
         world_attestation_path, label="world input attestation"
     )
     target = _mapping(target, "target report")
+    host_transfer = _mapping(host_transfer, "host transfer")
     run = _mapping(run, "run bundle")
     session = _mapping(session, "world session")
     world_attestation = _mapping(world_attestation, "world input attestation")
@@ -459,6 +493,22 @@ def analyze_mapping(
     run_terminal = _mapping(run.get("mission_terminal"), "run mission terminal")
     run_exit_codes = _mapping(run.get("process_exit_codes"), "run exit codes")
     target_hashes = _mapping(target.get("sha256"), "target evidence hashes")
+    source_hashes = _mapping(target_hashes.get("sources"), "target source hashes")
+    if (
+        target_hashes.get("elf") != _sha256(target_elf_path)
+        or target_hashes.get("gvsoc_config") != _sha256(gvsoc_config_path)
+        or target_hashes.get("host_transfer") != _sha256(host_transfer_path)
+        or not source_hashes
+        or "cslam-gap9-app/main.c" not in source_hashes
+        or any(
+            not isinstance(digest, str)
+            or len(digest) != 64
+            or any(character not in "0123456789abcdef" for character in digest)
+            for digest in source_hashes.values()
+        )
+        or validate_config(gvsoc_config_path)
+    ):
+        raise ValueError("target ELF, config, transfer, or source hashes are invalid")
     if (
         gazebo_source.get("run_id") != run.get("run_id")
         or capture.get("run_id") != run.get("run_id")
@@ -487,7 +537,7 @@ def analyze_mapping(
         raise ValueError("target pose dump differs from the validated target report")
     if target.get("target_projected_map_points") != points:
         raise ValueError("target point dump differs from the validated target report")
-    _verify_target_capture(target, target_log, run, mapping_samples)
+    _verify_target_capture(target, host_transfer, target_log, run, mapping_samples)
     if len(points) >= TARGET_MAP_CAPACITY:
         raise ValueError(
             "target map reached SIZE_POINTS capacity; completeness is unknown"
@@ -546,7 +596,7 @@ def analyze_mapping(
             "target_optimizer_health": "validated",
             "sensor_model_fidelity": "not-validated",
             "stm32_flight_firmware": "not-validated",
-            "target_build_reproducibility": "hashes-recorded-not-rebuilt",
+            "target_build_reproducibility": "artifact-hashes-verified-not-rebuilt",
         },
         "run_id": run["run_id"],
         "world_session_id": session["session_id"],
@@ -612,6 +662,10 @@ def analyze_mapping(
         },
         "sha256": {
             "target_report": _sha256(target_report_path),
+            "target_elf": _sha256(target_elf_path),
+            "gvsoc_config": _sha256(gvsoc_config_path),
+            "host_transfer": _sha256(host_transfer_path),
+            "target_sources": source_hashes,
             "run_bundle": _sha256(run_bundle_path),
             "world_session": _sha256(session_path),
             "world_input_attestation": _sha256(world_attestation_path),
@@ -623,7 +677,9 @@ def analyze_mapping(
             "thresholds are declared.",
             "The report cross-checks target frames, optimizer response, and SPI "
             "diagnostics against the same-run log and source packets, but does "
-            "not independently rebuild the target firmware.",
+            "not independently rebuild the target firmware. ELF, configuration, "
+            "and transfer hashes are checked; source hashes are recorded from "
+            "capture because source snapshots are not archived.",
             "The Gazebo sensor bridge uses idealized four-ray ranges from the "
             "simulator, not physical ToF behavior.",
             "This does not validate UWB effects or Crazyflie STM32 flight "
@@ -636,6 +692,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--target-report", type=Path, required=True)
     parser.add_argument("--target-log", type=Path, required=True)
+    parser.add_argument("--target-elf", type=Path, required=True)
+    parser.add_argument("--gvsoc-config", type=Path, required=True)
+    parser.add_argument("--host-transfer", type=Path, required=True)
     parser.add_argument("--run-bundle", type=Path, required=True)
     parser.add_argument("--world-session", type=Path, required=True)
     parser.add_argument("--world-attestation", type=Path, required=True)
@@ -646,6 +705,9 @@ def main(argv: list[str] | None = None) -> int:
         report = analyze_mapping(
             target_report_path=args.target_report,
             target_log_path=args.target_log,
+            target_elf_path=args.target_elf,
+            gvsoc_config_path=args.gvsoc_config,
+            host_transfer_path=args.host_transfer,
             run_bundle_path=args.run_bundle,
             session_path=args.world_session,
             world_attestation_path=args.world_attestation,

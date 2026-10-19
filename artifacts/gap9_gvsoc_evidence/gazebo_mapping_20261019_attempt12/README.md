@@ -52,6 +52,9 @@ artifact_dir=artifacts/gap9_gvsoc_evidence/gazebo_mapping_20261019_attempt12
 uv run --locked python -m scripts.analyze_gap9_target_mapping_geometry \
   --target-report "$artifact_dir/target-evidence.json" \
   --target-log "$artifact_dir/gvsoc.log" \
+  --target-elf "$artifact_dir/nano_c_slam_gvsoc_spi_main_probe" \
+  --gvsoc-config "$artifact_dir/gvsoc-config.json" \
+  --host-transfer "$artifact_dir/host-transfer.json" \
   --run-bundle "$artifact_dir/gazebo-run.json" \
   --world-session "$artifact_dir/world-session.json" \
   --world-attestation "$artifact_dir/world-input-attestation.json" \

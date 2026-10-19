@@ -138,6 +138,27 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
         self.run_path = self.root / "run.json"
         self.target_path = self.root / "target.json"
         self.log_path = self.root / "gvsoc.log"
+        self.elf_path = self.root / "target.elf"
+        self.config_path = self.root / "gvsoc-config.json"
+        self.host_transfer_path = self.root / "host-transfer.json"
+        self.source_path = self.root / "main.c"
+        self.elf_path.write_bytes(b"fixture GAP9 ELF")
+        self.config_path.write_text(
+            json.dumps(
+                {
+                    "target": {
+                        "addon_testbench_enabled": True,
+                        "components": ["testbench"],
+                        "bindings": [
+                            ["chip->spim2_cs0_data", "testbench->spi2_cs0_data"],
+                            ["chip->spim2_cs0", "testbench->spi2_cs0"],
+                        ],
+                    }
+                }
+            ),
+            encoding="utf-8",
+        )
+        self.source_path.write_text("int main(void) { return 0; }\n", encoding="utf-8")
         self.samples = tuple(
             MappingSample(
                 sample_id=index,
@@ -214,6 +235,33 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
         ]
         packets = encode_mapping_samples(self.samples)
         scan_ids = [packet.pose_id for packet in packets if packet.command == SCAN_CMD]
+        host_transfer = {
+            "sequence": "gazebo-live",
+            "run_id": self.run_id,
+            "drone_id": "cf1",
+            "pre_cs_dummy_clock_cycles": 8,
+            "frames": [
+                {
+                    "sequence": packet.sequence,
+                    "command": packet.command,
+                    "pose_id": packet.pose_id,
+                    "source_stamp_ns": packet.source_stamp_ns,
+                    "frame_tx_hex": packet.frame.hex(),
+                    "length": len(packet.frame),
+                }
+                for packet in packets
+            ],
+            "command_transfer_lengths": [
+                {
+                    "master_tx_bytes": len(packet.frame),
+                    "master_rx_bytes": len(packet.frame),
+                }
+                for packet in packets
+            ],
+            "control_phase": "optimizer_response_captured",
+            "response_rx_hex": response_hex,
+        }
+        self.host_transfer_path.write_text(json.dumps(host_transfer), encoding="utf-8")
         self.run_path.write_text(
             json.dumps(
                 {
@@ -273,7 +321,15 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
                         "process_exit_codes": {"collector": 0, "mission": 0},
                         "run_bundle_sha256": self._sha(self.run_path),
                     },
-                    "sha256": {"gvsoc_log": self._sha(self.log_path)},
+                    "sha256": {
+                        "elf": self._sha(self.elf_path),
+                        "gvsoc_config": self._sha(self.config_path),
+                        "host_transfer": self._sha(self.host_transfer_path),
+                        "gvsoc_log": self._sha(self.log_path),
+                        "sources": {
+                            "cslam-gap9-app/main.c": self._sha(self.source_path)
+                        },
+                    },
                     "optimizer_response_expected_hex": response_hex,
                     "optimizer_response_rx_hex": response_hex,
                     "optimizer_response_status": (
@@ -330,6 +386,9 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
         return analyze_mapping(
             target_report_path=self.target_path,
             target_log_path=self.log_path,
+            target_elf_path=self.elf_path,
+            gvsoc_config_path=self.config_path,
+            host_transfer_path=self.host_transfer_path,
             run_bundle_path=self.run_path,
             session_path=self.session_path,
             world_attestation_path=self.world_attestation_path,
@@ -451,6 +510,23 @@ class Gap9TargetMappingGeometryTests(unittest.TestCase):
         self.target_path.write_text(json.dumps(target), encoding="utf-8")
 
         with self.assertRaisesRegex(ValueError, "SPI diagnostics differ"):
+            self._analyze()
+
+    def test_target_elf_must_match_the_capture_hash(self) -> None:
+        self.elf_path.write_bytes(self.elf_path.read_bytes() + b"changed")
+
+        with self.assertRaisesRegex(ValueError, "target ELF, config, transfer"):
+            self._analyze()
+
+    def test_host_transfer_is_checked_against_same_run_frames(self) -> None:
+        transfer = json.loads(self.host_transfer_path.read_text())
+        transfer["drone_id"] = "cf2"
+        self.host_transfer_path.write_text(json.dumps(transfer), encoding="utf-8")
+        target = json.loads(self.target_path.read_text())
+        target["sha256"]["host_transfer"] = self._sha(self.host_transfer_path)
+        self.target_path.write_text(json.dumps(target), encoding="utf-8")
+
+        with self.assertRaisesRegex(ValueError, "host SPI transfer differs"):
             self._analyze()
 
     def test_raw_spi_log_cannot_disagree_with_target_evidence_report(self) -> None:

@@ -1,6 +1,14 @@
 {
   "schema_version": 1,
   "status": "measured-no-acceptance-threshold",
+  "validation_claims": {
+    "pose_consistency": "diagnostic-no-acceptance-threshold",
+    "map_vs_world_geometry": "diagnostic-no-acceptance-threshold",
+    "target_optimizer_health": "validated",
+    "sensor_model_fidelity": "not-validated",
+    "stm32_flight_firmware": "not-validated",
+    "target_build_reproducibility": "artifact-hashes-verified-not-rebuilt"
+  },
   "run_id": "8b86395f-d6cb-4b0c-b758-b7fb37e9550e",
   "world_session_id": "7817c1d5-ee98-4b09-84a2-bd80e2f067b1",
   "coordinate_convention": "Gazebo world-frame XY meters and yaw radians; GAP9 z field is planar yaw. Trajectory errors compare same-frame values without fitted alignment; the live bridge initializes this frame from Gazebo odometry.",
@@ -377,6 +385,17 @@
   },
   "sha256": {
     "target_report": "29badbef965d489fed0e096ecfeca0e0dc40504ac07da8cf4d5faa040e56ec56",
+    "target_elf": "365a737759874b6a4f171af9cc7ceac337712a80db51f72d0f6b68a5bf6a8e4a",
+    "gvsoc_config": "0078e8a98ecb7c6910d4be579fb2cc131c4afcc7e9d4f492c3effc6849fb5862",
+    "host_transfer": "9c2323bb999a9c586a954880b7e50447bfd93c402f4d04d5dcf4b2996d233d21",
+    "target_sources": {
+      "cslam-gap9-app/main.c": "d02c95b9f575c7f6f31a99bfbbf1ef7317a4843da9728200a8e4fa0f20344e2f",
+      "scripts/capture_gap9_gvsoc_spi_main_probe_evidence.py": "23c8c0a05f1078e3aabb522a46c9515b6522abc5544189ab22fcef805e6d4fcb",
+      "scripts/gvsoc_spi_slave_probe_control.py": "635e65f57794cdfd1d3b4be338132259b6b410742522a490548c4ae6306b078b",
+      "scripts/gap9_gvsoc_spi_probe_protocol.py": "879d96864e68aa84fcc8f0210e3081ada568cff78bde5cb8c50667e10c591bf7",
+      "sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/mapping_packets.py": "e476903f587f3f452b58ee6cbd51dcef6f81b9aa2cecfb7a445b6349a60c0086",
+      "sim/gazebo/nano_c_slam_gazebo/nano_c_slam_gazebo/mapping_model.py": "9a00523d250f78bc673bbcadac16614e692693bcfe5164aea50038519c56f798"
+    },
     "run_bundle": "a17b5e4fc3ae43013cd47174fc13710888434931e31c8adf8812e5703939b458",
     "world_session": "66c61c63d6672b01e268bbac782e6efea9e6e5cfe8b77a47d5bb6c3df738d15f",
     "world_input_attestation": "cb9027e2c0e05340f0ff977eb77fc77a7c724439b7cdc72165a29ec89c76730f",
@@ -385,6 +404,7 @@
   },
   "limitations": [
     "Metrics characterize one synthetic near-field run; no acceptance thresholds are declared.",
+    "The report cross-checks target frames, optimizer response, and SPI diagnostics against the same-run log and source packets, but does not independently rebuild the target firmware. ELF, configuration, and transfer hashes are checked; source hashes are recorded from capture because source snapshots are not archived.",
     "The Gazebo sensor bridge uses idealized four-ray ranges from the simulator, not physical ToF behavior.",
     "This does not validate UWB effects or Crazyflie STM32 flight firmware in Gazebo."
   ]
