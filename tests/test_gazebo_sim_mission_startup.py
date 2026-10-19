@@ -262,6 +262,25 @@ class SimMissionStartupTests(unittest.TestCase):
         self.assertEqual(len(node._enable_publisher.messages), 1)
         self.assertEqual(node._publisher.messages[-1].linear.z, 0.5)
 
+    def test_stale_odometry_failure_does_not_publish_another_enable(self) -> None:
+        node = self.module.SimMission()
+        now_ns = [1_000_000_000]
+        node.get_clock = lambda: types.SimpleNamespace(
+            now=lambda: types.SimpleNamespace(nanoseconds=now_ns[0])
+        )
+        node.subscriptions[0].callback(odometry_message(x=0.0, z=0.5, sec=1))
+        node._step()
+        self.assertEqual(len(node._enable_publisher.messages), 1)
+
+        now_ns[0] = 2_000_000_000
+        node._step()
+
+        self.assertEqual(node._sequence.phase.name, "FAILED")
+        self.assertEqual(node._sequence.failure_reason, "odometry data is stale")
+        self.assertEqual(len(node._enable_publisher.messages), 1)
+        self.assertEqual(node._publisher.messages[-1].linear.z, 0.0)
+        self.assertIn('"phase": "FAILED"', node._status_publisher.messages[-1].data)
+
     def test_teardown_skips_ros_publish_when_context_is_invalid(self) -> None:
         node = self.module.SimMission()
         before = len(node._publisher.messages)

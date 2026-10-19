@@ -188,9 +188,6 @@ class SimMission(Node):
             self._timer.cancel()
             return
 
-        enabled = Bool()
-        enabled.data = True
-        self._enable_publisher.publish(enabled)
         command = Twist()
         now_s = self.get_clock().now().nanoseconds / 1e9
         command.linear.z = self._sequence.step(
@@ -199,6 +196,10 @@ class SimMission(Node):
             self._odometry_stamp_s,
             hold_hover=self._mapping_path_enabled and not self._mapping_path_finished,
         )
+        if self._sequence.phase not in (MissionPhase.COMPLETE, MissionPhase.FAILED):
+            enabled = Bool()
+            enabled.data = True
+            self._enable_publisher.publish(enabled)
         if self._sequence.phase is MissionPhase.HOVER and self._mapping_path_enabled:
             if self._position_xy_m is None:
                 self._sequence.fail("odometry position is unavailable")
