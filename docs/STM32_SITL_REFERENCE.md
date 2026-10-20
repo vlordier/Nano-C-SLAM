@@ -879,7 +879,7 @@ uv run --locked python scripts/capture_timestamped_process.py \
   --timeout-s 120 \
   --lima-instance ncs-sitl \
   -- limactl shell ncs-sitl -- bash -lc \
-  'cd /path/to/crazyflie-firmware/build && exec ./cf2 19950 192.168.5.2'
+  'cd /path/to/crazyflie-firmware/build && exec timeout --signal=TERM --kill-after=2s 115s ./cf2 19950 192.168.5.2'
 ```
 
 Replace the build path with the pinned diagnostic firmware checkout used by the
@@ -887,7 +887,8 @@ world, and start the matching Gazebo plugin/world before starting `cf2`. The
 collector records the host-side Lima client output. The `process/` directory
 contains `stdout.raw`, `stderr.raw`, `events.jsonl`, and `process.json`; the
 parent directory contains the clock probe. A bounded collector timeout sends
-TERM and then KILL to the Lima client process group, so confirm the guest
+TERM and then KILL to the Lima client process group; the guest-side `timeout`
+independently terminates `cf2` before the collector deadline. Confirm the guest
 process has exited before reusing its UDP port. This captures line arrival and
 exit evidence only; it does not make the current reference flight pass or
 validate Nano-C-SLAM firmware.
