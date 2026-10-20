@@ -1,0 +1,10 @@
+528e1f6e0aaaf2093533a473d50d986bc489da612278147b466f0ef3d5a67961  ./REPORT.md
+414dac7d4f58e2215be093417b6eb94ff10704d70a87b2891baab3fd157ef644  ./capture/imu.jsonl.gz
+a9f1fa8d870853927a91035dcef91e7e2847d83d40ffa735c778f4c5d25497ae  ./capture/joint-state.jsonl.gz
+e3a424f9a52d9f7b7822fc7d484395a00ae00bcf2d5bc77b9996b0da8e321a42  ./capture/motors.jsonl.gz
+4fe6adb321f55d34a044992a5d3f495bc4df4f32ec0e20b64381d0f2f7315d8d  ./capture/odometry.jsonl.gz
+25caf440f5087a38cc85894a3691177a17aacab106c70080ebf13dde0fbbda6f  ./capture/world-stats.jsonl.gz
+ca2ebdf97d7469496b1f4b78958f9dc8447efdcb623953fee7b6996b762f6fff  ./firmware.exit
+801ded4fccf1e1e174957842668bcb4230cc6c9186c83aba07148f0c5f9b1bd9  ./firmware.log.gz
+5c9aa7c5c91b16e0e8edda8bf5e8b2b0cf8f9c8b48e9c3f0471e64c1cb78e2d6  ./manifest.json
+71c0e6f7fd830f6b449750b1a64c2daebe54f9478d1d502d8b5b31abdfdfa051  ./world.sdf

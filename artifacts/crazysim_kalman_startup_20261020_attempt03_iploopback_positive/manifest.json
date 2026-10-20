@@ -1,0 +1,49 @@
+{
+  "attempt": "03_iploopback_positive",
+  "date": "2026-10-20",
+  "simulator": "Gazebo Sim 8.14.0 Harmonic on macOS",
+  "firmware_runtime": "Crazyflie reference SITL in Lima Ubuntu 24.04",
+  "partition": "ncs-kalman-positive-iploopback-01",
+  "gazebo_transport_ip": "127.0.0.1",
+  "sampler_transport_ip": "127.0.0.1",
+  "positive_sampler_callbacks": {
+    "odometry": 5558,
+    "imu": 13025,
+    "motors": 26050,
+    "joint_state": 13025,
+    "world_stats": 211
+  },
+  "gazebo_odometry_altitude_min_m": 2.0145745433636955,
+  "gazebo_odometry_altitude_max_m": 2.4823763972293205,
+  "gazebo_odometry_altitude_final_m": 2.0149999124764766,
+  "stable_hover_duration_s": 7.450000000000003,
+  "nonzero_motor_components": 63208,
+  "world_stats_mean_reported_rtf": 0.9051982144880555,
+  "world_stats_reported_rtf_min": 0.014472739921375682,
+  "world_stats_reported_rtf_max": 2.3206378969451125,
+  "firmware_log_markers": {
+    "takeoff_2_received": true,
+    "land_2_received": true,
+    "crtp_receive_started_count": 1,
+    "stabilizer_rate_warning_hz": [477],
+    "kalman_prediction_rate_warning_hz": [98, 98, 98],
+    "kalman_bounds_reset": false,
+    "crash": false,
+    "scheduler_stopped_cleanly": true
+  },
+  "firmware_timeout_wrapper_exit_code": 124,
+  "gazebo_exit_code": null,
+  "firmware_binary_sha256_retained": false,
+  "gazebo_plugin_log_retained": false,
+  "world_sdf_exact_run_input_retained": false,
+  "command_ack_files_retained": false,
+  "strict_flight_checker_passed": false,
+  "strict_rejection_reasons": [
+    "mean world RTF 0.9052 is below 0.95",
+    "firmware stabilizer and Kalman prediction cadence warnings",
+    "firmware timeout wrapper exit code is 124",
+    "Gazebo/firmware process exit accounting and exact plugin/world inputs were not retained"
+  ],
+  "nano_c_slam_firmware_executed": false,
+  "mapping_validated": false
+}

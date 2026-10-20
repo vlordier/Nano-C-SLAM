@@ -1742,3 +1742,34 @@ Firmware fork commit [`a0e6faba`](https://github.com/vlordier/crazyflie-firmware
 A cold-start no-command run started firmware before Gazebo. The first IMU trace had zero sequence gaps at source time 2.048 s; over 15 seconds of runtime there was no Kalman bounds reset or predicted velocity crossing. A subsequent mission attempt received successful TAKEOFF_2 and LAND_2 ACKs, recorded nonzero firmware motor ratios, and had no Kalman reset or supervisor crash. However, it still warned at 96–98 Hz Kalman prediction and 506 Hz stabilizer rates. The host sampler listed the expected topics but discovered zero matching publisher endpoints and wrote zero telemetry callbacks. The strict checker therefore could not verify Gazebo altitude, stable hover, landing, or RTF. These runs do not establish flight acceptance or Nano-C-SLAM execution.
 
 The raw mission log, ACKs, SDF, failed sampler discovery report, manifest and checksums are in [`attempt02_mission_guard`](../artifacts/crazysim_kalman_startup_20261020_attempt02_mission_guard/REPORT.md). The earlier warm-start diagnostic is in [`attempt01`](../artifacts/crazysim_kalman_startup_20261020_attempt01/REPORT.md). The next blocker is the host telemetry discovery task in bead `ncs-fea.5.8.2.7.1.3.3.2.1`; the main estimator/rate bead stays open until telemetry, cadence and strict positive/negative checks pass.
+
+### Explicit Gazebo Transport address and positive physical response (2026-10-20)
+
+The sampler discovery failure was traced to a transport environment mismatch,
+not missing Gazebo publishers. On this macOS setup, Gazebo and the sampler
+must share both the unique `GZ_PARTITION` and explicit `GZ_IP=127.0.0.1`.
+With matching values, the sampler discovered all five typed publishers; a short
+probe recorded 1,003 odometry, 1,507 IMU, 3,016 motor, 22 world-stat and 1,508
+joint-state callbacks.
+
+The subsequent positive reference run is archived in
+[`attempt03_iploopback_positive`](../artifacts/crazysim_kalman_startup_20261020_attempt03_iploopback_positive/REPORT.md).
+It captured 5,558 odometry, 13,025 IMU, 26,050 motor, 13,025 joint-state and
+211 world-stat callbacks. Gazebo altitude rose from 2.0146 m to 2.4824 m,
+remained in the registered stable-hover band for 7.45 s, and ended at 2.0150 m.
+The firmware log shows TAKEOFF_2 and LAND_2 reception, no Kalman bounds reset
+or crash, and clean scheduler shutdown. This is the first retained direct
+Gazebo odometry evidence in this cold-start series that the Crazyflie
+reference firmware's motor outputs produced a rise, stable interval and
+landing.
+
+It remains a diagnostic, not an accepted flight. Mean reported RTF was
+0.9052; firmware warned at 477/500-Hz stabilizer and 98/100-Hz Kalman rates;
+and the outer timeout wrapper returned 124 despite the scheduler's clean-stop
+marker. The run did not retain its exact SDF/plugin logs, child process exit
+accounting or ACK files. The artifact lists those omissions and hashes every
+retained file. Bead `ncs-fea.5.8.2.7.1.3.3.2.1` is therefore still open: transport
+subscription is repaired, but a fully retained positive and disconnected-
+actuator pair passing the unchanged strict checker is still required. This is
+Crazyflie reference SITL evidence only; Nano-C-SLAM firmware flight and mapping
+remain unvalidated.
