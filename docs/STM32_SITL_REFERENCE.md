@@ -1734,3 +1734,11 @@ build produces a controlled-load runtime capture and both strict positive and
 disconnected-actuator checks are retained. This remains Crazyflie reference
 SITL instrumentation; it does not establish Nano-C-SLAM firmware flight or
 mapping correctness.
+
+## Kalman cold-start guard and missing host telemetry (2026-10-20)
+
+Firmware fork commit [`a0e6faba`](https://github.com/vlordier/crazyflie-firmware/commit/a0e6faba) advances the Kalman prediction time when either the accelerometer or gyro sampler has no sample, avoiding integration of the calibration wait as zero-acceleration free fall. The change adds two focused firmware unit tests: one shows the old zero-acceleration interval drives vertical velocity below −10 m/s; the other rebases the prediction clock and verifies a gravity-only first sample leaves vertical position/velocity near zero. Both tests pass, and the Linux `cf2` target rebuilds in Lima.
+
+A cold-start no-command run started firmware before Gazebo. The first IMU trace had zero sequence gaps at source time 2.048 s; over 15 seconds of runtime there was no Kalman bounds reset or predicted velocity crossing. A subsequent mission attempt received successful TAKEOFF_2 and LAND_2 ACKs, recorded nonzero firmware motor ratios, and had no Kalman reset or supervisor crash. However, it still warned at 96–98 Hz Kalman prediction and 506 Hz stabilizer rates. The host sampler listed the expected topics but discovered zero matching publisher endpoints and wrote zero telemetry callbacks. The strict checker therefore could not verify Gazebo altitude, stable hover, landing, or RTF. These runs do not establish flight acceptance or Nano-C-SLAM execution.
+
+The raw mission log, ACKs, SDF, failed sampler discovery report, manifest and checksums are in [`attempt02_mission_guard`](../artifacts/crazysim_kalman_startup_20261020_attempt02_mission_guard/REPORT.md). The earlier warm-start diagnostic is in [`attempt01`](../artifacts/crazysim_kalman_startup_20261020_attempt01/REPORT.md). The next blocker is the host telemetry discovery task in bead `ncs-fea.5.8.2.7.1.3.3.2.1`; the main estimator/rate bead stays open until telemetry, cadence and strict positive/negative checks pass.
