@@ -72,7 +72,7 @@ and linkage, not that its device calls have a functioning simulator peer.
 
 | Owned source | Current evidence | Linux SITL dependency or boundary |
 | --- | --- | --- |
-| `app_main.c` | SITL-linked | Linked with CrazySim `app_handler.c`; UWB init is checked and currently fails closed through the unconfigured SITL provider. |
+| `app_main.c` | SITL-linked | Linked with CrazySim `app_handler.c`; UWB init now waits for broker registration and simulation clock before starting Nano tasks. This path is host-tested but not yet observed in CrazySim. |
 | `src/bounded_batch.c` | SITL-linked | FreeRTOS-independent bounded batch behavior is included unchanged. |
 | `src/exploration/exploration.c` | SITL-linked | Nano exploration code links against the real CrazySim estimator/commander; no valid matrix is available yet. |
 | `src/exploration/limit_actuation.c` | SITL-linked | Included unchanged before commander handoff; existing finite-value and physical-bound checks remain. |
@@ -90,10 +90,10 @@ and linkage, not that its device calls have a functioning simulator peer.
 | `src/tof-matrix/i2c_platform.c` | ARM-build only | Hardware-only I²C implementation; excluded from SITL build. |
 | `src/tof-matrix/tof_matrix.c` | ARM-build only | Physical sensor orchestrator; replaced in CrazySim by the UDP matrix provider. |
 | `src/tof-matrix/tof_matrix.h` | ARM-build only | Shared public API/data contract; do not fork struct layout between targets. |
-| `src/tof_daq.c` | SITL-linked | Acquisition/freshness task compiles against the same public API; it remains unobserved at runtime because `appMain()` currently exits at UWB initialization first. |
+| `src/tof_daq.c` | SITL-linked | Acquisition/freshness task compiles against the same public API; runtime remains unobserved because the live broker/Gazebo path has not yet been launched with CrazySim. |
 | `src/tof_freshness.c` | SITL-linked | Freshness logic compiles unchanged and retains timeout/fault behavior. |
 | `src/uwb_collision_det.c` | SITL-linked | Nano policy compiles; timestamped simulated neighbor/range input is absent. |
-| `src/uwb_ranging.c` | SITL-linked | Token/pose logic compiles against the still fail-closed UWB provider and fail-closed GAP9 SPI seam; no simulated ranging occurs. |
+| `src/uwb_ranging.c` | SITL-linked | Token/pose logic compiles against the UDP provider. Broker-backed ranging is exercised between two C processes; token handoff under CrazySim and GAP9 SPI remain unvalidated. |
 | `src/uwb_token_handoff.c` | SITL-linked | Compiles under the real FreeRTOS queue/task API; runtime task behavior is not yet observed. |
 | `src/uwb_token_lease.c` | SITL-linked | Compiles unchanged; runtime stale/lost-token behavior remains unvalidated. |
 
@@ -113,11 +113,11 @@ wire frame. The CrazySim fork model branch adds the four GPU lidar topics.
 These interfaces have live topic-to-UDP and C-provider host tests, but their
 sensor transforms and mapping geometry have not been accepted in flight.
 
-The live boot attempt in
+The historical live boot attempt in
 [`nano_app_boot_sitl_20261020_attempt01`](../artifacts/nano_app_boot_sitl_20261020_attempt01/REPORT.md)
 proves the Gazebo UDP handshake, firmware self-test, and entry into the Nano
 `appMain()`. It then logs `NCS_APP_INIT_FAILED` because the UWB SITL provider is
-unconfigured, and returns before mission, ToF, or UWB tasks start. The trace
+unconfigured, and returned before mission, ToF, or UWB tasks started. The trace
 shows zero motor ratios. This validates app startup and fail-closed behavior;
 it is not a flight or mapping result.
 
@@ -149,6 +149,27 @@ and link in the Lima Ubuntu guest. The app target is source-level POSIX
 FreeRTOS execution, and its ToF, UWB and GAP9 SPI providers deliberately fail
 closed. The boot probe stopped at CrazySim's Gazebo socket wait; it did not
 reach Nano app startup. No Nano-controlled flight or mapping result is claimed.
+
+### UWB provider update (2026-10-20)
+
+The Linux SITL UWB stub has since been replaced with a UDP client. It validates
+the configured broker IPv4 endpoint, binds a per-node local port, registers
+until it receives a timestamped acknowledgement, renews the endpoint lease,
+tracks simulation-time freshness per packet flow, and serves the existing
+message, measurement, ACK/ACK2, and 3-/4-way-ranging API. No range succeeds
+without a matching fresh broker response. The C source passes strict host
+compilation (`-Wall -Wextra -Wconversion -Wsign-conversion -Werror`; the
+upstream UWB header requires suppressing its legacy non-prototype warnings) and
+the Nano-enabled CrazySim `cf2` target links in the Lima guest.
+
+`tests/test_uwb_sitl_api.py` compiles the adapter and starts two independent C
+processes against a local UDP broker running the production `UwbBrokerCore`.
+The test verifies ACK2 delivery, a Gazebo-pose-derived 1000 mm range, and the
+matching measurement queue/position units. This confirms protocol/client
+interop only; it does not exercise Gazebo topic subscriptions, CrazySim's
+FreeRTOS task scheduler, the Nano mission, actuator output, flight, or mapping.
+The operator CRTP command/heartbeat bridge and GAP9 SPI result provider are
+still required before the application can complete its mapping mission.
 
 The host C suite currently compiles and exercises pure timeout, heartbeat,
 token-handoff/lease, bounded-batch, ToF freshness, packet encoding, SPI wait,

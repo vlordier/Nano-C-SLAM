@@ -120,8 +120,9 @@ include = [
     "tests/test_crazysim_tof_bridge.py",
     "tests/test_uwb_sitl_protocol.py",
     "tests/test_uwb_sitl_c_codec.py",
-    "scripts/uwb_sitl_broker.py",
+    "tests/test_uwb_sitl_api.py",
     "tests/test_uwb_sitl_broker.py",
+    "scripts/uwb_sitl_broker.py",
     "tests/test_capture_timestamped_process.py",
 ]
 

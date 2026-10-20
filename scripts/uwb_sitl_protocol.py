@@ -44,7 +44,7 @@ class UwbDatagram:
 
 @dataclass
 class SequenceFreshnessGuard:
-    """Per-source receiver state for simulation-time freshness and replay checks."""
+    """Per-flow receiver state for freshness and replay checks."""
 
     last_sequence: int | None = None
     last_sim_time_ns: int | None = None

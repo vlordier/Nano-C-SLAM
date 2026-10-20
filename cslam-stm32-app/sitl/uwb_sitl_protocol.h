@@ -45,7 +45,8 @@ int uwb_sitl_encode(const uwb_sitl_packet_t *packet, uint8_t *output,
 int uwb_sitl_decode(const uint8_t *bytes, size_t length,
                     uwb_sitl_packet_t *packet);
 uint32_t uwb_sitl_crc32(const uint8_t *bytes, size_t length);
-/* Accept only increasing per-source sequence/time within the simulation-age bound. */
+/* Accept increasing sequence/time within the simulation-age bound.
+ * Callers keep one guard per packet kind and source/destination flow. */
 int uwb_sitl_accept_fresh(uwb_sitl_freshness_guard_t *guard,
                           const uwb_sitl_packet_t *packet,
                           uint64_t now_sim_time_ns,
