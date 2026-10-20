@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "date": "2026-10-20",
+  "classification": "Gazebo/plugin transport preflight only; no firmware, no flight, not Nano-C-SLAM execution",
+  "crazysim_branch": "codex/sitl-combined-provenance-motor-clean",
+  "crazysim_commit": "02429e8",
+  "parent_commit": "1eadb3e",
+  "plugin_path": "/tmp/ncs-cf-combined-clean-build/libgz_crazysim_plugin.dylib",
+  "plugin_sha256": "2e70696d11235be4053cb72b65992b6ef2a01af30fd089c300ba2809d67e55e5",
+  "build_options": {
+    "CRAZYSIM_IMU_PROVENANCE": true,
+    "CRAZYSIM_MOTOR_TRACE": true
+  },
+  "ctest": {
+    "passed": 2,
+    "failed": 0
+  },
+  "gazebo": "Harmonic native macOS",
+  "gz_ip": "127.0.0.1",
+  "gz_partition": "ncs-combined-trace-preflight-20261020-01",
+  "firmware_connected": false,
+  "flight_command_sent": false,
+  "trace_files_empty_expected": true,
+  "sampler_counts": {
+    "odometry": 634,
+    "imu": 596,
+    "motors": 1191,
+    "world_stats": 10,
+    "joint_state": 594
+  },
+  "duration_seconds": 4
+}

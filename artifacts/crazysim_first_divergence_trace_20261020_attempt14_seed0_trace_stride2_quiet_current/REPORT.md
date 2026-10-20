@@ -1,6 +1,6 @@
 # Diagnostic run: attempt14, seed 0, trace stride 2, verbose diagnostics off
 
-Date: 2026-10-20. This is reference CrazySim firmware, not the Nano-C-SLAM STM32 application. It uses the same seed-0 world and TAKEOFF_2/LAND_2 mission as attempts 12–13. Firmware source commit `748b5724` enables the bounded stabilizer trace, lightweight diagnostic markers, and disables sampled `NCS_STAB`/`NCS_IMU` formatted output. Build configuration is 500-Hz stabilizer, trace ring capacity 32,768, stride 2, verbose diagnostics OFF. Firmware binary SHA-256: `f8d85abaa5d42a1550cf8c9bfe9473fd412e68a47b28fd577e934ab14f796ea5`.
+Date: 2026-10-20. This is reference CrazySim firmware, not the Nano-C-SLAM STM32 application. It uses the same seed-0 world and TAKEOFF_2/LAND_2 mission as attempts 12–13. The firmware log embeds build id `e06abd1154ff` (`SYS: Build 44:e06abd1154ff (v1.2-alpha +44) MODIFIED`), and the recorded binary SHA-256 is `f8d85abaa5d42a1550cf8c9bfe9473fd412e68a47b28fd577e934ab14f796ea5`. The exact modified build diff was not snapshotted; an earlier manifest incorrectly attributed this binary to commit `748b5724`. Build configuration is 500-Hz stabilizer, trace ring capacity 32,768, stride 2, verbose diagnostics OFF.
 
 ## Observed result
 

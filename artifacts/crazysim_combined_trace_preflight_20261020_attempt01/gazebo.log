@@ -1,0 +1,4 @@
+NCS_SITL motor_trace=all capacity=32768 path=/Users/vincent/Work/Nano-C-SLAM/artifacts/crazysim_combined_trace_preflight_20261020_attempt01/plugin-motors.jsonl
+NCS_SITL imu_send_trace_records=0 overwritten=0 path=/Users/vincent/Work/Nano-C-SLAM/artifacts/crazysim_combined_trace_preflight_20261020_attempt01/imu-send.csv
+NCS_SITL motor_trace=all records=0 dropped=0 path=/Users/vincent/Work/Nano-C-SLAM/artifacts/crazysim_combined_trace_preflight_20261020_attempt01/plugin-motors.jsonl
+NCS_SITL imu_queue_enqueue_failures=0

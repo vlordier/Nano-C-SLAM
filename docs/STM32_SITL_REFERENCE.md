@@ -1667,13 +1667,36 @@ The next run should be made under controlled host load, preserve wrapper exit
 codes, and continue the paired trials before using trace data to claim a first
 cause.
 
+## Combined CrazySim provenance and motor trace preflight (2026-10-20)
+
+CrazySim fork branch `codex/sitl-combined-provenance-motor-clean`, commit
+`02429e8`, combines the IMU provenance instrumentation from `1eadb3e` with the
+bounded four-channel motor-packet trace. The native Gazebo Harmonic plugin
+build passed and its two IMU layout CTests passed. A short no-firmware preflight
+loaded that exact dylib and captured odometry, IMU, motor command, world stats,
+and joint state with matching `GZ_IP=127.0.0.1` and a unique partition. Counts
+were 634, 596, 1,191, 10, and 594 respectively over four seconds. With no
+firmware connected, the IMU-send CSV contained only its header and the motor
+trace contained zero records, as expected. This validates plugin loading and
+Gazebo transport only; it does not validate packet provenance through firmware
+or flight. Evidence, exact library hash, logs, capture, world, and checksums are
+in [`combined trace preflight`](../artifacts/crazysim_combined_trace_preflight_20261020_attempt01/REPORT.md).
+
+The next run must use this exact combined plugin with the provenance-enabled
+Crazyflie reference firmware, capture a full positive/disconnected pair, and
+join source sequence/simulation time to firmware receive tick, filtered state,
+and motor packets. No Nano-C-SLAM firmware flight or mapping claim follows.
+
 ## Quiet-diagnostics retest and IMU provenance lead (2026-10-20)
 
-Attempt14 rebuilt the Crazyflie reference firmware from commit `748b5724` with
-the 500-Hz loop, trace ring enabled at stride 2, required checker markers on,
-and sampled `NCS_STAB` / `NCS_IMU` formatted diagnostics off. The binary SHA-256
-is `f8d85abaa5d42a1550cf8c9bfe9473fd412e68a47b28fd577e934ab14f796ea5`; the
-SDF is byte-identical to attempts 12–13. Both firmware and Gazebo exited 0 and
+Attempt14 used the Crazyflie reference firmware binary whose log embeds build
+id `e06abd1154ff` (`SYS: Build 44:e06abd1154ff (v1.2-alpha +44) MODIFIED`).
+The binary SHA-256 is
+`f8d85abaa5d42a1550cf8c9bfe9473fd412e68a47b28fd577e934ab14f796ea5`; its
+modified build diff was not snapshotted, and an earlier manifest incorrectly
+attributed it to commit `748b5724`. The build used the 500-Hz loop, trace ring
+stride 2, required checker markers, and sampled `NCS_STAB` / `NCS_IMU` formatted
+diagnostics off. The SDF is byte-identical to attempts 12–13. Both firmware and Gazebo exited 0 and
 both mission commands were acknowledged, but firmware still logged a crash,
 472/500-Hz stabilizer rate, and 94–98/100-Hz Kalman prediction rate. Odometry
 reached 2.519 m then returned to 2.015 m, with nearly 180° maximum tilt. The

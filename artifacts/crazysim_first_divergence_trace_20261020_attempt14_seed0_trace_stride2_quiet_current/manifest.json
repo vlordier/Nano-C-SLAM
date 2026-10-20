@@ -3,7 +3,7 @@
   "date": "2026-10-20",
   "classification": "diagnostic; not accepted flight; not Nano-C-SLAM execution",
   "seed": 0,
-  "firmware_source_commit": "748b572453aca221e604b1100987b3bf244b7d14",
+  "firmware_source_commit": "e06abd1154ff29e1b226b6d0921c8992b306953e",
   "firmware_binary_sha256": "f8d85abaa5d42a1550cf8c9bfe9473fd412e68a47b28fd577e934ab14f796ea5",
   "firmware_build": {
     "rate_main_loop_hz": 500,
@@ -97,8 +97,8 @@
     },
     {
       "path": "REPORT.md",
-      "bytes": 4237,
-      "sha256": "48c83ca4457b8f3e24842129153da6fa84532f9eaf034f97aa00ab3095c94dd2"
+      "bytes": 4317,
+      "sha256": "d35a596ff62e1c08adf628c21a2f5d50e736b90226fb73ad2ae761e7e123a203"
     },
     {
       "path": "capture/imu.jsonl.gz",
@@ -175,5 +175,7 @@
       "bytes": 14193,
       "sha256": "e2172e5ff88e174f5f63781acef079c35ebb2a8a999db087a58e45cac3383ab9"
     }
-  ]
+  ],
+  "firmware_embedded_build_id": "e06abd1154ff",
+  "firmware_worktree_state": "MODIFIED; exact build diff not snapshotted, so source attribution is limited to embedded build id and matching recorded binary SHA-256"
 }
