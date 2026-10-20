@@ -70,6 +70,30 @@ class CrazySimTofBridgeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "8 horizontal"):
             parse_scan_message(json.dumps(message))
 
+    def test_zero_default_timestamp_waits_for_nonzero_wire_time(self) -> None:
+        message = json.loads(_scan(0, 0))
+        message["header"]["stamp"] = {}
+        self.assertEqual(parse_scan_message(json.dumps(message)).sim_time_ns, 0)
+
+        bridge = TofUdpBridge(
+            gz_command="gz",
+            topic_prefix="/cf_0/tof",
+            udp_host="127.0.0.1",
+            udp_port=19951,
+        )
+        try:
+            frames = []
+            for sensor_id in range(4):
+                self.assertIsNone(bridge.accept_scan(sensor_id, json.dumps(message)))
+            for sensor_id in range(4):
+                frame = bridge.accept_scan(sensor_id, _scan(sensor_id, 0))
+                if frame is not None:
+                    frames.append(frame)
+            self.assertTrue(frames)
+            self.assertEqual(FRAME_HEADER.unpack_from(frames[0])[6], 1_000_000)
+        finally:
+            bridge.socket.close()
+
     def test_four_coherent_scans_encode_one_wire_compatible_frame(self) -> None:
         bridge = TofUdpBridge(
             gz_command="gz",

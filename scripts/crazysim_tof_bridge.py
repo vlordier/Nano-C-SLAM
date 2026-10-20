@@ -49,10 +49,13 @@ def parse_scan_message(payload: str | bytes) -> ScanSample:
     if not isinstance(ranges, list) or len(ranges) != SIDE * SIDE:
         raise ValueError("LaserScan must contain exactly 64 ranges")
     header = _mapping(scan.get("header"))
-    stamp = _mapping(header.get("stamp"))
+    stamp_value = header.get("stamp")
+    if not isinstance(stamp_value, dict):
+        raise ValueError("LaserScan is missing an integer simulation timestamp")
+    stamp = stamp_value
     try:
-        seconds = int(stamp["sec"])
         # Gazebo's protobuf JSON omits zero-valued scalar fields.
+        seconds = int(stamp.get("sec", "0"))
         nanoseconds = int(stamp.get("nsec", "0"))
     except (KeyError, TypeError, ValueError) as error:
         raise ValueError(
@@ -61,8 +64,6 @@ def parse_scan_message(payload: str | bytes) -> ScanSample:
     if seconds < 0 or not 0 <= nanoseconds < 1_000_000_000:
         raise ValueError("LaserScan simulation timestamp is out of range")
     sim_time_ns = seconds * 1_000_000_000 + nanoseconds
-    if sim_time_ns == 0:
-        raise ValueError("LaserScan simulation timestamp must be nonzero")
     try:
         range_min = float(scan["rangeMin"])
         range_max = float(scan["rangeMax"])
@@ -188,6 +189,10 @@ class TofUdpBridge:
         complete = tuple(item for item in self.samples if item is not None)
         timestamps = tuple(item.sim_time_ns for item in complete)
         newest_time = max(timestamps)
+        if newest_time == 0:
+            # Zero is a valid initial Gazebo timestamp, but the firmware's
+            # wire protocol reserves zero to mean “no sensor frame yet.”
+            return None
         if newest_time - min(timestamps) > self.max_skew_ns:
             return None
         if newest_time <= self.last_sent_sim_time_ns:

@@ -47,7 +47,7 @@ instance zero and the Lima SITL guest:
 ```sh
 uv run --locked python scripts/crazysim_tof_bridge.py \
   --topic-prefix /cf_0/tof \
-  --udp-port 19951 \
+  --udp-port 21951 \
   --node-id 0 \
   --nat-rendezvous \
   --verbose
@@ -59,8 +59,14 @@ not-ready until a complete fresh frame reaches its UDP socket. This bridge
 validates transport and dimensions; it does not establish that the simulated
 sensor poses or map geometry match the physical VL53L5CX assembly.
 
-Set `NCS_SITL_TOF_UDP_PORT` and `NCS_SITL_TOF_BRIDGE_PORT` to the same port in
-the firmware guest (both default to `19951`) and set
-`NCS_SITL_TOF_BRIDGE_HOST` to the guest's host-side gateway (Lima defaults to
-`192.168.5.2`). The direct `--udp-host` mode remains available for guests on a
-network where host-to-guest UDP routing works without NAT rendezvous.
+The firmware receiver port and the host bridge port serve different sockets.
+Keep `NCS_SITL_TOF_UDP_PORT=19951` in the firmware guest. Lima reserves host UDP
+port `19951` for forwarding that guest receiver, so the host bridge cannot bind
+that same port; use `NCS_SITL_TOF_BRIDGE_PORT=21951` in the guest and
+`--udp-port 21951` on the host bridge. This bridge port is both the firmware's
+registration destination and the source port that the firmware validates on
+incoming frames. Set `NCS_SITL_TOF_BRIDGE_HOST` to the guest's host-side gateway
+(Lima defaults to `192.168.5.2`). On a network without this Lima port-forward
+collision, the receiver and bridge ports may both use `19951`. The direct
+`--udp-host` mode remains available for guests where host-to-guest UDP routing
+works without NAT rendezvous.
