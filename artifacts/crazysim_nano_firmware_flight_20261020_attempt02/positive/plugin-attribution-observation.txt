@@ -1,0 +1,2 @@
+TRACE_MOTOR_NONZERO NCS_SITL_ACTUATOR source=firmware ratio=37673,37673,37673,37673 omega_rad_s=2103.97,2103.97,2103.97,2103.97
+The plugin emits this trace once per loaded model. It was captured in the same long-lived Gazebo server before this positive sampler interval.

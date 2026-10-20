@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-20",
+  "gazebo": "Gazebo Sim 8.14.0 native macOS, headless",
+  "world": "one Crazyflie model, ground_plane, 4x 8x8 ToF, joint-state publisher",
+  "firmware_sha256": "18016ddd59923c6f4a392989d22e755babcd190df8298a64b281b0affc4b1849",
+  "plugin_sha256": "607357023cd6ec7b11c2229106e92ae659e49ece6afe8b32eb55be09695dfc6d",
+  "sampler_sha256": "324c0d2646224d637a65cfdb5f05001a10b6458909d1f3e40ae0e1834f716f53",
+  "positive_capture": "attempt11, continuous sampler started before mission through heartbeat-triggered landing",
+  "negative_capture": "attempt08b, same firmware and world with NCS_CRAZYSIM_DISABLE_ACTUATORS=1",
+  "firmware_stdout": "not retained: the SITL process wrote through block-buffered stdout; operator protocol output and pose packets are retained instead",
+  "positive_plugin_trace": "one-shot firmware-source attribution from same long-lived Gazebo plugin instance, preceding attempt11 sampler"
+}

@@ -1,0 +1,2 @@
+NCS_SITL actuator_bridge=disconnected
+TRACE_MOTOR_NONZERO NCS_SITL_ACTUATOR source=firmware
