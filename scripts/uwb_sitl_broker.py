@@ -158,10 +158,28 @@ class UwbBrokerCore:
         self._pending_messages: dict[tuple[int, int, int], int] = {}
 
     def observe_clock(self, sim_time_ns: int, received_monotonic_ns: int) -> None:
-        if sim_time_ns <= self.clock_ns:
+        if sim_time_ns < self.clock_ns:
+            # Gazebo can restart while this broker remains alive. A clock
+            # rollback marks a new simulation session; cached poses and node
+            # registrations from the previous session cannot be reused.
+            self._reset_session()
+        if sim_time_ns == self.clock_ns:
+            if sim_time_ns == 0:
+                self.clock_received_monotonic_ns = received_monotonic_ns
+                return
             raise ValueError("Gazebo clock must advance monotonically")
         self.clock_ns = sim_time_ns
         self.clock_received_monotonic_ns = received_monotonic_ns
+
+    def _reset_session(self) -> None:
+        self.clock_ns = 0
+        self.clock_received_monotonic_ns = 0
+        self._last_clock_sync_ns = 0
+        self._nodes.clear()
+        self._poses.clear()
+        self._broker_sequences.clear()
+        self._guards.clear()
+        self._pending_messages.clear()
 
     def observe_pose(
         self,

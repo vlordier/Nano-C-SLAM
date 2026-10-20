@@ -83,6 +83,35 @@ class UwbSitlBrokerTests(unittest.TestCase):
         self.assertEqual((measurement.source_id, measurement.destination_id), (0, 1))
         self.assertEqual(RANGE_VECTOR.unpack(measurement.payload), (1234, 0, 0, 1000))
 
+    def test_clock_rollback_starts_a_clean_gazebo_session(self) -> None:
+        message = bytes((0xDE, 0, 1, 7, 0x41))
+        request = UwbDatagram(PacketKind.MESSAGE_REQUEST, 7, NOW, 0, 1, message)
+        self.assertEqual(len(self.core.handle(encode_datagram(request), NODE0, 150)), 1)
+        self.assertTrue(self.core._guards)
+        self.assertTrue(self.core._pending_messages)
+
+        self.core.observe_clock(1_000_000_000, 200)
+
+        self.assertEqual(self.core.clock_ns, 1_000_000_000)
+        self.assertEqual(self.core.clock_received_monotonic_ns, 200)
+        self.assertEqual(self.core._last_clock_sync_ns, 0)
+        self.assertFalse(self.core._nodes)
+        self.assertFalse(self.core._poses)
+        self.assertFalse(self.core._broker_sequences)
+        self.assertFalse(self.core._guards)
+        self.assertFalse(self.core._pending_messages)
+
+        self.core.observe_pose(0, 999_000_000, (0.0, 0.0, 0.5), 210)
+        acknowledgement = self.core.handle(_register(0, NODE0[1]), NODE0, 220)
+        self.assertEqual(
+            decode_datagram(acknowledgement[0][1]).kind,
+            PacketKind.REGISTER_ACK,
+        )
+
+    def test_repeated_nonzero_clock_sample_is_still_rejected(self) -> None:
+        with self.assertRaisesRegex(ValueError, "advance monotonically"):
+            self.core.observe_clock(NOW, 200)
+
     def test_absent_peer_and_stale_pose_never_produce_a_range(self) -> None:
         unknown_request = UwbDatagram(PacketKind.RANGE_REQUEST, 2, NOW, 0, 2)
         unknown_reply = self.core.handle(encode_datagram(unknown_request), NODE0, 200)
