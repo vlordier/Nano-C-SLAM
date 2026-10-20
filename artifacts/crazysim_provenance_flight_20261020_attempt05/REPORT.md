@@ -6,7 +6,7 @@ This is the upstream Crazyflie SITL reference firmware. It does not execute Nano
 
 - Firmware source: `a0e6faba30d3d73bb2838b9034aeee1b756ca3e5`; isolated Lima source snapshot also included CrazySim plugin `02429e8e3385d88ef62a7954df491681795000bd`.
 - Firmware binary SHA-256: `6a3c3463571e24da5a27024d07c1fb4458ad5eb43c232fda0799ff657b9653cb`.
-- SITL loop: 500 Hz. Trace: capacity 8192, stride 32, IMU provenance enabled. The guest-only snapshot changed `sitl_make/CMakeLists.txt` optimization from `-O0` to `-O2`; that edit was not committed upstream.
+- SITL loop: 500 Hz. Trace: capacity 8192, stride 32, IMU provenance enabled. The guest-only snapshot changed the CMake source flag from `-O0` to `-O2`, but `CMAKE_BUILD_TYPE=Release` appended `-O3 -DNDEBUG` later in the effective compiler flags. The last optimization flag wins, so this binary was compiled with **-O3**, not -O2; the source edit was not committed upstream.
 - CrazySim plugin SHA-256: `2e70696d11235be4053cb72b65992b6ef2a01af30fd089c300ba2809d67e55e5`.
 - Host sampler SHA-256: `7a302dff29bb617d2c3899dcdb97cc6191559bcf4dea6cac906c316f96a8eaf8`.
 - Native Gazebo Sim 8.14.0 Harmonic with rebuilt DART 6.20.1; Lima Ubuntu 24.04 AArch64 runs `cf2`. Unique `GZ_PARTITION`, `GZ_IP=127.0.0.1`.

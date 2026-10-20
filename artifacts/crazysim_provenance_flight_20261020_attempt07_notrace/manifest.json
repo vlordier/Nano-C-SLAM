@@ -1,0 +1,145 @@
+{
+  "attempt": "07_notrace",
+  "claim_boundary": "Crazyflie reference SITL only; no Nano-C-SLAM application, mapping, or flight validation.",
+  "crazyflie_plugin_sha256": "2e70696d11235be4053cb72b65992b6ef2a01af30fd089c300ba2809d67e55e5",
+  "crazyflie_simulation_plugin_commit": "02429e8e3385d88ef62a7954df491681795000bd",
+  "files": {
+    "REPORT.md": {
+      "bytes": 2594,
+      "sha256": "4e40daabfacb7a575db4309f6e40d3239812e382979ec6c5490103494b2feeb2",
+      "uncompressed_bytes": 2594,
+      "uncompressed_sha256": "4e40daabfacb7a575db4309f6e40d3239812e382979ec6c5490103494b2feeb2"
+    },
+    "capture/imu.jsonl.gz": {
+      "bytes": 1285108,
+      "sha256": "e6953cba279be3e680a55b640f96c747deedc783436a14b82ef495ec9c36ac4f",
+      "uncompressed_bytes": 8748033,
+      "uncompressed_sha256": "7de000fcf7848ab6645084ff14b8663298810ca377b311a37548f4f24c1891c6"
+    },
+    "capture/motors.jsonl.gz": {
+      "bytes": 232233,
+      "sha256": "d69594b56be62e0503309a83ff9160c3c950706b8692010b3fb17982f1119877",
+      "uncompressed_bytes": 2525160,
+      "uncompressed_sha256": "387f24537e9d858f2117e685566501cd6654bb753d7a2fd650959f121ec1a8e9"
+    },
+    "capture/odometry.jsonl.gz": {
+      "bytes": 76008,
+      "sha256": "10870ee80737c3d441990be4046b5822f53de36271b4606d1faabc50d26be6bd",
+      "uncompressed_bytes": 2673851,
+      "uncompressed_sha256": "229652405e866ca1e93449f7180b251b9132471a39de30bdd9a5aa0f44745a84"
+    },
+    "capture/world-stats.jsonl.gz": {
+      "bytes": 10908,
+      "sha256": "23484e9928915615164128b6b571dca233da9f8a32d5e768a779adf69074e213",
+      "uncompressed_bytes": 66047,
+      "uncompressed_sha256": "ee765dc488c7bedb0e7de5ea9a267d65cf755be3544a7ea1ae71735ef42a8efd"
+    },
+    "firmware-build.txt": {
+      "bytes": 1810,
+      "sha256": "a277e1821307a58099f4b33d649eff179c4d5b95b4f013f4b1faec0398e4fd94",
+      "uncompressed_bytes": 1810,
+      "uncompressed_sha256": "a277e1821307a58099f4b33d649eff179c4d5b95b4f013f4b1faec0398e4fd94"
+    },
+    "firmware-launch.txt": {
+      "bytes": 376,
+      "sha256": "1879f3bb9bfad2e900c31602eb7dfb32bbfc513b5f1a31a03259c90e89640e3a",
+      "uncompressed_bytes": 376,
+      "uncompressed_sha256": "1879f3bb9bfad2e900c31602eb7dfb32bbfc513b5f1a31a03259c90e89640e3a"
+    },
+    "firmware-stop.txt": {
+      "bytes": 258,
+      "sha256": "cf9fbb9720e4e51c18c82153c0d9ef1e88f30bf3952b7bc2adffe655ab28dbdc",
+      "uncompressed_bytes": 258,
+      "uncompressed_sha256": "cf9fbb9720e4e51c18c82153c0d9ef1e88f30bf3952b7bc2adffe655ab28dbdc"
+    },
+    "firmware.log.gz": {
+      "bytes": 612,
+      "sha256": "5cd62519647197e1dd3129e6bcf6ac5e92dd0892805aadb1d23f2811d3a0c4b7",
+      "uncompressed_bytes": 1521,
+      "uncompressed_sha256": "d29735bd15da58977e4545d83300f5f3ab05038c842304caf112e781ee7d8ee5"
+    },
+    "firmware.pid": {
+      "bytes": 6,
+      "sha256": "f86f0137e8a14d0157ca0e351e3e20f04e1bf442edf5d081ae15dfa2671b0e71",
+      "uncompressed_bytes": 6,
+      "uncompressed_sha256": "f86f0137e8a14d0157ca0e351e3e20f04e1bf442edf5d081ae15dfa2671b0e71"
+    },
+    "gazebo.exit": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "uncompressed_bytes": 2,
+      "uncompressed_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "gazebo.log": {
+      "bytes": 7713,
+      "sha256": "c97e9a1187096ef436e3826052daceead18d51f6a88d8a6f7bdf65e0a59e1760",
+      "uncompressed_bytes": 7713,
+      "uncompressed_sha256": "c97e9a1187096ef436e3826052daceead18d51f6a88d8a6f7bdf65e0a59e1760"
+    },
+    "gazebo.pid": {
+      "bytes": 6,
+      "sha256": "06347f54a8eac094b10fbe0d5ebdc47256614a22c1b24db35b6f20fdd133523d",
+      "uncompressed_bytes": 6,
+      "uncompressed_sha256": "06347f54a8eac094b10fbe0d5ebdc47256614a22c1b24db35b6f20fdd133523d"
+    },
+    "host-load.txt": {
+      "bytes": 533,
+      "sha256": "33348ffc5ce7ad3f7a6c3de4bf04ddd81694f4688dd05d26998aa198e8e565a5",
+      "uncompressed_bytes": 533,
+      "uncompressed_sha256": "33348ffc5ce7ad3f7a6c3de4bf04ddd81694f4688dd05d26998aa198e8e565a5"
+    },
+    "imu-send.csv.gz": {
+      "bytes": 458616,
+      "sha256": "d02ea13a93d0ffdc5c2281e91b823db61b554a3fa1c639dc91b3dd7a0aa3c09e",
+      "uncompressed_bytes": 2356671,
+      "uncompressed_sha256": "755cf99e2823fa6961107f271e2738f143a8175fb6da8a2cab13e596399996c5"
+    },
+    "plugin-motors.csv.gz": {
+      "bytes": 205912,
+      "sha256": "86fdfb7f15a19f454a26c35db4673e176ba163ea94cd9b37cc5b3ddfb11c6558",
+      "uncompressed_bytes": 3508626,
+      "uncompressed_sha256": "4264d4f1f319dbe82d16a100092f6eb76231809168fec20d5e2a16214f04d343"
+    },
+    "run-identity.json": {
+      "bytes": 918,
+      "sha256": "cc82cbe4284b055157f984f1f8b03fa86b4e211a4e36d6cec735b4f6ba8e51af",
+      "uncompressed_bytes": 918,
+      "uncompressed_sha256": "cc82cbe4284b055157f984f1f8b03fa86b4e211a4e36d6cec735b4f6ba8e51af"
+    },
+    "sampler.exit": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "uncompressed_bytes": 2,
+      "uncompressed_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "sampler.log": {
+      "bytes": 1019,
+      "sha256": "303bf4130997d676e181dffe66e56ab8c086e404929c2a64597c7218c81b56f6",
+      "uncompressed_bytes": 1019,
+      "uncompressed_sha256": "303bf4130997d676e181dffe66e56ab8c086e404929c2a64597c7218c81b56f6"
+    },
+    "sampler.pid": {
+      "bytes": 6,
+      "sha256": "c0f8ab28431980fec7b3cf9ee8628228048c690e821b0a73e33dc6eff8a0ff00",
+      "uncompressed_bytes": 6,
+      "uncompressed_sha256": "c0f8ab28431980fec7b3cf9ee8628228048c690e821b0a73e33dc6eff8a0ff00"
+    },
+    "world.sdf": {
+      "bytes": 14346,
+      "sha256": "e227700ab4b496ff3994ec0f9bd9fac45b98d692935cb48a2eb02ab9ab8384f3",
+      "uncompressed_bytes": 14346,
+      "uncompressed_sha256": "e227700ab4b496ff3994ec0f9bd9fac45b98d692935cb48a2eb02ab9ab8384f3"
+    }
+  },
+  "firmware_binary_sha256": "c363793058228731bcdf1e293ad06ad362bdacc415f87c8ec42e49101239273c",
+  "firmware_build": "Lima Ubuntu 24.04 AArch64; 500-Hz loop; source CMake -O0 changed to -O2; Release appends -O3 -DNDEBUG, so effective optimizer is -O3; readiness diagnostics on; trace ring, trace diagnostics, and IMU provenance off.",
+  "firmware_source_commit": "a0e6faba30d3d73bb2838b9034aeee1b756ca3e5",
+  "guest_source_snapshot_commit": "c86ca621d6adaa859179044821f5c6178bc0dbfb",
+  "result": "invalid for trace-overhead comparison: aggregate Gazebo RTF 0.6553 and three other host Gazebo processes were active; readiness and scheduler stop occurred, but firmware child exit receipt is missing.",
+  "sampler_sha256": "7a302dff29bb617d2c3899dcdb97cc6191559bcf4dea6cac906c316f96a8eaf8",
+  "schema_version": 1,
+  "strict_gate": {
+    "reason": "No TAKEOFF_2 or LAND_2 command was sent; harness timed out waiting for line-buffered firmware readiness.",
+    "status": "not_run"
+  }
+}

@@ -1,0 +1,1 @@
+rm -f /tmp/ncs-attempt07-notrace-firmware.log /tmp/ncs-attempt07-notrace-firmware.exit /tmp/ncs-attempt07-notrace-firmware.pid; nohup bash -c '/home/vincent.guest/ncs-cf-build-a0e6-notrace/cf2 19950 192.168.5.2 >/tmp/ncs-attempt07-notrace-firmware.log 2>&1; echo $? >/tmp/ncs-attempt07-notrace-firmware.exit' >/dev/null 2>&1 & echo $! >/tmp/ncs-attempt07-notrace-firmware.pid

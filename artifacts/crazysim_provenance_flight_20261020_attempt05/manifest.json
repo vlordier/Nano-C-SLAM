@@ -4,10 +4,10 @@
   "crazyflie_simulation_plugin_commit": "02429e8e3385d88ef62a7954df491681795000bd",
   "files": {
     "REPORT.md": {
-      "bytes": 2345,
-      "sha256": "6f9fb2b814e728a48f03679c2760d8b8ca434cf33804b55a6fd149266e1d7437",
-      "uncompressed_bytes": 2345,
-      "uncompressed_sha256": "6f9fb2b814e728a48f03679c2760d8b8ca434cf33804b55a6fd149266e1d7437"
+      "bytes": 2511,
+      "sha256": "c997d7352f1a594d674719cf083decc70851ee0836614d918417d8b0dcdaea18",
+      "uncompressed_bytes": 2511,
+      "uncompressed_sha256": "c997d7352f1a594d674719cf083decc70851ee0836614d918417d8b0dcdaea18"
     },
     "capture/imu.jsonl.gz": {
       "bytes": 2102133,
@@ -32,6 +32,12 @@
       "sha256": "9548c1ee02b9d32fb12a11a4f6ad6495570d89dc1a31020cd357c0024f94059e",
       "uncompressed_bytes": 66790,
       "uncompressed_sha256": "5e4a671abbde0d3aa687ce6141c4e31903bf90fe0cc335b5920fa1329f550650"
+    },
+    "firmware-build.txt": {
+      "bytes": 796,
+      "sha256": "c68f9fbc442b9b288c3bffdd0af4dc2783fcbf9923c06efece06bc8fbe80c03c",
+      "uncompressed_bytes": 796,
+      "uncompressed_sha256": "c68f9fbc442b9b288c3bffdd0af4dc2783fcbf9923c06efece06bc8fbe80c03c"
     },
     "firmware-client.pid": {
       "bytes": 6,
@@ -167,7 +173,7 @@
     }
   },
   "firmware_binary_sha256": "6a3c3463571e24da5a27024d07c1fb4458ad5eb43c232fda0799ff657b9653cb",
-  "firmware_build": "Lima Ubuntu 24.04 AArch64; 500-Hz loop; isolated snapshot CMake -O0 changed to -O2; stride-32 bounded trace; IMU provenance enabled.",
+  "firmware_build": "Lima Ubuntu 24.04 AArch64; 500-Hz loop; guest source CMake flag changed from -O0 to -O2, then CMAKE_BUILD_TYPE=Release appended -O3 -DNDEBUG; effective optimizer -O3; stride-32 bounded trace; IMU provenance enabled.",
   "firmware_source_commit": "a0e6faba30d3d73bb2838b9034aeee1b756ca3e5",
   "pair": "positive",
   "plugin_sha256": "2e70696d11235be4053cb72b65992b6ef2a01af30fd089c300ba2809d67e55e5",

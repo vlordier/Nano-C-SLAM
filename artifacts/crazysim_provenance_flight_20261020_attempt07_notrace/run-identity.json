@@ -1,0 +1,16 @@
+{
+  "claim_boundary": "Crazyflie reference SITL diagnostic; not Nano firmware or mapping validation",
+  "firmware_source": "a0e6faba30d3d73bb2838b9034aeee1b756ca3e5",
+  "firmware_binary": "/home/vincent.guest/ncs-cf-build-a0e6-notrace/cf2",
+  "firmware_binary_sha256": "c363793058228731bcdf1e293ad06ad362bdacc415f87c8ec42e49101239273c",
+  "firmware_build_flags": "SITL source sets -O2; CMAKE_BUILD_TYPE=Release appends -O3, so effective final optimizer flag is -O3",
+  "firmware_rate_hz": 500,
+  "firmware_diagnostics": true,
+  "firmware_trace_ring": false,
+  "imu_provenance_ring": false,
+  "plugin_sha256": "2e70696d11235be4053cb72b65992b6ef2a01af30fd089c300ba2809d67e55e5",
+  "sampler_sha256": "7a302dff29bb617d2c3899dcdb97cc6191559bcf4dea6cac906c316f96a8eaf8",
+  "world": "copied from attempt05; same selected physics/plugin/model/mission world",
+  "partition": "ncs-notrace-20261020-07",
+  "GZ_IP": "127.0.0.1"
+}

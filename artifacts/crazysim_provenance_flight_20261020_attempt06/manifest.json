@@ -33,6 +33,12 @@
       "uncompressed_bytes": 68339,
       "uncompressed_sha256": "751e0ef09fd1d97d93a199410ea3ccf4736729df28db7fde9d0133ab0cc7d449"
     },
+    "firmware-build.txt": {
+      "bytes": 796,
+      "sha256": "c68f9fbc442b9b288c3bffdd0af4dc2783fcbf9923c06efece06bc8fbe80c03c",
+      "uncompressed_bytes": 796,
+      "uncompressed_sha256": "c68f9fbc442b9b288c3bffdd0af4dc2783fcbf9923c06efece06bc8fbe80c03c"
+    },
     "firmware-client.pid": {
       "bytes": 6,
       "sha256": "d8de509e971501a5248b769994b30f1b20ee39cd694ab2335ae3706938cc6625",
@@ -155,7 +161,7 @@
     }
   },
   "firmware_binary_sha256": "6a3c3463571e24da5a27024d07c1fb4458ad5eb43c232fda0799ff657b9653cb",
-  "firmware_build": "Lima Ubuntu 24.04 AArch64; 500-Hz loop; isolated snapshot CMake -O0 changed to -O2; stride-32 bounded trace; IMU provenance enabled.",
+  "firmware_build": "Lima Ubuntu 24.04 AArch64; 500-Hz loop; guest source CMake flag changed from -O0 to -O2, then CMAKE_BUILD_TYPE=Release appended -O3 -DNDEBUG; effective optimizer -O3; stride-32 bounded trace; IMU provenance enabled.",
   "firmware_source_commit": "a0e6faba30d3d73bb2838b9034aeee1b756ca3e5",
   "pair": "negative_disconnected_actuator",
   "plugin_sha256": "2e70696d11235be4053cb72b65992b6ef2a01af30fd089c300ba2809d67e55e5",

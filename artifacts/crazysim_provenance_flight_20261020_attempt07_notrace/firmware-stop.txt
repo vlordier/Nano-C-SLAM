@@ -1,0 +1,1 @@
+Firmware PID 43492 received SIGTERM directly after the harness timed out waiting for buffered readiness output. The final firmware log contains "SITL: Scheduler stopped cleanly". The wrapper did not write its exit receipt; process exit status is unverified.

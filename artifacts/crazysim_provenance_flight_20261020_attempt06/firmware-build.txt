@@ -1,0 +1,18 @@
+source_firmware_commit=a0e6faba30d3d73bb2838b9034aeee1b756ca3e5
+source_snapshot_commit=c86ca621d6adaa859179044821f5c6178bc0dbfb
+source_snapshot_patch=sitl_make/CMakeLists.txt changes -O0 to -O2 (guest-only, not committed)
+platform=Lima Ubuntu 24.04 AArch64
+CMAKE_BUILD_TYPE_source=Release
+CMAKE_C_FLAGS_source=-O2 ...
+CMAKE_C_FLAGS_RELEASE=-O3 -DNDEBUG
+C_FLAGS_effective=-O2 [source flags] ... -O3 -DNDEBUG ... -DRATE_MAIN_LOOP=500
+last optimization flag wins: effective optimizer is -O3
+CRAZYSIM_RATE_MAIN_LOOP=500
+CRAZYSIM_DIAGNOSTICS=ON
+CRAZYSIM_VERBOSE_DIAGNOSTICS=OFF
+CRAZYSIM_TRACE_RING=ON
+CRAZYSIM_TRACE_RING_CAPACITY=8192
+CRAZYSIM_TRACE_RING_STRIDE=32
+CRAZYSIM_TRACE_DIAGNOSTICS=ON
+CRAZYSIM_IMU_PROVENANCE=ON
+binary_sha256=6a3c3463571e24da5a27024d07c1fb4458ad5eb43c232fda0799ff657b9653cb

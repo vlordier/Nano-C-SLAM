@@ -1,0 +1,16 @@
+c86ca621d6adaa859179044821f5c6178bc0dbfb
+diff --git a/sitl_make/CMakeLists.txt b/sitl_make/CMakeLists.txt
+index 3012d7f..aae3f5e 100644
+--- a/sitl_make/CMakeLists.txt
++++ b/sitl_make/CMakeLists.txt
+@@ -76,7 +76,7 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/../version.c
+   )
+ add_custom_target(version_cf ALL DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../version.c)
+ 
+-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -Wno-unused-variable -std=gnu11 -g3 -Wall -Wno-maybe-uninitialized -Wno-error=maybe-uninitialized -Wmissing-braces -fno-strict-aliasing -ffunction-sections -fdata-sections -Wdouble-promotion -Wno-deprecated-declarations")
++set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -Wno-unused-variable -std=gnu11 -g3 -Wall -Wno-maybe-uninitialized -Wno-error=maybe-uninitialized -Wmissing-braces -fno-strict-aliasing -ffunction-sections -fdata-sections -Wdouble-promotion -Wno-deprecated-declarations")
+ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DESTIMATOR=StateEstimatorType${ESTIMATOR} -DCONTROLLER=ControllerType${CONTROLLER} -DCONFIG_SENSORS_SITL -DSENSORS_FORCE=SensorImplementation_sitl")
+ if(CRAZYSIM_DIAGNOSTICS)
+   add_compile_definitions(NCS_SITL_DIAGNOSTICS)
+C_FLAGS =  -O2 -Wno-unused-variable -std=gnu11 -g3 -Wall -Wno-maybe-uninitialized -Wno-error=maybe-uninitialized -Wmissing-braces -fno-strict-aliasing -ffunction-sections -fdata-sections -Wdouble-promotion -Wno-deprecated-declarations -DESTIMATOR=StateEstimatorTypeKalman -DCONTROLLER=ControllerTypePID -DCONFIG_SENSORS_SITL -DSENSORS_FORCE=SensorImplementation_sitl -O3 -DNDEBUG -DCONFIG_DECK_FORCE -DCONFIG_ESTIMATOR_KALMAN_ENABLE -DCONFIG_ESTIMATOR_UKF_ENABLE -DCRAZYFLIE_FW -DCONFIG_PLATFORM_SITL -DARCH_64 -DRATE_MAIN_LOOP=500
+c363793058228731bcdf1e293ad06ad362bdacc415f87c8ec42e49101239273c  /home/vincent.guest/ncs-cf-build-a0e6-notrace/cf2

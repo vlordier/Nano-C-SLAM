@@ -1833,8 +1833,9 @@ same CrazySim combined plugin, Gazebo Harmonic world, 500-Hz firmware loop,
 Lima AArch64 binary, and telemetry sampler. The generated `cf2` binary is from
 the local snapshot of firmware commit `a0e6faba30d3d73bb2838b9034aeee1b756ca3e5`
 with the combined plugin at `02429e8e3385d88ef62a7954df491681795000bd`;
-the isolated guest build changes the SITL CMake optimization from `-O0` to
-`-O2`. Binary SHA-256 is
+the isolated guest source changes the SITL CMake flag from `-O0` to `-O2`,
+but the Release configuration appends `-O3 -DNDEBUG` later in compiler flags.
+The effective optimizer was therefore **-O3**, not -O2. Binary SHA-256 is
 `6a3c3463571e24da5a27024d07c1fb4458ad5eb43c232fda0799ff657b9653cb`.
 Plugin SHA-256 is
 `2e70696d11235be4053cb72b65992b6ef2a01af30fd089c300ba2809d67e55e5`; sampler
@@ -1857,13 +1858,24 @@ The unchanged strict gate fails the positive run for one reason:
 `firmware reported estimator/rate/crash failure`. The runtime log reports a
 503/500-Hz stabilizer window and 96–98/100-Hz Kalman prediction windows; the
 negative run reports 453/500 Hz and 97–98/100 Hz. The gate is intentionally
-unchanged. Although `-O2` allows the positive case to satisfy the registered
-height and hover envelope, cadence is still not qualified, and these runs do
+unchanged. The effective `-O3` positive build satisfies the registered height and hover
+envelope, but cadence is still not qualified, and these runs do
 not establish Nano firmware flight or mapping. See the per-run reports and
 hash manifests for exact captures and commands.
 
-The next diagnostic should compare this instrumented `-O2` pair against an
-otherwise identical trace-disabled and diagnostics-disabled pair, while
+The next diagnostic should compare this instrumented `-O3` pair against an
+otherwise identical trace-disabled pair, while
 retaining the strict cadence gate and process/timing evidence. If the loop is
 still slow, profile the POSIX FreeRTOS tick source and Gazebo-to-firmware
 transport scheduling; do not widen the rate thresholds to make the run pass.
+
+The first trace-disabled build is archived as
+[`attempt07_notrace`](../artifacts/crazysim_provenance_flight_20261020_attempt07_notrace/REPORT.md).
+It reached `Ready to fly` and reported 406-Hz stabilizer and 94–98-Hz Kalman
+windows, but this was not a valid instrumentation comparison: Gazebo RTF was
+0.655, three unrelated Gazebo processes were active, no mission command was
+sent, and the harness could not see readiness until SIGTERM flushed buffered
+stdout. The log's clean scheduler-stop marker is retained, but the firmware
+child exit receipt is missing. The run confirms the harness needs line-buffered
+firmware output and reliable child-PID tracking; it does not identify a cause
+for the rate shortfall.
