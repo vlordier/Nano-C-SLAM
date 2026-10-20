@@ -855,6 +855,43 @@ warning, landing timeout, and degraded capture-time RTF. The standalone
 checker was not run because this run did not include a synchronized plugin
 motor-attribution trace or disconnected-actuator negative-control bundle.
 
+## Timestamped firmware console capture
+
+The previous console capture ended at 4 KiB because the SITL firmware's stdout
+was block-buffered and the process was terminated. The host utility
+`scripts/capture_timestamped_process.py` now records stdout and stderr as exact
+raw byte streams, emits each received line to `events.jsonl` with host realtime
+and monotonic arrival timestamps, preserves a final unterminated line, records
+the child exit status and per-stream byte counts (including any difference
+between raw bytes and timestamped event bytes), and terminates the child process
+group at its deadline.
+It also samples host and Lima guest clocks before launch and records the
+lowest-round-trip offset interval in `clock-offset.json`. That interval bounds
+the measured clock offset for the probe; it does not synchronize Gazebo or
+replace simulation timestamps in the flight checker.
+
+For a diagnostic run, launch the firmware through Lima with an explicit
+deadline and unique output directory, for example:
+
+```sh
+uv run --locked python scripts/capture_timestamped_process.py \
+  --output-dir /tmp/ncs-firmware-console-run01 \
+  --timeout-s 120 \
+  --lima-instance ncs-sitl \
+  -- limactl shell ncs-sitl -- bash -lc \
+  'cd /path/to/crazyflie-firmware/build && exec ./cf2 19950 192.168.5.2'
+```
+
+Replace the build path with the pinned diagnostic firmware checkout used by the
+world, and start the matching Gazebo plugin/world before starting `cf2`. The
+collector records the host-side Lima client output. The `process/` directory
+contains `stdout.raw`, `stderr.raw`, `events.jsonl`, and `process.json`; the
+parent directory contains the clock probe. A bounded collector timeout sends
+TERM and then KILL to the Lima client process group, so confirm the guest
+process has exited before reusing its UDP port. This captures line arrival and
+exit evidence only; it does not make the current reference flight pass or
+validate Nano-C-SLAM firmware.
+
 The new `scripts/crazysim_bridge_command.py` sends these bounded commands to
 the plugin's cflib UDP port (20850). Its initial default was corrected after
 an ACK test exposed that 19850 was the wrong port for this world. Unit tests
