@@ -13,7 +13,8 @@ import time
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import Any, cast
+from pathlib import Path
+from typing import Any, TextIO, cast
 
 from scripts.uwb_sitl_protocol import (
     BROKER_ID,
@@ -482,14 +483,64 @@ class UwbBrokerCore:
 
 
 class _BrokerDatagramProtocol(asyncio.DatagramProtocol):
-    def __init__(self, core: UwbBrokerCore) -> None:
+    def __init__(
+        self,
+        core: UwbBrokerCore,
+        *,
+        packet_capture_path: Path | None = None,
+        packet_capture_limit: int = 10_000,
+    ) -> None:
+        if packet_capture_limit <= 0:
+            raise ValueError("packet capture limit must be positive")
         self.core = core
         self.transport: asyncio.DatagramTransport | None = None
+        self._packet_capture_path = packet_capture_path
+        self._capture: TextIO | None = None
+        self._capture_limit = packet_capture_limit
+        self._captured_packets = 0
+        self._capture_stopped = False
 
     def connection_made(self, transport: asyncio.BaseTransport) -> None:
         if not isinstance(transport, asyncio.DatagramTransport):
             raise TypeError("broker requires a UDP datagram transport")
         self.transport = transport
+        if self._packet_capture_path is not None:
+            self._capture = self._packet_capture_path.open(
+                "x", encoding="utf-8", buffering=1
+            )
+
+    def connection_lost(self, exc: Exception | None) -> None:
+        _ = exc
+        if self._capture is not None:
+            self._capture.close()
+            self._capture = None
+
+    def _capture_packet(
+        self, direction: str, packet: UwbDatagram, address: Address
+    ) -> None:
+        if self._capture is None or self._capture_stopped:
+            return
+        record = {
+            "direction": direction,
+            "kind": packet.kind.name,
+            "kind_id": int(packet.kind),
+            "sequence": packet.sequence,
+            "sim_time_ns": packet.sim_time_ns,
+            "source_id": packet.source_id,
+            "destination_id": packet.destination_id,
+            "endpoint": [address[0], address[1]],
+            "payload_hex": packet.payload.hex(),
+            "monotonic_ns": time.monotonic_ns(),
+        }
+        self._capture.write(json.dumps(record, separators=(",", ":")) + "\n")
+        self._captured_packets += 1
+        if self._captured_packets >= self._capture_limit:
+            marker = {
+                "event": "capture_limit_reached",
+                "packet_limit": self._capture_limit,
+            }
+            self._capture.write(json.dumps(marker, separators=(",", ":")) + "\n")
+            self._capture_stopped = True
 
     def datagram_received(self, data: bytes, addr: tuple[Any, ...]) -> None:
         if self.transport is None:
@@ -505,6 +556,7 @@ class _BrokerDatagramProtocol(asyncio.DatagramProtocol):
             packet = decode_datagram(data)
         except ValueError:
             return
+        self._capture_packet("received", packet, address)
         outbound = self.core.handle(data, address, time.monotonic_ns())
         if packet.kind == PacketKind.REGISTER and outbound:
             response = decode_datagram(outbound[0][1])
@@ -528,6 +580,13 @@ class _BrokerDatagramProtocol(asyncio.DatagramProtocol):
         if self.transport is None:
             return
         for address, payload in outbound:
+            if self._capture is not None and not self._capture_stopped:
+                try:
+                    packet = decode_datagram(payload)
+                except ValueError:
+                    packet = None
+                if packet is not None:
+                    self._capture_packet("sent", packet, address)
             self.transport.sendto(payload, address)
 
 
@@ -542,6 +601,8 @@ class CrazySimUwbBroker:
         bind_address: str,
         bind_port: int,
         pose_max_skew_ns: int = 50_000_000,
+        packet_capture_path: Path | None = None,
+        packet_capture_limit: int = 10_000,
     ) -> None:
         if not node_ids or len(set(node_ids)) != len(node_ids):
             raise ValueError("at least one distinct node ID is required")
@@ -553,12 +614,16 @@ class CrazySimUwbBroker:
             raise ValueError("clock topic must be absolute without trailing slash")
         if not 1 <= bind_port <= 65535:
             raise ValueError("UDP bind port must be in 1..65535")
+        if packet_capture_limit <= 0:
+            raise ValueError("packet capture limit must be positive")
         self.gz_command = gz_command
         self.node_ids = node_ids
         self.topic_prefix = topic_prefix
         self.clock_topic = clock_topic
         self.bind_address = bind_address
         self.bind_port = bind_port
+        self.packet_capture_path = packet_capture_path
+        self.packet_capture_limit = packet_capture_limit
         self.core = UwbBrokerCore(pose_max_skew_ns=pose_max_skew_ns)
         self.protocol: _BrokerDatagramProtocol | None = None
 
@@ -614,7 +679,11 @@ class CrazySimUwbBroker:
     async def run(self) -> None:
         loop = asyncio.get_running_loop()
         transport, protocol = await loop.create_datagram_endpoint(
-            lambda: _BrokerDatagramProtocol(self.core),
+            lambda: _BrokerDatagramProtocol(
+                self.core,
+                packet_capture_path=self.packet_capture_path,
+                packet_capture_limit=self.packet_capture_limit,
+            ),
             local_addr=(self.bind_address, self.bind_port),
             family=socket.AF_INET,
         )
@@ -682,6 +751,16 @@ def _parse_pose_max_skew_ms(raw_value: str) -> int:
     return round(milliseconds * 1_000_000)
 
 
+def _parse_positive_int(raw_value: str) -> int:
+    try:
+        value = int(raw_value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("value must be a positive integer") from error
+    if value <= 0:
+        raise argparse.ArgumentTypeError("value must be a positive integer")
+    return value
+
+
 def _arguments(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gz-command", default="gz")
@@ -690,6 +769,17 @@ def _arguments(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--clock-topic", default="/clock")
     parser.add_argument("--bind-address", default="0.0.0.0")  # noqa: S104
     parser.add_argument("--bind-port", type=int, default=19952)
+    parser.add_argument(
+        "--packet-capture-jsonl",
+        type=Path,
+        help="create a JSONL capture of decoded UWB packets (fails if the file exists)",
+    )
+    parser.add_argument(
+        "--packet-capture-limit",
+        type=_parse_positive_int,
+        default=10_000,
+        help="maximum decoded packets to write before the capture stops",
+    )
     parser.add_argument(
         "--pose-max-skew-ms",
         type=_parse_pose_max_skew_ms,
@@ -710,6 +800,8 @@ async def _run_cli(arguments: argparse.Namespace) -> None:
         bind_address=arguments.bind_address,
         bind_port=arguments.bind_port,
         pose_max_skew_ns=arguments.pose_max_skew_ns,
+        packet_capture_path=arguments.packet_capture_jsonl,
+        packet_capture_limit=arguments.packet_capture_limit,
     )
     await broker.run()
 

@@ -7,9 +7,11 @@ import asyncio
 import json
 import socket
 import struct
+import tempfile
 import time
 import unittest
 from collections.abc import Callable
+from pathlib import Path
 from unittest.mock import patch
 
 from scripts.uwb_sitl_broker import (
@@ -19,6 +21,7 @@ from scripts.uwb_sitl_broker import (
     _arguments,
     _BrokerDatagramProtocol,
     _parse_pose_max_skew_ms,
+    _parse_positive_int,
     parse_gazebo_clock,
     parse_gazebo_odometry,
 )
@@ -217,9 +220,29 @@ class UwbSitlBrokerTests(unittest.TestCase):
             ):
                 _parse_pose_max_skew_ms(invalid)
 
+    def test_packet_capture_limit_requires_a_positive_integer(self) -> None:
+        self.assertEqual(_parse_positive_int("100"), 100)
+        for invalid in ("0", "-1", "1.5", "nope"):
+            with (
+                self.subTest(invalid=invalid),
+                self.assertRaises(argparse.ArgumentTypeError),
+            ):
+                _parse_positive_int(invalid)
+
     def test_pose_skew_cli_option_is_passed_as_nanoseconds(self) -> None:
-        arguments = _arguments(["--pose-max-skew-ms", "250"])
+        arguments = _arguments(
+            [
+                "--pose-max-skew-ms",
+                "250",
+                "--packet-capture-jsonl",
+                "capture.jsonl",
+                "--packet-capture-limit",
+                "42",
+            ]
+        )
         self.assertEqual(arguments.pose_max_skew_ns, 250_000_000)
+        self.assertEqual(arguments.packet_capture_jsonl, Path("capture.jsonl"))
+        self.assertEqual(arguments.packet_capture_limit, 42)
 
     def test_pose_timestamp_may_lead_clock_within_bounded_topic_skew(self) -> None:
         core = UwbBrokerCore(pose_max_skew_ns=50_000_000)
@@ -244,6 +267,89 @@ class UwbSitlBrokerTests(unittest.TestCase):
 
 
 class UwbSitlBrokerUdpTests(unittest.IsolatedAsyncioTestCase):
+    async def test_broker_packet_capture_records_decoded_input_and_output(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            capture_path = Path(directory) / "uwb.jsonl"
+            core = UwbBrokerCore()
+            core.observe_clock(NOW, time.monotonic_ns())
+            core.observe_pose(0, NOW - 1_000_000, (0.0, 0.0, 1.0), time.monotonic_ns())
+            loop = asyncio.get_running_loop()
+            transport, _protocol = await loop.create_datagram_endpoint(
+                lambda: _BrokerDatagramProtocol(
+                    core,
+                    packet_capture_path=capture_path,
+                    packet_capture_limit=10,
+                ),
+                local_addr=("127.0.0.1", 0),
+            )
+            client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            client.setblocking(False)
+            client.bind(("127.0.0.1", 0))
+            try:
+                await loop.sock_sendto(
+                    client,
+                    _register(0, client.getsockname()[1]),
+                    transport.get_extra_info("sockname"),
+                )
+                ack, _ = await asyncio.wait_for(
+                    loop.sock_recvfrom(client, 256), timeout=1.0
+                )
+                self.assertEqual(decode_datagram(ack).kind, PacketKind.REGISTER_ACK)
+            finally:
+                client.close()
+                transport.close()
+                await asyncio.sleep(0)
+
+            records = [
+                json.loads(line) for line in capture_path.read_text().splitlines()
+            ]
+            self.assertEqual(
+                [record["direction"] for record in records], ["received", "sent"]
+            )
+            self.assertEqual(
+                [record["kind"] for record in records], ["REGISTER", "REGISTER_ACK"]
+            )
+            self.assertEqual(records[0]["source_id"], 0)
+            self.assertEqual(records[0]["endpoint"][0], "127.0.0.1")
+            self.assertEqual(records[1]["destination_id"], 0)
+
+    async def test_broker_packet_capture_stops_at_configured_limit(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            capture_path = Path(directory) / "uwb.jsonl"
+            core = UwbBrokerCore()
+            core.observe_clock(NOW, time.monotonic_ns())
+            core.observe_pose(0, NOW - 1_000_000, (0.0, 0.0, 1.0), time.monotonic_ns())
+            loop = asyncio.get_running_loop()
+            transport, _protocol = await loop.create_datagram_endpoint(
+                lambda: _BrokerDatagramProtocol(
+                    core,
+                    packet_capture_path=capture_path,
+                    packet_capture_limit=1,
+                ),
+                local_addr=("127.0.0.1", 0),
+            )
+            client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            client.setblocking(False)
+            client.bind(("127.0.0.1", 0))
+            try:
+                await loop.sock_sendto(
+                    client,
+                    _register(0, client.getsockname()[1]),
+                    transport.get_extra_info("sockname"),
+                )
+                await asyncio.wait_for(loop.sock_recvfrom(client, 256), timeout=1.0)
+            finally:
+                client.close()
+                transport.close()
+                await asyncio.sleep(0)
+
+            records = [
+                json.loads(line) for line in capture_path.read_text().splitlines()
+            ]
+            self.assertEqual(len(records), 2)
+            self.assertEqual(records[1]["event"], "capture_limit_reached")
+            self.assertEqual(records[1]["packet_limit"], 1)
+
     async def test_broker_subscribes_to_configured_gazebo_clock_topic(self) -> None:
         probe = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         probe.bind(("127.0.0.1", 0))

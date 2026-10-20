@@ -125,3 +125,27 @@ golden packets (registration, range response, app-message request, and clock
 sync) compiled and checked against the same exact bytes. Keep this contract in
 draft until cross-process positive and fail-closed tests pass against the live
 Gazebo broker and CrazySim firmware.
+
+For live integration evidence, the broker can capture decoded received and
+sent UDP packets as JSONL. Capture is disabled by default. Choose a new output
+path for every run; existing files are not overwritten. Each packet record
+contains packet kind, transaction sequence, source/destination IDs, simulation
+timestamp, endpoint, monotonic capture timestamp, and hexadecimal payload. The
+packet limit bounds file growth and writes a marker when reached:
+
+```sh
+uv run --locked python -m scripts.uwb_sitl_broker \
+  --node-ids 0,1 \
+  --bind-address 0.0.0.0 \
+  --bind-port 19952 \
+  --clock-topic /world/crazysim_default/clock \
+  --pose-max-skew-ms 250 \
+  --packet-capture-jsonl /tmp/ncs-uwb-run-01.jsonl \
+  --packet-capture-limit 10000 \
+  --verbose
+```
+
+The capture proves which datagrams crossed the broker boundary; it does not
+prove that firmware acted on a routed packet or that a landing command reached
+Gazebo. Correlate it with firmware console/telemetry, world and binary hashes,
+and process exit status.
