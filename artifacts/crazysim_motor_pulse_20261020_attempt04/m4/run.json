@@ -1,0 +1,8 @@
+{
+  "channel": 4,
+  "partition": "ncs-motor-pulse-20261020-m4",
+  "start_host_monotonic_ns": 241016190178958,
+  "finish_host_monotonic_ns": 241029828529208,
+  "gazebo_return_code": 0,
+  "publisher_return_code": 0
+}

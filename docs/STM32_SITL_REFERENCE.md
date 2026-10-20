@@ -1475,3 +1475,44 @@ tree beyond its recorded identity, or rule out PWM-to-thrust calibration,
 actuator dynamics, estimator timing, or controller instability. The restrained
 single-channel torque-sign test and first-divergence motor trace remain open in
 bead `ncs-fea.5.8.2.7.1.3`; no speculative sign or gain change is justified.
+
+### Isolated single-channel attitude response (2026-10-20)
+
+Four fresh Gazebo runs published one nonzero value at a time to
+`/cf_0/command/motor_speed`; all other entries remained zero. The vehicle used
+the same captured CrazySim SDF and Bullet Featherstone motor models as the
+reference flight. The world was deliberately gravity-free so a pulse could not
+be mistaken for a takeoff. M1, M2 and M4 used 500 rad/s; M3 was repeated at
+100 rad/s after the 500 rad/s run produced invalid angular-velocity fields.
+Each pulse lasted about 0.20 simulation seconds. The sampler recorded the
+command vectors, world time, odometry and process exit status in
+[`attempt04`](../artifacts/crazysim_motor_pulse_20261020_attempt04),
+[`attempt05/m1`](../artifacts/crazysim_motor_pulse_20261020_attempt05/m1), and
+[`attempt11_m3_100`](../artifacts/crazysim_motor_pulse_20261020_attempt11_m3_100).
+All four selected runs returned zero from both publisher and Gazebo.
+
+The odometry `twist.angular` fields were intermittently NaN, so the sign check
+uses the finite orientation quaternions instead. For each pulse, the values
+below are the change in roll, pitch and yaw between the means of the first and
+last 20% of finite samples inside the pulse. Angles are in radians.
+
+| Channel | Active command vector (rad/s) | Finite pose samples | Δ roll | Δ pitch | Δ yaw | Expected / observed signs |
+| --- | --- | ---: | ---: | ---: | ---: | --- |
+| M1 | `[500, 0, 0, 0]` | 35 | -0.0641 | -0.0627 | -0.00776 | `---` / `---` |
+| M2 | `[0, 500, 0, 0]` | 51 | -0.1490 | +0.1466 | +0.00944 | `-++` / `-++` |
+| M3 | `[0, 0, 100, 0]` | 31 | +0.00213 | +0.00206 | -0.000708 | `++-` / `++-` |
+| M4 | `[0, 0, 0, 500]` | 29 | +0.0455 | -0.0444 | +0.00631 | `+-+` / `+-+` |
+
+The signs agree with the static X-layout mixer/SDF convention for all four
+channels. The control vectors before and after each pulse were `[0, 0, 0, 0]`.
+This is useful evidence against a simple channel-order or rotation-sign error,
+but it is not a direct torque measurement: the capture does not include the
+four motor-model speed outputs or a force/torque sensor, and the angular-rate
+fields were not reliable. M1, M2 and M4 also use a higher command speed than
+M3, so their magnitudes are not comparable. The zero-gravity free-body setup
+does not validate thrust, hover, landing, firmware motor output, or flight.
+The disconnected-bridge negative control and restrained, repeatable test
+harness remain outstanding; bead `ncs-fea.5.8.2.7.1.3.2` therefore stays open.
+The synchronized firmware-to-Gazebo first-divergence trace in
+`ncs-fea.5.8.2.7.1.3.3` is still required before changing controller gains or
+claiming a validated motor mapping.

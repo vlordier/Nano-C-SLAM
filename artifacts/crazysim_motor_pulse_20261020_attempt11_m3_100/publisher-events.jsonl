@@ -1,0 +1,6 @@
+{"event":"phase","label":"baseline","host_monotonic_ns":241494749483208,"sim_time_ns":1000000,"active_channel":-1,"speed_rad_s":0}
+{"event":"phase_end","label":"baseline","host_monotonic_ns":241494950185625,"sim_time_ns":200000000}
+{"event":"phase","label":"m3","host_monotonic_ns":241494950228208,"sim_time_ns":200000000,"active_channel":2,"speed_rad_s":100}
+{"event":"phase_end","label":"m3","host_monotonic_ns":241495158344166,"sim_time_ns":402000000}
+{"event":"phase","label":"pulse_end","host_monotonic_ns":241495158378208,"sim_time_ns":402000000,"active_channel":-1,"speed_rad_s":0}
+{"event":"phase_end","label":"pulse_end","host_monotonic_ns":241495563695000,"sim_time_ns":801000000}

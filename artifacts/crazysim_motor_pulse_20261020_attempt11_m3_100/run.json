@@ -1,0 +1,7 @@
+{
+  "motor": 3,
+  "speed_rad_s": 100,
+  "partition": "ncs-motor-pulse-20261020-m3-low",
+  "publisher_rc": 0,
+  "gazebo_rc": 0
+}

@@ -1,0 +1,6 @@
+{"event":"phase","label":"baseline","host_monotonic_start_ns":241063474829750,"sim_time_start_ns":1000000,"active_channel":-1,"commanded_speed_rad_s":0}
+{"event":"phase_end","label":"baseline","host_monotonic_end_ns":241063725235916,"sim_time_end_ns":186000000}
+{"event":"phase","label":"m1","host_monotonic_start_ns":241063977187666,"sim_time_start_ns":464000000,"active_channel":0,"commanded_speed_rad_s":500}
+{"event":"phase_end","label":"m1","host_monotonic_end_ns":241064231025333,"sim_time_end_ns":666000000}
+{"event":"phase","label":"pulse_end","host_monotonic_start_ns":241064231042000,"sim_time_start_ns":666000000,"active_channel":-1,"commanded_speed_rad_s":0}
+{"event":"phase_end","label":"pulse_end","host_monotonic_end_ns":241064492632500,"sim_time_end_ns":947000000}
