@@ -1,0 +1,71 @@
+{
+  "capture": "crazysim_attitude_correlation_20261020_attempt03",
+  "purpose": "Primary bounded correlation capture. Both TAKEOFF_2 and LAND_2 were acknowledged (result 0); the CrazySim reference firmware produced nonzero motor commands and the model rose from about 2.015 m to 2.468 m, then flipped and returned to platform height. Supervisor reported crashed/recovery required. This is not Nano-C-SLAM firmware and not a stable-flight pass.",
+  "files": [
+    {
+      "path": "capture/imu.jsonl",
+      "size_bytes": 17270256,
+      "sha256": "4f15f860ecdd15789a6c7e5fe4aa8e14acda6a1b9e008915aa5dc9b9ba6b9ba8"
+    },
+    {
+      "path": "capture/motors.jsonl",
+      "size_bytes": 5257388,
+      "sha256": "4319e878b46124b825728e451e8ae967be550731d0e27b9a7d186a7b3cc86215"
+    },
+    {
+      "path": "capture/odometry.jsonl",
+      "size_bytes": 5313193,
+      "sha256": "d7ce303c7f0437496decba133867a53346e090120df117dd8b6e0faaa0304829"
+    },
+    {
+      "path": "capture/world-stats.jsonl",
+      "size_bytes": 85616,
+      "sha256": "5c18aba706f22e82f29b4a78beca389448d9eaa1babf94b36b6bcdfdcaa496ad"
+    },
+    {
+      "path": "commands.txt",
+      "size_bytes": 1494,
+      "sha256": "9dae06c0cd234aca2559156ec297f636697875717e757baa5c297313ee17d391"
+    },
+    {
+      "path": "firmware/clock-offset.json",
+      "size_bytes": 2626,
+      "sha256": "c3cf83cce9c9f1952af50f1720c14fca74a55d5251cb17afc9110290b2131398"
+    },
+    {
+      "path": "firmware/process/events.jsonl",
+      "size_bytes": 1007798,
+      "sha256": "44a9044028e4dc116454036aaeda35a6551ad98c66445b81c129fbdb18c82f70"
+    },
+    {
+      "path": "firmware/process/process.json",
+      "size_bytes": 683,
+      "sha256": "06a4f78b4e3c9aad793dd9722338b12f4bc95655388a8619887170d8a1a1bbb5"
+    },
+    {
+      "path": "firmware/process/stderr.raw",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "firmware/process/stdout.raw",
+      "size_bytes": 275300,
+      "sha256": "15791c044e87954e8f72c53bc72245e977b8a7420e9484add776d4d635b3d298"
+    },
+    {
+      "path": "gazebo.log",
+      "size_bytes": 7305,
+      "sha256": "7301afa3ec5d0b22969fce6b9d9625a674d840731f249358fee0df1992c92f4b"
+    },
+    {
+      "path": "sampler.log",
+      "size_bytes": 1022,
+      "sha256": "6caf3fd12a76fc1ae1aa94373b611445019517a83f9b07b9f884958b65c3ea67"
+    },
+    {
+      "path": "world.sdf",
+      "size_bytes": 15283,
+      "sha256": "d3d5bbd4813a0b5b0d886bda0e8a1ae71305013c822939fd1750975cd6b34c4c"
+    }
+  ]
+}

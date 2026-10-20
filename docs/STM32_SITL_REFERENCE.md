@@ -879,7 +879,7 @@ uv run --locked python scripts/capture_timestamped_process.py \
   --timeout-s 120 \
   --lima-instance ncs-sitl \
   -- limactl shell ncs-sitl -- bash -lc \
-  'cd /path/to/crazyflie-firmware/build && exec timeout --signal=TERM --kill-after=2s 115s ./cf2 19950 192.168.5.2'
+  'cd /path/to/crazyflie-firmware/build && exec timeout --signal=TERM --kill-after=2s 115s stdbuf -oL ./cf2 19950 192.168.5.2'
 ```
 
 Replace the build path with the pinned diagnostic firmware checkout used by the
@@ -888,10 +888,13 @@ collector records the host-side Lima client output. The `process/` directory
 contains `stdout.raw`, `stderr.raw`, `events.jsonl`, and `process.json`; the
 parent directory contains the clock probe. A bounded collector timeout sends
 TERM and then KILL to the Lima client process group; the guest-side `timeout`
-independently terminates `cf2` before the collector deadline. Confirm the guest
-process has exited before reusing its UDP port. This captures line arrival and
-exit evidence only; it does not make the current reference flight pass or
-validate Nano-C-SLAM firmware.
+independently terminates `cf2` before the collector deadline. `stdbuf -oL`
+forces the guest's C stdout into line-buffered mode; without it Lima delivered
+bursts of up to 49 diagnostic lines under one host timestamp, too coarse for a
+50-ms controller comparison. Confirm the guest process has exited before
+reusing its UDP port. This captures line arrival and exit evidence only; it
+does not make the current reference flight pass or validate Nano-C-SLAM
+firmware.
 
 The new `scripts/crazysim_bridge_command.py` sends these bounded commands to
 the plugin's cflib UDP port (20850). Its initial default was corrected after
@@ -1396,3 +1399,69 @@ speeds around the first attitude divergence before changing gains or relaxing
 the flight gate. A single successful hover interval is not repeatable-flight
 acceptance. Even repeatable CrazySim reference flight would not run the
 Nano-C-SLAM STM32 application or validate its map.
+
+## Timestamp-aligned attitude correlation and checker correction (2026-10-20)
+
+A bounded 45-second upstream CrazySim reference run is archived at
+[`artifacts/crazysim_attitude_correlation_20261020_attempt03`](../artifacts/crazysim_attitude_correlation_20261020_attempt03/README.md).
+Its matching firmware binary returned guest timeout code 124 after 60 seconds;
+the timestamp collector completed normally and captured 275,300 stdout bytes
+with zero missing event bytes. The best Lima clock probe measured 37.49 ms RTT
+and guest-minus-host offset +72.88 ±18.74 ms. Use the recorded arrival times as
+interval evidence, not as exact simulation-time timestamps. `stdbuf -oL` is
+required for useful line timing: earlier captures without it grouped up to 49
+firmware lines under one host arrival timestamp.
+
+In attempt03, Gazebo observed both takeoff and land ACKs, nonzero motor output,
+and altitude from 2.0144 m to 2.4682 m. The model nevertheless tilted to
+167.11 degrees and the supervisor reported a crash. The strict paired checker
+was not run because this capture lacks a matching disconnected-actuator
+negative control. Firmware/Gazebo gyro cross-correlation peaks within roughly
+6 ms, so this capture weighs against a large sensor queue delay; it does not
+identify the cause of instability. Preserve the motor order/sign/scaling and
+estimator/controller questions as open until first-divergence traces establish
+them.
+
+This capture also exposed a checker defect: the prior `2*acos(abs(q.w))`
+metric treated heading yaw as body tilt. The checker now measures body-Z
+alignment with world vertical, so yaw-only rotation does not fail the tilt
+limit. Focused tests cover 90-degree yaw and 20-degree roll/pitch while keeping
+the existing 15-degree threshold. Reanalysis still finds only about 0.35 s in
+the target hover envelope and a 167.11-degree maximum tilt; the correction does
+not turn this failed flight into a pass.
+
+The next hardware-independent investigation is the four-channel motor mapping
+from firmware ratio through SITL packet, plugin actuator and SDF rotor to
+measured body torque, followed by aligned controller/estimator traces if that
+mapping passes. Nano-C-SLAM firmware execution, mapping validation, and swarm
+flight remain unproven.
+
+### Static motor-channel audit
+
+The exact Linux reference firmware in Lima (`/home/vincent.guest/ncs-cf-fw`,
+commit `e06abd1154ff29e1b226b6d0921c8992b306953e`) and the captured Gazebo
+plugin/world have a consistent **static** four-channel mapping:
+
+| Firmware field / legacy mixer | CRTP payload field | Plugin conversion / published actuator | SDF rotor | Rotor position (m) | Spin |
+| --- | --- | --- | --- | --- | --- |
+| `m1`; legacy `-roll + pitch + yaw` | packed `m1` | `m1` → `m_motor_command_.m1` → index 0 | `m1_joint`, `actuator_number=0` | (+0.031, -0.031) | CCW |
+| `m2`; legacy `-roll - pitch - yaw` | packed `m2` | `m2` → `m_motor_command_.m2` → index 1 | `m2_joint`, `actuator_number=1` | (-0.031, -0.031) | CW |
+| `m3`; legacy `+roll - pitch + yaw` | packed `m3` | `m3` → `m_motor_command_.m3` → index 2 | `m3_joint`, `actuator_number=2` | (-0.031, +0.031) | CCW |
+| `m4`; legacy `+roll + pitch - yaw` | packed `m4` | `m4` → `m_motor_command_.m4` → index 3 | `m4_joint`, `actuator_number=3` | (+0.031, +0.031) | CW |
+
+The SITL firmware stores four contiguous `uint16_t` values in `motorPower`,
+assigns `m1` through `m4` from the mixer output in that order, and copies all
+four fields into the CRTP packet. The plugin reads each same-named field,
+converts it to angular velocity, and publishes the four values in that order.
+The SDF assigns the corresponding motor model to actuator indices 0 through 3.
+For the X-layout, the legacy roll/pitch mix is consistent with rotor position;
+the force/torque mix's yaw signs are also consistent with the SDF's alternating
+CCW/CW directions under the Crazyflie body convention.
+
+This source audit rules out an obvious channel permutation between these
+specific captured sources. It does not measure Gazebo's resulting single-rotor
+body torque, prove the firmware binary was built from precisely this working
+tree beyond its recorded identity, or rule out PWM-to-thrust calibration,
+actuator dynamics, estimator timing, or controller instability. The restrained
+single-channel torque-sign test and first-divergence motor trace remain open in
+bead `ncs-fea.5.8.2.7.1.3`; no speculative sign or gain change is justified.

@@ -1,0 +1,71 @@
+{
+  "capture": "crazysim_attitude_correlation_20261020_attempt01",
+  "purpose": "Rejected for time correlation: Lima buffered console output into coarse host-arrival bursts (up to 49 firmware lines sharing one arrival timestamp); command timing did not capture a complete takeoff/land acknowledgement sequence.",
+  "files": [
+    {
+      "path": "capture/imu.jsonl",
+      "size_bytes": 15042975,
+      "sha256": "f9519284651aeac95e2c8d73514ec65e50ac0afd315a085352724abe03f537d9"
+    },
+    {
+      "path": "capture/motors.jsonl",
+      "size_bytes": 5079998,
+      "sha256": "b340e5e6d9c9b965f47d2623b869c442f88a6bf2ff057d9b7b6f3094094a6c62"
+    },
+    {
+      "path": "capture/odometry.jsonl",
+      "size_bytes": 4560553,
+      "sha256": "d1fc1c568b27b926b1c3cf9239a8de32aa49231dca59a566c5ecdad806867c14"
+    },
+    {
+      "path": "capture/world-stats.jsonl",
+      "size_bytes": 78300,
+      "sha256": "8f724c8896112056d48dfebd2ae0ec9080dd39b10af449804851c6c60bc93afc"
+    },
+    {
+      "path": "commands.txt",
+      "size_bytes": 1588,
+      "sha256": "0c80399aab933cb3a052f89ff62d407dc4706181116bd0456bb7ff7bebcbd329"
+    },
+    {
+      "path": "firmware/clock-offset.json",
+      "size_bytes": 2624,
+      "sha256": "51b5e97efec125326d482fe191146bd5c2a519ffac0f27fffd007b0010bece16"
+    },
+    {
+      "path": "firmware/process/events.jsonl",
+      "size_bytes": 568470,
+      "sha256": "e31fd8adab211350467ca94d433c962d5201b581d48927af6c3a87d1c52ed0d8"
+    },
+    {
+      "path": "firmware/process/process.json",
+      "size_bytes": 672,
+      "sha256": "b446ad392c3c1f5e24da88c6b7aab7aca45bd46dc89ce21555440134635e96bd"
+    },
+    {
+      "path": "firmware/process/stderr.raw",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "firmware/process/stdout.raw",
+      "size_bytes": 153973,
+      "sha256": "dddc64aa5d55703d8513533a57f0341e8862c8098d31ead01f6756b053fa19b2"
+    },
+    {
+      "path": "gazebo.log",
+      "size_bytes": 7305,
+      "sha256": "ed96156dd8ac7dcb8879e6be05289b9b3ce1af41760f08645fb12bf6568a9033"
+    },
+    {
+      "path": "sampler.log",
+      "size_bytes": 1022,
+      "sha256": "944d19d62d7e54519df3dba63ede2569ba915d641c582b17d6be49c0fdb685a1"
+    },
+    {
+      "path": "world.sdf",
+      "size_bytes": 15283,
+      "sha256": "f918edb18380d198183803297d228ed411768e93d687b5a051239c21540690c1"
+    }
+  ]
+}

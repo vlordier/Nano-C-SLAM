@@ -1,0 +1,66 @@
+{
+  "capture": "crazysim_attitude_correlation_20261020_attempt02",
+  "purpose": "Rejected for flight conclusion: guest stdbuf made firmware line arrivals observable, but takeoff was sent late and the guest timeout ended the run before a landing acknowledgement. Diagnostic only.",
+  "files": [
+    {
+      "path": "capture/imu.jsonl",
+      "size_bytes": 11570755,
+      "sha256": "f25852565df852cc18cc6cc46c4b6165bc9fa33f059814a40558f034a4b19eb3"
+    },
+    {
+      "path": "capture/motors.jsonl",
+      "size_bytes": 4325724,
+      "sha256": "bfc42aea965773c0e4cd3136f82f5e5b96bf2baac262a7a28e82535b3e8c7e9e"
+    },
+    {
+      "path": "capture/odometry.jsonl",
+      "size_bytes": 3742671,
+      "sha256": "273365fa8cc805a579aa4db36d1c2ee22616bf3001c58f134e4a292807cf1602"
+    },
+    {
+      "path": "capture/world-stats.jsonl",
+      "size_bytes": 56856,
+      "sha256": "26af5bfc67dc773d237161f8c01d585316d2ae13101ca4764d16b7cf93fb79d1"
+    },
+    {
+      "path": "firmware/clock-offset.json",
+      "size_bytes": 2633,
+      "sha256": "2f30b50e577119ed0432845ccd73b33b9e0dcc5e8a8555e1122abeb73f521010"
+    },
+    {
+      "path": "firmware/process/events.jsonl",
+      "size_bytes": 501882,
+      "sha256": "6b412bb02bc0993041750cb9dc159f76d4ebae19c1f07c219ba502712b9b4ae2"
+    },
+    {
+      "path": "firmware/process/process.json",
+      "size_bytes": 683,
+      "sha256": "b4ef088dba9e83caf78fadc5e532336782bb19b59e274a8ad9e18d1706be7eda"
+    },
+    {
+      "path": "firmware/process/stderr.raw",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "firmware/process/stdout.raw",
+      "size_bytes": 136353,
+      "sha256": "6827fae83c136f42a22f97716b44b51906a3f927429856e3e6ba8b47cc9a8762"
+    },
+    {
+      "path": "gazebo.log",
+      "size_bytes": 7305,
+      "sha256": "ae18973553cd45168a2e40890476f9ecbd5dd9aed5c9616b563f76873661b143"
+    },
+    {
+      "path": "sampler.log",
+      "size_bytes": 1022,
+      "sha256": "7fb129685ccc1d888a8ee8414db1a6e5cdf3068b5c00d4b43eae2160c0e01c15"
+    },
+    {
+      "path": "world.sdf",
+      "size_bytes": 15283,
+      "sha256": "7b72f7c237d26a5e373dd71f6a874d6988e59b2042d5f1115ddfb5273b7316c0"
+    }
+  ]
+}

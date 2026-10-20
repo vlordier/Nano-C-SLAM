@@ -1,0 +1,9 @@
+# CrazySim attitude correlation, attempt 03
+
+This is an isolated, bounded run of upstream CrazySim SITL firmware in Gazebo Sim 8.14 on macOS. It is **not** the Nano-C-SLAM STM32 application. Run inputs, firmware identity, transport settings and binary hashes are in `commands.txt`; raw captures and SHA-256 inventory are preserved in `evidence.tar.gz` and `manifest.json`.
+
+The 45-second sampler recorded 8,879 odometry samples over 44.39 simulation seconds, 22,197 IMU messages, 44,350 motor messages (177,400 motor components), and 337 world-stat samples. World-stat coverage was 99.61%; aggregate real-time factor was approximately 0.986. Firmware stdout capture recorded 1,984 timestamped line events and 275,300 bytes with zero byte discrepancy. The best Lima clock probe had 37.49 ms round-trip time, estimating guest-minus-host offset at +72.88 ±18.74 ms.
+
+Both takeoff and land commands were acknowledged. Altitude ranged from 2.0144 m to 2.4682 m and ended at 2.0150 m. The corrected yaw-invariant maximum physical tilt is 167.11 degrees; the longest interval satisfying the checker hover constraints at the 2.315 m target was about 0.35 s. The supervisor reported `Crashed, recovery required` at approximately simulation time 11.045 s. This proves the reference firmware was connected through the actuator bridge and affected the model; it does **not** prove stable flight.
+
+Firmware IMU gyro and Gazebo IMU angular velocity cross-correlation peaks within about 6 ms (axis correlations 0.941, 0.917 and 0.985). This weighs against a large sensor queue delay but does not identify the flip cause. The attitude divergence begins before the first obvious command saturation, so next inspect four-channel motor ordering/sign/scaling and the controller/estimator at the first divergence. The strict paired-flight checker was not run because this capture has no matching disconnected-actuator negative control.
