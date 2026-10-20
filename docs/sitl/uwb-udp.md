@@ -66,5 +66,9 @@ rejected. Broker absence and peer loss map to `UWB_RX_TIMEOUT`; malformed
 input maps to `UWB_RX_ERROR`. A broker may not synthesize ACKs or token return
 messages for absent firmware peers in the acceptance path.
 
-This is the proposed byte-level shape. Implementation and golden C/Python
-vectors are required before the contract can be marked accepted.
+The repository currently has Python and C framing/field validators plus three
+shared golden packets (registration, range response, and app-message request)
+compiled and checked against the same exact bytes. This verifies framing only:
+sequence replay and freshness enforcement, the FreeRTOS API adapter, and the
+Gazebo pose broker are still unimplemented. Keep this contract in draft until
+those behaviors have cross-process positive and negative tests.

@@ -119,6 +119,7 @@ include = [
     "tests/test_crazysim_flight_checker.py",
     "tests/test_crazysim_tof_bridge.py",
     "tests/test_uwb_sitl_protocol.py",
+    "tests/test_uwb_sitl_c_codec.py",
     "tests/test_capture_timestamped_process.py",
 ]
 

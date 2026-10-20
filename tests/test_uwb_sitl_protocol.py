@@ -61,6 +61,11 @@ class UwbSitlProtocolTests(unittest.TestCase):
         decoded = decode_datagram(encode_datagram(packet))
 
         self.assertEqual(decoded, packet)
+        self.assertEqual(
+            encode_datagram(packet).hex(),
+            "4e435355010400000000000700000002dfd1c0400100001000000929"
+            "ffffff9c000000c8000005dc6d10c9a8",
+        )
         self.assertEqual(RANGE_VECTOR.unpack(decoded.payload), (2345, -100, 200, 1500))
 
     def test_app_message_identity_and_size_are_bound_to_header(self) -> None:
@@ -73,7 +78,12 @@ class UwbSitlProtocolTests(unittest.TestCase):
             destination_id=1,
             payload=valid_message,
         )
-        self.assertEqual(decode_datagram(encode_datagram(packet)), packet)
+        encoded = encode_datagram(packet)
+        self.assertEqual(decode_datagram(encoded), packet)
+        self.assertEqual(
+            encoded.hex(),
+            "4e435355010500000000000300000000000f424000010005de00010742786c8d8e",
+        )
 
         with self.assertRaisesRegex(ValueError, "source ID"):
             encode_datagram(replace(packet, payload=bytes((0xDE, 1, 1, 7, 0x42))))
