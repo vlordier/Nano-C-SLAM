@@ -143,6 +143,19 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
         self.assertAlmostEqual(_tilt_angle_rad(roll_20_degrees), math.radians(20.0))
         self.assertAlmostEqual(_tilt_angle_rad(pitch_20_degrees), math.radians(20.0))
 
+    def test_hover_tilt_rejects_invalid_zero_quaternion(self) -> None:
+        invalid_orientation = (0.0, 0.0, 0.0, 0.0)
+        sample = OdometrySample(
+            time_s=0.0,
+            position=(0.0, 0.0, 2.4),
+            orientation=invalid_orientation,
+            linear_velocity=(0.0, 0.0, 0.0),
+            angular_velocity=(0.0, 0.0, 0.0),
+        )
+
+        self.assertTrue(math.isinf(_tilt_angle_rad(invalid_orientation)))
+        self.assertEqual(_has_hover([sample], 2.4, 0.12), 0.0)
+
     def test_protobuf_text_timestamps_default_omitted_nanoseconds_to_zero(self) -> None:
         odometry = """header {
   stamp {
