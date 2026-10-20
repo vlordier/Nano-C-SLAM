@@ -1,0 +1,80 @@
+{
+  "active": {
+    "motors": {
+      "count": 21752,
+      "all_zero": true,
+      "nonzero_records": 0
+    },
+    "world-stats": {
+      "count": 192
+    },
+    "imu": {
+      "count": 10877
+    },
+    "odometry": {
+      "count": 4739,
+      "z_min_m": 0.014999211409657062,
+      "z_max_m": 0.014999211409657062,
+      "x_min_m": 1.3245667461731296e-18,
+      "x_max_m": 1.3245667461731296e-18
+    }
+  },
+  "landed": {
+    "motors": {
+      "count": 15225,
+      "all_zero": true,
+      "nonzero_records": 0
+    },
+    "world-stats": {
+      "count": 136
+    },
+    "imu": {
+      "count": 7612
+    },
+    "odometry": {
+      "count": 3380,
+      "z_min_m": 0.014999211409657062,
+      "z_max_m": 0.014999211409657062,
+      "x_min_m": 1.3245667461731296e-18,
+      "x_max_m": 1.3245667461731296e-18
+    }
+  },
+  "firmware_source_trace": {
+    "records": 9357,
+    "nonzero_records": 4358,
+    "first_nonzero": {
+      "record": 4997,
+      "monotonic_time_ns": 12873093433708,
+      "packet_bytes": [
+        144,
+        241,
+        181,
+        109,
+        181,
+        241,
+        181,
+        109,
+        181
+      ],
+      "motor_ratio": [
+        46577,
+        46445,
+        46577,
+        46445
+      ],
+      "omega_rad_s": [
+        2339.43,
+        2336.11,
+        2339.43,
+        2336.11
+      ]
+    }
+  },
+  "firmware_log": {
+    "takeoff_recorded": true,
+    "mission_ended_recorded": false,
+    "startup_tasks_ready": true,
+    "tof_fresh": true
+  },
+  "pose_packets": 762
+}
