@@ -27,6 +27,7 @@ class PacketKind(IntEnum):
     MESSAGE_DELIVERY = 6
     MESSAGE_RESPONSE = 7
     MEASUREMENT = 8
+    TIME_SYNC = 9
     ERROR = 255
 
 
@@ -92,6 +93,7 @@ def _validate_packet(packet: UwbDatagram) -> None:
         PacketKind.RANGE_REQUEST: 0,
         PacketKind.RANGE_RESPONSE: RANGE_VECTOR.size,
         PacketKind.MEASUREMENT: RANGE_VECTOR.size,
+        PacketKind.TIME_SYNC: 0,
         PacketKind.ERROR: 1,
     }
     expected = exact_sizes.get(packet.kind)
@@ -116,6 +118,9 @@ def _validate_packet(packet: UwbDatagram) -> None:
     elif packet.kind == PacketKind.REGISTER_ACK:
         if packet.source_id != BROKER_ID or packet.destination_id == BROKER_ID:
             raise ValueError("REGISTER_ACK route must be broker-to-node")
+    elif packet.kind == PacketKind.TIME_SYNC:
+        if packet.source_id != BROKER_ID or packet.destination_id == BROKER_ID:
+            raise ValueError("TIME_SYNC route must be broker-to-node")
     elif packet.kind in {
         PacketKind.RANGE_REQUEST,
         PacketKind.RANGE_RESPONSE,

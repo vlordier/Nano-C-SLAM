@@ -27,13 +27,20 @@ four-byte IEEE CRC-32 over header plus payload:
 
 Packet kinds are `1 REGISTER`, `2 REGISTER_ACK`, `3 RANGE_REQUEST`,
 `4 RANGE_RESPONSE`, `5 MESSAGE_REQUEST`, `6 MESSAGE_DELIVERY`,
-`7 MESSAGE_RESPONSE`, `8 MEASUREMENT`, and `255 ERROR`.
+`7 MESSAGE_RESPONSE`, `8 MEASUREMENT`, `9 TIME_SYNC`, and `255 ERROR`.
 
 `REGISTER` carries the node's advertised receive UDP port (`uint16`). The host
 broker binds each registered node ID to the source IP plus advertised port and
 returns `REGISTER_ACK` only after observing a finite, fresh Gazebo pose for
 that node. Registration response timestamp and sequence identify that pose
 snapshot.
+
+`TIME_SYNC` has an empty payload and routes broker-to-node. It is emitted
+periodically from Gazebo's simulation clock and carries the current clock in
+the header timestamp. Firmware uses the most recently received TIME_SYNC as
+`now_sim_time_ns` for freshness checks; if the clock heartbeat exceeds its
+wall-clock lease or simulation time stops advancing, ranging and message
+responses fail closed. The packet sequence is monotonic for the broker sender.
 
 `RANGE_REQUEST` has an empty payload and routes from requester to target peer.
 `RANGE_RESPONSE` routes back from the peer to the requester and carries

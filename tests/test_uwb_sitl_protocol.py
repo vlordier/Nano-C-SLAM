@@ -192,6 +192,23 @@ class UwbSitlProtocolTests(unittest.TestCase):
                 )
             )
 
+    def test_time_sync_is_a_broker_clock_vector(self) -> None:
+        packet = UwbDatagram(
+            kind=PacketKind.TIME_SYNC,
+            sequence=1,
+            sim_time_ns=5_000_000_000,
+            source_id=BROKER_ID,
+            destination_id=0,
+        )
+        encoded = encode_datagram(packet)
+        self.assertEqual(
+            encoded.hex(),
+            "4e4353550109000000000001000000012a05f200ff00000031fde60f",
+        )
+        self.assertEqual(decode_datagram(encoded), packet)
+        with self.assertRaisesRegex(ValueError, "broker-to-node"):
+            encode_datagram(replace(packet, source_id=0))
+
     def test_freshness_guard_rejects_replays_stale_and_future_packets(self) -> None:
         packet = UwbDatagram(
             kind=PacketKind.RANGE_RESPONSE,

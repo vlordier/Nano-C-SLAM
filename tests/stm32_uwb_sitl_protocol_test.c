@@ -19,6 +19,11 @@ static const uint8_t message_request_golden[] = {
     0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0f, 0x42, 0x40, 0x00, 0x01,
     0x00, 0x05, 0xde, 0x00, 0x01, 0x07, 0x42, 0x78, 0x6c, 0x8d, 0x8e,
 };
+static const uint8_t time_sync_golden[] = {
+    0x4e, 0x43, 0x53, 0x55, 0x01, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x01, 0x00, 0x00, 0x00, 0x01, 0x2a, 0x05, 0xf2, 0x00, 0xff, 0x00,
+    0x00, 0x00, 0x31, 0xfd, 0xe6, 0x0f,
+};
 
 int main(void) {
     uwb_sitl_packet_t packet = {
@@ -39,6 +44,21 @@ int main(void) {
         memcmp(encoded, registration_golden, sizeof(registration_golden)) !=
             0) {
         fputs("C registration encoding differs from the Python golden vector\n",
+              stderr);
+        return 1;
+    }
+
+    packet.kind = UWB_SITL_TIME_SYNC;
+    packet.sequence = 1U;
+    packet.sim_time_ns = UINT64_C(5000000000);
+    packet.source_id = UWB_SITL_BROKER_ID;
+    packet.destination_id = 0U;
+    packet.payload_length = 0U;
+    if (uwb_sitl_encode(&packet, encoded, sizeof(encoded), &encoded_length) !=
+            0 ||
+        encoded_length != sizeof(time_sync_golden) ||
+        memcmp(encoded, time_sync_golden, sizeof(time_sync_golden)) != 0) {
+        fputs("C time-sync encoding differs from the Python golden vector\n",
               stderr);
         return 1;
     }

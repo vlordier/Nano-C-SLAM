@@ -59,6 +59,7 @@ static int validate_packet(const uwb_sitl_packet_t *packet) {
         break;
     case UWB_SITL_REGISTER_ACK:
     case UWB_SITL_RANGE_REQUEST:
+    case UWB_SITL_TIME_SYNC:
         expected_length = 0U;
         break;
     case UWB_SITL_RANGE_RESPONSE:
@@ -92,6 +93,12 @@ static int validate_packet(const uwb_sitl_packet_t *packet) {
             return -1;
         }
     } else if (kind == UWB_SITL_REGISTER_ACK) {
+        if (packet->source_id != UWB_SITL_BROKER_ID ||
+            packet->destination_id == UWB_SITL_BROKER_ID ||
+            packet->sim_time_ns == 0U) {
+            return -1;
+        }
+    } else if (kind == UWB_SITL_TIME_SYNC) {
         if (packet->source_id != UWB_SITL_BROKER_ID ||
             packet->destination_id == UWB_SITL_BROKER_ID ||
             packet->sim_time_ns == 0U) {

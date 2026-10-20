@@ -18,6 +18,7 @@ typedef enum {
     UWB_SITL_MESSAGE_DELIVERY = 6,
     UWB_SITL_MESSAGE_RESPONSE = 7,
     UWB_SITL_MEASUREMENT = 8,
+    UWB_SITL_TIME_SYNC = 9,
     UWB_SITL_ERROR = 255
 } uwb_sitl_kind_t;
 
