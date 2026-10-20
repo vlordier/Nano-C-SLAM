@@ -1237,3 +1237,40 @@ firmware investigation should address the measured 15/500-Hz stabilizer loop
 deficit, the position-controller oscillation, and this IMU/odometry disagreement before
 another acceptance run. Mapping, swarm, and Nano application validation remain
 open.
+
+## Hover and actuator-isolation retest (2026-10-20)
+
+The next matched pair used SITL firmware commit `55a8f414`, CrazySim commit
+`aeafa64`, and the patched odometry publisher. The positive run started at
+z=2.015 m, acknowledged TAKEOFF_2 to 2.315 m and LAND_2 back to the platform,
+and kept all 5,975 odometry samples finite. The capture includes 14,938 IMU
+samples, 29,777 motor messages and 232 world-stat samples. It remained inside
+the registered 0.12-m altitude, 15-degree tilt and 0.5-rad/s angular-rate
+envelope for 5.255 continuous seconds. It landed at z=2.015 m; aggregate RTF
+was 0.992 and the largest odometry gap was 5 ms.
+
+The paired negative run used the same build and world with the actuator bridge
+disabled before spawn. Across 3,013 poses, altitude remained at 2.015 m within
+4 micrometers, and all 15,014 captured motor components were zero. The plugin
+logged `actuator_bridge=disconnected`.
+
+This is the first captured 5-second hover interval with a same-configuration
+actuator-isolation control. It still fails the strict flight gate: the
+firmware warned at 502 Hz for the 500-Hz stabilizer and at 95–98 Hz for the
+100-Hz Kalman prediction task; it also logged `Landing timeout, disarming`.
+Both firmware sessions were interrupted after bounded captures (exit 255),
+and the negative plugin log omitted the firmware startup marker. The unchanged
+checker therefore exits 1 with those four failures. Full captures, logs, SDFs,
+commands and hashes are in
+[`artifacts/crazysim_motor_mapping_20261020_attempt09`](../artifacts/crazysim_motor_mapping_20261020_attempt09/manifest.json).
+
+The five orphaned `cf2` processes left by the test sessions were stopped after
+their PID, command, working directory and sockets were checked. The next run
+should use a session supervisor that captures PID and shutdown status for each
+firmware and Gazebo process, and wait for all sessions to exit before starting
+the next UDP partition. Do not loosen the rate gate based on aggregate RTF:
+these captures show aggregate real-time performance near 1.0 alongside
+per-window firmware rate warnings. Firmware-driven movement and the
+disconnected-actuator negative control are demonstrated, while clean strict
+flight acceptance, Nano-C-SLAM firmware, mapping, and swarm validation remain
+open.

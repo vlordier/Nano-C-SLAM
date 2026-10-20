@@ -1,0 +1,68 @@
+{
+  "attempt": "Step-flight positive and disconnected-actuator negative control",
+  "date": "2026-10-20",
+  "valid_for_flight_acceptance": false,
+  "scope": "Upstream Crazyflie SITL reference firmware driving CrazySim in Gazebo Harmonic; not Nano-C-SLAM application, mapping, swarm, or hardware validation.",
+  "source_revisions": {
+    "firmware": "55a8f414",
+    "crazysim_plugin": "aeafa64",
+    "odometry_plugin_patch": "b256950"
+  },
+  "firmware_binary_sha256": "65137ada1de2aa34a498651a8647edffb06dc2cdcca637a206250fab377c1b96",
+  "runtime": {
+    "gazebo_sim_version": "8.14.0",
+    "physics_engine": "gz-physics-bullet-featherstone-plugin",
+    "positive_partition": "ncs-stepflight-20261020",
+    "negative_partition": "ncs-stepflight-negative-20261020",
+    "positive_firmware_process_count": 1,
+    "negative_firmware_process_count": 1,
+    "positive_firmware_exit_code": 255,
+    "negative_firmware_exit_code": 255,
+    "gazebo_exit_code": 0,
+    "shutdown": "Firmware sessions were interrupted after capture; nonzero exits fail acceptance."
+  },
+  "flight": {
+    "spawn_z_m": 2.015,
+    "target_z_m": 2.315,
+    "takeoff_ack_result": 0,
+    "land_ack_result": 0,
+    "odometry_samples": 5975,
+    "imu_samples": 14938,
+    "motor_messages": 29777,
+    "odometry_max_gap_s": 0.005,
+    "all_odometry_finite": true,
+    "min_altitude_m": 2.014,
+    "max_altitude_m": 2.6215,
+    "end_altitude_m": 2.015,
+    "longest_registered_hover_interval_s": 5.255,
+    "aggregate_real_time_factor": 0.9916,
+    "firmware_motor_attribution": true,
+    "firmware_warnings": [
+      "stabilizer loop rate is off (502)",
+      "Kalman prediction rate off (95-98)"
+    ],
+    "landing_timeout": true
+  },
+  "negative_control": {
+    "odometry_samples": 3013,
+    "imu_samples": 7507,
+    "aggregate_real_time_factor": 0.9963,
+    "start_altitude_m": 2.014990,
+    "max_altitude_m": 2.014994,
+    "end_altitude_m": 2.014994,
+    "motor_components": 15014,
+    "nonzero_motor_components": 0,
+    "disconnected_bridge_marker": true
+  },
+  "strict_checker": {
+    "command": "uv run --locked python scripts/check_crazysim_flight.py",
+    "exit_code": 1,
+    "failures": [
+      "firmware reported estimator/rate/crash failure",
+      "firmware exited with status 255",
+      "negative-control firmware exited with status 255",
+      "negative control log must contain exactly one firmware startup marker"
+    ]
+  },
+  "interpretation": "Firmware-attributed takeoff, sustained hover interval, landing, and disconnected-actuator behavior are observed. Registered paired flight acceptance fails due to firmware rate warnings and process/log evidence requirements."
+}

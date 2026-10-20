@@ -1,0 +1,11 @@
+Positive run (firmware process in Lima ncs-sitl):
+  GZ_PARTITION=ncs-stepflight-20261020
+  spawn z=2.015 m; TAKEOFF_2 target z=2.315 m over 8 s; hold 13 s; LAND_2 target z=2.015 m over 4 s
+  firmware ACK result=0 for TAKEOFF_2 (trace command id 7) and LAND_2 (trace command id 8)
+
+Negative control:
+  Same firmware build and world; NCS_CRAZYSIM_DISABLE_ACTUATORS=1 before model spawn; no flight commands
+  Plugin emitted actuator_bridge=disconnected; captured actuator commands all zero
+
+Process shutdown:
+  Both sessions were interrupted after the bounded captures; firmware exited 255. These exits fail the strict checker.

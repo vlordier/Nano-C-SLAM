@@ -1,0 +1,805 @@
+address : 192.168.5.2 , port : 19950
+SOCKET_LINK: Create socket succeed
+SOCKET_LINK: Binding succeed
+SOCKET_LINK: Waiting for connection with gazebo ...
+SOCKET_LINK: Connection established with gazebo
+SOCKET_LINK: TRACE_CRTP_RX_STARTED
+SYS: ----------------------------
+SYS: Software-in-the-Loop Simulator is up and running!
+SYS: Build 34:fc30709529ee (v1.2-alpha +34) CLEAN
+ESTKALMANUNSCENTED: Sigma Points chosen
+SENSORS: Forcing sensors to SensorImplementation_sitl
+AK8963 I2C connection [OK].
+LPS25H I2C connection [OK].
+Entering sensorsTask()
+ESTIMATOR: Using Kalman (2) estimator
+CONTROLLER: Using PID (1) controller
+SYS: About to run tests in system.c.
+SENSORS TEST PASSED [OK].
+SYS: Self test passed!
+STAB: Wait for sensor calibration...
+NCS_IMU tick=36 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.04258 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=39 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99776 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=44 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99958 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=44 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=46 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=46 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=46 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=46 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=51 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=53 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=55 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=59 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=61 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=65 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=67 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=67 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=71 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=71 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=75 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=75 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=81 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=83 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=85 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=87 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=90 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=90 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=90 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=100 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=159 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=232 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=284 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=312 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=354 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=400 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=457 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=499 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=550 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=603 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=652 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=701 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=752 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=802 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=853 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=901 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+NCS_IMU tick=952 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+GYro Bias found
+NCS_IMU tick=1001 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: Starting stabilizer loop
+SUP: Can not fly
+STAB: NCS_STAB tick=1050 step=25 pos=0.00000,-0.00000,2.00140 vel=0.00000,-0.00000,-0.62253 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=1051 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=1098 step=50 pos=0.00000,-0.00000,2.01175 vel=0.00000,-0.00000,-0.07001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=1100 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+SUP: Ready to fly
+STAB: NCS_STAB tick=1149 step=75 pos=0.00000,-0.00000,2.01358 vel=0.00000,-0.00000,-0.01939 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=1153 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=1199 step=100 pos=0.00000,-0.00000,2.01424 vel=0.00000,-0.00000,-0.00769 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=1201 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=1250 step=125 pos=0.00000,-0.00000,2.01453 vel=0.00000,-0.00000,-0.00373 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=1250 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=1299 step=150 pos=0.00000,-0.00000,2.01469 vel=0.00000,-0.00000,-0.00203 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=1301 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=1348 step=175 pos=0.00000,-0.00000,2.01479 vel=0.00000,-0.00000,-0.00120 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=1352 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=1402 step=200 pos=0.00000,-0.00000,2.01486 vel=0.00000,-0.00000,-0.00072 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=1403 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=1449 step=225 pos=0.00000,-0.00000,2.01490 vel=0.00000,-0.00000,-0.00051 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=1451 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=1499 step=250 pos=0.00000,-0.00000,2.01493 vel=0.00000,-0.00000,-0.00043 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=1501 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=1551 step=275 pos=0.00000,-0.00000,2.01494 vel=0.00000,-0.00000,-0.00044 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=1554 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=1609 step=300 pos=0.00000,-0.00000,2.01494 vel=0.00000,-0.00000,-0.00054 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=1609 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=1655 step=325 pos=0.00000,-0.00000,2.01495 vel=0.00000,-0.00000,-0.00054 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=1655 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=1701 step=350 pos=0.00000,-0.00000,2.01495 vel=0.00000,-0.00000,-0.00061 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=1701 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=1751 step=375 pos=0.00000,-0.00000,2.01495 vel=0.00000,-0.00000,-0.00066 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=1753 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=1804 step=400 pos=0.00000,-0.00000,2.01494 vel=0.00000,-0.00000,-0.00069 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=1807 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=1857 step=425 pos=0.00000,-0.00000,2.01494 vel=0.00000,-0.00000,-0.00073 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=1857 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=1919 step=450 pos=0.00000,-0.00000,2.01493 vel=0.00000,-0.00000,-0.00078 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=1919 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=1956 step=475 pos=0.00000,-0.00000,2.01494 vel=0.00000,-0.00000,-0.00074 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=1956 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2000 step=500 pos=0.00000,-0.00000,2.01494 vel=0.00000,-0.00000,-0.00070 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2002 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2061 step=525 pos=0.00000,-0.00000,2.01494 vel=0.00000,-0.00000,-0.00072 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2062 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2165 step=550 pos=0.00000,-0.00000,2.01492 vel=0.00000,-0.00000,-0.00078 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2167 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2224 step=575 pos=0.00000,-0.00000,2.01494 vel=0.00000,-0.00000,-0.00064 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2228 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2246 step=600 pos=0.00000,-0.00000,2.01496 vel=0.00000,-0.00000,-0.00057 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2246 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2264 step=625 pos=0.00000,-0.00000,2.01496 vel=0.00000,-0.00000,-0.00056 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2264 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2300 step=650 pos=0.00000,-0.00000,2.01496 vel=0.00000,-0.00000,-0.00061 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2300 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2350 step=675 pos=0.00000,-0.00000,2.01495 vel=0.00000,-0.00000,-0.00070 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2352 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2459 step=700 pos=0.00000,-0.00000,2.01492 vel=0.00000,-0.00000,-0.00085 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2459 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2466 step=725 pos=0.00000,-0.00000,2.01495 vel=0.00000,-0.00000,-0.00063 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2467 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2499 step=750 pos=0.00000,-0.00000,2.01495 vel=0.00000,-0.00000,-0.00063 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2501 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2549 step=775 pos=0.00000,-0.00000,2.01495 vel=0.00000,-0.00000,-0.00063 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2551 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2599 step=800 pos=0.00000,-0.00000,2.01495 vel=0.00000,-0.00000,-0.00063 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2601 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2649 step=825 pos=0.00000,-0.00000,2.01495 vel=0.00000,-0.00000,-0.00066 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2651 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2699 step=850 pos=0.00000,-0.00000,2.01494 vel=0.00000,-0.00000,-0.00072 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2700 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2748 step=875 pos=0.00000,-0.00000,2.01494 vel=0.00000,-0.00000,-0.00078 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2750 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2798 step=900 pos=0.00000,-0.00000,2.01493 vel=0.00000,-0.00000,-0.00083 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2800 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2848 step=925 pos=0.00000,-0.00000,2.01493 vel=0.00000,-0.00000,-0.00082 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2850 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2903 step=950 pos=0.00000,-0.00000,2.01493 vel=0.00000,-0.00000,-0.00084 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2903 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2948 step=975 pos=0.00000,-0.00000,2.01493 vel=0.00000,-0.00000,-0.00081 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=2950 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99951 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=2997 step=1000 pos=0.00000,-0.00000,2.01493 vel=0.00000,-0.00000,-0.00080 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3000 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,0.99953 gyro_dps=0.00000,0.00000,0.00000
+STAB: WARNING: stabilizer loop rate is off (502)
+ESTKALMAN: WARNING: Kalman prediction rate off (98)
+STAB: NCS_STAB tick=3049 step=1025 pos=0.00000,-0.00000,2.01493 vel=0.00000,-0.00000,-0.00065 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3058 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00002 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=3097 step=1050 pos=0.00000,-0.00000,2.01494 vel=0.00000,-0.00000,-0.00043 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3099 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=3148 step=1075 pos=0.00000,-0.00000,2.01495 vel=0.00000,-0.00000,-0.00026 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3150 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=3198 step=1100 pos=0.00000,-0.00000,2.01496 vel=0.00000,-0.00000,-0.00013 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3200 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=3248 step=1125 pos=0.00000,-0.00000,2.01498 vel=0.00000,-0.00000,-0.00004 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3250 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=3300 step=1150 pos=0.00000,-0.00000,2.01498 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3300 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=3348 step=1175 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00004 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3350 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=3398 step=1200 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00004 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3400 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=3448 step=1225 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00004 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3450 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=3506 step=1250 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00003 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3508 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=3549 step=1275 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00003 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3549 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=3597 step=1300 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3599 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=3648 step=1325 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3650 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=3706 step=1350 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3712 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=3768 step=1375 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3768 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=3812 step=1400 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3812 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=3848 step=1425 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3850 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=3906 step=1450 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3906 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=3948 step=1475 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=3950 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=3998 step=1500 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4000 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=4048 step=1525 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4050 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=4098 step=1550 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4100 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=4148 step=1575 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4150 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=4197 step=1600 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4199 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=4246 step=1625 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4248 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=4296 step=1650 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4298 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=4346 step=1675 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4348 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=4396 step=1700 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4398 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=4446 step=1725 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4448 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=4496 step=1750 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4498 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=4546 step=1775 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4548 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=4597 step=1800 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4599 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=4646 step=1825 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4648 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=4697 step=1850 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4698 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=4745 step=1875 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4747 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=4797 step=1900 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4797 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=4847 step=1925 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4847 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=4907 step=1950 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4909 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=4948 step=1975 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=4948 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5000 step=2000 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5001 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5045 step=2025 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5047 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5100 step=2050 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5102 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5153 step=2075 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5157 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5209 step=2100 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5211 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5248 step=2125 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5248 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5295 step=2150 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5297 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5359 step=2175 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5359 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5431 step=2200 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5435 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5485 step=2225 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5485 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5495 step=2250 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5497 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5545 step=2275 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5547 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5595 step=2300 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5597 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5645 step=2325 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5647 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5697 step=2350 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5699 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5745 step=2375 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5747 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5795 step=2400 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5797 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5845 step=2425 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5847 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5906 step=2450 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5906 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5945 step=2475 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5947 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=5994 step=2500 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=5996 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6045 step=2525 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+ESTKALMAN: WARNING: Kalman prediction rate off (98)
+NCS_IMU tick=6047 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6096 step=2550 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=6098 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6146 step=2575 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=6148 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6194 step=2600 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=6196 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6246 step=2625 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=6246 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6294 step=2650 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=6298 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6345 step=2675 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=6347 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6394 step=2700 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=6397 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6446 step=2725 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=6450 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6494 step=2750 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=6498 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6544 step=2775 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=6546 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6603 step=2800 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=6604 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6644 step=2825 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=6646 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6697 step=2850 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=6697 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6753 step=2875 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=6754 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6800 step=2900 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=6800 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6859 step=2925 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=6861 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6907 step=2950 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=6909 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6945 step=2975 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=6947 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=6997 step=3000 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=6999 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7060 step=3025 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7064 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7128 step=3050 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7130 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7164 step=3075 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7170 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7237 step=3100 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7237 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7287 step=3125 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7293 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7326 step=3150 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7327 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7372 step=3175 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7372 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7416 step=3200 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7416 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7469 step=3225 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7499 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7508 step=3250 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7508 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7542 step=3275 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7544 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7593 step=3300 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7595 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7643 step=3325 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7645 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7693 step=3350 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7695 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7742 step=3375 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7745 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7792 step=3400 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7795 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7843 step=3425 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7845 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7892 step=3450 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7904 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7940 step=3475 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7942 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=7989 step=3500 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=7991 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=8039 step=3525 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=8041 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+ESTKALMAN: WARNING: Kalman prediction rate off (96)
+STAB: NCS_STAB tick=8089 step=3550 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=8091 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=8140 step=3575 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=8142 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=8190 step=3600 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=8192 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=8242 step=3625 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=8244 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=8293 step=3650 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=8295 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=8344 step=3675 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=8348 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=8396 step=3700 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=8400 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=8452 step=3725 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=8454 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=8502 step=3750 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=8502 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=8551 step=3775 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=8555 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=8604 step=3800 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=8606 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=8662 step=3825 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=8664 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=8722 step=3850 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=8722 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=8784 step=3875 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=8793 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=8836 step=3900 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=8836 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=8893 step=3925 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=8895 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=8942 step=3950 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=8945 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9013 step=3975 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9013 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9065 step=4000 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9065 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9077 step=4025 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9083 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9133 step=4050 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9133 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9171 step=4075 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9173 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9236 step=4100 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9254 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9329 step=4125 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9332 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9408 step=4150 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9410 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9428 step=4175 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9430 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9455 step=4200 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9455 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9478 step=4225 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9478 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9533 step=4250 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9537 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9579 step=4275 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9582 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9629 step=4300 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9631 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9683 step=4325 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9684 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9732 step=4350 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9734 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9784 step=4375 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9786 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9837 step=4400 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9839 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9887 step=4425 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9889 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9939 step=4450 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9941 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=9992 step=4475 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=9992 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=10038 step=4500 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=10040 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+ESTKALMAN: WARNING: Kalman prediction rate off (95)
+STAB: NCS_STAB tick=10089 step=4525 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=10091 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=10142 step=4550 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=10142 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=10193 step=4575 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=10195 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=10245 step=4600 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=10247 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=10295 step=4625 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=10297 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=10347 step=4650 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=10349 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=10398 step=4675 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=10402 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=10448 step=4700 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=10450 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=10499 step=4725 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=10503 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=10551 step=4750 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=10551 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=10602 step=4775 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=10603 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=10653 step=4800 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=10656 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=10704 step=4825 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=10706 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=10761 step=4850 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=10761 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=10819 step=4875 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=10819 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=10858 step=4900 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=10858 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=10930 step=4925 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=10934 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11001 step=4950 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11003 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11055 step=4975 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11055 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11071 step=5000 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11071 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11113 step=5025 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11115 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11165 step=5050 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11173 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11280 step=5075 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11282 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11321 step=5100 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11323 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11370 step=5125 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11370 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11392 step=5150 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11398 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11431 step=5175 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11432 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11469 step=5200 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11473 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11554 step=5225 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11554 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11632 step=5250 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11633 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11637 step=5275 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11638 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11674 step=5300 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11676 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11725 step=5325 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11727 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11778 step=5350 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11778 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11828 step=5375 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11830 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11878 step=5400 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11880 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11928 step=5425 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11930 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=11980 step=5450 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=11982 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=12032 step=5475 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=12034 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+ESTKALMAN: WARNING: Kalman prediction rate off (97)
+STAB: NCS_STAB tick=12084 step=5500 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=12087 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=12131 step=5525 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=12133 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=12181 step=5550 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=12185 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=12233 step=5575 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=12235 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=12286 step=5600 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=12288 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=12335 step=5625 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=12337 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=12386 step=5650 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=12389 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=12436 step=5675 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=12438 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=12487 step=5700 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=12489 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=12539 step=5725 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=12541 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=12591 step=5750 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=12593 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=12646 step=5775 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=12646 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=12692 step=5800 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=12694 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=12742 step=5825 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=12744 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=12793 step=5850 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=12795 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=12865 step=5875 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=12867 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=12908 step=5900 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=12910 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=12948 step=5925 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=12948 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=12996 step=5950 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13000 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=13057 step=5975 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13057 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=13109 step=6000 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13112 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=13158 step=6025 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13160 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=13198 step=6050 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13200 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=13253 step=6075 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13253 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=13317 step=6100 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13319 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=13398 step=6125 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13400 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=13457 step=6150 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13457 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=13469 step=6175 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13469 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=13529 step=6200 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13533 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=13574 step=6225 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13574 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=13630 step=6250 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13630 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=13689 step=6275 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13689 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=13705 step=6300 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13707 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=13756 step=6325 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13759 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=13807 step=6350 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13809 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=13858 step=6375 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13860 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=13907 step=6400 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13909 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=13954 step=6425 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=13956 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=14004 step=6450 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14006 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=14055 step=6475 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14058 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+ESTKALMAN: WARNING: Kalman prediction rate off (98)
+STAB: NCS_STAB tick=14106 step=6500 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14108 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=14158 step=6525 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14158 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=14209 step=6550 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14209 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=14260 step=6575 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14262 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=14309 step=6600 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14311 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=14360 step=6625 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14362 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=14411 step=6650 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14413 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=14461 step=6675 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14464 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=14512 step=6700 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14514 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=14563 step=6725 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14565 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=14614 step=6750 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14616 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=14666 step=6775 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14666 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=14714 step=6800 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14718 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=14774 step=6825 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14774 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=14815 step=6850 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14817 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=14866 step=6875 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14868 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=14917 step=6900 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14919 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=14967 step=6925 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=14969 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15018 step=6950 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15020 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15068 step=6975 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15070 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15120 step=7000 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15122 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15170 step=7025 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15172 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15221 step=7050 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15223 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15272 step=7075 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15274 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15324 step=7100 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15324 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15374 step=7125 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15378 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15423 step=7150 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15425 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15475 step=7175 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15477 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15526 step=7200 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15528 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15576 step=7225 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15578 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15625 step=7250 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15628 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15675 step=7275 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15677 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15726 step=7300 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15728 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15780 step=7325 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15780 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15828 step=7350 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15831 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15879 step=7375 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15879 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15929 step=7400 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15931 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=15975 step=7425 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=15977 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16028 step=7450 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16031 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16078 step=7475 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16080 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16129 step=7500 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16131 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16178 step=7525 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16182 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16232 step=7550 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16232 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16292 step=7575 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16296 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16344 step=7600 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16346 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16397 step=7625 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16397 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16454 step=7650 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16454 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16492 step=7675 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16496 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16551 step=7700 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16552 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16595 step=7725 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16595 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16633 step=7750 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16635 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16689 step=7775 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16694 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16735 step=7800 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16737 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16787 step=7825 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16790 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16837 step=7850 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16839 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16887 step=7875 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16889 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16937 step=7900 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16939 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=16989 step=7925 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=16989 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17038 step=7950 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17041 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17089 step=7975 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17091 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17139 step=8000 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17141 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17189 step=8025 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17191 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17240 step=8050 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17242 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17291 step=8075 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17293 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17341 step=8100 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17343 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17393 step=8125 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17393 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17442 step=8150 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17445 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17493 step=8175 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17495 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17543 step=8200 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17545 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17593 step=8225 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17595 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17644 step=8250 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17647 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17695 step=8275 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17698 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17745 step=8300 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17747 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17796 step=8325 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17796 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17846 step=8350 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17848 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17902 step=8375 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17905 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17949 step=8400 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17949 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=17997 step=8425 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=17999 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18046 step=8450 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18048 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18107 step=8475 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18109 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18162 step=8500 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18165 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18222 step=8525 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18224 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18271 step=8550 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18273 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18313 step=8575 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18319 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18345 step=8600 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18347 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18396 step=8625 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18398 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18451 step=8650 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18452 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18512 step=8675 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18522 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18577 step=8700 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18581 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18655 step=8725 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18657 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18703 step=8750 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18703 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18758 step=8775 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18759 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18767 step=8800 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18767 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18794 step=8825 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18796 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18844 step=8850 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18846 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18894 step=8875 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18896 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18944 step=8900 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18946 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=18994 step=8925 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=18996 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=19044 step=8950 pos=0.00000,-0.00000,2.01500 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=19046 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=19094 step=8975 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=19096 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=19144 step=9000 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00002 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=19146 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=19194 step=9025 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=19196 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=19244 step=9050 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00001 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=19246 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=19294 step=9075 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,-0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=19296 raw_acc=0,0,2047 raw_gyro=0,0,0 acc_g=0.00000,0.00000,1.00000 gyro_dps=0.00000,0.00000,0.00000
+STAB: NCS_STAB tick=19345 step=9100 pos=0.00000,-0.00000,2.01499 vel=0.00000,-0.00000,0.00000 attitude_deg=0.0000,0.0000,0.0000 setpoint_z=0.00000 thrust=0.00000
+NCS_IMU tick=19349 raw
