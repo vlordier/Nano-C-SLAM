@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import json
+import math
 import unittest
 from dataclasses import replace
 
 from scripts.check_crazysim_flight import (
+    OdometrySample,
+    _has_hover,
+    _tilt_angle_rad,
     parse_imu_timestamps,
     parse_imu_vectors,
     parse_motor_components,
@@ -98,6 +102,46 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
             }
         )
         self.assertEqual(parse_odometry(subsecond_odometry)[0].time_s, 0.005)
+
+    def test_hover_tilt_is_independent_of_heading_yaw(self) -> None:
+        half_yaw = math.radians(45.0)
+        yaw_only_orientation = (
+            0.0,
+            0.0,
+            math.sin(half_yaw),
+            math.cos(half_yaw),
+        )
+        hover_samples = [
+            OdometrySample(
+                time_s=sample * 0.01,
+                position=(0.0, 0.0, 2.4),
+                orientation=yaw_only_orientation,
+                linear_velocity=(0.0, 0.0, 0.0),
+                angular_velocity=(0.0, 0.0, 0.0),
+            )
+            for sample in range(201)
+        ]
+
+        self.assertAlmostEqual(_tilt_angle_rad(yaw_only_orientation), 0.0)
+        self.assertAlmostEqual(_has_hover(hover_samples, 2.4, 0.12), 2.0)
+
+    def test_hover_tilt_still_rejects_roll_and_pitch(self) -> None:
+        half_tilt = math.radians(10.0)
+        roll_20_degrees = (
+            math.sin(half_tilt),
+            0.0,
+            0.0,
+            math.cos(half_tilt),
+        )
+        pitch_20_degrees = (
+            0.0,
+            math.sin(half_tilt),
+            0.0,
+            math.cos(half_tilt),
+        )
+
+        self.assertAlmostEqual(_tilt_angle_rad(roll_20_degrees), math.radians(20.0))
+        self.assertAlmostEqual(_tilt_angle_rad(pitch_20_degrees), math.radians(20.0))
 
     def test_protobuf_text_timestamps_default_omitted_nanoseconds_to_zero(self) -> None:
         odometry = """header {

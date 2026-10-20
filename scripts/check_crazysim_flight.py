@@ -315,10 +315,7 @@ def _has_hover(
     run_start: float | None = None
     previous_time: float | None = None
     for sample in samples:
-        norm = math.sqrt(sum(value * value for value in sample.orientation))
-        upright_error = math.inf
-        if norm > 0.0:
-            upright_error = 2.0 * math.acos(min(1.0, abs(sample.orientation[3] / norm)))
+        upright_error = _tilt_angle_rad(sample.orientation)
         angular_rate = math.sqrt(
             sum(value * value for value in sample.angular_velocity)
         )
@@ -337,6 +334,16 @@ def _has_hover(
             longest = max(longest, sample.time_s - run_start)
         previous_time = sample.time_s
     return longest
+
+
+def _tilt_angle_rad(orientation: Vector4) -> float:
+    """Return body-Z deviation from world vertical, independent of yaw."""
+    norm_squared = sum(value * value for value in orientation)
+    if not math.isfinite(norm_squared) or norm_squared <= 0.0:
+        return math.inf
+    x, y, _, _ = orientation
+    world_vertical_alignment = 1.0 - 2.0 * (x * x + y * y) / norm_squared
+    return math.acos(max(-1.0, min(1.0, world_vertical_alignment)))
 
 
 def _command_ids(firmware_log: str) -> set[int]:
