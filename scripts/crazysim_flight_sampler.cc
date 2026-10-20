@@ -33,10 +33,18 @@ void stop(int) {
 }
 
 template <typename Message>
-std::function<void(const Message &)> jsonRecorder(
-    std::ofstream &output, std::mutex &outputMutex,
-    std::atomic<std::uint64_t> &count) {
+std::function<void(const Message &)> jsonRecorder(std::ofstream &output,
+                                                  std::mutex &outputMutex,
+                                                  std::atomic<std::uint64_t> &count) {
     return [&output, &outputMutex, &count](const Message &message) {
+        const auto arrivalWallNs =
+            std::chrono::duration_cast<std::chrono::nanoseconds>(
+                std::chrono::system_clock::now().time_since_epoch())
+                .count();
+        const auto arrivalMonotonicNs =
+            std::chrono::duration_cast<std::chrono::nanoseconds>(
+                std::chrono::steady_clock::now().time_since_epoch())
+                .count();
         std::string serialized;
         const auto status =
             google::protobuf::util::MessageToJsonString(message, &serialized);
@@ -45,6 +53,16 @@ std::function<void(const Message &)> jsonRecorder(
                       << status.message() << '\n';
             return;
         }
+        const auto objectStart = serialized.find('{');
+        if (objectStart == std::string::npos) {
+            std::cerr << "encoded protobuf JSON is not an object\n";
+            return;
+        }
+        const std::string arrivalFields =
+            "\"capture_unix_time_ns\":" + std::to_string(arrivalWallNs) +
+            ",\"capture_monotonic_time_ns\":" + std::to_string(arrivalMonotonicNs) +
+            ',';
+        serialized.insert(objectStart + 1, arrivalFields);
         std::lock_guard<std::mutex> lock(outputMutex);
         output << serialized << '\n';
         count.fetch_add(1, std::memory_order_relaxed);

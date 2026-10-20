@@ -39,6 +39,8 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
     def test_gazebo_json_topic_captures_parse_like_protobuf_text(self) -> None:
         odometry = json.dumps(
             {
+                "capture_unix_time_ns": 1_797_000_000_000_000_000,
+                "capture_monotonic_time_ns": 420_000_000,
                 "header": {"stamp": {"sec": "12", "nsec": 500_000_000}},
                 "pose": {
                     "position": {"x": 1, "y": 2, "z": 2.4},
@@ -52,14 +54,24 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
         )
         imu = json.dumps(
             {
+                "capture_unix_time_ns": 1_797_000_000_000_250_000,
+                "capture_monotonic_time_ns": 670_000_000,
                 "header": {"stamp": {"sec": "12", "nsec": 750_000_000}},
                 "linearAcceleration": {"x": 0, "y": 0, "z": 9.81},
                 "angularVelocity": {"x": 0.1, "y": 0.2, "z": 0.3},
             }
         )
-        motors = json.dumps({"velocity": [1000, 1100, 1200, 1300]})
+        motors = json.dumps(
+            {
+                "capture_unix_time_ns": 1_797_000_000_000_500_000,
+                "capture_monotonic_time_ns": 920_000_000,
+                "velocity": [1000, 1100, 1200, 1300],
+            }
+        )
         world_stats = json.dumps(
             {
+                "capture_unix_time_ns": 1_797_000_000_000_750_000,
+                "capture_monotonic_time_ns": 1_170_000_000,
                 "simTime": {"sec": "12", "nsec": 500_000_000},
                 "realTime": {"sec": "12", "nsec": 250_000_000},
                 "realTimeFactor": 1.1,

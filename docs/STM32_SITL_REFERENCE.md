@@ -976,6 +976,16 @@ left `GZ_IP` unset. The sampler now prints its effective partition, `GZ_IP`,
 each subscription result, publisher message type and address, and a per-topic
 zero-callback diagnostic.
 
+Each JSONL record now also carries `capture_unix_time_ns` and
+`capture_monotonic_time_ns`, sampled on the host when the Gazebo transport
+callback receives the message. Gazebo header timestamps remain unchanged and
+continue to drive flight acceptance. The host timestamps let a bounded
+firmware console capture be aligned with the sensor and motor streams; use
+monotonic time for event order within this sampler and Unix time only for
+cross-process correlation after checking host/guest wall-clock offset. These
+fields are observer metadata and do not convert sensor arrival time into
+simulation time.
+
 The compact JSONL capture retained full timestamps without disturbing
 simulation speed: RTF was 0.998 and the largest IMU gap was 22 ms. Starting
 the sampler before Gazebo aligned the odometry and stats intervals (99.3%
