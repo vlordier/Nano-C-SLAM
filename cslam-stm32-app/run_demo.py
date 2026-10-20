@@ -22,8 +22,9 @@ SCAN_PACKET = 1
 FINAL_FRAGMENT = 0x80
 OPERATOR_HEARTBEAT_INTERVAL_SECONDS = 0.25
 UINT32_MASK = 0xFFFFFFFF
-PARAM_DOWNLOAD_TIMEOUT_SECONDS = 30.0
-LINK_CONNECT_TIMEOUT_SECONDS = 10.0
+PARAM_VALUES_TIMEOUT_SECONDS = 30.0
+LINK_HANDSHAKE_TIMEOUT_SECONDS = 10.0
+TOC_DOWNLOAD_TIMEOUT_SECONDS = 120.0
 
 
 class PacketLike(Protocol):
@@ -62,6 +63,7 @@ class CrazyflieLike(Protocol):
 
 
 class LinkCrazyflieLike(CrazyflieLike, Protocol):
+    link_established: LinkCallbackListLike
     connected: LinkCallbackListLike
     connection_failed: LinkCallbackListLike
 
@@ -89,12 +91,16 @@ class BoundedSwarm:
         self,
         links: Mapping[str, LinkCrazyflieLike],
         *,
-        connect_timeout_s: float = LINK_CONNECT_TIMEOUT_SECONDS,
+        connect_timeout_s: float = LINK_HANDSHAKE_TIMEOUT_SECONDS,
+        toc_timeout_s: float = TOC_DOWNLOAD_TIMEOUT_SECONDS,
     ) -> None:
         if connect_timeout_s <= 0:
             raise ValueError("link connection timeout must be positive")
+        if toc_timeout_s <= 0:
+            raise ValueError("TOC download timeout must be positive")
         self._links = links
         self._connect_timeout_s = connect_timeout_s
+        self._toc_timeout_s = toc_timeout_s
         self._sync_cfs = {
             uri: SyncCrazyflieLikeAdapter(cf, uri) for uri, cf in links.items()
         }
@@ -127,6 +133,7 @@ class BoundedSwarm:
             scf.cf,
             scf.link_uri,
             connect_timeout_s=self._connect_timeout_s,
+            toc_timeout_s=self._toc_timeout_s,
         )
 
 
@@ -140,35 +147,54 @@ def open_crazyflie_link(
     cf: LinkCrazyflieLike,
     uri: str,
     *,
-    connect_timeout_s: float = LINK_CONNECT_TIMEOUT_SECONDS,
+    connect_timeout_s: float = LINK_HANDSHAKE_TIMEOUT_SECONDS,
+    toc_timeout_s: float = TOC_DOWNLOAD_TIMEOUT_SECONDS,
 ) -> None:
     if connect_timeout_s <= 0:
         raise ValueError("link connection timeout must be positive")
-    connected = Event()
+    if toc_timeout_s <= 0:
+        raise ValueError("TOC download timeout must be positive")
+    link_established = Event()
+    toc_downloaded = Event()
     failure_messages: list[str] = []
 
-    def on_connected(_link_uri: str) -> None:
-        connected.set()
+    def on_link_established(_link_uri: str) -> None:
+        link_established.set()
+
+    def on_toc_downloaded(_link_uri: str) -> None:
+        toc_downloaded.set()
 
     def on_connection_failed(_link_uri: str, message: str) -> None:
         failure_messages.append(message)
-        connected.set()
+        link_established.set()
+        toc_downloaded.set()
 
-    cf.connected.add_callback(on_connected)
+    cf.link_established.add_callback(on_link_established)
+    cf.connected.add_callback(on_toc_downloaded)
     cf.connection_failed.add_callback(on_connection_failed)
     try:
         cf.open_link(uri)
-        if not connected.wait(connect_timeout_s):
+        if not link_established.wait(connect_timeout_s):
             cf.close_link()
             raise TimeoutError(
-                f"link connection timed out for {uri} after {connect_timeout_s:g}s"
+                f"link handshake timed out for {uri} after {connect_timeout_s:g}s"
+            )
+        if failure_messages:
+            raise ConnectionError(
+                f"link connection failed for {uri}: {failure_messages[0]}"
+            )
+        if not toc_downloaded.wait(toc_timeout_s):
+            cf.close_link()
+            raise TimeoutError(
+                f"TOC download timed out for {uri} after {toc_timeout_s:g}s"
             )
         if failure_messages:
             raise ConnectionError(
                 f"link connection failed for {uri}: {failure_messages[0]}"
             )
     finally:
-        cf.connected.remove_callback(on_connected)
+        cf.link_established.remove_callback(on_link_established)
+        cf.connected.remove_callback(on_toc_downloaded)
         cf.connection_failed.remove_callback(on_connection_failed)
 
 
@@ -318,7 +344,7 @@ def wait_for_param_download(
     scf: SyncCrazyflieLike,
     *,
     loggers: Mapping[str, DroneLogger],
-    timeout_s: float = PARAM_DOWNLOAD_TIMEOUT_SECONDS,
+    timeout_s: float = PARAM_VALUES_TIMEOUT_SECONDS,
 ) -> None:
     if timeout_s <= 0:
         raise ValueError("parameter download timeout must be positive")

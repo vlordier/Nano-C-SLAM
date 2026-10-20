@@ -96,9 +96,13 @@ class MissionTests(unittest.TestCase):
                 callback(*args)
 
     class FakeLink:
-        def __init__(self, uri: str, *, respond: bool = True) -> None:
+        def __init__(
+            self, uri: str, *, respond: bool = True, toc_respond: bool = True
+        ) -> None:
             self.link_uri = uri
             self.respond = respond
+            self.toc_respond = toc_respond
+            self.link_established = MissionTests.CallbackList()
             self.connected = MissionTests.CallbackList()
             self.connection_failed = MissionTests.CallbackList()
             self.close_count = 0
@@ -113,7 +117,9 @@ class MissionTests(unittest.TestCase):
         def open_link(self, uri: str) -> None:
             self.link_uri = uri
             if self.respond:
-                self.connected.call(uri)
+                self.link_established.call(uri)
+                if self.toc_respond:
+                    self.connected.call(uri)
 
         def close_link(self) -> None:
             self.close_count += 1
@@ -288,6 +294,7 @@ assert not Path("logs").exists()
             swarm.parallel_safe(lambda scf: called.append(scf.link_uri))
         self.assertEqual(called, [uri])
         self.assertEqual(link.close_count, 1)
+        self.assertEqual(link.link_established.callbacks, [])
         self.assertEqual(link.connected.callbacks, [])
         self.assertEqual(link.connection_failed.callbacks, [])
 
@@ -295,11 +302,25 @@ assert not Path("logs").exists()
         uri = "udp://127.0.0.1:21850"
         link = self.FakeLink(uri, respond=False)
         with (
-            self.assertRaisesRegex(TimeoutError, "link connection timed out"),
+            self.assertRaisesRegex(TimeoutError, "link handshake timed out"),
             demo.BoundedSwarm({uri: link}, connect_timeout_s=0.001),
         ):
             self.fail("connection should not have completed")
         self.assertGreaterEqual(link.close_count, 1)
+        self.assertEqual(link.link_established.callbacks, [])
+        self.assertEqual(link.connected.callbacks, [])
+        self.assertEqual(link.connection_failed.callbacks, [])
+
+    def test_bounded_swarm_waits_for_toc_after_link_handshake(self) -> None:
+        uri = "udp://127.0.0.1:21850"
+        link = self.FakeLink(uri, toc_respond=False)
+        with (
+            self.assertRaisesRegex(TimeoutError, "TOC download timed out"),
+            demo.BoundedSwarm({uri: link}, connect_timeout_s=0.1, toc_timeout_s=0.001),
+        ):
+            self.fail("connection setup should not have completed")
+        self.assertGreaterEqual(link.close_count, 1)
+        self.assertEqual(link.link_established.callbacks, [])
         self.assertEqual(link.connected.callbacks, [])
         self.assertEqual(link.connection_failed.callbacks, [])
 
