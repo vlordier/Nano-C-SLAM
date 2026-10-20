@@ -5,6 +5,8 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <pthread.h>
+#include <stdatomic.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,6 +40,8 @@ static pthread_mutex_t state_lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t state_changed = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t tx_lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t receiver_thread;
+static atomic_bool receiver_running = ATOMIC_VAR_INIT(false);
+static uint8_t receiver_thread_started;
 static int socket_fd = -1;
 static struct sockaddr_in broker_address;
 static uint8_t own_id;
@@ -155,7 +159,7 @@ static void make_ack_message(const uwb_sitl_packet_t *request,
 static void *receiver_main(void *unused) {
     (void)unused;
     uint8_t bytes[SITL_MAX_DATAGRAM];
-    for (;;) {
+    while (atomic_load_explicit(&receiver_running, memory_order_acquire)) {
         struct sockaddr_in sender;
         socklen_t sender_length = (socklen_t)sizeof(sender);
         const ssize_t received =
@@ -164,7 +168,7 @@ static void *receiver_main(void *unused) {
         if (received < 0) {
             if (errno == EINTR)
                 continue;
-            if (socket_fd < 0)
+            if (!atomic_load_explicit(&receiver_running, memory_order_acquire))
                 break;
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
                 uint8_t port_bytes[2] = {(uint8_t)(configured_local_port >> 8),
@@ -177,6 +181,8 @@ static void *receiver_main(void *unused) {
             }
             continue;
         }
+        if (!atomic_load_explicit(&receiver_running, memory_order_acquire))
+            break;
         if (sender.sin_family != AF_INET ||
             sender.sin_addr.s_addr != broker_address.sin_addr.s_addr ||
             sender.sin_port != broker_address.sin_port)
@@ -236,6 +242,19 @@ static void *receiver_main(void *unused) {
         pthread_mutex_unlock(&state_lock);
     }
     return NULL;
+}
+
+static void stop_receiver(void) {
+    if (receiver_thread_started == 0U)
+        return;
+    atomic_store_explicit(&receiver_running, false, memory_order_release);
+    if (socket_fd >= 0)
+        (void)shutdown(socket_fd, SHUT_RDWR);
+    (void)pthread_join(receiver_thread, NULL);
+    receiver_thread_started = 0U;
+    if (socket_fd >= 0)
+        close(socket_fd);
+    socket_fd = -1;
 }
 
 static void deadline_after_ms(struct timespec *deadline, uint32_t timeout_ms) {
@@ -359,17 +378,22 @@ uwb_err_code_e uwb_api_init(uint8_t node_id) {
     struct timeval receive_timeout = {.tv_sec = 0, .tv_usec = 100000};
     (void)setsockopt(socket_fd, SOL_SOCKET, SO_RCVTIMEO, &receive_timeout,
                      sizeof(receive_timeout));
+    atomic_store_explicit(&receiver_running, true, memory_order_release);
     if (pthread_create(&receiver_thread, NULL, receiver_main, NULL) != 0) {
+        atomic_store_explicit(&receiver_running, false, memory_order_release);
         close(socket_fd);
         socket_fd = -1;
         return UWB_ERROR;
     }
+    receiver_thread_started = 1U;
     uint8_t port_bytes[2] = {(uint8_t)(local_port >> 8), (uint8_t)local_port};
     uwb_sitl_packet_t registration =
         make_packet(UWB_SITL_REGISTER, UWB_SITL_BROKER_ID, port_bytes,
                     sizeof(port_bytes), next_packet_sequence());
-    if (send_packet(&registration) != 0)
+    if (send_packet(&registration) != 0) {
+        stop_receiver();
         return UWB_TX_ERROR;
+    }
     struct timespec deadline;
     deadline_after_ms(&deadline, SITL_REGISTER_TIMEOUT_MS);
     pthread_mutex_lock(&state_lock);
@@ -379,6 +403,7 @@ uwb_err_code_e uwb_api_init(uint8_t node_id) {
             pthread_mutex_unlock(&state_lock);
             DEBUG_PRINT(
                 "NCS_SITL_DEVICE_ERROR device=uwb reason=no_sim_clock\n");
+            stop_receiver();
             return UWB_RX_TIMEOUT;
         }
     }

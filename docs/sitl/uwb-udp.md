@@ -99,8 +99,9 @@ scripts.uwb_sitl_broker --node-ids 0,1 --bind-address 0.0.0.0 --bind-port
 `/cf_<id>/odom`, then sends UWB datagrams to each registered firmware IP and
 port. Host tests cover the broker state machine, local UDP registration/ranging
 and two independent C firmware-provider processes exchanging ACK2 and a
-timestamped range/measurement. They do not exercise the Gazebo `gz topic`
-subscribers, CrazySim task scheduler, motor path, flight, or mapping.
+timestamped range/measurement; a missing peer is also verified to return
+`UWB_RX_TIMEOUT`. They do not exercise the Gazebo `gz topic` subscribers,
+CrazySim task scheduler, motor path, flight, or mapping.
 
 The repository has Python and C framing/field validators plus four shared
 golden packets (registration, range response, app-message request, and clock

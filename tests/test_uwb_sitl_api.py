@@ -135,6 +135,25 @@ class UwbSitlApiTests(unittest.TestCase):
             self.assertIn("ACK2 and 1000 mm range passed", node0.stdout)
             self.assertEqual(node1.returncode, 0, node1_stderr)
             self.assertIn("message and ranging measurement passed", node1_stdout)
+            with LocalUwbBroker() as missing_broker:
+                missing_environment = os.environ.copy()
+                missing_environment["NCS_SITL_UWB_BROKER_HOST"] = "127.0.0.1"
+                missing_environment["NCS_SITL_UWB_BROKER_PORT"] = str(
+                    missing_broker.port
+                )
+                missing_environment["NCS_SITL_UWB_LOCAL_PORT"] = str(
+                    _reserve_udp_port()
+                )
+                missing = subprocess.run(  # noqa: S603 -- executes owned harness
+                    [str(executable), "missing"],
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=8,
+                    env=missing_environment,
+                )
+            self.assertEqual(missing.returncode, 0, missing.stderr)
+            self.assertIn("missing peer returned UWB_RX_TIMEOUT", missing.stdout)
 
 
 if __name__ == "__main__":

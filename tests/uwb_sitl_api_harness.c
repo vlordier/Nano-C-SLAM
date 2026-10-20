@@ -14,6 +14,22 @@ static void pause_ms(long milliseconds) {
 int main(int argc, char **argv) {
     if (argc != 2)
         return 2;
+    if (strcmp(argv[1], "missing") == 0) {
+        if (uwb_api_init(0U) != UWB_SUCCESS)
+            return 3;
+        UWB_message message = {
+            .ctrl = 0xDEU, .src = 0U, .dest = 2U, .code = UWB_ACK2_MSG, .data_len = 1U};
+        uint8_t response[RX_BUF_LEN];
+        uint8_t response_length = 0U;
+        if (uwb_send_msg_wait_rsp(message, 0U, response, &response_length) !=
+                UWB_RX_TIMEOUT ||
+            response_length != 0U) {
+            fputs("missing peer did not fail closed\n", stderr);
+            return 9;
+        }
+        puts("missing peer returned UWB_RX_TIMEOUT");
+        return 0;
+    }
     const uint8_t node_id = (uint8_t)strtoul(argv[1], NULL, 10);
     if (uwb_api_init(node_id) != UWB_SUCCESS) {
         fputs("init failed\n", stderr);
