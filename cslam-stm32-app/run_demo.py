@@ -345,6 +345,9 @@ def set_initial_params(
     config = configs[scf.cf.link_uri]
     x, y, yaw = config.initial_pose
     print("Setting ", x, y, yaw)
+    # A previous mission can leave the persistent SITL firmware instance in
+    # its landing state. Clear that latch before arming this new mission.
+    scf.cf.param.set_value("cmds.land", "0")
     scf.cf.param.set_value("initial.xinit", f"{x:f}")
     scf.cf.param.set_value("initial.yinit", f"{y:f}")
     scf.cf.param.set_value("initial.yawinit", f"{yaw:f}")

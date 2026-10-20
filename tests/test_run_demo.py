@@ -313,6 +313,7 @@ assert not Path("logs").exists()
         self.assertEqual(
             writes,
             [
+                ("cmds.land", "0"),
                 ("initial.xinit", "-1.950000"),
                 ("initial.yinit", "0.000000"),
                 ("initial.yawinit", "0.000000"),
