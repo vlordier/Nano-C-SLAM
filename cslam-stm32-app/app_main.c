@@ -107,6 +107,8 @@ void appMain() {
             (int)uwb_responder_error);
         return;
     }
+    DEBUG_PRINT("NCS_APP_INIT_STAGE stage=uwb_ready node=%u\n",
+                (unsigned int)NODE_ID);
 
     vSemaphoreCreateBinary(tofSemaphore0);
     vSemaphoreCreateBinary(tofSemaphore1);
@@ -115,12 +117,35 @@ void appMain() {
     poseQueue = xQueueCreate(100, sizeof(aug_pose_t));
 
     init_scan_queue();
+    if (tofSemaphore0 == NULL || tofSemaphore1 == NULL || poseQueue == NULL) {
+        DEBUG_PRINT("NCS_APP_INIT_FAILED device=rtos operation=allocate\n");
+        return;
+    }
+    DEBUG_PRINT("NCS_APP_INIT_STAGE stage=queues_ready\n");
 
-    STATIC_MEM_TASK_CREATE(mission_task, mission_task, "mission", NULL, 2);
-    STATIC_MEM_TASK_CREATE(tof_task, tof_task, "tof", NULL, 3);
+    TaskHandle_t tof_handle =
+        STATIC_MEM_TASK_CREATE(tof_task, tof_task, "tof", NULL, 3);
+    if (tof_handle == NULL) {
+        DEBUG_PRINT("NCS_APP_INIT_FAILED device=rtos task=tof\n");
+        return;
+    }
+    DEBUG_PRINT("NCS_APP_INIT_STAGE stage=tof_task_created\n");
 
-    xTaskCreate(uwb_ranging_task, "uwb_task", 5 * configMINIMAL_STACK_SIZE,
-                NULL, 4, &uwbTaskHandle);
+    TaskHandle_t mission_handle =
+        STATIC_MEM_TASK_CREATE(mission_task, mission_task, "mission", NULL, 2);
+    if (mission_handle == NULL) {
+        DEBUG_PRINT("NCS_APP_INIT_FAILED device=rtos task=mission\n");
+        return;
+    }
+    DEBUG_PRINT("NCS_APP_INIT_STAGE stage=mission_task_created\n");
+
+    if (xTaskCreate(uwb_ranging_task, "uwb_task",
+                    5 * configMINIMAL_STACK_SIZE, NULL, 4,
+                    &uwbTaskHandle) != pdPASS) {
+        DEBUG_PRINT("NCS_APP_INIT_FAILED device=rtos task=uwb_ranging\n");
+        return;
+    }
+    DEBUG_PRINT("NCS_APP_INIT_STAGE stage=tasks_ready\n");
     DEBUG_PRINT("DRONE ID: %d\n", NODE_ID);
 
     while (1)
