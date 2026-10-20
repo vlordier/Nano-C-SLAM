@@ -1624,6 +1624,8 @@ Gazebo processes from separate workspaces were active on the host during the
 run. They may have affected RTF, but no per-process profile was retained, so
 this is an unverified possible confounder.
 
+Source inspection corrects an earlier interpretation of `Landing timeout, disarming`: `supervisor.c` emits this when the supervisor transitions from Landed to Reset after `LANDING_TIMEOUT_MS` (3,000 ms by default). This is the normal post-landing disarm timer, not evidence that the commanded landing failed. The strict checker does not reject this marker; it independently verifies final odometry height, hover, rate, estimator, and process criteria.
+
 The main first-divergence bead remains open. Follow-up recorder work is tracked
 in bead `ncs-bq2`. The attempt11 manifest and per-file hashes are retained. No
 Nano-C-SLAM STM32 application, ToF/UWB adapter, or mapping output was exercised

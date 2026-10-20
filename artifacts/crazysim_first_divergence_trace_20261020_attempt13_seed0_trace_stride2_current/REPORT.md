@@ -15,4 +15,4 @@ Date: 2026-10-20. Both sequential runs used Gazebo seed 0, the same SDF (SHA-256
 
 The diagnostic checker was run against the retained disconnected actuator control (attempt 04). Its result is in `CHECKER_OUTPUT.json`. The pair is not accepted flight: firmware and Gazebo wrapper exits were captured as zero; the checker still rejects estimator/rate diagnostics.
 
-The trace-on run avoided a crash but still reached a 108-degree tilt, logged a landing timeout, and warned at 494 Hz. It did not pass the unchanged flight gate.
+The trace-on run avoided a crash but still reached a 108-degree tilt, logged a landing timeout, and warned at 494 Hz. The `Landing timeout, disarming` marker is the expected post-landing reset transition after three seconds, per the pinned supervisor state machine; it is not itself a landing failure. The unchanged flight gate still fails on the 494-Hz stabilizer warning.
