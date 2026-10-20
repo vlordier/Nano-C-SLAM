@@ -30,13 +30,16 @@ Packet kinds are `1 REGISTER`, `2 REGISTER_ACK`, `3 RANGE_REQUEST`,
 `4 RANGE_RESPONSE`, `5 MESSAGE_REQUEST`, `6 MESSAGE_DELIVERY`,
 `7 MESSAGE_RESPONSE`, `8 MEASUREMENT`, `9 TIME_SYNC`, and `255 ERROR`.
 
-`REGISTER` carries the node's advertised receive UDP port (`uint16`). The host
-broker binds each registered node ID to the source IP plus advertised port and
-returns `REGISTER_ACK` only after observing a finite, fresh Gazebo pose for
-that node. Registration response timestamp and sequence identify that pose
-snapshot. Firmware repeats the zero-time registration packet as a bounded
-lease renewal; the broker refreshes the node lease without replying to every
-renewal.
+`REGISTER` carries the node's local receive UDP port (`uint16`). The host
+broker validates it as nonzero, then binds the node ID to the UDP source
+endpoint it actually observed. This matters behind Lima NAT: the host can see a
+loopback address and translated port, and replies to the guest's advertised
+address would not arrive. Later packets must still come from that registered
+endpoint. The broker returns `REGISTER_ACK` only after observing a finite,
+fresh Gazebo pose for the node. Registration response timestamp and sequence
+identify that pose snapshot. Firmware repeats the zero-time registration packet
+as a bounded lease renewal; the broker refreshes the node lease without
+replying to every renewal.
 
 `TIME_SYNC` has an empty payload and routes broker-to-node. It is emitted
 when Gazebo simulation time advances and carries the current clock in the
@@ -95,7 +98,12 @@ and are addressed to the requesting node.
 
 Run the broker on the native Gazebo host with `uv run --locked python -m
 scripts.uwb_sitl_broker --node-ids 0,1 --bind-address 0.0.0.0 --bind-port
-19952`. It subscribes through `gz topic -e --json-output` to `/clock` and
+19952`. The Linux Lima firmware defaults to the Lima host gateway
+`192.168.5.2`; set `NCS_SITL_UWB_BROKER_HOST` explicitly when the guest uses a
+different gateway. The firmware process must also receive the gateway as its
+second positional argument (`cf2 <firmware-port> 192.168.5.2`) so CrazySim
+publishes IMU packets to the host. The broker subscribes through
+`gz topic -e --json-output` to `/clock` and
 `/cf_<id>/odom`, then sends UWB datagrams to each registered firmware IP and
 port. Host tests cover the broker state machine, local UDP registration/ranging
 and two independent C firmware-provider processes exchanging ACK2 and a

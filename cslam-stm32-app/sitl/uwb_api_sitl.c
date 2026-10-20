@@ -350,7 +350,7 @@ uwb_err_code_e uwb_api_init(uint8_t node_id) {
 
     const char *host = getenv("NCS_SITL_UWB_BROKER_HOST");
     if (host == NULL || host[0] == '\0')
-        host = "192.168.5.1";
+        host = "192.168.5.2";
     uint16_t broker_port, local_port;
     if (parse_port("NCS_SITL_UWB_BROKER_PORT", 19952U, &broker_port) != 0 ||
         parse_port("NCS_SITL_UWB_LOCAL_PORT", 19953U + node_id, &local_port) !=

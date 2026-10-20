@@ -254,12 +254,17 @@ class UwbBrokerCore:
         self, packet: UwbDatagram, remote: Address, now_monotonic_ns: int
     ) -> list[Outbound]:
         node_id = packet.source_id
-        port = struct.unpack("!H", packet.payload)[0]
+        advertised_port = struct.unpack("!H", packet.payload)[0]
+        if advertised_port == 0:
+            return []
+        # Use the observed UDP endpoint so replies traverse guest NAT mappings.
+        # On a direct network it is the same IP/port the node advertised.
+        endpoint = remote
         existing = self._nodes.get(node_id)
         if existing is not None and (
             now_monotonic_ns - existing.last_seen_monotonic_ns <= self.node_lease_ns
         ):
-            if existing.address != (remote[0], port):
+            if existing.address != endpoint:
                 return []
             self._nodes[node_id] = RegisteredNode(
                 node_id, existing.address, now_monotonic_ns
@@ -277,8 +282,8 @@ class UwbBrokerCore:
                 if node_id not in key[:2]
             }
         if not self._pose_is_fresh(node_id, now_monotonic_ns):
-            return [self._error(node_id, remote[0], port, BrokerError.STALE_POSE)]
-        address = (remote[0], port)
+            return [self._error(node_id, *endpoint, BrokerError.STALE_POSE)]
+        address = endpoint
         self._nodes[node_id] = RegisteredNode(node_id, address, now_monotonic_ns)
         pose = self._poses[node_id]
         ack = UwbDatagram(
@@ -478,7 +483,27 @@ class _BrokerDatagramProtocol(asyncio.DatagramProtocol):
         ):
             return
         address = (addr[0], addr[1])
+        try:
+            packet = decode_datagram(data)
+        except ValueError:
+            return
         outbound = self.core.handle(data, address, time.monotonic_ns())
+        if packet.kind == PacketKind.REGISTER and outbound:
+            response = decode_datagram(outbound[0][1])
+            if response.kind == PacketKind.REGISTER_ACK:
+                LOGGER.info(
+                    "registered UWB node=%d endpoint=%s:%d pose_sim_ns=%d",
+                    packet.source_id,
+                    *outbound[0][0],
+                    response.sim_time_ns,
+                )
+            elif response.kind == PacketKind.ERROR:
+                LOGGER.warning(
+                    "rejected UWB registration node=%d endpoint=%s:%d error=%d",
+                    packet.source_id,
+                    *outbound[0][0],
+                    response.payload[0],
+                )
         self.send(outbound)
 
     def send(self, outbound: list[Outbound]) -> None:

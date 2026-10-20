@@ -49,8 +49,8 @@ class UwbSitlBrokerTests(unittest.TestCase):
         self.core.observe_clock(NOW, 100)
         self.core.observe_pose(0, NOW - 2_000_000, (0.0, 0.0, 1.0), 110)
         self.core.observe_pose(1, NOW - 1_000_000, (1.234, 0.0, 1.0), 120)
-        ack0 = self.core.handle(_register(0, NODE0[1]), (NODE0[0], 40000), 130)
-        ack1 = self.core.handle(_register(1, NODE1[1]), (NODE1[0], 40001), 140)
+        ack0 = self.core.handle(_register(0, NODE0[1]), NODE0, 130)
+        ack1 = self.core.handle(_register(1, NODE1[1]), NODE1, 140)
         self.assertEqual(len(ack0), 1)
         self.assertEqual(len(ack1), 1)
         self.assertEqual(decode_datagram(ack0[0][1]).kind, PacketKind.REGISTER_ACK)
@@ -103,8 +103,8 @@ class UwbSitlBrokerTests(unittest.TestCase):
         skew_core.observe_clock(NOW, 100)
         skew_core.observe_pose(0, NOW - 80_000_000, (0.0, 0.0, 1.0), 110)
         skew_core.observe_pose(1, NOW - 1_000_000, (1.234, 0.0, 1.0), 120)
-        skew_core.handle(_register(0, NODE0[1]), (NODE0[0], 40000), 130)
-        skew_core.handle(_register(1, NODE1[1]), (NODE1[0], 40001), 140)
+        skew_core.handle(_register(0, NODE0[1]), NODE0, 130)
+        skew_core.handle(_register(1, NODE1[1]), NODE1, 140)
         request = UwbDatagram(PacketKind.RANGE_REQUEST, 5, NOW, 0, 1)
         skewed = skew_core.handle(encode_datagram(request), NODE0, 220)
         self.assertEqual(
@@ -138,8 +138,8 @@ class UwbSitlBrokerTests(unittest.TestCase):
     def test_bad_crc_and_unregistered_endpoint_are_ignored(self) -> None:
         bad_crc = bytearray(_register(0, NODE0[1]))
         bad_crc[-1] ^= 1
-        self.assertEqual(self.core.handle(bytes(bad_crc), (NODE0[0], 40000), 300), [])
-        wrong_endpoint = self.core.handle(_register(2, 19955), (NODE0[0], 40000), 310)
+        self.assertEqual(self.core.handle(bytes(bad_crc), NODE0, 300), [])
+        wrong_endpoint = self.core.handle(_register(2, 19955), NODE0, 310)
         self.assertEqual(len(wrong_endpoint), 1)
         self.assertEqual(
             decode_datagram(wrong_endpoint[0][1]).payload,
@@ -174,12 +174,20 @@ class UwbSitlBrokerTests(unittest.TestCase):
         core = UwbBrokerCore(pose_max_skew_ns=50_000_000)
         core.observe_clock(NOW, 100)
         core.observe_pose(0, NOW + 1_000_000, (0.0, 0.0, 0.5), 110)
-        acknowledgement = core.handle(_register(0, NODE0[1]), (NODE0[0], 40000), 120)
+        acknowledgement = core.handle(_register(0, NODE0[1]), NODE0, 120)
         self.assertEqual(len(acknowledgement), 1)
         self.assertEqual(
             decode_datagram(acknowledgement[0][1]).kind,
             PacketKind.REGISTER_ACK,
         )
+        # Lima's UDP proxy can rewrite the source port. Replies must target the
+        # observed endpoint so the reverse datagram follows that NAT mapping.
+        nat_core = UwbBrokerCore()
+        nat_core.observe_clock(NOW, 100)
+        nat_core.observe_pose(0, NOW - 1_000_000, (0.0, 0.0, 1.0), 110)
+        nat_endpoint = ("127.0.0.1", 49152)
+        nat_acknowledgement = nat_core.handle(_register(0, 21953), nat_endpoint, 130)
+        self.assertEqual(nat_acknowledgement[0][0], nat_endpoint)
         with self.assertRaisesRegex(ValueError, "clock skew bound"):
             core.observe_pose(1, NOW + 60_000_000, (1.0, 0.0, 0.5), 130)
 
