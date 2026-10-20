@@ -140,6 +140,24 @@ class Stm32TofMatrixInitTests(unittest.TestCase):
         self.assertEqual(execution.returncode, 0, execution.stderr)
         self.assertIn("fault injection passed", execution.stdout)
 
+    def test_sitl_udp_frame_decoder_rejects_malformed_and_unsafe_ranges(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            executable = Path(temporary) / "stm32_tof_sitl_frame_test"
+            self._compile(
+                REPOSITORY_ROOT / "tests/stm32_tof_sitl_frame_test.c",
+                [REPOSITORY_ROOT / "cslam-stm32-app/sitl/tof_matrix_sitl.c"],
+                executable,
+            )
+            result = subprocess.run(  # noqa: S603 -- temp binary built above
+                [str(executable)],
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("frame decoder passed", result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()
