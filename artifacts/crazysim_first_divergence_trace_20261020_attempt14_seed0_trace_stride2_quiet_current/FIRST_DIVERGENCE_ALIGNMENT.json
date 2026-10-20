@@ -1,0 +1,80 @@
+{
+  "method": "Matched firmware trace records to plugin motor packets by exact four-channel uint16 ratio tuple; tuples listed below are unique in the retained plugin stream. Gazebo telemetry is selected by capture_monotonic_time_ns proximity. This aligns output events, not the source IMU sample consumed by that firmware iteration.",
+  "host_clock": "CLOCK_MONOTONIC nanoseconds captured independently by the plugin and host sampler.",
+  "physical_first_odometry_tilt_over_1_deg": {
+    "capture_monotonic_time_ns": 246858322433750,
+    "gazebo_sim_time_s": 22.49,
+    "tilt_deg": 1.0428874525,
+    "z_m": 2.2101723028
+  },
+  "nearest_exactly_matched_firmware_motor_output": {
+    "firmware_tick": 21046,
+    "stabilizer_step": 10006,
+    "trace_attitude_tilt_deg": 0.3795271759,
+    "filtered_gyro_dps": [
+      4.7621,
+      -13.8695,
+      0.0614
+    ],
+    "motor_ratio": [
+      31921,
+      35575,
+      34473,
+      30795
+    ],
+    "matching_plugin_record_index": 8062,
+    "plugin_capture_monotonic_time_ns": 246858330526791,
+    "plugin_delta_from_first_physical_tilt_ms": 8.093041
+  },
+  "gazebo_imu_nearest_matched_motor_output": {
+    "capture_monotonic_time_ns": 246858332646583,
+    "delta_from_plugin_motor_packet_ms": 2.119792,
+    "gazebo_sim_time_s": 22.498,
+    "angular_velocity_rad_s": [
+      0.5204799504,
+      -0.646002087,
+      0.0028419573
+    ],
+    "angular_velocity_deg_s": [
+      29.816,
+      -37.013,
+      0.163
+    ],
+    "linear_acceleration_m_s2": [
+      0.0228401562,
+      0.0294286048,
+      10.0470383167
+    ]
+  },
+  "gazebo_odometry_nearest_matched_motor_output": {
+    "capture_monotonic_time_ns": 246858334180583,
+    "delta_from_plugin_motor_packet_ms": 3.653792,
+    "gazebo_sim_time_s": 22.5,
+    "tilt_deg": 1.4041506433,
+    "z_m": 2.2118700102
+  },
+  "first_firmware_attitude_over_1_deg": {
+    "firmware_tick": 21097,
+    "stabilizer_step": 10028,
+    "trace_attitude_tilt_deg": 1.0634492589,
+    "filtered_gyro_dps": [
+      23.5117,
+      -32.8291,
+      0.122
+    ],
+    "motor_ratio": [
+      31036,
+      41974,
+      34568,
+      23518
+    ],
+    "plugin_record_index": 8077,
+    "plugin_capture_monotonic_time_ns": 246858409474000,
+    "delta_from_tick_21046_matched_motor_packet_ms": 78.947209
+  },
+  "limitations": [
+    "Firmware sensor sample source timestamp/sequence is absent; exact consumed IMU age is unknown.",
+    "Gazebo and firmware filtered gyro values are close in wall-clock capture time but cannot be asserted to describe the same source measurement.",
+    "Other Gazebo processes were active. This evidence prioritizes a sensor-provenance investigation; it does not prove stale data or a conversion defect."
+  ]
+}

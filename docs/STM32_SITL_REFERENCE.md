@@ -1666,3 +1666,71 @@ diagnostics. The run validates neither stable flight nor Nano-C-SLAM execution.
 The next run should be made under controlled host load, preserve wrapper exit
 codes, and continue the paired trials before using trace data to claim a first
 cause.
+
+## Quiet-diagnostics retest and IMU provenance lead (2026-10-20)
+
+Attempt14 rebuilt the Crazyflie reference firmware from commit `748b5724` with
+the 500-Hz loop, trace ring enabled at stride 2, required checker markers on,
+and sampled `NCS_STAB` / `NCS_IMU` formatted diagnostics off. The binary SHA-256
+is `f8d85abaa5d42a1550cf8c9bfe9473fd412e68a47b28fd577e934ab14f796ea5`; the
+SDF is byte-identical to attempts 12–13. Both firmware and Gazebo exited 0 and
+both mission commands were acknowledged, but firmware still logged a crash,
+472/500-Hz stabilizer rate, and 94–98/100-Hz Kalman prediction rate. Odometry
+reached 2.519 m then returned to 2.015 m, with nearly 180° maximum tilt. The
+strict checker rejected the capture for firmware estimator/rate/crash failures
+and only 0.92 s of stable hover. Thus suppressing verbose diagnostic output did
+not produce accepted flight. The 476 sampled world-stat values had mean RTF
+0.950 and median 0.970; three other Gazebo processes were running, so this run
+does not isolate observer overhead or host scheduling effects.
+
+The attempt14 trace allows a more useful join than the earlier captures: exact
+four-motor ratio tuples associate a firmware trace row with the plugin's
+monotonic motor-packet receive time. Around the first instability, firmware
+tick 21046 / step 10006 emitted `[31921, 35575, 34473, 30795]`. The associated
+plugin record is at host monotonic `246858330526791` ns. Firmware's state at
+that control step reports 0.38° tilt and filtered gyro `(4.76, -13.87, 0.06)`
+°/s. The nearest Gazebo IMU callback is 2.12 ms later and reports `(29.82,
+-37.01, 0.16)` °/s; the nearest Gazebo odometry callback is 3.65 ms later and
+reports 1.40° tilt. Firmware's first sampled attitude over 1° occurs at tick
+21097, matched to a motor packet 78.95 ms later. These nearby values point to
+IMU sample age, conversion, filtering, or scheduler delay as the next question,
+but they do not prove a defect because the firmware does not retain the IMU
+source sequence or simulation timestamp and the callbacks are not guaranteed
+to describe the exact same sample. The raw method and values are in
+[`attempt14/FIRST_DIVERGENCE_ALIGNMENT.json`](../artifacts/crazysim_first_divergence_trace_20261020_attempt14_seed0_trace_stride2_quiet_current/FIRST_DIVERGENCE_ALIGNMENT.json);
+the report, full captures, manifest, and verified SHA-256 list are in that
+directory.
+
+New P1 child bead `ncs-fea.5.8.2.7.1.3.3.1` tracks adding bounded SITL-only IMU
+sequence/timestamp provenance through the plugin and firmware, with raw and
+filtered measurements and explicit queue/drop evidence. It preserves the
+production hardware CRTP format and requires a controlled-load retest before
+diagnosing controller axes or gains. Attempt14 still runs only Crazyflie
+reference firmware; Nano-C-SLAM execution and map validation remain unproven.
+
+### IMU provenance instrumentation status (2026-10-20)
+
+The diagnostic implementation is now available on the forks in two focused
+commits: CrazySim `30a6177` (`vlordier/crazyflie-simulation`, branch
+`codex/sitl-imu-provenance`) and Crazyflie firmware `d64ae14f`
+(`vlordier/crazyflie-firmware`, branch `codex/sitl-first-divergence-trace`).
+It is opt-in on both sides. Default plugin packets retain the legacy layout;
+with `CRAZYSIM_IMU_PROVENANCE=ON`, IMU packets carry Gazebo header sequence (or
+an explicitly flagged local sequence fallback) and source simulation time.
+Firmware's bounded trace records those fields, the firmware receive tick, raw
+acceleration and gyro, filtered values, sequence gaps, and ring overwrite
+count. The plugin has host layout tests for the provenance packet and unchanged
+legacy packet; both pass. The firmware `cf2` target builds in the Lima guest
+with provenance and trace diagnostics enabled.
+
+The first paired runtime is still blocked before plugin loading. On the native
+macOS build, `crazysim_plugin.cpp` compiles but the final shared-library link
+fails with an undefined
+`google::protobuf::internal::HandleAddOverflow(absl::lts_20250512::int128, ...)`;
+the installed protobuf exports the corresponding symbol under
+`absl::lts_20260817`. No provenance-enabled flight or packet-age measurement
+has been captured. The bead stays open until a coherent Gazebo/Protobuf/Abseil
+build produces a controlled-load runtime capture and both strict positive and
+disconnected-actuator checks are retained. This remains Crazyflie reference
+SITL instrumentation; it does not establish Nano-C-SLAM firmware flight or
+mapping correctness.

@@ -1,0 +1,2 @@
+NCS_SITL motor_trace=all capacity=32768 path=/Users/vincent/Work/Nano-C-SLAM/artifacts/crazysim_first_divergence_trace_20261020_attempt14_seed0_trace_stride2_quiet_current/capture/plugin-motors.jsonl
+NCS_SITL motor_trace=all records=28883 dropped=0 path=/Users/vincent/Work/Nano-C-SLAM/artifacts/crazysim_first_divergence_trace_20261020_attempt14_seed0_trace_stride2_quiet_current/capture/plugin-motors.jsonl

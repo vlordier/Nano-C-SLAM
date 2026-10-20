@@ -1,0 +1,21 @@
+# Diagnostic run: attempt14, seed 0, trace stride 2, verbose diagnostics off
+
+Date: 2026-10-20. This is reference CrazySim firmware, not the Nano-C-SLAM STM32 application. It uses the same seed-0 world and TAKEOFF_2/LAND_2 mission as attempts 12–13. Firmware source commit `748b5724` enables the bounded stabilizer trace, lightweight diagnostic markers, and disables sampled `NCS_STAB`/`NCS_IMU` formatted output. Build configuration is 500-Hz stabilizer, trace ring capacity 32,768, stride 2, verbose diagnostics OFF. Firmware binary SHA-256: `f8d85abaa5d42a1550cf8c9bfe9473fd412e68a47b28fd577e934ab14f796ea5`.
+
+## Observed result
+
+- Gazebo and firmware process exit codes were both 0. Takeoff and landing command ACKs both returned result 0.
+- Odometry: 13178 samples; altitude 2.015–2.519 m; final altitude 2.015 m; maximum tilt 180.00°.
+- Stabilizer loop warning: 472 Hz against 500 Hz. Kalman prediction warnings included 94–98 Hz against 100 Hz. Firmware logged `SUP: Crashed, recovery required`.
+- The ring retained 17963 records. Header: `NCS_TRACE_HEADER schema=1 records=17963 skipped=17963 stride=2 capacity=32768 sampling_hz=250 record_bytes=120 memory_bytes=3932160`. The ring captures the full finite trace after shutdown but costs 3,932,160 bytes at the configured capacity.
+- First sampled firmware attitude above 1° occurred at RTOS tick 21097 / stabilizer step 10028: tilt 1.06°, control `-7463.00000,-10994.00000,28.00000,32774.60938`, motor ratios `[31036, 41974, 34568, 23518]`. First sampled attitude above 5° occurred at tick 21254 / step 10134: tilt 7.47°, control `32767.00000,32767.00000,3407.00000,31199.11719`, ratios `[34606, 0, 34606, 60558]`. The trace therefore shows large/saturated roll/pitch control values during instability. It does not establish whether controller output, estimator state, motor mapping, or host scheduling initiated the divergence.
+- Host sampler: 476 world-stat samples; mean RTF 0.950, median 0.970 (range 0.044–1.384).
+- Gazebo plugin recorded 28883 motor packets, 3548 with nonzero ratios; plugin reported zero dropped records.
+- Exact motor-ratio matching links firmware tick 21046 / step 10006 to one plugin motor packet. In the same host-monotonic neighborhood, firmware estimated 0.38° tilt and filtered gyro (4.76, -13.87, 0.06) °/s; the nearest Gazebo IMU sample 2.12 ms after that packet reported (29.82, -37.01, 0.16) °/s, and nearest Gazebo odometry 3.65 ms after it showed 1.40° tilt. The first Gazebo odometry sample above 1° was at sim time 22.490 s; the first firmware sample above 1° was at tick 21097, whose matched motor packet followed the tick-21046 packet by 78.95 ms. This is a strong measurement-age/conversion lead, not proof: firmware has no IMU source sequence or timestamp, and the samples are not known to represent the same source frame. Full matched values and method are in `FIRST_DIVERGENCE_ALIGNMENT.json`.
+- The unchanged strict checker rejected this run: `CHECKER_OUTPUT.json` reports firmware estimator/rate/crash failure and stable hover of 0.92 s (minimum 5.00 s). The retained disconnected-actuator control produced no negative-control error in this checker run; its process exit codes were not captured, so full paired process-exit acceptance is not established.
+
+## Interpretation and limits
+
+Disabling verbose sampled diagnostic printing did not restore an accepted flight: firmware still crashed and loop rates remained below target. This single attempt cannot attribute the failure to tracing, logging, controller behavior, estimator behavior, or host contention. Three other long-running Gazebo processes were present during the run, so RTF and timing are confounded.
+
+Firmware RTOS ticks are captured, and motor-output records can be joined to plugin packet arrivals by exact four-channel ratios. However, the sensor interrupt timestamp is zero and no IMU source sequence or timestamp reaches firmware; there is no proven mapping from a controller iteration to the exact IMU sample it consumed. The output join narrows the first-divergence investigation but does not yet constitute a synchronized sensor-to-control proof. The run does not validate Nano-C-SLAM firmware execution, SLAM mapping, or hardware flight.
