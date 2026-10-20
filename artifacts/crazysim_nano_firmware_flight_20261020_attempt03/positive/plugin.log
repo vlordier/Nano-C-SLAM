@@ -1,0 +1,3 @@
+NCS_SITL motor_trace_file=/tmp/ncs-nano-strict-20261020/positive-restarted/plugin-motors.jsonl stride=10 limit=100000
+TRACE_MOTOR_NONZERO NCS_SITL_ACTUATOR source=firmware ratio=37673,37673,37673,37673 omega_rad_s=2103.97,2103.97,2103.97,2103.97
+NCS_SITL imu_queue_enqueue_failures=0

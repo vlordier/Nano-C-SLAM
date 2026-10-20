@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-20",
+  "gazebo": "Gazebo Sim 8.14.0 native macOS headless; Nano firmware in Lima Ubuntu 24.04 ARM64",
+  "world": "one Crazyflie model, ground plane, four 8x8 ToF topics",
+  "firmware_sha256": "18016ddd59923c6f4a392989d22e755babcd190df8298a64b281b0affc4b1849",
+  "plugin_sha256": "b0f4bd493ceb1f91a1c4f3d5051d21b0acf2f0750f381f9acb1e0de2b8f81cc3",
+  "sampler_sha256": "324c0d2646224d637a65cfdb5f05001a10b6458909d1f3e40ae0e1834f716f53",
+  "world_sha256": "3e3b6d56d436b32a7b6ec2c0c75f5b16626143c85d4178f32ff981b8a43dc4df",
+  "tof_ports": {
+    "firmware_receiver": 19951,
+    "host_bridge": 21951
+  },
+  "uwb_broker_pose_max_skew_ms": 250,
+  "positive_capture": {
+    "flight_interval_s": 92.069,
+    "samples": {
+      "odometry": 18157,
+      "imu": 44419,
+      "motors": 88837,
+      "world_stats": 719,
+      "plugin_motor_trace": 3961
+    },
+    "altitude_m": {
+      "start": 0.014999,
+      "max": 0.893996,
+      "flight_sample_end": 0.69992
+    },
+    "horizontal_x_delta_m": 31.818,
+    "continuous_hover_s": 65.987,
+    "aggregate_rtf": 0.985953,
+    "plugin_trace_nonzero_records": 3692,
+    "motor_max_rad_s": 2126.714
+  },
+  "post_mission_ground_sample": {
+    "interval_s": 19.906,
+    "samples": {
+      "odometry": 4359,
+      "imu": 9952,
+      "motors": 19903,
+      "world_stats": 162
+    },
+    "altitude_m": 0.01499996,
+    "all_motor_speeds_zero": true,
+    "gap_from_flight_sample_s": 30.965
+  },
+  "operator_stdout_raw_retained": false,
+  "paired_disconnected_actuator_gate_passed": false,
+  "strict_checker_passed": false,
+  "limitations": [
+    "estimator and stabilizer rate warnings occurred",
+    "the flight and ground telemetry windows are separated by a 30.97 s gap",
+    "fresh disconnected-actuator arm attempt did not reach cflib readiness",
+    "no multi-drone, GAP9 execution, mapping quality, or geometry validation"
+  ]
+}

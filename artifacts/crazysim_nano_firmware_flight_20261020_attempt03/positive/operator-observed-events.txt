@@ -1,0 +1,5 @@
+Parameters downloaded for udp://127.0.0.1:21850
+Setting  0.0 0.0 0.0
+Mission ended after landing
+
+Transcribed from the live run_demo console output; raw operator stdout was not retained.
