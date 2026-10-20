@@ -77,7 +77,15 @@ static int expect_rejected(uint8_t packet[FRAME_SIZE], size_t length) {
 
 static int test_udp_provider(const uint8_t packet[FRAME_SIZE]) {
     const int sender = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sender < 0 || tof_matrix_init() != 0) {
+    struct sockaddr_in source;
+    memset(&source, 0, sizeof(source));
+    source.sin_family = AF_INET;
+    source.sin_port = htons(39950U);
+    source.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    if (sender < 0 || bind(sender, (struct sockaddr *)&source, sizeof(source)) < 0 ||
+        setenv("NCS_SITL_TOF_BRIDGE_HOST", "127.0.0.1", 1) != 0 ||
+        setenv("NCS_SITL_TOF_BRIDGE_PORT", "39950", 1) != 0 ||
+        tof_matrix_init() != 0) {
         perror("UDP provider init");
         return 1;
     }
@@ -124,6 +132,8 @@ static int test_udp_provider(const uint8_t packet[FRAME_SIZE]) {
 
 static int listen_for_udp_frame(void) {
     if (setenv("NCS_SITL_TOF_UDP_PORT", "39951", 1) != 0 ||
+        setenv("NCS_SITL_TOF_BRIDGE_HOST", "127.0.0.1", 1) != 0 ||
+        setenv("NCS_SITL_TOF_BRIDGE_PORT", "39950", 1) != 0 ||
         tof_matrix_init() != 0) {
         fputs("receiver initialization failed\n", stderr);
         return 1;

@@ -184,10 +184,19 @@ class Stm32TofMatrixInitTests(unittest.TestCase):
                 body = header + payload
                 packet = body + struct.pack("!I", binascii.crc32(body) & 0xFFFFFFFF)
                 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sender:
+                    sender.bind(("127.0.0.1", 39950))
+                    sender.settimeout(0.001)
                     send_deadline = time.monotonic() + 1.0
+                    registration = b""
                     while receiver.poll() is None and time.monotonic() < send_deadline:
                         sender.sendto(packet, ("127.0.0.1", 39951))
-                        time.sleep(0.02)
+                        try:
+                            registration, _ = sender.recvfrom(64)
+                        except TimeoutError:
+                            registration = b""
+                        if registration:
+                            break
+                        time.sleep(0.01)
                 stdout, stderr = receiver.communicate(timeout=10)
             finally:
                 if receiver.poll() is None:
@@ -195,6 +204,7 @@ class Stm32TofMatrixInitTests(unittest.TestCase):
                     receiver.communicate()
 
         self.assertEqual(receiver.returncode, 0, stderr)
+        self.assertEqual(registration[:6], b"NCTR\x01\x00")
         self.assertIn("received fresh sensor 0 matrix (64 valid cells)", stdout)
 
 

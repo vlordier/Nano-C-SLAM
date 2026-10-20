@@ -18,6 +18,8 @@ SIDE = 8
 MAX_RANGE_MM = 4000
 FRAME_HEADER = struct.Struct("!4sBBBBIQI")
 FRAME_CRC = struct.Struct("!I")
+REGISTRATION_HEADER = struct.Struct("!4sBB")
+REGISTRATION_SIZE = REGISTRATION_HEADER.size + FRAME_CRC.size
 MAX_SCAN_SKEW_NS = 100_000_000
 LOGGER = logging.getLogger(__name__)
 
@@ -50,7 +52,8 @@ def parse_scan_message(payload: str | bytes) -> ScanSample:
     stamp = _mapping(header.get("stamp"))
     try:
         seconds = int(stamp["sec"])
-        nanoseconds = int(stamp["nsec"])
+        # Gazebo's protobuf JSON omits zero-valued scalar fields.
+        nanoseconds = int(stamp.get("nsec", "0"))
     except (KeyError, TypeError, ValueError) as error:
         raise ValueError(
             "LaserScan is missing an integer simulation timestamp"
@@ -108,6 +111,29 @@ def encode_matrix_frame(
     return body + FRAME_CRC.pack(binascii.crc32(body) & 0xFFFFFFFF)
 
 
+def decode_registration(payload: bytes) -> int:
+    """Return the registered node ID from an NCTR v1 rendezvous datagram."""
+    if len(payload) != REGISTRATION_SIZE:
+        raise ValueError("ToF registration has invalid length")
+    body, crc_bytes = payload[: -FRAME_CRC.size], payload[-FRAME_CRC.size :]
+    magic, version, node_id = REGISTRATION_HEADER.unpack(body)
+    if not isinstance(node_id, int):
+        raise ValueError("ToF registration node ID is invalid")
+    if magic != b"NCTR" or version != 1 or node_id > 5:
+        raise ValueError("ToF registration header is invalid")
+    if binascii.crc32(body) & 0xFFFFFFFF != FRAME_CRC.unpack(crc_bytes)[0]:
+        raise ValueError("ToF registration checksum is invalid")
+    return node_id
+
+
+def encode_registration(node_id: int) -> bytes:
+    """Encode one node's request to receive ToF frames over its NAT mapping."""
+    if not 0 <= node_id <= 5:
+        raise ValueError("ToF registration node ID must be in 0..5")
+    body = REGISTRATION_HEADER.pack(b"NCTR", 1, node_id)
+    return body + FRAME_CRC.pack(binascii.crc32(body) & 0xFFFFFFFF)
+
+
 class TofUdpBridge:
     def __init__(
         self,
@@ -117,6 +143,8 @@ class TofUdpBridge:
         udp_host: str,
         udp_port: int,
         max_skew_ns: int = MAX_SCAN_SKEW_NS,
+        nat_rendezvous: bool = False,
+        node_id: int = 0,
     ) -> None:
         if not topic_prefix.startswith("/") or topic_prefix.endswith("/"):
             raise ValueError("topic prefix must be absolute and have no trailing slash")
@@ -124,9 +152,14 @@ class TofUdpBridge:
             raise ValueError("UDP port must be in 1..65535")
         if max_skew_ns < 0:
             raise ValueError("maximum scan skew cannot be negative")
+        if not 0 <= node_id <= 5:
+            raise ValueError("node ID must be in 0..5")
         self.gz_command = gz_command
         self.topic_prefix = topic_prefix
         self.destination = (udp_host, udp_port)
+        self.nat_rendezvous = nat_rendezvous
+        self.node_id = node_id
+        self.registered_endpoints: dict[int, tuple[str, int]] = {}
         self.max_skew_ns = max_skew_ns
         self.samples: list[ScanSample | None] = [None] * SENSOR_COUNT
         self.generations = [0] * SENSOR_COUNT
@@ -191,13 +224,19 @@ class TofUdpBridge:
                     LOGGER.warning("discarding malformed scan on %s: %s", topic, error)
                     continue
                 if frame is not None:
-                    self.socket.sendto(frame, self.destination)
-                    LOGGER.info(
-                        "sent ToF frame seq=%d sim_time_ns=%d destination=%s:%d",
-                        (self.sequence - 1) & 0xFFFFFFFF,
-                        self.last_sent_sim_time_ns,
-                        *self.destination,
+                    endpoint = (
+                        self.registered_endpoints.get(self.node_id)
+                        if self.nat_rendezvous
+                        else self.destination
                     )
+                    if endpoint is not None:
+                        self.socket.sendto(frame, endpoint)
+                        LOGGER.info(
+                            "sent ToF frame seq=%d sim_time_ns=%d destination=%s:%d",
+                            (self.sequence - 1) & 0xFFFFFFFF,
+                            self.last_sent_sim_time_ns,
+                            *endpoint,
+                        )
             return_code = await process.wait()
             raise RuntimeError(f"gz topic exited for {topic} ({return_code})")
         finally:
@@ -209,10 +248,33 @@ class TofUdpBridge:
                     process.kill()
                     await process.wait()
 
+    async def _receive_registrations(self) -> None:
+        loop = asyncio.get_running_loop()
+        while True:
+            payload, endpoint = await loop.sock_recvfrom(self.socket, 64)
+            try:
+                node_id = decode_registration(payload)
+            except ValueError as error:
+                LOGGER.warning("discarding invalid ToF registration: %s", error)
+                continue
+            if node_id != self.node_id:
+                LOGGER.warning(
+                    "ignoring ToF registration for node %d; this bridge serves node %d",
+                    node_id,
+                    self.node_id,
+                )
+                continue
+            self.registered_endpoints[node_id] = endpoint
+            LOGGER.info("registered ToF node=%d endpoint=%s:%d", node_id, *endpoint)
+
     async def run(self) -> None:
-        await asyncio.gather(
-            *(self._consume_topic(sensor_id) for sensor_id in range(SENSOR_COUNT))
-        )
+        if self.nat_rendezvous:
+            self.socket.bind(("0.0.0.0", self.destination[1]))  # noqa: S104
+            self.socket.setblocking(False)
+        tasks = [*(self._consume_topic(sensor_id) for sensor_id in range(SENSOR_COUNT))]
+        if self.nat_rendezvous:
+            tasks.append(self._receive_registrations())
+        await asyncio.gather(*tasks)
 
 
 def _arguments() -> argparse.Namespace:
@@ -222,6 +284,12 @@ def _arguments() -> argparse.Namespace:
     parser.add_argument("--udp-host", default="192.168.5.2")
     parser.add_argument("--udp-port", type=int, default=19951)
     parser.add_argument("--max-skew-ms", type=float, default=100.0)
+    parser.add_argument("--node-id", type=int, default=0)
+    parser.add_argument(
+        "--nat-rendezvous",
+        action="store_true",
+        help="reply to firmware-originated registrations for NATed guests",
+    )
     parser.add_argument("--verbose", action="store_true")
     return parser.parse_args()
 
@@ -238,6 +306,8 @@ def main() -> None:
         udp_host=arguments.udp_host,
         udp_port=arguments.udp_port,
         max_skew_ns=round(arguments.max_skew_ms * 1_000_000),
+        nat_rendezvous=arguments.nat_rendezvous,
+        node_id=arguments.node_id,
     )
     try:
         asyncio.run(bridge.run())

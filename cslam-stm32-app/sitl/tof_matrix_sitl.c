@@ -26,12 +26,19 @@
 #define TOF_PAYLOAD_SIZE (TOF_SENSOR_COUNT * TOF_SIDE * TOF_SIDE * 2U)
 #define TOF_FRAME_SIZE (TOF_HEADER_SIZE + TOF_PAYLOAD_SIZE + 4U)
 #define TOF_DEFAULT_PORT 19951U
+#define TOF_REGISTRATION_SIZE 10U
+#define TOF_REGISTRATION_INTERVAL_MS 250U
+#ifndef NCS_SITL_NANO_NODE_ID
+#define NCS_SITL_NANO_NODE_ID 0
+#endif
 
 static int receiver_fd = -1;
+static struct sockaddr_in bridge_address;
 static int16_t latest_frame[TOF_SENSOR_COUNT][TOF_SIDE][TOF_SIDE];
 static uint32_t latest_sequence;
 static uint64_t latest_sim_time_ns;
 static TickType_t latest_receive_tick;
+static TickType_t last_registration_tick;
 static uint8_t frame_ready;
 
 /* Exposed for hardware-independent host tests of the wire decoder. */
@@ -57,6 +64,13 @@ static uint16_t read_be16(const uint8_t *p) {
 static uint32_t read_be32(const uint8_t *p) {
     return ((uint32_t)p[0] << 24) | ((uint32_t)p[1] << 16) |
            ((uint32_t)p[2] << 8) | (uint32_t)p[3];
+}
+
+static void write_be32(uint8_t *p, uint32_t value) {
+    p[0] = (uint8_t)(value >> 24);
+    p[1] = (uint8_t)(value >> 16);
+    p[2] = (uint8_t)(value >> 8);
+    p[3] = (uint8_t)value;
 }
 
 static uint64_t read_be64(const uint8_t *p) {
@@ -111,12 +125,37 @@ static uint16_t configured_port(void) {
     return (uint16_t)port;
 }
 
+static uint16_t configured_bridge_port(void) {
+    const char *value = getenv("NCS_SITL_TOF_BRIDGE_PORT");
+    if (value == NULL || value[0] == '\0') {
+        return TOF_DEFAULT_PORT;
+    }
+    char *end = NULL;
+    const unsigned long port = strtoul(value, &end, 10);
+    if (end == value || *end != '\0' || port == 0UL || port > 65535UL) {
+        return 0U;
+    }
+    return (uint16_t)port;
+}
+
+static void send_registration(void) {
+    uint8_t packet[TOF_REGISTRATION_SIZE] = {
+        'N', 'C', 'T', 'R', 1U, (uint8_t)NCS_SITL_NANO_NODE_ID};
+    write_be32(packet + sizeof(packet) - 4U,
+               tof_matrix_sitl_crc32(packet, sizeof(packet) - 4U));
+    (void)sendto(receiver_fd, packet, sizeof(packet), 0,
+                 (const struct sockaddr *)&bridge_address,
+                 sizeof(bridge_address));
+    last_registration_tick = xTaskGetTickCount();
+}
+
 tof_err_code_e tof_matrix_init(void) {
     if (receiver_fd >= 0) {
         return TOF_SUCCESS;
     }
     const uint16_t port = configured_port();
-    if (port == 0U) {
+    const uint16_t bridge_port = configured_bridge_port();
+    if (port == 0U || bridge_port == 0U) {
         DEBUG_PRINT("NCS_SITL_DEVICE_ERROR device=tof_matrix reason=bad_port\n");
         return TOF_CONFIG_ERROR;
     }
@@ -135,12 +174,24 @@ tof_err_code_e tof_matrix_init(void) {
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = htonl(INADDR_ANY);
     address.sin_port = htons(port);
+    const char *bridge_host = getenv("NCS_SITL_TOF_BRIDGE_HOST");
+    if (bridge_host == NULL || bridge_host[0] == '\0') {
+        bridge_host = "192.168.5.2";
+    }
+    memset(&bridge_address, 0, sizeof(bridge_address));
+    bridge_address.sin_family = AF_INET;
+    bridge_address.sin_port = htons(bridge_port);
+    if (inet_pton(AF_INET, bridge_host, &bridge_address.sin_addr) != 1) {
+        close(fd);
+        return TOF_CONFIG_ERROR;
+    }
     if (bind(fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
         DEBUG_PRINT("NCS_SITL_DEVICE_ERROR device=tof_matrix reason=bind\n");
         close(fd);
         return TOF_CONFIG_ERROR;
     }
     receiver_fd = fd;
+    send_registration();
     DEBUG_PRINT("NCS_SITL_DEVICE_READY device=tof_matrix port=%u\n", port);
     return TOF_SUCCESS;
 }
@@ -154,9 +205,17 @@ tof_err_code_e config_sensors(VL53L5CX_Configuration *device,
 
 static void receive_latest_frame(void) {
     uint8_t packet[TOF_FRAME_SIZE];
+    const TickType_t now = xTaskGetTickCount();
+    if ((TickType_t)(now - last_registration_tick) >=
+        M2T(TOF_REGISTRATION_INTERVAL_MS)) {
+        send_registration();
+    }
     for (;;) {
-        const ssize_t received = recv(receiver_fd, packet, sizeof(packet),
-                                      MSG_DONTWAIT | MSG_TRUNC);
+        struct sockaddr_in sender;
+        socklen_t sender_length = (socklen_t)sizeof(sender);
+        const ssize_t received = recvfrom(
+            receiver_fd, packet, sizeof(packet), MSG_DONTWAIT | MSG_TRUNC,
+            (struct sockaddr *)&sender, &sender_length);
         if (received < 0) {
             if (errno != EAGAIN && errno != EWOULDBLOCK && errno != EINTR) {
                 frame_ready = 0U;
@@ -164,6 +223,11 @@ static void receive_latest_frame(void) {
             return;
         }
         if ((size_t)received != sizeof(packet)) {
+            continue;
+        }
+        if (sender.sin_family != AF_INET ||
+            sender.sin_addr.s_addr != bridge_address.sin_addr.s_addr ||
+            sender.sin_port != bridge_address.sin_port) {
             continue;
         }
         int16_t candidate[TOF_SENSOR_COUNT][TOF_SIDE][TOF_SIDE];

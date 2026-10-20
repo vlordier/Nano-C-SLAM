@@ -11,7 +11,9 @@ from scripts.crazysim_tof_bridge import (
     FRAME_CRC,
     FRAME_HEADER,
     TofUdpBridge,
+    decode_registration,
     encode_matrix_frame,
+    encode_registration,
     parse_scan_message,
 )
 
@@ -35,6 +37,14 @@ def _scan(
 
 
 class CrazySimTofBridgeTests(unittest.TestCase):
+    def test_nat_registration_is_checksummed_and_node_scoped(self) -> None:
+        registration = encode_registration(3)
+        self.assertEqual(decode_registration(registration), 3)
+        with self.assertRaisesRegex(ValueError, "checksum"):
+            decode_registration(registration[:-1] + bytes((registration[-1] ^ 1,)))
+        with self.assertRaisesRegex(ValueError, "node ID"):
+            encode_registration(6)
+
     def test_scan_conversion_preserves_row_major_grid_and_invalid_returns(self) -> None:
         scan = parse_scan_message(
             _scan(0, 12, [0.02, 4.0, 1.2344, "Infinity", 0.01, 4.1] + [0.5] * 58)
@@ -49,6 +59,11 @@ class CrazySimTofBridgeTests(unittest.TestCase):
         del message["header"]["stamp"]
         with self.assertRaisesRegex(ValueError, "timestamp"):
             parse_scan_message(json.dumps(message))
+
+        message = json.loads(_scan(0, 12))
+        del message["header"]["stamp"]["nsec"]
+        parsed = parse_scan_message(json.dumps(message))
+        self.assertEqual(parsed.sim_time_ns, 12_000_000_000)
 
         message = json.loads(_scan(0, 12))
         message["verticalCount"] = 7

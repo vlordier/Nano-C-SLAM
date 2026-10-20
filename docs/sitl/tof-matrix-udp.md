@@ -31,6 +31,12 @@ not a comparison between Gazebo host time and the Linux firmware guest clock.
 This defines and tests the firmware-side boundary. It does not by itself
 provide Gazebo range data: a separate bridge must convert the four Gazebo
 range sensors to the same matrix ordering and transmit frames to the guest.
+For NATed guests, the firmware sends a 10-byte `NCTR` rendezvous packet to the
+host bridge from the same UDP socket that receives matrices. The packet is
+`magic[4], version[1], node_id[1], CRC32[4]`; the bridge validates it and sends
+frames back to the observed UDP endpoint, keeping replies inside the guest's
+existing NAT mapping. The firmware repeats the registration every 250 ms while
+polling, and accepts matrix frames only from the configured bridge IP and port.
 
 The host bridge is `scripts/crazysim_tof_bridge.py`. The CrazySim model
 templates publish four `/cf_<id>/tof/<sensor-id>` `gz.msgs.LaserScan` topics.
@@ -41,8 +47,9 @@ instance zero and the Lima SITL guest:
 ```sh
 uv run --locked python scripts/crazysim_tof_bridge.py \
   --topic-prefix /cf_0/tof \
-  --udp-host 192.168.5.2 \
   --udp-port 19951 \
+  --node-id 0 \
+  --nat-rendezvous \
   --verbose
 ```
 
@@ -51,3 +58,9 @@ does not fabricate readings when a topic is missing, and the firmware remains
 not-ready until a complete fresh frame reaches its UDP socket. This bridge
 validates transport and dimensions; it does not establish that the simulated
 sensor poses or map geometry match the physical VL53L5CX assembly.
+
+Set `NCS_SITL_TOF_UDP_PORT` and `NCS_SITL_TOF_BRIDGE_PORT` to the same port in
+the firmware guest (both default to `19951`) and set
+`NCS_SITL_TOF_BRIDGE_HOST` to the guest's host-side gateway (Lima defaults to
+`192.168.5.2`). The direct `--udp-host` mode remains available for guests on a
+network where host-to-guest UDP routing works without NAT rendezvous.
