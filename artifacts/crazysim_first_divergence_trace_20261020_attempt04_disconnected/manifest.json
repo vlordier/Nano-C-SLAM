@@ -22,19 +22,14 @@
     "compressed_jsonl": true,
     "files": [
       {
-        "path": "CHECKER_EXIT_CODE.txt",
-        "bytes": 88,
-        "sha256": "6b4417a67836e8adf0ff228abfb1ae2d26e82ba31eec5834791329692bc82e34"
-      },
-      {
-        "path": "CHECKER_OUTPUT.json",
+        "path": "NEGATIVE_CONTROL_SUMMARY.json",
         "bytes": 794,
         "sha256": "880a5c9db54f0a16299c6d25a4c5f390f54af654cbac139ff960c93d3a03f9f1"
       },
       {
         "path": "REPORT.md",
-        "bytes": 1485,
-        "sha256": "6326b401d6ba47f5058aa391b6acb7438e76ea11dfbdf7b29fd799742bacea6a"
+        "bytes": 1609,
+        "sha256": "a02be12b9a762f58b04a0d894b4064ff6e2d570815412879b126f1d6ae77e8fb"
       },
       {
         "path": "capture/imu.jsonl.gz",

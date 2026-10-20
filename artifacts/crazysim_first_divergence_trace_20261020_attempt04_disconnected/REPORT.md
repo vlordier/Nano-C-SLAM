@@ -23,5 +23,6 @@ This is a valid actuator-path negative control: firmware output and packet
 reception are present, but disconnecting the bridge prevents motor commands,
 rotor response and takeoff. It is not a flight-acceptance run. Its aggregate
 RTF was 0.811, and it does not provide the >1-degree event or firmware/Gazebo
-clock mapping required by the first-divergence bead. The paired strict checker
-output is retained in `CHECKER_OUTPUT.json`.
+clock mapping required by the first-divergence bead. The paired full checker output is retained in
+`../attempt02_plugin_trace/CHECKER_OUTPUT.json`; this directory has a
+negative-control-specific evidence summary in `NEGATIVE_CONTROL_SUMMARY.json`.
