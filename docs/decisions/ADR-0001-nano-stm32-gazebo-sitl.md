@@ -29,10 +29,20 @@ trace-validation binary SHA-256 is
 
 Nano SITL integration is carried by the pushed fork branch
 [`codex/nano-app-sitl-integration`](https://github.com/vlordier/crazyflie-firmware/tree/codex/nano-app-sitl-integration),
-currently at commit [`e8e26f4f`](https://github.com/vlordier/crazyflie-firmware/commit/e8e26f4f),
-based on the reference baseline above. It adds the opt-in app source manifest,
+based on the reference baseline above. Its initial integration commit
+[`e8e26f4f`](https://github.com/vlordier/crazyflie-firmware/commit/e8e26f4f)
+adds the opt-in app source manifest,
 enables `CONFIG_APP_ENABLE`, supplies Nano's bounded Kalman pose-init entry
 point, and accepts an explicit SITL node ID.
+
+The fork branch now advances through
+[`88bde9bb`](https://github.com/vlordier/crazyflie-firmware/commit/88bde9bb),
+which pins CrazySim sensor-template commit
+[`b81bda0`](https://github.com/vlordier/crazyflie-simulation/commit/b81bda07087bc117b63438612b0359a169d94f9e).
+That template adds four 8×8 GPU lidar topics. A host bridge converts their
+timestamped Gazebo `LaserScan` messages to the Nano SITL ToF matrix UDP
+contract. Live topic publication and transport to the C provider are tested;
+sensor pose fidelity and mapping remain unvalidated.
 
 Build the firmware with `sitl_make` target `cf2`, then add the Nano app sources
 through an explicit `NCS_NANO_APP_DIR` CMake input. The SITL build must include
@@ -47,7 +57,7 @@ of application logic.
 | --- | --- | --- |
 | Flight outputs | Keep Crazyflie's actual `stabilizerTask`, controller and mixer. Its `power_distribution_sitl.c::motorsSetRatio` output is sent by the pinned plugin to Gazebo motor models. Nano `flight_task` may request setpoints through the same commander API. | Match firmware motor packet sequence and four ratios to Gazebo motor commands and joint velocities; disconnect the actuator bridge and show the vehicle stays put. |
 | IMU and pose | Keep CrazySim's timestamped simulator IMU packet into `sensors_sitl`; retain source sequence/time, firmware receive tick, units and drop counters. Use Gazebo odometry as independent evaluation truth, not as hidden state injected into the estimator. | Compare source and firmware accepted samples; no unreported clock conversion or zero placeholder timestamps. |
-| ToF matrices | Add a SITL provider implementing the existing `tof_matrix_init` / `get_tof_matrix` contract for four 8×8 `int16_t` matrices, same sensor ordering, millimetres, invalid-value semantics and freshness. It must derive cells from Gazebo ray geometry. The existing four-ray multiranger may seed tests but cannot stand in for all 256 matrix samples in mapping acceptance. | Deterministic wall/obstacle fixtures prove each sensor transform, cell order, range clipping and stale-data failure; a live run compares matrix rays with the Gazebo geometry. |
+| ToF matrices | CrazySim now supplies four 8×8 GPU lidar topics. A host bridge packages their timestamped ranges and the Linux SITL provider validates and serves fresh matrices through the existing `tof_matrix_init` / `get_tof_matrix` contract. | Existing tests cover dimensions, units, invalid values, CRC, sequence and freshness, and a live Gazebo topic reached the C provider. Still required: deterministic wall/obstacle fixtures proving each sensor transform and cell order, followed by a flight capture compared with Gazebo geometry. |
 | GAP9 SPI | Connect the existing bounded SPI protocol to the repository's GVSOC GAP9 testbench. Keep packet bytes, size and timeout behavior identical to the hardware interface. A mock is permitted only for isolated startup tests and must be explicitly labelled. | Live GVSOC receives Nano pose/scan packets and returns optimizer results in the same run; exercise timeout and malformed replies. |
 | UWB and radio | Preserve the owned Nano packet/state logic. Supply simulated node identity and timestamped ranging through a transport adapter; use real FreeRTOS queues and token scheduling. Use CRTP only for operator commands/telemetry supported by the existing SITL bridge. | Single-node and multi-node protocol tests cover identity, loss, stale packets, token lease expiry and safe landing. No silent always-success ranging stub. |
 | Safety and lifecycle | Keep heartbeat, ToF freshness, mission deadline, land/fault and task-shutdown logic. Each adapter must report initialization, freshness and failure. | Missing/stale input and disconnected devices fail closed, yield nonzero run result, and retain a reasoned terminal marker. |
@@ -56,7 +66,7 @@ of application logic.
 
 | Candidate | Evidence and compatibility | Decision |
 | --- | --- | --- |
-| `gtfactslab/CrazySim` and the current `vlordier` fork | The fork's Linux `cf2` target builds in Lima; the matching native Gazebo 8.15 plugin loads, handshakes and exchanges IMU/odometry with firmware. The Nano app now links and reaches `appMain()`, then exits at its intentionally unconfigured UWB provider before mission tasks; its trace has zero motor ratios. Flight acceptance remains open. Gazebo Garden is upstream's documented baseline; the fork plugin also builds and runs on the local Harmonic stack. | Choose as the smallest tested firmware-driven path while retaining native macOS Gazebo. |
+| `gtfactslab/CrazySim` and the current `vlordier` fork | The fork's Linux `cf2` target builds in Lima; the matching native Gazebo 8.15 plugin loads, handshakes and exchanges IMU/odometry with firmware. The Nano app links and reaches `appMain()`, then exits at its intentionally unconfigured UWB provider before mission tasks. Four GPU lidar topics and their UDP transport to the C ToF provider now have live evidence; no flight or mapping is validated. Gazebo Garden is upstream's documented baseline; the fork plugin also builds and runs on the local Harmonic stack. | Choose as the smallest tested firmware-driven path while retaining native macOS Gazebo. |
 | CrazyflieTHI `sim_cf2` | Linux SITL/FreeRTOS is a relevant reference, but this machine has no reproduced checkout/build/flight for it. The documented ROS 2 Humble / Gazebo 11 / Ubuntu 22.04 stack differs from the installed native Jazzy / Harmonic stack. Switching stacks would discard the working local Gazebo plugin boundary without evidence of a benefit for Nano task integration. | Keep as a fallback/reference only; do not migrate the simulator now. |
 | `prakash-aryan/crazyswarm2_gazebo` at local checkout `5f2e4cc8e9687fb4c05e9e4be40a20370a022f9e` | Local README states Ubuntu 24.04, ROS 2 Jazzy and Gazebo Harmonic, and describes a Python-bound firmware backend plus PD conversion to `/cmd_vel`. Its demonstrated flight path is not Nano app execution and motor-ratio actuation. The checkout also contains unrelated dirty submodule/untracked changes and is left untouched. | Retain for synthetic geometry, sensor and mapping experiments; reject as the firmware flight path. |
 | Run the normal ARM `cf2` hardware image directly | `cslam-stm32-app` and the hardware `cf2` image build on macOS, but they target STM32F405 and embedded peripherals. Gazebo cannot execute that ARM image as a host process. Instruction-accurate execution would require a Cortex-M emulator and peripheral model that has not been reproduced here. | Do not claim binary-equivalent STM32 execution. The initial SITL validates the same owned C app sources under Linux FreeRTOS plus the Crazyflie SITL flight stack. |

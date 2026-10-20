@@ -19,13 +19,14 @@ updating this inventory and its test expectation.
 | Task symbol | Entry source | Creation | Purpose and blocking dependencies |
 | --- | --- | --- | --- |
 | mission_task | cslam-stm32-app/app_main.c | Static task, priority 2, stack allocation 2000 | Waits for ToF readiness, fresh sensor frames, and operator heartbeat; initializes the estimator; gates takeoff; forwards pose and scan records over CRTP; enforces mission timeout and landing. Depends on ToF status, FreeRTOS semaphores/queue, estimator, radio/CRTP, and GAP9 SPI. |
-| tof_task | cslam-stm32-app/src/tof_daq.c | Static task, priority 3, stack allocation 500 | Initializes and polls four 8x8 ToF matrices sequentially, tracks per-sensor freshness, and signals acquisition semaphores. Current implementation depends on VL53L5CX, I2C, sensor power/address selection, and the deck platform. VL53L9CX is a planned additional source with a separate interface qualification; see [VL53L9CX integration](VL53L9CX_INTEGRATION.md). |
+| tof_task | cslam-stm32-app/src/tof_daq.c | Static task, priority 3, stack allocation 500 | Initializes and polls four 8x8 ToF matrices sequentially, tracks per-sensor freshness, and signals acquisition semaphores. Hardware uses VL53L5CX/I2C; CrazySim SITL now has a separate UDP provider fed by four GPU lidar topics. VL53L9CX remains a separate hardware-interface qualification; see [VL53L9CX integration](VL53L9CX_INTEGRATION.md). |
 | flight_task | cslam-stm32-app/src/flight_commander.c | Static task, priority 2, stack allocation 1000 | Runs the Nano exploration controller, requests high-level takeoff/landing, and submits low-level velocity setpoints. Depends on Crazyflie estimator/logging/commander APIs, ToF freshness and matrix data, and upstream stabilization and motor-mixing tasks. |
 | uwb_ranging_task | cslam-stm32-app/src/uwb_ranging.c | Dynamic xTaskCreate, priority 4, stack 5 * configMINIMAL_STACK_SIZE | Owns token scheduling, UWB ranging, scan exchange, pose updates, and GAP9 optimization exchange. Depends on UWB transceiver/API, radio-address-based node identity, FreeRTOS queues, estimator, and GAP9 SPI. |
 
 show_optimized_poses() is a helper, not a task. appMain() also allocates two
 ToF semaphores and a 100-element aug_pose_t queue, initializes the scan queue
-and UWB node, then remains alive in a one-second delay loop.
+and UWB node, then remains alive in a one-second delay loop. The current
+CrazySim boot still exits at UWB initialization before any app task starts.
 
 ## Owned modules selected by the app Kbuild files
 
@@ -75,7 +76,7 @@ and linkage, not that its device calls have a functioning simulator peer.
 | `src/bounded_batch.c` | SITL-linked | FreeRTOS-independent bounded batch behavior is included unchanged. |
 | `src/exploration/exploration.c` | SITL-linked | Nano exploration code links against the real CrazySim estimator/commander; no valid matrix is available yet. |
 | `src/exploration/limit_actuation.c` | SITL-linked | Included unchanged before commander handoff; existing finite-value and physical-bound checks remain. |
-| `src/exploration/line_detector.c` | SITL-linked | Compiled unchanged; no Gazebo matrix provider feeds its orientation/order contract yet. |
+| `src/exploration/line_detector.c` | SITL-linked | Compiled unchanged; receives the same four 8x8 matrices through the SITL contract when the host bridge is running. Sensor-to-vehicle orientation still needs flight-level geometric validation. |
 | `src/flight_commander.c` | SITL-linked | Uses CrazySim FreeRTOS, estimator and high-level commander; physical flight remains unverified. |
 | `src/mission_timeout.c` | SITL-linked | Uses the SITL FreeRTOS tick; host fixture tests cover wrap-safe expiry. |
 | `src/operator_heartbeat.c` | SITL-linked | Compiled, but no operator CRTP input bridge is configured. |
@@ -87,12 +88,12 @@ and linkage, not that its device calls have a functioning simulator peer.
 | `src/tof-matrix/drivers/i2c_expander.c` | ARM-build only | Hardware-only GPIO/I²C address-selection driver; excluded from SITL build. |
 | `src/tof-matrix/drivers/vl53l5cx_api.c` | ARM-build only | Physical sensor API; excluded from SITL build; simulator must preserve public matrix units/range/invalid-cell semantics. |
 | `src/tof-matrix/i2c_platform.c` | ARM-build only | Hardware-only I²C implementation; excluded from SITL build. |
-| `src/tof-matrix/tof_matrix.c` | ARM-build only | Physical sensor orchestrator; replaced by fail-closed SITL provider until Gazebo matrix transport exists. |
+| `src/tof-matrix/tof_matrix.c` | ARM-build only | Physical sensor orchestrator; replaced in CrazySim by the UDP matrix provider. |
 | `src/tof-matrix/tof_matrix.h` | ARM-build only | Shared public API/data contract; do not fork struct layout between targets. |
-| `src/tof_daq.c` | SITL-linked | Acquisition/freshness task compiles against the same public API and remains blocked until matrix init/data succeed. |
+| `src/tof_daq.c` | SITL-linked | Acquisition/freshness task compiles against the same public API; it remains unobserved at runtime because `appMain()` currently exits at UWB initialization first. |
 | `src/tof_freshness.c` | SITL-linked | Freshness logic compiles unchanged and retains timeout/fault behavior. |
 | `src/uwb_collision_det.c` | SITL-linked | Nano policy compiles; timestamped simulated neighbor/range input is absent. |
-| `src/uwb_ranging.c` | SITL-linked | Token/pose logic compiles against fail-closed UWB/SPI providers; no simulated ranging occurs. |
+| `src/uwb_ranging.c` | SITL-linked | Token/pose logic compiles against the still fail-closed UWB provider and fail-closed GAP9 SPI seam; no simulated ranging occurs. |
 | `src/uwb_token_handoff.c` | SITL-linked | Compiles under the real FreeRTOS queue/task API; runtime task behavior is not yet observed. |
 | `src/uwb_token_lease.c` | SITL-linked | Compiles unchanged; runtime stale/lost-token behavior remains unvalidated. |
 
@@ -104,7 +105,13 @@ against the pinned POSIX FreeRTOS port. The target consumes the checked-in
 The Python test expands nested Kbuild directory entries and asserts the
 manifest equals the complete app source set minus `app_main.c` (listed
 separately in the CMake target) and the four physical ToF/I²C units replaced
-by `tof_matrix_sitl.c`.
+by `tof_matrix_sitl.c`. That provider now validates NCTF v1 UDP frames and
+returns only complete, recent 4×8×8 matrices. The matching host bridge is
+[`crazysim_tof_bridge.py`](../scripts/crazysim_tof_bridge.py); it consumes
+Gazebo `LaserScan` topics and preserves Gazebo simulation timestamps in the
+wire frame. The CrazySim fork model branch adds the four GPU lidar topics.
+These interfaces have live topic-to-UDP and C-provider host tests, but their
+sensor transforms and mapping geometry have not been accepted in flight.
 
 The live boot attempt in
 [`nano_app_boot_sitl_20261020_attempt01`](../artifacts/nano_app_boot_sitl_20261020_attempt01/REPORT.md)
