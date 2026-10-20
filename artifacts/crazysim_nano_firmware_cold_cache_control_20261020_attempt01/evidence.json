@@ -1,0 +1,91 @@
+{
+  "active": {
+    "motors": {
+      "count": 19994,
+      "all_zero": true,
+      "nonzero_records": 0
+    },
+    "world-stats": {
+      "count": 157,
+      "mean_reported_rtf": 0.9941385697703553
+    },
+    "imu": {
+      "count": 9997
+    },
+    "joint-state": {
+      "count": 19994,
+      "max_abs_rotor_velocity_rad_s": 1.9838841680552832e-09
+    },
+    "odometry": {
+      "count": 4407,
+      "z_min_m": 0.01499909907579422,
+      "z_max_m": 0.01499909907579422,
+      "x_min_m": 8.318188520206604e-06,
+      "x_max_m": 8.318188520206604e-06
+    }
+  },
+  "post-stop": {
+    "motors": {
+      "count": 17855,
+      "all_zero": true,
+      "nonzero_records": 0
+    },
+    "world-stats": {
+      "count": 138,
+      "mean_reported_rtf": 0.9912984335606144
+    },
+    "imu": {
+      "count": 8928
+    },
+    "joint-state": {
+      "count": 17855,
+      "max_abs_rotor_velocity_rad_s": 1.9838839460106783e-09
+    },
+    "odometry": {
+      "count": 3966,
+      "z_min_m": 0.01499909907579422,
+      "z_max_m": 0.01499909907579422,
+      "x_min_m": 8.318188520206604e-06,
+      "x_max_m": 8.318188520206604e-06
+    }
+  },
+  "after-landing": {
+    "motors": {
+      "count": 8083,
+      "all_zero": true,
+      "nonzero_records": 0
+    },
+    "world-stats": {
+      "count": 76,
+      "mean_reported_rtf": 0.8053110435127435
+    },
+    "imu": {
+      "count": 4041
+    },
+    "joint-state": {
+      "count": 8083,
+      "max_abs_rotor_velocity_rad_s": 1.983881503520024e-09
+    },
+    "odometry": {
+      "count": 1832,
+      "z_min_m": 0.01499909907579422,
+      "z_max_m": 0.01499909907579422,
+      "x_min_m": 8.318188520206604e-06,
+      "x_max_m": 8.318188520206604e-06
+    }
+  },
+  "firmware_motor_packets": {
+    "trace_records": 2492,
+    "nonzero_records": 2237,
+    "max_requested_omega_rad_s": 2774.98
+  },
+  "nano_pose_packets": 365,
+  "firmware_console": {
+    "tasks_ready": true,
+    "tof_fresh": true,
+    "takeoff": true,
+    "landing_in_pty": false,
+    "no_uwb_peer": true
+  },
+  "host_cflib_toc_cache_empty_at_first_attempt": true
+}
