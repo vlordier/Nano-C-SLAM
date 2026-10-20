@@ -1619,7 +1619,10 @@ estimator/rate/crash diagnostics. The disconnected-control negative capture pass
 The checker invocation supplied zero firmware/Gazebo process codes without
 retaining wrapper return codes, so process-exit acceptance is unverified. Thus
 stride 2 produced a non-crashing rise-and-return diagnostic, but it did not
-make the trace overhead-neutral or establish full flight acceptance.
+make the trace overhead-neutral or establish full flight acceptance. Three other
+Gazebo processes from separate workspaces were active on the host during the
+run. They may have affected RTF, but no per-process profile was retained, so
+this is an unverified possible confounder.
 
 The main first-divergence bead remains open. Follow-up recorder work is tracked
 in bead `ncs-bq2`. The attempt11 manifest and per-file hashes are retained. No

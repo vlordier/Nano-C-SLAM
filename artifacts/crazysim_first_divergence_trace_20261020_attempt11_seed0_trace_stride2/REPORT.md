@@ -12,7 +12,7 @@ The firmware logged `stabilizer loop rate is off (421)` and `Landing timeout, di
 
 ## Interpretation and remaining work
 
-Stride 2 reduced record writes and retained enough actuator packets to show nonzero firmware output, but it did not establish the registered loop-rate, RTF, landing-predicate, or strict paired flight conditions. The capture also has no matched disconnected-actuator run using this exact binary and configuration. Keep bead `ncs-fea.5.8.2.7.1.3.3` open.
+Stride 2 reduced record writes and retained enough actuator packets to show nonzero firmware output, but it did not establish the registered loop-rate, RTF, landing-predicate, or strict paired flight conditions. Three other Gazebo processes from separate workspaces were active on the host during this run. They may have competed for CPU, but no per-process resource profile was retained, so they cannot be identified as the cause of the low RTF. The capture also has no matched disconnected-actuator run using this exact binary and configuration. Keep bead `ncs-fea.5.8.2.7.1.3.3` open.
 
 Next, make the recorder genuinely low-cost (e.g. a fixed-size compact record with producer-side sampling and a bounded, separately scheduled drain; measure drops and loop timing with trace off/on), then run paired seed-0 positive and disconnected-control captures under the unchanged strict checker. Only after that should the trace be used to assert a precise first-divergence cause. Nano firmware execution and mapping remain unvalidated.
 

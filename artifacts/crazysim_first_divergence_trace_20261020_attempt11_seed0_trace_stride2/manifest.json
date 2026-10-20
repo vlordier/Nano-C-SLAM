@@ -42,8 +42,8 @@
       },
       {
         "path": "REPORT.md",
-        "bytes": 3652,
-        "sha256": "0181356c8d359b2ca423265c89cb925f0847042f6a9e3b94d0b3898a40e61de2"
+        "bytes": 4103,
+        "sha256": "bbd0120b9c82fb810c8042101164f4c64bb8e45a8b9ed5e1f576026ce3273011"
       },
       {
         "path": "capture/imu.jsonl.gz",
@@ -122,7 +122,8 @@
     "no disconnected-control pair was run with this exact stride-2 binary",
     "the trace contains only 16,061 records and the 65-second sampler starts after publisher discovery",
     "trace observer impact is not proven neutral",
-    "upstream Crazyflie SITL only; no Nano-C-SLAM application or mapping validation"
+    "upstream Crazyflie SITL only; no Nano-C-SLAM application or mapping validation",
+    "three unrelated Gazebo processes were active on the host during the run; possible RTF contention is unprofiled and unverified"
   ],
   "strict_checker": {
     "passed": false,
