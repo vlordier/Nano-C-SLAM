@@ -243,6 +243,12 @@ assert not Path("logs").exists()
                 )
             self.assertEqual(len(console_callbacks), 1)
             self.assertEqual(packet_callbacks[0][0], 1)
+            with patch("builtins.print"):
+                console_callbacks[0]("ToF ready; waiting for mission.\n")
+            self.assertEqual(
+                (Path(tmp) / "console.log").read_text(encoding="utf-8"),
+                "ToF ready; waiting for mission.\n",
+            )
             packet_callbacks[0][1](
                 SimpleNamespace(data=b"\x81\x00" + struct.pack("<h", 9))
             )

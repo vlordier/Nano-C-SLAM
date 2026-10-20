@@ -294,6 +294,12 @@ class DroneLogger:
             ) as csv_file:
                 csv.writer(csv_file).writerow([scan_id])
 
+    def handle_console(self, text: str) -> None:
+        with (self.log_dir / "console.log").open(
+            "a", encoding="utf-8", newline=""
+        ) as console_file:
+            console_file.write(text)
+
 
 def create_log_dir(root: Path) -> Path:
     root.mkdir(parents=True, exist_ok=True)
@@ -331,6 +337,7 @@ def wait_for_param_download(
 
     def on_console(text: str) -> None:
         print(f"{logger.label}: {text}", end="")
+        logger.handle_console(text)
 
     def on_packet(packet: PacketLike) -> None:
         logger.handle_packet(packet.data)
