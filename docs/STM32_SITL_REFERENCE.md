@@ -1640,3 +1640,27 @@ causality. The seed-0 pair demonstrates that the full-rate observer run crashed
 while the trace-off run returned to the pad, though both retained rate/landing
 warnings and neither proves accepted flight. These are diagnostics, not a
 hardware-equivalent validation.
+
+## Same-source current trace-off/on pair (2026-10-20)
+
+Two adjacent seed-0 runs now use binaries rebuilt from firmware commit
+`62abf6d4`, the same SDF hash, same command timing and enabled plugin packet
+trace. The trace-off run is archived as
+[`attempt12`](../artifacts/crazysim_first_divergence_trace_20261020_attempt12_seed0_trace_off_current/REPORT.md);
+trace stride 2 is
+[`attempt13`](../artifacts/crazysim_first_divergence_trace_20261020_attempt13_seed0_trace_stride2_current/REPORT.md).
+Both takeoff and landing commands were acknowledged with result 0. Attempt12
+crashed, produced 0.812 mean RTF and warned at 456 Hz. Attempt13 did not record
+a crash, reached 2.507 m and returned to 2.015 m, but reached 108.2 degrees
+maximum tilt, logged `Landing timeout, disarming`, and warned at 494 Hz. Its
+mean RTF was 0.955. Both plugin packet traces had zero drops.
+
+This pair still cannot measure instrumentation overhead: the host RTF differed
+substantially and three unrelated Gazebo servers were active. Attempt13's
+firmware and Gazebo exit codes were retained as zero; attempt12's firmware
+wrapper code is missing because zsh rejected assignment to its reserved
+`status` variable. The checker rejected attempt13 on firmware estimator/rate
+diagnostics. The run validates neither stable flight nor Nano-C-SLAM execution.
+The next run should be made under controlled host load, preserve wrapper exit
+codes, and continue the paired trials before using trace data to claim a first
+cause.

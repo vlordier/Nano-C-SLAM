@@ -1,0 +1,126 @@
+{
+  "schema": 1,
+  "date": "2026-10-20",
+  "classification": "diagnostic; not accepted flight",
+  "seed": 0,
+  "firmware_source_commit": "62abf6d4",
+  "firmware_trace_enabled": true,
+  "firmware_binary_sha256": "0cc18fdf26bd89853941bd89baf39d0ab6537132e4c610ac0030b3cc62c1de3e",
+  "firmware_stabilizer_warning_hz": 494,
+  "firmware_landing_timeout": true,
+  "firmware_crash_marker": false,
+  "firmware_exit_code": "0",
+  "gazebo_exit_code": "0",
+  "same_sdf_sha256": "e2172e5ff88e174f5f63781acef079c35ebb2a8a999db087a58e45cac3383ab9",
+  "takeoff_ack_result": 0,
+  "land_ack_result": 0,
+  "odometry_records": 12951,
+  "z_min_m": 2.0148834686,
+  "z_max_m": 2.5065100621,
+  "z_end_m": 2.0149998704,
+  "max_tilt_deg": 108.1935212,
+  "world_stats_records": 496,
+  "rtf_mean": 0.9548099783,
+  "rtf_median": 0.9711684406,
+  "plugin_trace_records": 29727,
+  "plugin_nonzero_motor_records": 9143,
+  "plugin_trace_dropped": 0,
+  "trace_header": "NCS_TRACE_HEADER schema=1 records=17257 skipped=17257 stride=2 capacity=32768 sampling_hz=250 record_bytes=120 memory_bytes=3932160",
+  "process_exit_codes_verified": true,
+  "checker_exit_code": 1,
+  "checker_errors": [
+    "firmware reported estimator/rate/crash failure"
+  ],
+  "files": [
+    {
+      "path": "CHECKER_EXIT_CODE.txt",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "CHECKER_OUTPUT.json",
+      "bytes": 94,
+      "sha256": "563cf37739bb255644fc89cbfaa283985ffd1898e9bb1fc89151aedbdcc001cf"
+    },
+    {
+      "path": "REPORT.md",
+      "bytes": 1635,
+      "sha256": "13b043f84ece439f3f6170793cb5e24fcfb783998c9aecea7a9a9384314821a4"
+    },
+    {
+      "path": "capture/imu.jsonl.gz",
+      "bytes": 3518930,
+      "sha256": "5ef762e7cc8a2a4d6c5b98e38debfc70b3b20f36f1a58175ec55b2964daedca9"
+    },
+    {
+      "path": "capture/joint-state.jsonl.gz",
+      "bytes": 3243694,
+      "sha256": "e3c889ec0cbaa340996a8300334d7a64b3204f8aa76f3653d25f9cfdd36e3fca"
+    },
+    {
+      "path": "capture/motors.jsonl.gz",
+      "bytes": 761918,
+      "sha256": "ae7263e2995d404ecb121b6cd66205e7c6049326a5143adb781c8df162925033"
+    },
+    {
+      "path": "capture/odometry.jsonl.gz",
+      "bytes": 713745,
+      "sha256": "a7162e23676854596b1ed1becb0c660dd01dac7bcb9d33b4fe8439b473062e72"
+    },
+    {
+      "path": "capture/plugin-motors.jsonl.gz",
+      "bytes": 479120,
+      "sha256": "a725e5228d6fabc1693e7221fdf0b1c05bfc9f84d5efaeae31891111a7950d78"
+    },
+    {
+      "path": "capture/world-stats.jsonl.gz",
+      "bytes": 20171,
+      "sha256": "e1cb33af9957a158d6c87d9b76bec289053df6160356ae8794eda6cde8241844"
+    },
+    {
+      "path": "firmware.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "firmware.log.gz",
+      "bytes": 461659,
+      "sha256": "e59124eb64ecbf293022d87b2408fa9c5bb838062f0602e20197adc5a8865359"
+    },
+    {
+      "path": "gazebo-plugin.log",
+      "bytes": 211,
+      "sha256": "b97f3c31dd69bb1da417862593778975f7f9955c7969f8a30310e41d5ec7ea48"
+    },
+    {
+      "path": "gazebo.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "gazebo.log",
+      "bytes": 397,
+      "sha256": "ec8174cfc05a48f2d3a1d3d16e6e0b436484dde8fb08753fdc584c7b3ac62c44"
+    },
+    {
+      "path": "gazebo.pid",
+      "bytes": 6,
+      "sha256": "3e3abf4f4526323f0a78a71af3d8043d148474e962a951ea08a3bb1e5dfbf974"
+    },
+    {
+      "path": "land-ack.json",
+      "bytes": 140,
+      "sha256": "a8cf515b51e74388208fb0095c655b35ffb1e1f62a7bf8f17e93776227459a71"
+    },
+    {
+      "path": "takeoff-ack.json",
+      "bytes": 141,
+      "sha256": "528657ddabbdc72a3637ee2faa97f2b38cb055b9d356efbfb686fff55c078a9d"
+    },
+    {
+      "path": "world.sdf",
+      "bytes": 14193,
+      "sha256": "e2172e5ff88e174f5f63781acef079c35ebb2a8a999db087a58e45cac3383ab9"
+    }
+  ]
+}
