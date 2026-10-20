@@ -107,7 +107,12 @@ second positional argument (`cf2 <firmware-port> 192.168.5.2`) so CrazySim
 publishes IMU packets to the host. The broker subscribes through
 `gz topic -e --json-output` to the configured clock topic and
 `/cf_<id>/odom`, then sends UWB datagrams to each registered firmware IP and
-port. Host tests cover the broker state machine, local UDP registration/ranging
+port. By default it rejects odometry more than 50 ms ahead of the latest
+Gazebo clock sample. Some fresh Gazebo/Lima starts showed about 130 ms of
+clock-to-odometry lead; measure the actual topic timestamps before increasing
+the bound, then pass a value such as `--pose-max-skew-ms 250` to the host
+broker. The same bound also limits how far a peer pose may lead during ranging.
+Host tests cover the broker state machine, local UDP registration/ranging
 and two independent C firmware-provider processes exchanging ACK2 and a
 timestamped range/measurement; a missing peer is also verified to return
 `UWB_RX_TIMEOUT`; CRC-corrupted broker errors, stale peer poses, and a valid

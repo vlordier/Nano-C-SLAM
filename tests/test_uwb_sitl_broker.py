@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import asyncio
 import json
 import socket
@@ -15,7 +16,9 @@ from scripts.uwb_sitl_broker import (
     BrokerError,
     CrazySimUwbBroker,
     UwbBrokerCore,
+    _arguments,
     _BrokerDatagramProtocol,
+    _parse_pose_max_skew_ms,
     parse_gazebo_clock,
     parse_gazebo_odometry,
 )
@@ -186,6 +189,8 @@ class UwbSitlBrokerTests(unittest.TestCase):
             3_000_000_012,
         )
         self.assertEqual(parse_gazebo_clock('{"sim":{"sec":"3"}}'), 3_000_000_000)
+        self.assertEqual(parse_gazebo_clock('{"sim":{}}'), 0)
+        self.assertEqual(parse_gazebo_clock('{"sim":{"nsec":12}}'), 12)
         odometry = {
             "header": {"stamp": {"sec": "4", "nsec": "15"}},
             "pose": {"position": {"x": 1.25, "y": -2, "z": 0.5}},
@@ -201,6 +206,20 @@ class UwbSitlBrokerTests(unittest.TestCase):
                 '{"header":{"stamp":{"sec":"4","nsec":"15"}},'
                 '"pose":{"position":{"x":"NaN","y":0,"z":0}}}'
             )
+
+    def test_pose_skew_cli_value_is_finite_nonnegative_milliseconds(self) -> None:
+        self.assertEqual(_parse_pose_max_skew_ms("250"), 250_000_000)
+        self.assertEqual(_parse_pose_max_skew_ms("0.5"), 500_000)
+        for invalid in ("nan", "inf", "-1", "nope"):
+            with (
+                self.subTest(invalid=invalid),
+                self.assertRaises(argparse.ArgumentTypeError),
+            ):
+                _parse_pose_max_skew_ms(invalid)
+
+    def test_pose_skew_cli_option_is_passed_as_nanoseconds(self) -> None:
+        arguments = _arguments(["--pose-max-skew-ms", "250"])
+        self.assertEqual(arguments.pose_max_skew_ns, 250_000_000)
 
     def test_pose_timestamp_may_lead_clock_within_bounded_topic_skew(self) -> None:
         core = UwbBrokerCore(pose_max_skew_ns=50_000_000)
@@ -237,7 +256,9 @@ class UwbSitlBrokerUdpTests(unittest.IsolatedAsyncioTestCase):
             clock_topic="/world/crazysim_default/clock",
             bind_address="127.0.0.1",
             bind_port=bind_port,
+            pose_max_skew_ns=250_000_000,
         )
+        self.assertEqual(broker.core.pose_max_skew_ns, 250_000_000)
         subscribed_topics: list[str] = []
         clock_topic_seen = asyncio.Event()
 

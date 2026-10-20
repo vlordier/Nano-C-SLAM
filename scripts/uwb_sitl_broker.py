@@ -10,7 +10,7 @@ import math
 import socket
 import struct
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from enum import IntEnum
 from typing import Any, cast
@@ -52,8 +52,8 @@ def _number(value: object) -> float:
 def _timestamp_ns(value: object) -> int:
     stamp = _object(value)
     try:
-        seconds = _integer(stamp["sec"])
         # gz.msgs time fields omit zero-valued protobuf scalars in JSON mode.
+        seconds = _integer(stamp.get("sec", "0"))
         nanoseconds = _integer(stamp.get("nsec", "0"))
     except (KeyError, TypeError, ValueError) as error:
         raise ValueError("Gazebo timestamp is malformed") from error
@@ -541,6 +541,7 @@ class CrazySimUwbBroker:
         clock_topic: str,
         bind_address: str,
         bind_port: int,
+        pose_max_skew_ns: int = 50_000_000,
     ) -> None:
         if not node_ids or len(set(node_ids)) != len(node_ids):
             raise ValueError("at least one distinct node ID is required")
@@ -558,7 +559,7 @@ class CrazySimUwbBroker:
         self.clock_topic = clock_topic
         self.bind_address = bind_address
         self.bind_port = bind_port
-        self.core = UwbBrokerCore()
+        self.core = UwbBrokerCore(pose_max_skew_ns=pose_max_skew_ns)
         self.protocol: _BrokerDatagramProtocol | None = None
 
     async def _consume_topic(
@@ -667,6 +668,39 @@ def _parse_node_ids(raw_value: str) -> tuple[int, ...]:
     return node_ids
 
 
+def _parse_pose_max_skew_ms(raw_value: str) -> int:
+    try:
+        milliseconds = float(raw_value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(
+            "pose maximum skew must be a finite nonnegative number"
+        ) from error
+    if not math.isfinite(milliseconds) or milliseconds < 0:
+        raise argparse.ArgumentTypeError(
+            "pose maximum skew must be a finite nonnegative number"
+        )
+    return round(milliseconds * 1_000_000)
+
+
+def _arguments(argv: Sequence[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--gz-command", default="gz")
+    parser.add_argument("--node-ids", type=_parse_node_ids, default=(0, 1))
+    parser.add_argument("--topic-prefix", default="/cf")
+    parser.add_argument("--clock-topic", default="/clock")
+    parser.add_argument("--bind-address", default="0.0.0.0")  # noqa: S104
+    parser.add_argument("--bind-port", type=int, default=19952)
+    parser.add_argument(
+        "--pose-max-skew-ms",
+        type=_parse_pose_max_skew_ms,
+        dest="pose_max_skew_ns",
+        default=50_000_000,
+        help="maximum Gazebo pose lead over the simulation clock (default: 50 ms)",
+    )
+    parser.add_argument("--verbose", action="store_true")
+    return parser.parse_args(argv)
+
+
 async def _run_cli(arguments: argparse.Namespace) -> None:
     broker = CrazySimUwbBroker(
         gz_command=arguments.gz_command,
@@ -675,20 +709,13 @@ async def _run_cli(arguments: argparse.Namespace) -> None:
         clock_topic=arguments.clock_topic,
         bind_address=arguments.bind_address,
         bind_port=arguments.bind_port,
+        pose_max_skew_ns=arguments.pose_max_skew_ns,
     )
     await broker.run()
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--gz-command", default="gz")
-    parser.add_argument("--node-ids", type=_parse_node_ids, default=(0, 1))
-    parser.add_argument("--topic-prefix", default="/cf")
-    parser.add_argument("--clock-topic", default="/clock")
-    parser.add_argument("--bind-address", default="0.0.0.0")  # noqa: S104
-    parser.add_argument("--bind-port", type=int, default=19952)
-    parser.add_argument("--verbose", action="store_true")
-    arguments = parser.parse_args()
+    arguments = _arguments()
     logging.basicConfig(
         level=logging.INFO if arguments.verbose else logging.WARNING,
         format="%(asctime)s %(levelname)s %(message)s",
