@@ -1,0 +1,31 @@
+{
+  "command": [
+    "limactl",
+    "shell",
+    "ncs-sitl",
+    "--",
+    "bash",
+    "-lc",
+    "cd /home/vincent.guest/ncs-cf-build-kalman-trace && exec timeout --signal=TERM --kill-after=2s 14s stdbuf -oL ./cf2 19950 192.168.5.2"
+  ],
+  "return_code": 124,
+  "timed_out": false,
+  "capture_started_unix_time_ns": 1792478612959741000,
+  "capture_finished_unix_time_ns": 1792478627053090000,
+  "bytes_captured_by_stream": {
+    "stdout": 46642,
+    "stderr": 0
+  },
+  "bytes_in_events_by_stream": {
+    "stdout": 46642,
+    "stderr": 0
+  },
+  "bytes_missing_from_events_by_stream": {
+    "stdout": 0,
+    "stderr": 0
+  },
+  "event_counts_by_stream": {
+    "stdout": 129,
+    "stderr": 0
+  }
+}

@@ -1,0 +1,7 @@
+transport partition=ncs-kalman-field-fix GZ_IP=127.0.0.1
+topic=odometry name=/cf_0/odom subscribed=yes discovered=yes publishers=1 [type=gz.msgs.Odometry addr=tcp://127.0.0.1:57106] expected_type=gz.msgs.Odometry matching_publishers=1
+topic=imu name=/cf_0/imu subscribed=yes discovered=yes publishers=1 [type=gz.msgs.IMU addr=tcp://127.0.0.1:57106] expected_type=gz.msgs.IMU matching_publishers=1
+topic=motor name=/cf_0/command/motor_speed subscribed=yes discovered=yes publishers=1 [type=gz.msgs.Actuators addr=tcp://127.0.0.1:57106] expected_type=gz.msgs.Actuators matching_publishers=1
+topic=world_stats name=/world/crazysim_default/stats subscribed=yes discovered=yes publishers=1 [type=gz.msgs.WorldStatistics addr=tcp://127.0.0.1:57106] expected_type=gz.msgs.WorldStatistics matching_publishers=1
+sampling CrazySim odometry (publisher 200 Hz, uncapped), IMU (uncapped), motor commands (uncapped), world stats (10 Hz) as compact JSONL for 10 seconds
+captured odometry=1242 imu=2610 motor=5222 world_stats=78

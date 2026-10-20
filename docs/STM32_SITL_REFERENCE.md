@@ -1879,3 +1879,29 @@ stdout. The log's clean scheduler-stop marker is retained, but the firmware
 child exit receipt is missing. The run confirms the harness needs line-buffered
 firmware output and reliable child-PID tracking; it does not identify a cause
 for the rate shortfall.
+
+### Corrected Kalman trace field ordering (2026-10-20)
+
+The schema-3 diagnostic trace added a Kalman prediction counter, but the
+provenance-enabled `printf` arguments did not match the format-field order.
+This shifted the reported prediction count and IMU sequence/receive fields.
+Therefore schema-3 field values from the prior stationary capture are invalid;
+do not use its apparent prediction cadence or sequence-gap count for diagnosis.
+The independent Gazebo sampler's consecutive IMU source sequence and 500-Hz
+callback measurement are unaffected.
+
+Crazyflie firmware fork commit `662a7916` moves the counter argument into the
+matching format position. The Linux AArch64 `cf2` target rebuilt successfully
+in Lima (SHA-256
+`d5b1127507500e93e1ca731aaf357a2e8a6ade294fa26b255ab80a07b4ab094d`). A new
+stationary schema-validation run reached `SUP: Ready to fly`, emitted the
+corrected nonzero fields, and is archived in
+[`attempt01`](../artifacts/crazysim_trace_field_fix_20261020_attempt01/REPORT.md).
+The Kalman counter advanced 739 over 7.462 firmware ticks (99.0 Hz) and the
+stabilizer step count advanced 3,104 over the same interval (416 Hz), matching
+the firmware's 97–98-Hz Kalman and 419-Hz stabilizer warnings. Gazebo ran at
+only about 0.52 RTF with other Gazebo processes active, so this validates trace
+format and cross-checks the warning counters, not controlled-load cadence. The
+model remained on its platform and no mission was sent. This instrumentation
+correction does not change flight control, and Crazyflie reference SITL still
+does not validate Nano-C-SLAM firmware or mapping.
