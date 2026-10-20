@@ -110,6 +110,7 @@ include = [
     "scripts/crazysim_udp_probe.py",
     "scripts/crazysim_bridge_command.py",
     "scripts/crazysim_tof_bridge.py",
+    "scripts/uwb_sitl_protocol.py",
     "scripts/capture_timestamped_process.py",
     "scripts/check_crazysim_flight.py",
     "test_support/gap9_mapping_fixtures.py",
@@ -117,6 +118,7 @@ include = [
     "test_support/ros_fixtures.py",
     "tests/test_crazysim_flight_checker.py",
     "tests/test_crazysim_tof_bridge.py",
+    "tests/test_uwb_sitl_protocol.py",
     "tests/test_capture_timestamped_process.py",
 ]
 
