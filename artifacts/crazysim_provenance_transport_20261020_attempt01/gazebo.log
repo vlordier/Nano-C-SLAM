@@ -1,0 +1,18 @@
+[1;32m[Msg] [0m[1;32mGazebo Sim Server v[0m[1;32m8.15.0[0m[1;32m[0m
+[1;32m[Msg] [0m[1;32mLoading SDF world file[[0m[1;32m/Users/vincent/Work/Nano-C-SLAM/artifacts/crazysim_provenance_transport_20261020_attempt01/world.sdf[0m[1;32m].[0m
+[1;32m[Msg] [0m[1;32mServing entity system service on [[0m[1;32m/[0m[1;32mentity/system/add[0m[1;32m][0m[1;32m[0m
+Error while loading the library [/opt/homebrew/Cellar/gz-physics7/7.8.0_4/lib/gz-physics-7/engine-plugins/libgz-physics-dartsim-plugin.dylib]: dlopen(/opt/homebrew/Cellar/gz-physics7/7.8.0_4/lib/gz-physics-7/engine-plugins/libgz-physics-dartsim-plugin.dylib, 0x0005): Library not loaded: /opt/homebrew/opt/dartsim/lib/libdart-collision-bullet.6.19.dylib
+  Referenced from: <56776852-48E3-3941-8EBA-FC03415A348B> /opt/homebrew/Cellar/gz-physics7/7.8.0_4/lib/gz-physics-7/engine-plugins/libgz-physics7-dartsim-plugin.7.8.0.dylib
+  Reason: tried: '/opt/homebrew/opt/dartsim/lib/libdart-collision-bullet.6.19.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/opt/dartsim/lib/libdart-collision-bullet.6.19.dylib' (no such file), '/opt/homebrew/opt/dartsim/lib/libdart-collision-bullet.6.19.dylib' (no such file), '/opt/homebrew/Cellar/dartsim/6.20.1/lib/libdart-collision-bullet.6.19.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/homebrew/Cellar/dartsim/6.20.1/lib/libdart-collision-bullet.6.19.dylib' (no such file), '/opt/homebrew/Cellar/dartsim/6.20.1/lib/libdart-collision-bullet.6.19.dylib' (no such file)
+[1;31m[Err] [Physics.cc:972] [0m[1;31mUnable to load the [[0m[1;31m/opt/homebrew/Cellar/gz-physics7/7.8.0_4/lib/gz-physics-7/engine-plugins/libgz-physics-dartsim-plugin.dylib[0m[1;31m] library.[0m
+Stack trace (most recent call last):
+#9    Object "libprotobuf.32.0.0.dylib", at 0x1390a2577, in google::protobuf::internal::AddDescriptors(google::protobuf::internal::DescriptorTable const*) + 139
+#8    Object "libprotobuf.32.0.0.dylib", at 0x139002cd3, in google::protobuf::DescriptorPool::InternalAddGeneratedFile(void const*, int) + 87
+#7    Object "libprotobuf.32.0.0.dylib", at 0x13905ebef, in google::protobuf::EncodedDescriptorDatabase::Add(void const*, int) + 95
+#6    Object "libprotobuf.32.0.0.dylib", at 0x13904418b, in google::protobuf::FileDescriptorProto::~FileDescriptorProto() + 19
+#5    Object "libprotobuf.32.0.0.dylib", at 0x13915e947, in google::protobuf::FileDescriptorProto::Impl_::~Impl_() + 283
+#4    Object "libprotobuf.32.0.0.dylib", at 0x13915e947, in google::protobuf::FileDescriptorProto::Impl_::~Impl_() + 283
+#3    Object "libsystem_platform.dylib", at 0x18ecad743, in _sigtramp + 55
+#2    Object "libgz-tools2-backward.2.0.4.dylib", at 0x122d9d643, in backward::SignalHandling::sig_handler(int, __siginfo*, void*) + 19
+#1    Object "libgz-tools2-backward.2.0.4.dylib", at 0x122d9d6a7, in backward::SignalHandling::handleSignal(int, __siginfo*, void*) + 71
+#0    Object "libgz-tools2-backward.2.0.4.dylib", at 0x122d9d7e7, in backward::StackTraceImpl<backward::system_tag::darwin_tag>::load_from(void*, unsigned long, void*, void*) + 43

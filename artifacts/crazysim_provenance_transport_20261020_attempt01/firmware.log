@@ -1,0 +1,8 @@
+address : 192.168.5.2 , port : 19950
+SOCKET_LINK: Create socket succeed
+SOCKET_LINK: Binding succeed
+SOCKET_LINK: Waiting for connection with gazebo ...
+SITL: Shutdown requested; ending scheduler
+NCS_TRACE_HEADER schema=2 records=0 skipped=0 overwritten=0 stride=4 capacity=8192 sampling_hz=125 record_bytes=144 memory_bytes=1179648
+NCS_TRACE_END records=0
+SITL: Scheduler stopped cleanly

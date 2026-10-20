@@ -1687,6 +1687,31 @@ Crazyflie reference firmware, capture a full positive/disconnected pair, and
 join source sequence/simulation time to firmware receive tick, filtered state,
 and motor packets. No Nano-C-SLAM firmware flight or mapping claim follows.
 
+### Provenance-enabled firmware build and blocked native runtime attempt
+
+The matching firmware source was rebuilt from Crazyflie fork commit
+`d64ae14f` (the IMU provenance change) with its tracked CrazySim submodule
+from commit `02429e8`. Firmware recursive submodules were taken from the
+existing Lima checkout at the exact gitlink revisions. In Lima Ubuntu 24.04,
+`cf2` built successfully for the AArch64 guest with
+`CRAZYSIM_IMU_PROVENANCE=ON`, a 500-Hz loop, and an 8,192-record trace ring;
+the binary SHA-256 is
+`0d393dbf2eb77071ec14703c9467fca64a9fc5cf9ccaef109f95bbf5ea24dc86`.
+This verifies compilation of matching firmware instrumentation only.
+
+A subsequent native macOS runtime attempt did not reach plugin discovery or
+firmware handshake. Gazebo Physics 7.8.0 could not load its DART engine because
+the installed Homebrew DART is 6.20.1 while that plugin requests
+`libdart-collision-bullet.6.19.dylib`; the server then crashed. The bounded
+sampler reported zero publishers and `cf2` remained at
+`Waiting for connection with gazebo`. The failed attempt is retained at
+`artifacts/crazysim_provenance_transport_20261020_attempt01/`; its empty
+topic files are not sensor evidence. Do not create a versioned symlink to
+masquerade as DART 6.19. A coherent native Gazebo/DART runtime or an earlier
+working documented runtime is required before sequence/time provenance can be
+measured. No flight was attempted and no Nano-C-SLAM firmware or mapping claim
+follows from this build.
+
 ## Quiet-diagnostics retest and IMU provenance lead (2026-10-20)
 
 Attempt14 used the Crazyflie reference firmware binary whose log embeds build

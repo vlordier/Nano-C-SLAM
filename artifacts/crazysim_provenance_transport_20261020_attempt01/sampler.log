@@ -1,0 +1,7 @@
+transport partition=ncs-prov-transport-20261020-01 GZ_IP=127.0.0.1
+topic=odometry name=/cf_0/odom subscribed=yes discovered=yes publishers=0 expected_type=gz.msgs.Odometry matching_publishers=0 publisher_discovery=timed_out
+topic=imu name=/cf_0/imu subscribed=yes discovered=yes publishers=0 expected_type=gz.msgs.IMU matching_publishers=0 publisher_discovery=timed_out
+topic=motor name=/cf_0/command/motor_speed subscribed=yes discovered=yes publishers=0 expected_type=gz.msgs.Actuators matching_publishers=0 publisher_discovery=timed_out
+topic=world_stats name=/world/crazysim_default/stats subscribed=yes discovered=yes publishers=0 expected_type=gz.msgs.WorldStatistics matching_publishers=0 publisher_discovery=timed_out
+topic=joint_state name=/world/crazysim_default/model/crazyflie_0/joint_state subscribed=yes discovered=yes publishers=0 expected_type=gz.msgs.Model matching_publishers=0 publisher_discovery=timed_out
+failed to subscribe to one or more CrazySim topics
