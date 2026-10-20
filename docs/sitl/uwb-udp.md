@@ -46,6 +46,12 @@ local FreeRTOS receive tick separately and rejects replayed sequence numbers,
 non-increasing simulation timestamps, and data older than the configured
 freshness bound.
 
+The C and Python codecs expose a per-source freshness guard. Callers provide
+current Gazebo simulation time and a nonzero maximum age. The guard rejects
+zero/future/stale timestamps and non-increasing sequence or simulation time;
+the API adapter must keep independent state for each source node. The guard is
+unit-tested but is not yet wired into `uwb_api_sitl.c`.
+
 `MESSAGE_REQUEST`, `MESSAGE_DELIVERY`, and `MESSAGE_RESPONSE` payloads contain
 the existing UWB API byte representation: `ctrl, src, dest, code, data[0..n)`.
 The payload length is `4+n` and determines `n`; v1 limits `n` to
@@ -68,7 +74,7 @@ messages for absent firmware peers in the acceptance path.
 
 The repository currently has Python and C framing/field validators plus three
 shared golden packets (registration, range response, and app-message request)
-compiled and checked against the same exact bytes. This verifies framing only:
-sequence replay and freshness enforcement, the FreeRTOS API adapter, and the
-Gazebo pose broker are still unimplemented. Keep this contract in draft until
-those behaviors have cross-process positive and negative tests.
+compiled and checked against the same exact bytes. Replay/freshness guard
+helpers are unit-tested, but the FreeRTOS API adapter does not call them yet.
+The adapter and Gazebo pose broker remain unimplemented. Keep this contract in
+draft until those behaviors have cross-process positive and negative tests.

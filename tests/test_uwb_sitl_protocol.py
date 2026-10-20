@@ -12,6 +12,7 @@ from scripts.uwb_sitl_protocol import (
     HEADER,
     RANGE_VECTOR,
     PacketKind,
+    SequenceFreshnessGuard,
     UwbDatagram,
     decode_datagram,
     encode_datagram,
@@ -189,6 +190,34 @@ class UwbSitlProtocolTests(unittest.TestCase):
                     destination_id=BROKER_ID,
                     payload=struct.pack("!H", 19958),
                 )
+            )
+
+    def test_freshness_guard_rejects_replays_stale_and_future_packets(self) -> None:
+        packet = UwbDatagram(
+            kind=PacketKind.RANGE_RESPONSE,
+            sequence=10,
+            sim_time_ns=1_000,
+            source_id=1,
+            destination_id=0,
+            payload=RANGE_VECTOR.pack(250, 0, 0, 0),
+        )
+        guard = SequenceFreshnessGuard()
+        guard.accept(packet, now_sim_time_ns=1_500, max_age_ns=1_000)
+        with self.assertRaisesRegex(ValueError, "replayed"):
+            guard.accept(packet, now_sim_time_ns=1_500, max_age_ns=1_000)
+        with self.assertRaisesRegex(ValueError, "non-increasing"):
+            guard.accept(
+                replace(packet, sequence=11),
+                now_sim_time_ns=1_500,
+                max_age_ns=1_000,
+            )
+        with self.assertRaisesRegex(ValueError, "stale"):
+            SequenceFreshnessGuard().accept(
+                packet, now_sim_time_ns=2_001, max_age_ns=1_000
+            )
+        with self.assertRaisesRegex(ValueError, "future"):
+            SequenceFreshnessGuard().accept(
+                packet, now_sim_time_ns=999, max_age_ns=1_000
             )
 
 

@@ -32,11 +32,22 @@ typedef struct {
     uint8_t payload[UWB_SITL_MAX_PAYLOAD];
 } uwb_sitl_packet_t;
 
+typedef struct {
+    uint32_t last_sequence;
+    uint64_t last_sim_time_ns;
+    uint8_t initialized;
+} uwb_sitl_freshness_guard_t;
+
 /* Return zero on success and -1 for invalid fields, capacity, or bytes. */
 int uwb_sitl_encode(const uwb_sitl_packet_t *packet, uint8_t *output,
                     size_t output_capacity, size_t *output_length);
 int uwb_sitl_decode(const uint8_t *bytes, size_t length,
                     uwb_sitl_packet_t *packet);
 uint32_t uwb_sitl_crc32(const uint8_t *bytes, size_t length);
+/* Accept only increasing per-source sequence/time within the simulation-age bound. */
+int uwb_sitl_accept_fresh(uwb_sitl_freshness_guard_t *guard,
+                          const uwb_sitl_packet_t *packet,
+                          uint64_t now_sim_time_ns,
+                          uint64_t max_age_ns);
 
 #endif

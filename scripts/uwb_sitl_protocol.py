@@ -41,12 +41,41 @@ class UwbDatagram:
     flags: int = 0
 
 
+@dataclass
+class SequenceFreshnessGuard:
+    """Per-source receiver state for simulation-time freshness and replay checks."""
+
+    last_sequence: int | None = None
+    last_sim_time_ns: int | None = None
+
+    def accept(
+        self, packet: UwbDatagram, *, now_sim_time_ns: int, max_age_ns: int
+    ) -> None:
+        if max_age_ns <= 0:
+            raise ValueError("maximum packet age must be positive")
+        if packet.sim_time_ns <= 0 or packet.sim_time_ns > now_sim_time_ns:
+            raise ValueError("packet timestamp is zero or in the future")
+        if now_sim_time_ns - packet.sim_time_ns > max_age_ns:
+            raise ValueError("packet is stale")
+        if self.last_sequence is not None and packet.sequence <= self.last_sequence:
+            raise ValueError("packet sequence is replayed or out of order")
+        if (
+            self.last_sim_time_ns is not None
+            and packet.sim_time_ns <= self.last_sim_time_ns
+        ):
+            raise ValueError("packet simulation timestamp is non-increasing")
+        self.last_sequence = packet.sequence
+        self.last_sim_time_ns = packet.sim_time_ns
+
+
 def _validate_node_id(node_id: int, *, allow_broker: bool) -> None:
     if not (0 <= node_id <= MAX_NODE_ID or (allow_broker and node_id == BROKER_ID)):
         raise ValueError("node ID is outside the protocol range")
 
 
 def _validate_packet(packet: UwbDatagram) -> None:
+    if not isinstance(packet.kind, PacketKind):
+        raise ValueError("unknown UWB packet kind")
     if not 0 <= packet.sequence <= 0xFFFFFFFF:
         raise ValueError("sequence must fit uint32")
     if not 0 <= packet.sim_time_ns <= 0xFFFFFFFFFFFFFFFF:

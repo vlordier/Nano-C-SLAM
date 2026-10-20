@@ -134,6 +134,24 @@ uint32_t uwb_sitl_crc32(const uint8_t *bytes, size_t length) {
     return crc ^ 0xFFFFFFFFU;
 }
 
+int uwb_sitl_accept_fresh(uwb_sitl_freshness_guard_t *guard,
+                          const uwb_sitl_packet_t *packet,
+                          uint64_t now_sim_time_ns,
+                          uint64_t max_age_ns) {
+    if (guard == NULL || packet == NULL || max_age_ns == 0U ||
+        packet->sim_time_ns == 0U || packet->sim_time_ns > now_sim_time_ns ||
+        now_sim_time_ns - packet->sim_time_ns > max_age_ns ||
+        (guard->initialized != 0U &&
+         (packet->sequence <= guard->last_sequence ||
+          packet->sim_time_ns <= guard->last_sim_time_ns))) {
+        return -1;
+    }
+    guard->last_sequence = packet->sequence;
+    guard->last_sim_time_ns = packet->sim_time_ns;
+    guard->initialized = 1U;
+    return 0;
+}
+
 int uwb_sitl_encode(const uwb_sitl_packet_t *packet, uint8_t *output,
                     size_t output_capacity, size_t *output_length) {
     if (packet == NULL || output == NULL || output_length == NULL ||

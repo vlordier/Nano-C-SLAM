@@ -75,6 +75,27 @@ int main(void) {
         return 1;
     }
 
+    uwb_sitl_freshness_guard_t guard = {0};
+    if (uwb_sitl_accept_fresh(&guard, &packet, UINT64_C(13345000000),
+                              UINT64_C(1000000000)) != 0 ||
+        uwb_sitl_accept_fresh(&guard, &packet, UINT64_C(13345000000),
+                              UINT64_C(1000000000)) == 0) {
+        fputs("freshness guard accepted a duplicate packet\n", stderr);
+        return 1;
+    }
+    uwb_sitl_packet_t repeated_time = packet;
+    repeated_time.sequence++;
+    if (uwb_sitl_accept_fresh(&guard, &repeated_time,
+                              UINT64_C(13345000000),
+                              UINT64_C(1000000000)) == 0 ||
+        uwb_sitl_accept_fresh(&guard, &packet, UINT64_C(14345000001),
+                              UINT64_C(1000000000)) == 0 ||
+        uwb_sitl_accept_fresh(&guard, &packet, UINT64_C(12344999999),
+                              UINT64_C(1000000000)) == 0) {
+        fputs("freshness guard accepted invalid simulation time\n", stderr);
+        return 1;
+    }
+
     packet.kind = UWB_SITL_MESSAGE_REQUEST;
     packet.sequence = 3U;
     packet.sim_time_ns = UINT64_C(1000000);
