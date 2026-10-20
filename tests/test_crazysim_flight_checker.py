@@ -27,7 +27,8 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
             plugin_log=capture.plugin_log,
             negative_control_odometry_text=capture.negative_odometry,
             negative_control_motor_text=capture.negative_motors,
-            negative_control_log=capture.negative_log,
+            negative_control_firmware_log=capture.negative_firmware_log,
+            negative_control_plugin_log=capture.negative_plugin_log,
             firmware_process_count=capture.firmware_process_count,
             negative_control_firmware_process_count=(
                 capture.negative_firmware_process_count
@@ -133,7 +134,8 @@ real_time_factor: 1.0
             plugin_log=capture.plugin_log,
             negative_control_odometry_text=capture.negative_odometry,
             negative_control_motor_text=capture.negative_motors,
-            negative_control_log=capture.negative_log,
+            negative_control_firmware_log=capture.negative_firmware_log,
+            negative_control_plugin_log=capture.negative_plugin_log,
             firmware_process_count=capture.firmware_process_count,
             negative_control_firmware_process_count=(
                 capture.negative_firmware_process_count
@@ -174,7 +176,8 @@ real_time_factor: 1.0
             plugin_log=capture.plugin_log,
             negative_control_odometry_text=capture.negative_odometry,
             negative_control_motor_text=capture.negative_motors,
-            negative_control_log=capture.negative_log,
+            negative_control_firmware_log=capture.negative_firmware_log,
+            negative_control_plugin_log=capture.negative_plugin_log,
             firmware_exit_code=1,
             firmware_process_count=capture.firmware_process_count,
             negative_control_firmware_process_count=(
@@ -246,7 +249,7 @@ real_time_factor: 1.0
         )
         errors = self._validate(
             negative_odometry=raised_control,
-            negative_log="",
+            negative_plugin_log="",
         )
 
         self.assertIn("disconnected-actuator control rose more than 0.10 m", errors)
@@ -295,6 +298,20 @@ real_time_factor: 1.0
         self.assertIn(
             "negative control must have exactly one firmware process; observed 2",
             negative_errors,
+        )
+
+    def test_negative_startup_and_bridge_markers_use_their_own_logs(self) -> None:
+        errors = self._validate(
+            negative_firmware_log="TRACE_CRTP_RX_STARTED link=0xabcd",
+            negative_plugin_log="actuator_bridge=disconnected",
+        )
+
+        self.assertNotIn(
+            "negative control log must contain exactly one firmware startup marker",
+            errors,
+        )
+        self.assertNotIn(
+            "negative control lacks explicit disconnected-actuator marker", errors
         )
 
 

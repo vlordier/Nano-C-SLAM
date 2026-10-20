@@ -19,7 +19,8 @@ class FlightCapture:
     plugin_log: str
     negative_odometry: str
     negative_motors: str
-    negative_log: str
+    negative_firmware_log: str
+    negative_plugin_log: str
     firmware_process_count: int = 1
     negative_firmware_process_count: int = 1
 
@@ -118,7 +119,6 @@ def passing_capture() -> FlightCapture:
         plugin_log="TRACE_MOTOR_NONZERO 20000,20000,20000,20000",
         negative_odometry=negative_odometry,
         negative_motors=negative_motors,
-        negative_log=(
-            "TRACE_CRTP_RX_STARTED link=0x5678\nactuator_bridge=disconnected"
-        ),
+        negative_firmware_log="TRACE_CRTP_RX_STARTED link=0x5678",
+        negative_plugin_log="actuator_bridge=disconnected",
     )

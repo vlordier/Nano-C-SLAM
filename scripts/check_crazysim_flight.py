@@ -374,7 +374,8 @@ def validate_capture(
     plugin_log: str,
     negative_control_odometry_text: str,
     negative_control_motor_text: str,
-    negative_control_log: str,
+    negative_control_firmware_log: str,
+    negative_control_plugin_log: str,
     firmware_exit_code: int = 0,
     gazebo_exit_code: int = 0,
     negative_control_firmware_exit_code: int = 0,
@@ -540,7 +541,7 @@ def validate_capture(
             "negative control must have exactly one firmware process; "
             f"observed {negative_control_firmware_process_count}"
         )
-    if negative_control_log.count("TRACE_CRTP_RX_STARTED") != 1:
+    if negative_control_firmware_log.count("TRACE_CRTP_RX_STARTED") != 1:
         errors.append(
             "negative control log must contain exactly one firmware startup marker"
         )
@@ -598,7 +599,7 @@ def validate_capture(
             errors.append(
                 "disconnected-actuator control emitted nonzero motor commands"
             )
-    if "actuator_bridge=disconnected" not in negative_control_log:
+    if "actuator_bridge=disconnected" not in negative_control_plugin_log:
         errors.append("negative control lacks explicit disconnected-actuator marker")
 
     if errors:
@@ -628,7 +629,8 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--plugin-log", required=True, type=Path)
     parser.add_argument("--negative-control-odometry", required=True, type=Path)
     parser.add_argument("--negative-control-motors", required=True, type=Path)
-    parser.add_argument("--negative-control-log", required=True, type=Path)
+    parser.add_argument("--negative-control-firmware-log", required=True, type=Path)
+    parser.add_argument("--negative-control-plugin-log", required=True, type=Path)
     parser.add_argument("--firmware-process-count", required=True, type=int)
     parser.add_argument(
         "--negative-control-firmware-process-count", required=True, type=int
@@ -656,7 +658,12 @@ def main() -> int:
         negative_control_motor_text=args.negative_control_motors.read_text(
             encoding="utf-8"
         ),
-        negative_control_log=args.negative_control_log.read_text(encoding="utf-8"),
+        negative_control_firmware_log=args.negative_control_firmware_log.read_text(
+            encoding="utf-8"
+        ),
+        negative_control_plugin_log=args.negative_control_plugin_log.read_text(
+            encoding="utf-8"
+        ),
         firmware_process_count=args.firmware_process_count,
         negative_control_firmware_process_count=(
             args.negative_control_firmware_process_count
