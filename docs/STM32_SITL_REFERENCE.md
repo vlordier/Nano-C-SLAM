@@ -1615,10 +1615,11 @@ zero drops, including 9,802 packets with nonzero ratios. The firmware retained
 16,061 trace records and skipped 16,062 stabilizer iterations. It nevertheless
 reported a 421-Hz stabilizer rate and `Landing timeout, disarming`; the strict
 paired checker failed on aggregate RTF 0.890 (required 0.95–1.05) and firmware
-estimator/rate/crash diagnostics. The disconnected-control negative capture
-passed its checks. Thus stride 2 produced a non-crashing rise-and-return
-diagnostic, but it did not make the trace overhead-neutral or pass flight
-acceptance.
+estimator/rate/crash diagnostics. The disconnected-control negative capture passed its physics/bridge checks.
+The checker invocation supplied zero firmware/Gazebo process codes without
+retaining wrapper return codes, so process-exit acceptance is unverified. Thus
+stride 2 produced a non-crashing rise-and-return diagnostic, but it did not
+make the trace overhead-neutral or establish full flight acceptance.
 
 The main first-divergence bead remains open. Follow-up recorder work is tracked
 in bead `ncs-bq2`. The attempt11 manifest and per-file hashes are retained. No

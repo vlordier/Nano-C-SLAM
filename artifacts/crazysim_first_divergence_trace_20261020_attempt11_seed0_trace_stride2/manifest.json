@@ -42,8 +42,8 @@
       },
       {
         "path": "REPORT.md",
-        "bytes": 3120,
-        "sha256": "e891137cae64f2025d19130b78c862e915efb48c85abae39d41cd46d1011d156"
+        "bytes": 3652,
+        "sha256": "0181356c8d359b2ca423265c89cb925f0847042f6a9e3b94d0b3898a40e61de2"
       },
       {
         "path": "capture/imu.jsonl.gz",
@@ -131,6 +131,8 @@
       "aggregate Gazebo real-time factor is 0.890; requires [0.95, 1.05]",
       "firmware reported estimator/rate/crash failure"
     ],
-    "negative_control_passed": true
+    "negative_control_passed": true,
+    "process_exit_codes_verified": false,
+    "note": "Checker was supplied exit-code arguments of 0 based on console termination markers; shell wrapper return codes were not retained, so exit-code acceptance is unverified."
   }
 }

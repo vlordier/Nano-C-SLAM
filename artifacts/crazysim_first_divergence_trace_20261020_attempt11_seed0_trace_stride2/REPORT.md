@@ -18,8 +18,19 @@ Next, make the recorder genuinely low-cost (e.g. a fixed-size compact record wit
 
 See `manifest.json` and `SHA256SUMS` for capture hashes and machine-readable measurements. JSONL and firmware logs are gzip-compressed without altering their contents.
 
-The unchanged strict paired checker was run against attempt 11 and disconnected
-control attempt 04. The negative-control conditions passed. The positive gate
-failed with exactly two errors: aggregate Gazebo RTF 0.890 (required 0.95–1.05)
-and firmware estimator/rate/crash diagnostics. Full machine output and exit
-status are in `CHECKER_OUTPUT.json` and `CHECKER_EXIT_CODE.txt`.
+The unchanged checker was invoked against attempt 11 and disconnected
+control attempt 04. The negative-control physics/bridge conditions passed. The
+positive diagnostics returned exactly two errors: aggregate Gazebo RTF 0.890 (required 0.95–1.05)
+and firmware estimator/rate/crash diagnostics. Full machine output and the checker process exit status are in
+`CHECKER_OUTPUT.json` and `CHECKER_EXIT_CODE.txt`. However, the checker was
+supplied firmware/Gazebo exit-code arguments of 0 without retained wrapper
+return codes, so process-exit acceptance remains unverified; see the limitation
+above.
+
+The checker invocation set both firmware and Gazebo exit-code arguments to 0,
+but the shell process return codes were not retained as raw evidence (the
+firmware log contains the clean scheduler-stop marker; the Gazebo session
+reported its plugin destructor summary). Consequently, treat the two listed
+checker errors as the verified physics/firmware findings, while the strict
+process-exit criterion remains unverified for this attempt and for the paired
+attempt04 metadata. A repeat must record each wrapper's actual exit status.
