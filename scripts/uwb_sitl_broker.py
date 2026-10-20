@@ -53,7 +53,8 @@ def _timestamp_ns(value: object) -> int:
     stamp = _object(value)
     try:
         seconds = _integer(stamp["sec"])
-        nanoseconds = _integer(stamp["nsec"])
+        # gz.msgs time fields omit zero-valued protobuf scalars in JSON mode.
+        nanoseconds = _integer(stamp.get("nsec", "0"))
     except (KeyError, TypeError, ValueError) as error:
         raise ValueError("Gazebo timestamp is malformed") from error
     if seconds < 0 or not 0 <= nanoseconds < 1_000_000_000:
@@ -173,8 +174,8 @@ class UwbBrokerCore:
             raise ValueError("pose node ID is outside 0..5")
         if len(xyz_m) != 3 or any(not math.isfinite(value) for value in xyz_m):
             raise ValueError("Gazebo pose must have three finite coordinates")
-        if not 0 < sim_time_ns <= self.clock_ns:
-            raise ValueError("pose timestamp must be nonzero and no newer than clock")
+        if sim_time_ns <= 0 or sim_time_ns - self.clock_ns > self.pose_max_skew_ns:
+            raise ValueError("pose timestamp is outside the clock skew bound")
         previous = self._poses.get(node_id)
         if previous is not None and sim_time_ns <= previous.sim_time_ns:
             raise ValueError("Gazebo pose timestamp must increase")
@@ -420,9 +421,14 @@ class UwbBrokerCore:
 
     def _pose_is_fresh(self, node_id: int, now_monotonic_ns: int) -> bool:
         pose = self._poses.get(node_id)
+        if pose is None:
+            return False
+        clock_delta_ns = self.clock_ns - pose.sim_time_ns
         return bool(
-            pose
-            and 0 <= self.clock_ns - pose.sim_time_ns <= self.pose_max_age_ns
+            (
+                0 <= clock_delta_ns <= self.pose_max_age_ns
+                or -self.pose_max_skew_ns <= clock_delta_ns < 0
+            )
             and 0 <= now_monotonic_ns - pose.received_monotonic_ns <= self.node_lease_ns
         )
 

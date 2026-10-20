@@ -153,6 +153,7 @@ class UwbSitlBrokerTests(unittest.TestCase):
             parse_gazebo_clock('{"sim":{"sec":"3","nsec":"12"}}'),
             3_000_000_012,
         )
+        self.assertEqual(parse_gazebo_clock('{"sim":{"sec":"3"}}'), 3_000_000_000)
         odometry = {
             "header": {"stamp": {"sec": "4", "nsec": "15"}},
             "pose": {"position": {"x": 1.25, "y": -2, "z": 0.5}},
@@ -168,6 +169,19 @@ class UwbSitlBrokerTests(unittest.TestCase):
                 '{"header":{"stamp":{"sec":"4","nsec":"15"}},'
                 '"pose":{"position":{"x":"NaN","y":0,"z":0}}}'
             )
+
+    def test_pose_timestamp_may_lead_clock_within_bounded_topic_skew(self) -> None:
+        core = UwbBrokerCore(pose_max_skew_ns=50_000_000)
+        core.observe_clock(NOW, 100)
+        core.observe_pose(0, NOW + 1_000_000, (0.0, 0.0, 0.5), 110)
+        acknowledgement = core.handle(_register(0, NODE0[1]), (NODE0[0], 40000), 120)
+        self.assertEqual(len(acknowledgement), 1)
+        self.assertEqual(
+            decode_datagram(acknowledgement[0][1]).kind,
+            PacketKind.REGISTER_ACK,
+        )
+        with self.assertRaisesRegex(ValueError, "clock skew bound"):
+            core.observe_pose(1, NOW + 60_000_000, (1.0, 0.0, 0.5), 130)
 
 
 class UwbSitlBrokerUdpTests(unittest.IsolatedAsyncioTestCase):
