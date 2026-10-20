@@ -1458,6 +1458,16 @@ For the X-layout, the legacy roll/pitch mix is consistent with rotor position;
 the force/torque mix's yaw signs are also consistent with the SDF's alternating
 CCW/CW directions under the Crazyflie body convention.
 
+Source locations for reproduction: the firmware packed layout is
+`src/modules/src/power_distribution_sitl.c:55-60`, legacy mixer
+`104-112`, force/torque mixer `115-137`, and packet serialization
+`207-217`. The archived plugin snapshot has packet decoding/conversion at
+[`crazysim_plugin.cpp:402-429`](../artifacts/crazysim_motor_mapping_20261020_attempt11/source/crazysim_plugin.cpp#L402)
+and actuator publication at `441-449`; the archived SDF has rotor positions at
+`119-204` and motor-model configuration at `287-356`. Its exact hashes are
+recorded in
+[`attempt11/SHA256SUMS`](../artifacts/crazysim_motor_mapping_20261020_attempt11/SHA256SUMS).
+
 This source audit rules out an obvious channel permutation between these
 specific captured sources. It does not measure Gazebo's resulting single-rotor
 body torque, prove the firmware binary was built from precisely this working
