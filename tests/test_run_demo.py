@@ -8,6 +8,7 @@ import sys
 import tempfile
 import unittest
 from collections.abc import Callable
+from io import StringIO
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -80,6 +81,43 @@ class PacketTests(unittest.TestCase):
 
 
 class MissionTests(unittest.TestCase):
+    class CallbackList:
+        def __init__(self) -> None:
+            self.callbacks: list[Callable[..., None]] = []
+
+        def add_callback(self, callback: Callable[..., None]) -> None:
+            self.callbacks.append(callback)
+
+        def remove_callback(self, callback: Callable[..., None]) -> None:
+            self.callbacks.remove(callback)
+
+        def call(self, *args: object) -> None:
+            for callback in tuple(self.callbacks):
+                callback(*args)
+
+    class FakeLink:
+        def __init__(self, uri: str, *, respond: bool = True) -> None:
+            self.link_uri = uri
+            self.respond = respond
+            self.connected = MissionTests.CallbackList()
+            self.connection_failed = MissionTests.CallbackList()
+            self.close_count = 0
+            self.param = SimpleNamespace(is_updated=True)
+            self.console = SimpleNamespace(receivedChar=MissionTests.CallbackList())
+
+        def add_port_callback(
+            self, _port: int, _callback: Callable[[demo.PacketLike], None]
+        ) -> None:
+            pass
+
+        def open_link(self, uri: str) -> None:
+            self.link_uri = uri
+            if self.respond:
+                self.connected.call(uri)
+
+        def close_link(self) -> None:
+            self.close_count += 1
+
     def test_import_has_no_radio_or_filesystem_side_effects(self) -> None:
         code = f"""
 import importlib.util
@@ -108,13 +146,81 @@ assert not Path("logs").exists()
             self.assertEqual(demo.create_log_dir(root), root / "log0")
             self.assertEqual(demo.create_log_dir(root), root / "log1")
 
-    def test_cli_selects_drone_count_without_hardware(self) -> None:
+    def test_cli_preserves_radio_defaults_and_selects_drone_count(self) -> None:
         with patch.object(demo, "run_mission") as run_mission:
             self.assertEqual(demo.main(["2"]), 0)
-        run_mission.assert_called_once_with(demo.DRONES[:2])
+        run_mission.assert_called_once_with(demo.DRONES[:2], log_root=Path("logs"))
         with patch("sys.stderr"), self.assertRaises(SystemExit) as error:
             demo.main(["5"])
         self.assertEqual(error.exception.code, 2)
+
+    def test_cli_accepts_per_drone_udp_uris_and_log_root(self) -> None:
+        uris = ["udp://127.0.0.1:21850", "udp://127.0.0.1:21851"]
+        log_root = Path("sim-logs")
+        with patch.object(demo, "run_mission") as run_mission:
+            self.assertEqual(
+                demo.main(
+                    [
+                        "2",
+                        "--uri",
+                        uris[0],
+                        "--uri",
+                        uris[1],
+                        "--log-root",
+                        str(log_root),
+                    ]
+                ),
+                0,
+            )
+        selected = run_mission.call_args.args[0]
+        self.assertEqual(tuple(config.uri for config in selected), tuple(uris))
+        self.assertEqual(
+            tuple(config.label for config in selected),
+            tuple(config.label for config in demo.DRONES[:2]),
+        )
+        self.assertEqual(run_mission.call_args.kwargs, {"log_root": log_root})
+
+    def test_cli_rejects_uri_count_mismatch_and_duplicate_uris(self) -> None:
+        for arguments in (
+            ["2", "--uri", "udp://127.0.0.1:21850"],
+            ["2", "--uri", "udp://127.0.0.1:21850", "--uri", "udp://127.0.0.1:21850"],
+        ):
+            with (
+                self.subTest(arguments=arguments),
+                patch("sys.stderr"),
+                self.assertRaises(SystemExit) as error,
+            ):
+                demo.main(arguments)
+            self.assertEqual(error.exception.code, 2)
+
+    def test_cli_reports_bounded_startup_failure(self) -> None:
+        for error in (TimeoutError("link timeout"), ConnectionError("link refused")):
+            with (
+                self.subTest(error=error),
+                patch.object(demo, "run_mission", side_effect=error),
+                patch("sys.stderr", new_callable=StringIO) as stderr,
+            ):
+                self.assertEqual(demo.main(["1"]), 1)
+            self.assertIn(f"Mission startup failed: {error}", stderr.getvalue())
+
+    def test_gazebo_uri_selection_preserves_configured_initial_poses(self) -> None:
+        selected = demo.select_drone_configs(
+            2, ("udp://127.0.0.1:21850", "udp://127.0.0.1:21851")
+        )
+        self.assertEqual(
+            tuple(config.initial_pose for config in selected),
+            tuple(config.initial_pose for config in demo.DRONES[:2]),
+        )
+
+    def test_gazebo_help_includes_udp_endpoint_example(self) -> None:
+        with (
+            patch("sys.stdout", new_callable=StringIO) as stdout,
+            self.assertRaises(SystemExit) as error,
+        ):
+            demo.main(["--help"])
+        self.assertEqual(error.exception.code, 0)
+        self.assertIn("udp://127.0.0.1:21850", stdout.getvalue())
+        self.assertIn("udp://127.0.0.1:21851", stdout.getvalue())
 
     def test_param_callback_routes_packets_by_uri(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -142,6 +248,54 @@ assert not Path("logs").exists()
             )
             with (Path(tmp) / "As.csv").open(newline="", encoding="utf-8") as file:
                 self.assertEqual(list(csv.reader(file)), [["9"]])
+
+    def test_parameter_download_timeout_fails_instead_of_waiting_forever(self) -> None:
+        cf = SimpleNamespace(
+            link_uri="udp://127.0.0.1:21850",
+            param=SimpleNamespace(is_updated=False),
+        )
+        with (
+            patch.object(demo.time, "monotonic", side_effect=(0.0, 0.6)),
+            self.assertRaisesRegex(TimeoutError, "udp://127.0.0.1:21850"),
+        ):
+            demo.wait_for_param_download(
+                SimpleNamespace(cf=cf),
+                loggers={},
+                timeout_s=0.5,
+            )
+
+    def test_parameter_download_timeout_must_be_positive(self) -> None:
+        cf = SimpleNamespace(
+            link_uri="udp://127.0.0.1:21850",
+            param=SimpleNamespace(is_updated=False),
+        )
+        with self.assertRaisesRegex(ValueError, "must be positive"):
+            demo.wait_for_param_download(
+                SimpleNamespace(cf=cf), loggers={}, timeout_s=0.0
+            )
+
+    def test_bounded_swarm_opens_runs_callbacks_and_closes_links(self) -> None:
+        uri = "udp://127.0.0.1:21850"
+        link = self.FakeLink(uri)
+        called: list[str] = []
+        with demo.BoundedSwarm({uri: link}, connect_timeout_s=0.1) as swarm:
+            swarm.parallel_safe(lambda scf: called.append(scf.link_uri))
+        self.assertEqual(called, [uri])
+        self.assertEqual(link.close_count, 1)
+        self.assertEqual(link.connected.callbacks, [])
+        self.assertEqual(link.connection_failed.callbacks, [])
+
+    def test_bounded_swarm_times_out_and_closes_unresponsive_link(self) -> None:
+        uri = "udp://127.0.0.1:21850"
+        link = self.FakeLink(uri, respond=False)
+        with (
+            self.assertRaisesRegex(TimeoutError, "link connection timed out"),
+            demo.BoundedSwarm({uri: link}, connect_timeout_s=0.001),
+        ):
+            self.fail("connection should not have completed")
+        self.assertGreaterEqual(link.close_count, 1)
+        self.assertEqual(link.connected.callbacks, [])
+        self.assertEqual(link.connection_failed.callbacks, [])
 
     def test_initial_parameters_match_configured_pose(self) -> None:
         writes = []
