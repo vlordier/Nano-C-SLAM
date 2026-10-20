@@ -1,0 +1,20 @@
+{
+  "negative_control_passed": true,
+  "strict_paired_checker": "The positive attempt02 paired checker ran against this negative capture and passed all negative-control conditions; the complete paired output is in ../attempt02_plugin_trace/CHECKER_OUTPUT.json.",
+  "evidence": {
+    "plugin_records": 16301,
+    "plugin_dropped": 0,
+    "records_with_nonzero_firmware_ratio": 10733,
+    "motor_topic_nonzero_values": 0,
+    "odom_start_z_m": 2.0149994287552038,
+    "odom_end_z_m": 2.0149994287552038,
+    "odom_min_z_m": 2.01499019335,
+    "odom_max_z_m": 2.0149994287552038,
+    "max_abs_rotor_joint_rad_s": 1.5e-26,
+    "disconnected_marker": true
+  },
+  "limitations": [
+    "negative-control RTF aggregate 0.811 is outside registered window",
+    "does not validate positive flight"
+  ]
+}

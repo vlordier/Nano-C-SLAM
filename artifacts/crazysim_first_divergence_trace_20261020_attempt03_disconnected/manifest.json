@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "date": "2026-10-20",
+  "classification": "invalid capture; excluded from evidence",
+  "reason": "sampler started after Gazebo publisher discovery completed; all topic captures except plugin receive trace are empty",
+  "files": [
+    {
+      "path": "REPORT.md",
+      "bytes": 422,
+      "sha256": "23db5843511060c5e735673af64f0104bbad5831531429905989779006026f1b"
+    },
+    {
+      "path": "capture/imu.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "capture/joint-state.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "capture/motors.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "capture/odometry.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "capture/plugin-motors.jsonl.gz",
+      "bytes": 205834,
+      "sha256": "0c5d9fc17e52144f17947ad900b3cd82746e41315f1509b04b82faed130f9e87"
+    },
+    {
+      "path": "capture/world-stats.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "world.sdf",
+      "bytes": 14193,
+      "sha256": "e2172e5ff88e174f5f63781acef079c35ebb2a8a999db087a58e45cac3383ab9"
+    }
+  ]
+}

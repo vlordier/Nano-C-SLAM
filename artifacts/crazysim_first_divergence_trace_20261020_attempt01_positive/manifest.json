@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "date": "2026-10-20",
+  "classification": "positive diagnostic only; not flight acceptance",
+  "partition": "ncs-first-divergence-20261020-positive",
+  "firmware": {
+    "repository": "https://github.com/vlordier/crazyflie-firmware",
+    "branch": "codex/sitl-first-divergence-trace",
+    "commit": "4a6094ad99e80cf3",
+    "target": "cf2",
+    "rate_main_loop_hz": 500,
+    "diagnostics": true,
+    "trace_ring": true,
+    "trace_ring_capacity": 32768,
+    "binary_sha256": "126e07b3ded883aebcf087077235061f3f66b0c33bff287b4dfd54d36674cd70",
+    "trace_records": 28978,
+    "trace_record_bytes": 120,
+    "trace_ring_bytes": 3932160,
+    "binary_bss_bytes": 4004344
+  },
+  "sampler": {
+    "source": "scripts/crazysim_flight_sampler.cc",
+    "joint_state_mode": true,
+    "binary_sha256": "2a43b73662ca2ba385b0b9597a17b59fc7bfdf22a59c1f08511d996db794b4e3",
+    "counts": {
+      "imu.jsonl.gz": 21240,
+      "joint-state.jsonl.gz": 21240,
+      "motors.jsonl.gz": 42479,
+      "odometry.jsonl.gz": 8680,
+      "world-stats.jsonl.gz": 348
+    }
+  },
+  "commands": [
+    {
+      "command": "takeoff",
+      "target_height_m": 2.315,
+      "duration_s": 8,
+      "ack_result": 0,
+      "ack_packet_hex": "8c0700f600"
+    },
+    {
+      "command": "land",
+      "target_height_m": 2.015,
+      "duration_s": 4,
+      "ack_result": 0,
+      "ack_packet_hex": "8c0800c300"
+    }
+  ],
+  "limitations": [
+    "no shared firmware/Gazebo clock mapping",
+    "plugin decoded packet trace was disabled",
+    "no tracing-off overhead baseline",
+    "no actuator-disconnected negative run",
+    "RTF unstable; do not tune controller from this run"
+  ]
+}

@@ -14,6 +14,7 @@
 
 #include <gz/msgs/actuators.pb.h>
 #include <gz/msgs/imu.pb.h>
+#include <gz/msgs/model.pb.h>
 #include <gz/msgs/odometry.pb.h>
 #include <gz/msgs/world_stats.pb.h>
 #include <gz/transport/Node.hh>
@@ -27,6 +28,7 @@ std::atomic<std::uint64_t> odometryCount{0};
 std::atomic<std::uint64_t> imuCount{0};
 std::atomic<std::uint64_t> motorCount{0};
 std::atomic<std::uint64_t> worldStatsCount{0};
+std::atomic<std::uint64_t> jointStateCount{0};
 
 void stop(int) {
     running = 0;
@@ -130,8 +132,9 @@ bool subscribeAndReport(gz::transport::Node &node, const std::string &topic,
 } // namespace
 
 int main(int argc, char **argv) {
-    if (argc != 3) {
-        std::cerr << "usage: crazysim_flight_sampler DURATION_SECONDS OUTPUT_DIR\n";
+    const bool requireJointState = argc == 4 && std::string(argv[3]) == "--joint-state";
+    if ((argc != 3 && argc != 4) || (argc == 4 && !requireJointState)) {
+        std::cerr << "usage: crazysim_flight_sampler DURATION_SECONDS OUTPUT_DIR [--joint-state]\n";
         return 2;
     }
 
@@ -154,14 +157,18 @@ int main(int argc, char **argv) {
     std::ofstream imuOutput;
     std::ofstream motorOutput;
     std::ofstream worldStatsOutput;
+    std::ofstream jointStateOutput;
     std::mutex odometryMutex;
     std::mutex imuMutex;
     std::mutex motorMutex;
     std::mutex worldStatsMutex;
+    std::mutex jointStateMutex;
     if (!prepareOutput(outputDir / "odometry.jsonl", odometryOutput) ||
         !prepareOutput(outputDir / "imu.jsonl", imuOutput) ||
         !prepareOutput(outputDir / "motors.jsonl", motorOutput) ||
-        !prepareOutput(outputDir / "world-stats.jsonl", worldStatsOutput)) {
+        !prepareOutput(outputDir / "world-stats.jsonl", worldStatsOutput) ||
+        (requireJointState &&
+         !prepareOutput(outputDir / "joint-state.jsonl", jointStateOutput))) {
         return 2;
     }
 
@@ -201,15 +208,26 @@ int main(int argc, char **argv) {
         jsonRecorder<gz::msgs::WorldStatistics>(worldStatsOutput, worldStatsMutex,
                                                 worldStatsCount),
         worldStatsOptions, publisherDiscoveryDeadline);
+    bool jointStateSubscribed = true;
+    if (requireJointState) {
+        gz::transport::SubscribeOptions jointStateOptions;
+        jointStateSubscribed = subscribeAndReport<gz::msgs::Model>(
+            node, "/world/crazysim_default/model/crazyflie_0/joint_state",
+            "joint_state",
+            jsonRecorder<gz::msgs::Model>(jointStateOutput, jointStateMutex,
+                                          jointStateCount),
+            jointStateOptions, publisherDiscoveryDeadline);
+    }
     const bool subscribed = odometrySubscribed && imuSubscribed && motorSubscribed &&
-                            worldStatsSubscribed;
+                            worldStatsSubscribed && jointStateSubscribed;
     if (!subscribed) {
         std::cerr << "failed to subscribe to one or more CrazySim topics\n";
         return 3;
     }
 
     std::cerr << "sampling CrazySim odometry (publisher 200 Hz, uncapped), IMU "
-                 "(uncapped), motors (uncapped), and world stats (10 Hz) as "
+                 "(uncapped), motor commands (uncapped), world stats (10 Hz)"
+              << (requireJointState ? ", and joint state" : "") << " as "
                  "compact JSONL for "
               << durationSeconds << " seconds\n";
     const auto deadline =
@@ -223,6 +241,8 @@ int main(int argc, char **argv) {
     const bool motorUnsubscribed = node.Unsubscribe("/cf_0/command/motor_speed");
     const bool worldStatsUnsubscribed =
         node.Unsubscribe("/world/crazysim_default/stats");
+    const bool jointStateUnsubscribed = !requireJointState ||
+        node.Unsubscribe("/world/crazysim_default/model/crazyflie_0/joint_state");
     {
         std::lock_guard<std::mutex> lock(odometryMutex);
         odometryOutput.flush();
@@ -239,9 +259,17 @@ int main(int argc, char **argv) {
         std::lock_guard<std::mutex> lock(worldStatsMutex);
         worldStatsOutput.flush();
     }
+    if (requireJointState) {
+        std::lock_guard<std::mutex> lock(jointStateMutex);
+        jointStateOutput.flush();
+    }
     std::cerr << "captured odometry=" << odometryCount.load()
               << " imu=" << imuCount.load() << " motor=" << motorCount.load()
-              << " world_stats=" << worldStatsCount.load() << '\n';
+              << " world_stats=" << worldStatsCount.load();
+    if (requireJointState) {
+        std::cerr << " joint_state=" << jointStateCount.load();
+    }
+    std::cerr << '\n';
     if (odometryCount.load() == 0 || imuCount.load() == 0 ||
         motorCount.load() == 0 || worldStatsCount.load() == 0) {
         std::cerr << "no callbacks for:";
@@ -249,13 +277,17 @@ int main(int argc, char **argv) {
         if (imuCount.load() == 0) std::cerr << " imu";
         if (motorCount.load() == 0) std::cerr << " motor";
         if (worldStatsCount.load() == 0) std::cerr << " world_stats";
+        if (requireJointState && jointStateCount.load() == 0) {
+            std::cerr << " joint_state";
+        }
         std::cerr << "; match both GZ_PARTITION and GZ_IP with Gazebo, then verify "
                      "publisher type/address and transport reachability\n";
     }
     return odometryUnsubscribed && imuUnsubscribed && motorUnsubscribed &&
                    worldStatsUnsubscribed && odometryCount.load() > 0 &&
                    imuCount.load() > 0 && motorCount.load() > 0 &&
-                   worldStatsCount.load() > 0
+                   worldStatsCount.load() > 0 && jointStateUnsubscribed &&
+                   (!requireJointState || jointStateCount.load() > 0)
                ? 0
                : 4;
 }

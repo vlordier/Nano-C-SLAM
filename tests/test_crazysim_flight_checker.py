@@ -15,11 +15,80 @@ from scripts.check_crazysim_flight import (
     parse_odometry,
     parse_world_stats,
     validate_capture,
+    validate_plugin_motor_trace,
 )
 from test_support.crazysim_flight_fixtures import passing_capture
 
 
 class CrazySimFlightCheckerTests(unittest.TestCase):
+    def test_plugin_trace_checks_packet_header_ratios_and_motor_speeds(self) -> None:
+        record = {
+            "capture_monotonic_time_ns": 123,
+            "packet_bytes": [0x90, 0xE8, 0x03, 0x4C, 0x04, 0xB0, 0x04, 0x14, 0x05],
+            "motor_ratio": [1000, 1100, 1200, 1300],
+            "omega_rad_s": [1000.0, 1100.0, 1200.0, 1300.0],
+        }
+
+        self.assertEqual(validate_plugin_motor_trace(json.dumps(record)), [])
+        self.assertEqual(
+            validate_plugin_motor_trace(json.dumps(record), disconnected=True), []
+        )
+
+        record["motor_ratio"] = [1000, 1100, 1200, 1299]
+        self.assertIn(
+            "plugin trace line 1 ratios disagree with packet bytes",
+            validate_plugin_motor_trace(json.dumps(record)),
+        )
+
+    def test_plugin_trace_rejects_malformed_and_zero_only_records(self) -> None:
+        malformed = json.dumps(
+            {
+                "packet_bytes": [0] * 8,
+                "motor_ratio": [0] * 4,
+                "omega_rad_s": [0.0] * 4,
+            }
+        )
+        errors = validate_plugin_motor_trace(malformed)
+        self.assertTrue(any("malformed packet bytes" in error for error in errors))
+
+        zero = json.dumps(
+            {
+                "packet_bytes": [0x90] + [0] * 8,
+                "motor_ratio": [0] * 4,
+                "omega_rad_s": [0.0] * 4,
+            }
+        )
+        self.assertIn(
+            "negative plugin motor trace has no nonzero received firmware ratios",
+            validate_plugin_motor_trace(zero, disconnected=True),
+        )
+
+    def test_plugin_trace_rejects_invalid_header_nonfinite_and_out_of_range(
+        self,
+    ) -> None:
+        base = {
+            "packet_bytes": [0x90, 0xE8, 0x03, 0x4C, 0x04, 0xB0, 0x04, 0x14, 0x05],
+            "motor_ratio": [1000, 1100, 1200, 1300],
+            "omega_rad_s": [1000.0, 1100.0, 1200.0, 1300.0],
+        }
+        wrong_header = {**base, "packet_bytes": [0x91, *base["packet_bytes"][1:]]}
+        self.assertIn(
+            "plugin trace line 1 has unexpected packet header",
+            validate_plugin_motor_trace(json.dumps(wrong_header)),
+        )
+
+        nonfinite_speed = {**base, "omega_rad_s": [math.inf, 0.0, 0.0, 0.0]}
+        self.assertIn(
+            "plugin trace line 1 has malformed motor speeds",
+            validate_plugin_motor_trace(json.dumps(nonfinite_speed)),
+        )
+
+        excessive_speed = {**base, "omega_rad_s": [4000.0, 1100.0, 1200.0, 1300.0]}
+        self.assertIn(
+            "plugin trace line 1 has out-of-range motor speed",
+            validate_plugin_motor_trace(json.dumps(excessive_speed)),
+        )
+
     def _validate(self, **overrides: object) -> list[str]:
         capture = replace(passing_capture(), **overrides)
         _, errors = validate_capture(

@@ -1027,6 +1027,14 @@ cross-process correlation after checking host/guest wall-clock offset. These
 fields are observer metadata and do not convert sensor arrival time into
 simulation time.
 
+For a world that loads Gazebo's `JointStatePublisher` system on
+`crazyflie_0`, pass `--joint-state` to additionally subscribe to the model's
+`gz.msgs.Model` stream and write all four physical rotor joint velocities to
+`joint-state.jsonl`. The sampler still captures `/cf_0/command/motor_speed`
+separately; that topic is the command sent to the motor systems, while joint
+state is the measured response. This mode was added for the positive trace in
+[`attempt01_positive`](../artifacts/crazysim_first_divergence_trace_20261020_attempt01_positive/REPORT.md).
+
 The compact JSONL capture retained full timestamps without disturbing
 simulation speed: RTF was 0.998 and the largest IMU gap was 22 ms. Starting
 the sampler before Gazebo aligned the odometry and stats intervals (99.3%
@@ -1516,3 +1524,73 @@ harness remain outstanding; bead `ncs-fea.5.8.2.7.1.3.2` therefore stays open.
 The synchronized firmware-to-Gazebo first-divergence trace in
 `ncs-fea.5.8.2.7.1.3.3` is still required before changing controller gains or
 claiming a validated motor mapping.
+
+### First-divergence trace, positive run 01 (2026-10-20)
+
+The first instrumented positive run is recorded in
+[`attempt01_positive/REPORT.md`](../artifacts/crazysim_first_divergence_trace_20261020_attempt01_positive/REPORT.md),
+with compressed raw captures, the exact SDF world, firmware log, manifest and
+SHA-256 sums alongside it. It uses the reference CrazySim SITL firmware, not
+the Nano-C-SLAM STM32 application. The firmware ring captured 28,978 of
+32,768 possible 120-byte records without wrapping. The diagnostic firmware
+build reports 4,004,344 bytes of BSS, including a 3,932,160-byte ring; a
+separate ring-disabled `cf2` build also succeeds.
+
+Gazebo odometry rose from 2.015 m to 2.566 m and returned to 2.015 m. Odometry
+and IMU crossed 1 degree at sim times 31.465 s and 31.466 s respectively; the
+firmware trace's maximum estimated tilt was 1.331 degrees. However, the SITL
+sensor interrupt timestamp is zero and no verified RTOS-tick-to-sim-time map
+exists. The firmware packet bytes are reconstructed from its captured PWM
+ratios, and this run did not enable a timestamped plugin receive/decode trace.
+Consequently the per-sample firmware-packet-to-Gazebo-actuator relationship
+at first divergence remains unproven.
+
+The run also lacks a tracing-off baseline and an actuator-disconnected
+negative control. RTF ranged from 0.046 to 2.134 (median 0.908), and the
+stabilizer emitted a 490 Hz loop warning against a 500 Hz target. Do not use
+this run for controller tuning. Bead `ncs-fea.5.8.2.7.1.3.3` remains open;
+next add a bounded plugin receive trace with host monotonic timestamps, then
+repeat positive traced, positive baseline, and disconnected negative runs
+with identical world and command settings.
+
+### First-divergence trace, plugin-correlated positive run 02 and negative run 04 (2026-10-20)
+
+The second positive run enabled the bounded receive trace in CrazySim fork
+commit `8f30dc1`. Its 21,435 rows have no drops; all nine-byte packets use
+header `0x90`, and every decoded four-channel ratio matches its corresponding
+little-endian packet bytes. The capture retained odometry, IMU, motor command,
+rotor joint state and world statistics as compressed JSONL, plus the firmware
+log, world, plugin summary, exact checker output, manifest and hashes in
+[`attempt02_plugin_trace`](../artifacts/crazysim_first_divergence_trace_20261020_attempt02_plugin_trace/REPORT.md).
+Firmware packets with nonzero ratios reached the plugin and produced nonzero
+Gazebo motor commands; the rotor joint stream also records the physical
+response. This verifies the reference firmware packet-to-plugin decode path.
+
+It is not a first-divergence capture: maximum odometry tilt was only 0.279°.
+Altitude rose from 2.015 m to 2.402 m, but ended at 2.313 m. Aggregate RTF was
+0.905. The strict paired checker failed on RTF, final landing altitude, world-stat
+coverage (just below the required 95%), and firmware rate/estimator warnings. The plugin trace uses
+host monotonic time while the firmware ring uses RTOS ticks; no verified
+conversion or uncertainty bound connects those clocks. The archived firmware
+console log does not retain raw high-level command acknowledgements or live
+process accounting. The checker therefore reports only markers present in the
+retained console log; command reception is not independently proven by this
+archive. Treat this as packet/decode and actuation evidence, not flight
+acceptance.
+
+The paired disconnected run 04 is archived in
+[`attempt04_disconnected`](../artifacts/crazysim_first_divergence_trace_20261020_attempt04_disconnected/REPORT.md).
+It received 16,301 packets with no drops, including 10,733 records with
+nonzero firmware ratios. The plugin explicitly disabled actuator forwarding;
+all 32,497 Gazebo command components were zero, rotor joint velocities stayed
+at numerical zero, and odometry drift was only 9.24e-6 m. This is a valid
+negative control for the firmware-packet-to-actuator bridge. Its RTF was
+0.811, so it is not a timing baseline. Attempt 03 is preserved but explicitly
+excluded because sampler discovery completed after Gazebo had ended and its
+topic captures were empty.
+
+The next bead gate still requires a positive run that crosses 1° and proceeds
+through crash or landing, plus a tracing-off comparison to quantify trace
+overhead and a defensible RTOS-tick/Gazebo-time mapping. The available runs do
+not justify controller gain changes or a claim that Nano-C-SLAM firmware has
+flown in Gazebo.

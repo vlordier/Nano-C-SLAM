@@ -263,6 +263,88 @@ def parse_motor_components(text: str) -> list[float]:
     ]
 
 
+def _capture_text(path: Path) -> str:
+    """Read plain or gzip-compressed sampler captures."""
+    if path.suffix == ".gz":
+        import gzip
+
+        with gzip.open(path, "rt", encoding="utf-8") as stream:
+            return stream.read()
+    return path.read_text(encoding="utf-8")
+
+
+def validate_plugin_motor_trace(text: str, *, disconnected: bool = False) -> list[str]:
+    """Validate bounded CrazySim receive records against their wire packets."""
+    errors: list[str] = []
+    records = 0
+    nonzero = False
+    for line_number, line in enumerate(text.splitlines(), start=1):
+        if not line.strip():
+            continue
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError:
+            errors.append(f"plugin trace line {line_number} is not valid JSON")
+            continue
+        if not isinstance(record, dict):
+            errors.append(f"plugin trace line {line_number} is not an object")
+            continue
+        packet = record.get("packet_bytes")
+        ratios = record.get("motor_ratio")
+        speeds = record.get("omega_rad_s")
+        if (
+            not isinstance(packet, list)
+            or len(packet) != 9
+            or any(type(value) is not int or not 0 <= value <= 255 for value in packet)
+        ):
+            errors.append(f"plugin trace line {line_number} has malformed packet bytes")
+            continue
+        if packet[0] != 0x90:
+            errors.append(
+                f"plugin trace line {line_number} has unexpected packet header"
+            )
+        expected = [
+            packet[index * 2 + 1] | packet[index * 2 + 2] << 8 for index in range(4)
+        ]
+        if (
+            not isinstance(ratios, list)
+            or len(ratios) != 4
+            or any(
+                type(value) is not int or value != expected[index]
+                for index, value in enumerate(ratios)
+            )
+        ):
+            errors.append(
+                f"plugin trace line {line_number} ratios disagree with packet bytes"
+            )
+            continue
+        if (
+            not isinstance(speeds, list)
+            or len(speeds) != 4
+            or any(
+                not isinstance(value, (int, float)) or not math.isfinite(value)
+                for value in speeds
+            )
+        ):
+            errors.append(f"plugin trace line {line_number} has malformed motor speeds")
+            continue
+        if any(value < 0.0 or value > MAX_MOTOR_SPEED_RAD_S for value in speeds):
+            errors.append(
+                f"plugin trace line {line_number} has out-of-range motor speed"
+            )
+        nonzero = nonzero or any(value != 0 for value in ratios)
+        records += 1
+    if records == 0:
+        errors.append("plugin motor trace has no valid records")
+    if not disconnected and records and not nonzero:
+        errors.append("positive plugin motor trace has no nonzero firmware ratios")
+    if disconnected and records and not nonzero:
+        errors.append(
+            "negative plugin motor trace has no nonzero received firmware ratios"
+        )
+    return errors
+
+
 def parse_world_stats(text: str) -> list[WorldStatsSample]:
     """Read Gazebo WorldStatistics from protobuf text or JSON output."""
     json_messages = _json_messages(text)
@@ -390,6 +472,8 @@ def validate_capture(
     firmware_process_count: int | None = None,
     negative_control_firmware_process_count: int | None = None,
     hover_target_z_m: float = HOVER_TARGET_Z_M,
+    plugin_motor_trace_text: str = "",
+    negative_control_plugin_motor_trace_text: str = "",
 ) -> tuple[CaptureSummary | None, list[str]]:
     """Apply the pre-registered flight gate to one positive and one negative run."""
     errors: list[str] = []
@@ -494,7 +578,14 @@ def validate_capture(
     if not re.search(
         r"TRACE_MOTOR_NONZERO|NCS_SITL_ACTUATOR\s+source=firmware", plugin_log
     ):
-        errors.append("Gazebo plugin log does not attribute motor output to firmware")
+        if plugin_motor_trace_text:
+            errors.extend(validate_plugin_motor_trace(plugin_motor_trace_text))
+        else:
+            errors.append(
+                "Gazebo plugin log does not attribute motor output to firmware"
+            )
+    elif plugin_motor_trace_text:
+        errors.extend(validate_plugin_motor_trace(plugin_motor_trace_text))
 
     firmware_instances = firmware_log.count("TRACE_CRTP_RX_STARTED")
     if firmware_instances != 1:
@@ -521,6 +612,10 @@ def validate_capture(
         if marker not in firmware_log
     )
     commands = _command_ids(firmware_log)
+    commands.update(
+        int(value)
+        for value in re.findall(r"NCS_HIGH_LEVEL_COMMAND\s+id=(\d+)", firmware_log)
+    )
     if 7 not in commands:
         errors.append("firmware did not receive TAKEOFF_2")
     if 8 not in commands:
@@ -530,7 +625,8 @@ def validate_capture(
         r"Crashed, recovery required",
         re.IGNORECASE,
     )
-    if forbidden.search(firmware_log):
+    runtime_log = firmware_log.split("\n--- CAPTURE TRACE DATA ---\n", maxsplit=1)[0]
+    if forbidden.search(runtime_log):
         errors.append("firmware reported estimator/rate/crash failure")
     if firmware_exit_code != 0:
         errors.append(f"firmware exited with status {firmware_exit_code}")
@@ -608,6 +704,12 @@ def validate_capture(
             )
     if "actuator_bridge=disconnected" not in negative_control_plugin_log:
         errors.append("negative control lacks explicit disconnected-actuator marker")
+    if negative_control_plugin_motor_trace_text:
+        errors.extend(
+            validate_plugin_motor_trace(
+                negative_control_plugin_motor_trace_text, disconnected=True
+            )
+        )
 
     if errors:
         return None, errors
@@ -638,6 +740,8 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--negative-control-motors", required=True, type=Path)
     parser.add_argument("--negative-control-firmware-log", required=True, type=Path)
     parser.add_argument("--negative-control-plugin-log", required=True, type=Path)
+    parser.add_argument("--plugin-motor-trace", type=Path)
+    parser.add_argument("--negative-control-plugin-motor-trace", type=Path)
     parser.add_argument("--firmware-process-count", required=True, type=int)
     parser.add_argument(
         "--negative-control-firmware-process-count", required=True, type=int
@@ -653,24 +757,16 @@ def _parse_args() -> argparse.Namespace:
 def main() -> int:
     args = _parse_args()
     summary, errors = validate_capture(
-        odometry_text=args.odometry.read_text(encoding="utf-8"),
-        imu_text=args.imu.read_text(encoding="utf-8"),
-        world_stats_text=args.world_stats.read_text(encoding="utf-8"),
-        motor_text=args.motors.read_text(encoding="utf-8"),
-        firmware_log=args.firmware_log.read_text(encoding="utf-8"),
-        plugin_log=args.plugin_log.read_text(encoding="utf-8"),
-        negative_control_odometry_text=args.negative_control_odometry.read_text(
-            encoding="utf-8"
-        ),
-        negative_control_motor_text=args.negative_control_motors.read_text(
-            encoding="utf-8"
-        ),
-        negative_control_firmware_log=args.negative_control_firmware_log.read_text(
-            encoding="utf-8"
-        ),
-        negative_control_plugin_log=args.negative_control_plugin_log.read_text(
-            encoding="utf-8"
-        ),
+        odometry_text=_capture_text(args.odometry),
+        imu_text=_capture_text(args.imu),
+        world_stats_text=_capture_text(args.world_stats),
+        motor_text=_capture_text(args.motors),
+        firmware_log=_capture_text(args.firmware_log),
+        plugin_log=_capture_text(args.plugin_log),
+        negative_control_odometry_text=_capture_text(args.negative_control_odometry),
+        negative_control_motor_text=_capture_text(args.negative_control_motors),
+        negative_control_firmware_log=_capture_text(args.negative_control_firmware_log),
+        negative_control_plugin_log=_capture_text(args.negative_control_plugin_log),
         firmware_process_count=args.firmware_process_count,
         negative_control_firmware_process_count=(
             args.negative_control_firmware_process_count
@@ -680,6 +776,14 @@ def main() -> int:
         negative_control_firmware_exit_code=args.negative_control_firmware_exit_code,
         negative_control_gazebo_exit_code=args.negative_control_gazebo_exit_code,
         hover_target_z_m=args.hover_target_z,
+        plugin_motor_trace_text=(
+            _capture_text(args.plugin_motor_trace) if args.plugin_motor_trace else ""
+        ),
+        negative_control_plugin_motor_trace_text=(
+            _capture_text(args.negative_control_plugin_motor_trace)
+            if args.negative_control_plugin_motor_trace
+            else ""
+        ),
     )
     if errors:
         print(json.dumps({"passed": False, "errors": errors}, indent=2))

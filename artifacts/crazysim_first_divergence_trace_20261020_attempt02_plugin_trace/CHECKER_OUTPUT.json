@@ -1,0 +1,9 @@
+{
+  "passed": false,
+  "errors": [
+    "world stats cover only 95.0% of the positive odometry interval; requires at least 95%",
+    "aggregate Gazebo real-time factor is 0.905; requires [0.95, 1.05]",
+    "firmware reported estimator/rate/crash failure",
+    "positive run did not land within 0.10 m of the platform"
+  ]
+}
