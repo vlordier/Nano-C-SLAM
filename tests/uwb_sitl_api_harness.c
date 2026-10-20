@@ -1,9 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
+#include <pthread.h>
 #include <time.h>
 
 #include "uwb_api.h"
+
+#ifdef NCS_SITL_TESTING
+int ncs_sitl_test_receiver_signals_blocked(void);
+#endif
 
 static void pause_ms(long milliseconds) {
     const struct timespec delay = {.tv_sec = milliseconds / 1000L,
@@ -14,6 +20,26 @@ static void pause_ms(long milliseconds) {
 int main(int argc, char **argv) {
     if (argc != 2)
         return 2;
+#ifdef NCS_SITL_TESTING
+    if (strcmp(argv[1], "signal-mask") == 0) {
+        sigset_t caller_mask;
+        sigemptyset(&caller_mask);
+        if (pthread_sigmask(SIG_SETMASK, &caller_mask, NULL) != 0 ||
+            uwb_api_init(0U) != UWB_SUCCESS) {
+            fputs("signal-mask probe failed to initialize\n", stderr);
+            return 12;
+        }
+        for (unsigned attempt = 0U; attempt < 100U; ++attempt) {
+            if (ncs_sitl_test_receiver_signals_blocked()) {
+                puts("UWB receiver blocks FreeRTOS scheduler signals");
+                return 0;
+            }
+            pause_ms(1L);
+        }
+        fputs("UWB receiver inherited the caller signal mask\n", stderr);
+        return 13;
+    }
+#endif
     if (strcmp(argv[1], "missing") == 0) {
         if (uwb_api_init(0U) != UWB_SUCCESS)
             return 3;

@@ -101,6 +101,7 @@ class UwbSitlApiTests(unittest.TestCase):
                     "-pedantic",
                     "-Wno-strict-prototypes",
                     "-pthread",
+                    "-DNCS_SITL_TESTING",
                     "-I",
                     str(REPOSITORY_ROOT / "tests/stubs/uwb_sitl"),
                     "-I",
@@ -124,6 +125,23 @@ class UwbSitlApiTests(unittest.TestCase):
                 common_environment["NCS_SITL_UWB_BROKER_HOST"] = "127.0.0.1"
                 common_environment["NCS_SITL_UWB_BROKER_PORT"] = str(broker.port)
                 common_environment["NCS_SITL_UWB_LOCAL_PORT"] = str(_reserve_udp_port())
+                signal_mask_probe = subprocess.run(  # noqa: S603 -- executes owned test harness
+                    [str(executable), "signal-mask"],
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=8,
+                    env=common_environment,
+                )
+                self.assertEqual(
+                    signal_mask_probe.returncode,
+                    0,
+                    signal_mask_probe.stderr,
+                )
+                self.assertIn(
+                    "UWB receiver blocks FreeRTOS scheduler signals",
+                    signal_mask_probe.stdout,
+                )
                 node1_environment = common_environment.copy()
                 node1_environment["NCS_SITL_UWB_LOCAL_PORT"] = str(_reserve_udp_port())
                 node1 = subprocess.Popen(  # noqa: S603 -- executes compiled owned harness

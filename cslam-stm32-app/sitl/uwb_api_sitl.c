@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <pthread.h>
+#include <signal.h>
 #include <stdatomic.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -41,6 +42,7 @@ static pthread_cond_t state_changed = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t tx_lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_t receiver_thread;
 static atomic_bool receiver_running = ATOMIC_VAR_INIT(false);
+static atomic_bool receiver_signal_mask_ready = ATOMIC_VAR_INIT(false);
 static uint8_t receiver_thread_started;
 static int socket_fd = -1;
 static struct sockaddr_in broker_address;
@@ -158,6 +160,14 @@ static void make_ack_message(const uwb_sitl_packet_t *request,
 
 static void *receiver_main(void *unused) {
     (void)unused;
+    sigset_t receiver_mask;
+    if (pthread_sigmask(SIG_SETMASK, NULL, &receiver_mask) == 0) {
+        const bool scheduler_signals_blocked =
+            sigismember(&receiver_mask, SIGALRM) == 1 &&
+            sigismember(&receiver_mask, SIGUSR1) == 1;
+        atomic_store_explicit(&receiver_signal_mask_ready,
+                              scheduler_signals_blocked, memory_order_release);
+    }
     uint8_t bytes[SITL_MAX_DATAGRAM];
     while (atomic_load_explicit(&receiver_running, memory_order_acquire)) {
         struct sockaddr_in sender;
@@ -243,6 +253,15 @@ static void *receiver_main(void *unused) {
     }
     return NULL;
 }
+
+#ifdef NCS_SITL_TESTING
+int ncs_sitl_test_receiver_signals_blocked(void) {
+    return atomic_load_explicit(&receiver_signal_mask_ready,
+                                memory_order_acquire)
+               ? 1
+               : 0;
+}
+#endif
 
 static void stop_receiver(void) {
     if (receiver_thread_started == 0U)
@@ -379,10 +398,36 @@ uwb_err_code_e uwb_api_init(uint8_t node_id) {
     (void)setsockopt(socket_fd, SOL_SOCKET, SO_RCVTIMEO, &receive_timeout,
                      sizeof(receive_timeout));
     atomic_store_explicit(&receiver_running, true, memory_order_release);
-    if (pthread_create(&receiver_thread, NULL, receiver_main, NULL) != 0) {
+    sigset_t receiver_mask;
+    sigset_t caller_mask;
+    /* Keep the UWB POSIX worker out of FreeRTOS's SIGALRM scheduler tick. */
+    sigfillset(&receiver_mask);
+    const int mask_error =
+        pthread_sigmask(SIG_SETMASK, &receiver_mask, &caller_mask);
+    if (mask_error != 0) {
         atomic_store_explicit(&receiver_running, false, memory_order_release);
         close(socket_fd);
         socket_fd = -1;
+        DEBUG_PRINT("NCS_SITL_DEVICE_ERROR device=uwb reason=signal_mask "
+                    "error=%d\n",
+                    mask_error);
+        return UWB_ERROR;
+    }
+    const int thread_error =
+        pthread_create(&receiver_thread, NULL, receiver_main, NULL);
+    const int restore_error =
+        pthread_sigmask(SIG_SETMASK, &caller_mask, NULL);
+    if (thread_error != 0 || restore_error != 0) {
+        atomic_store_explicit(&receiver_running, false, memory_order_release);
+        if (thread_error == 0) {
+            (void)shutdown(socket_fd, SHUT_RDWR);
+            (void)pthread_join(receiver_thread, NULL);
+        }
+        close(socket_fd);
+        socket_fd = -1;
+        DEBUG_PRINT("NCS_SITL_DEVICE_ERROR device=uwb reason=receiver_thread "
+                    "create=%d restore_mask=%d\n",
+                    thread_error, restore_error);
         return UWB_ERROR;
     }
     receiver_thread_started = 1U;
