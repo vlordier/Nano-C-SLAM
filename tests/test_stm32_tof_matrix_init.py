@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import binascii
 import shutil
+import socket
+import struct
 import subprocess
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -157,6 +161,41 @@ class Stm32TofMatrixInitTests(unittest.TestCase):
             )
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("frame decoder passed", result.stdout)
+
+    def test_sitl_c_provider_receives_host_encoded_matrix_frame(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            executable = Path(temporary) / "stm32_tof_sitl_listener"
+            self._compile(
+                REPOSITORY_ROOT / "tests/stm32_tof_sitl_frame_test.c",
+                [REPOSITORY_ROOT / "cslam-stm32-app/sitl/tof_matrix_sitl.c"],
+                executable,
+            )
+            receiver = subprocess.Popen(  # noqa: S603 -- temp binary built above
+                [str(executable), "--listen"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            try:
+                header = struct.pack(
+                    "!4sBBBBIQI", b"NCTF", 1, 4, 8, 8, 17, 1_000_000_000, 512
+                )
+                payload = struct.pack("!256h", *([1234] * 256))
+                body = header + payload
+                packet = body + struct.pack("!I", binascii.crc32(body) & 0xFFFFFFFF)
+                with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sender:
+                    send_deadline = time.monotonic() + 1.0
+                    while receiver.poll() is None and time.monotonic() < send_deadline:
+                        sender.sendto(packet, ("127.0.0.1", 39951))
+                        time.sleep(0.02)
+                stdout, stderr = receiver.communicate(timeout=10)
+            finally:
+                if receiver.poll() is None:
+                    receiver.kill()
+                    receiver.communicate()
+
+        self.assertEqual(receiver.returncode, 0, stderr)
+        self.assertIn("received fresh sensor 0 matrix (64 valid cells)", stdout)
 
 
 if __name__ == "__main__":

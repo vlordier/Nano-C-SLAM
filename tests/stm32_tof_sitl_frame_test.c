@@ -5,6 +5,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "FreeRTOS.h"
@@ -121,7 +122,42 @@ static int test_udp_provider(const uint8_t packet[FRAME_SIZE]) {
     return 0;
 }
 
-int main(void) {
+static int listen_for_udp_frame(void) {
+    if (setenv("NCS_SITL_TOF_UDP_PORT", "39951", 1) != 0 ||
+        tof_matrix_init() != 0) {
+        fputs("receiver initialization failed\n", stderr);
+        return 1;
+    }
+    const struct timespec pause = {.tv_sec = 0, .tv_nsec = 10000000};
+    for (unsigned attempt = 0U; attempt < 500U; ++attempt) {
+        int16_t matrix[8][8];
+        if (get_tof_matrix(0U, matrix) == 0) {
+            unsigned valid_cells = 0U;
+            for (size_t row = 0; row < 8U; ++row) {
+                for (size_t column = 0; column < 8U; ++column) {
+                    if (matrix[row][column] >= 0) {
+                        ++valid_cells;
+                    }
+                }
+            }
+            printf("C provider received fresh sensor 0 matrix (%u valid cells)\n",
+                   valid_cells);
+            return 0;
+        }
+        (void)nanosleep(&pause, NULL);
+    }
+    fputs("timed out waiting for a valid UDP ToF frame\n", stderr);
+    return 1;
+}
+
+int main(int argc, char **argv) {
+    if (argc == 2 && strcmp(argv[1], "--listen") == 0) {
+        return listen_for_udp_frame();
+    }
+    if (argc != 1) {
+        fputs("usage: stm32_tof_sitl_frame_test [--listen]\n", stderr);
+        return 2;
+    }
     uint8_t packet[FRAME_SIZE];
     int16_t matrix[4][8][8];
     uint32_t sequence = 0U;
