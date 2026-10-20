@@ -185,17 +185,21 @@ class Stm32TofMatrixInitTests(unittest.TestCase):
                 packet = body + struct.pack("!I", binascii.crc32(body) & 0xFFFFFFFF)
                 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sender:
                     sender.bind(("127.0.0.1", 39950))
-                    sender.settimeout(0.001)
-                    send_deadline = time.monotonic() + 1.0
+                    sender.settimeout(0.01)
+                    send_deadline = time.monotonic() + 3.0
                     registration = b""
                     while receiver.poll() is None and time.monotonic() < send_deadline:
                         sender.sendto(packet, ("127.0.0.1", 39951))
                         try:
-                            registration, _ = sender.recvfrom(64)
+                            response, _ = sender.recvfrom(64)
                         except TimeoutError:
-                            registration = b""
-                        if registration:
-                            break
+                            pass
+                        else:
+                            if response.startswith(b"NCTR\x01\x00"):
+                                registration = response
+                        # Keep transmitting after registration. The receiver's
+                        # initial registration can arrive after the first data
+                        # packet was sent, before its task polls the socket.
                         time.sleep(0.01)
                 stdout, stderr = receiver.communicate(timeout=10)
             finally:

@@ -42,9 +42,20 @@ class CaptureTimestampedProcessTests(unittest.TestCase):
                 for line in (output_dir / "events.jsonl").read_text().splitlines()
             ]
             self.assertEqual([event["sequence"] for event in events], list(range(4)))
+            payloads_by_stream = {
+                stream: [
+                    base64.b64decode(event["payload_base64"])
+                    for event in events
+                    if event["stream"] == stream
+                ]
+                for stream in ("stdout", "stderr")
+            }
             self.assertEqual(
-                [base64.b64decode(event["payload_base64"]) for event in events],
-                [b"err\n", b"first line\n", b"second\n", b"last"],
+                payloads_by_stream,
+                {
+                    "stdout": [b"first line\n", b"second\n", b"last"],
+                    "stderr": [b"err\n"],
+                },
             )
             self.assertEqual(
                 [event["terminated_by_newline"] for event in events],
