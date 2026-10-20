@@ -25,6 +25,8 @@ UINT32_MASK = 0xFFFFFFFF
 PARAM_VALUES_TIMEOUT_SECONDS = 30.0
 LINK_HANDSHAKE_TIMEOUT_SECONDS = 10.0
 TOC_DOWNLOAD_TIMEOUT_SECONDS = 120.0
+LINK_HANDSHAKE_ATTEMPTS = 2
+LINK_HANDSHAKE_RETRY_DELAY_SECONDS = 0.25
 
 
 class PacketLike(Protocol):
@@ -46,6 +48,10 @@ class LinkCallbackListLike(Protocol):
     def add_callback(self, callback: Callable[..., None], /) -> None: ...
 
     def remove_callback(self, callback: Callable[..., None], /) -> None: ...
+
+
+class LinkHandshakeTimeout(TimeoutError):
+    """The transport did not return any packet during the initial handshake."""
 
 
 class ConsoleLike(Protocol):
@@ -93,14 +99,22 @@ class BoundedSwarm:
         *,
         connect_timeout_s: float = LINK_HANDSHAKE_TIMEOUT_SECONDS,
         toc_timeout_s: float = TOC_DOWNLOAD_TIMEOUT_SECONDS,
+        handshake_attempts: int = LINK_HANDSHAKE_ATTEMPTS,
+        handshake_retry_delay_s: float = LINK_HANDSHAKE_RETRY_DELAY_SECONDS,
     ) -> None:
         if connect_timeout_s <= 0:
             raise ValueError("link connection timeout must be positive")
         if toc_timeout_s <= 0:
             raise ValueError("TOC download timeout must be positive")
+        if handshake_attempts < 1:
+            raise ValueError("link handshake attempts must be positive")
+        if handshake_retry_delay_s < 0:
+            raise ValueError("link handshake retry delay must be non-negative")
         self._links = links
         self._connect_timeout_s = connect_timeout_s
         self._toc_timeout_s = toc_timeout_s
+        self._handshake_attempts = handshake_attempts
+        self._handshake_retry_delay_s = handshake_retry_delay_s
         self._sync_cfs = {
             uri: SyncCrazyflieLikeAdapter(cf, uri) for uri, cf in links.items()
         }
@@ -129,12 +143,20 @@ class BoundedSwarm:
             cf.close_link()
 
     def _open_link(self, scf: SyncCrazyflieLike) -> None:
-        open_crazyflie_link(
-            scf.cf,
-            scf.link_uri,
-            connect_timeout_s=self._connect_timeout_s,
-            toc_timeout_s=self._toc_timeout_s,
-        )
+        for attempt in range(self._handshake_attempts):
+            try:
+                open_crazyflie_link(
+                    scf.cf,
+                    scf.link_uri,
+                    connect_timeout_s=self._connect_timeout_s,
+                    toc_timeout_s=self._toc_timeout_s,
+                )
+            except LinkHandshakeTimeout:
+                if attempt + 1 == self._handshake_attempts:
+                    raise
+                time.sleep(self._handshake_retry_delay_s)
+            else:
+                return
 
 
 @dataclass(frozen=True)
@@ -176,7 +198,7 @@ def open_crazyflie_link(
         cf.open_link(uri)
         if not link_established.wait(connect_timeout_s):
             cf.close_link()
-            raise TimeoutError(
+            raise LinkHandshakeTimeout(
                 f"link handshake timed out for {uri} after {connect_timeout_s:g}s"
             )
         if failure_messages:

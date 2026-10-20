@@ -97,11 +97,18 @@ class MissionTests(unittest.TestCase):
 
     class FakeLink:
         def __init__(
-            self, uri: str, *, respond: bool = True, toc_respond: bool = True
+            self,
+            uri: str,
+            *,
+            respond: bool = True,
+            toc_respond: bool = True,
+            respond_after_attempts: int = 1,
         ) -> None:
             self.link_uri = uri
             self.respond = respond
             self.toc_respond = toc_respond
+            self.respond_after_attempts = respond_after_attempts
+            self.open_count = 0
             self.link_established = MissionTests.CallbackList()
             self.connected = MissionTests.CallbackList()
             self.connection_failed = MissionTests.CallbackList()
@@ -116,7 +123,8 @@ class MissionTests(unittest.TestCase):
 
         def open_link(self, uri: str) -> None:
             self.link_uri = uri
-            if self.respond:
+            self.open_count += 1
+            if self.respond and self.open_count >= self.respond_after_attempts:
                 self.link_established.call(uri)
                 if self.toc_respond:
                     self.connected.call(uri)
@@ -320,6 +328,23 @@ assert not Path("logs").exists()
         ):
             self.fail("connection setup should not have completed")
         self.assertGreaterEqual(link.close_count, 1)
+        self.assertEqual(link.open_count, 1)
+        self.assertEqual(link.link_established.callbacks, [])
+        self.assertEqual(link.connected.callbacks, [])
+        self.assertEqual(link.connection_failed.callbacks, [])
+
+    def test_bounded_swarm_retries_only_a_timed_out_link_handshake(self) -> None:
+        uri = "udp://127.0.0.1:21850"
+        link = self.FakeLink(uri, respond_after_attempts=2)
+        with demo.BoundedSwarm(
+            {uri: link},
+            connect_timeout_s=0.001,
+            toc_timeout_s=0.1,
+            handshake_retry_delay_s=0,
+        ) as swarm:
+            swarm.parallel_safe(lambda _scf: None)
+        self.assertEqual(link.open_count, 2)
+        self.assertEqual(link.close_count, 2)
         self.assertEqual(link.link_established.callbacks, [])
         self.assertEqual(link.connected.callbacks, [])
         self.assertEqual(link.connection_failed.callbacks, [])
