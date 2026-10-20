@@ -1,0 +1,2 @@
+NCS_SITL motor_trace=all capacity=32768 path=artifacts/crazysim_first_divergence_trace_20261020_attempt11_seed0_trace_stride2/capture/plugin-motors.jsonl
+NCS_SITL motor_trace=all records=28634 dropped=0

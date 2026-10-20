@@ -1,0 +1,7 @@
+{
+  "passed": false,
+  "errors": [
+    "aggregate Gazebo real-time factor is 0.890; requires [0.95, 1.05]",
+    "firmware reported estimator/rate/crash failure"
+  ]
+}

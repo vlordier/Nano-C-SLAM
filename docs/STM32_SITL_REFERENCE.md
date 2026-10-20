@@ -1594,3 +1594,33 @@ through crash or landing, plus a tracing-off comparison to quantify trace
 overhead and a defensible RTOS-tick/Gazebo-time mapping. The available runs do
 not justify controller gain changes or a claim that Nano-C-SLAM firmware has
 flown in Gazebo.
+
+## Seeded CrazySim trace-stride retest (2026-10-20)
+
+A same-seed trace investigation found the trace itself changes the measured
+firmware loop. With the original full-rate observer, seed-0 run 07 (trace off)
+reported a 502-Hz stabilizer warning and returned to the pad; trace-on run 08
+reported 450 Hz and crashed. I added compile-time `CRAZYSIM_TRACE_RING_STRIDE`
+selection and removed modulo operations from ring index advancement in the
+Crazyflie firmware fork, commit `62abf6d4`. The disabled build remains
+unchanged. The trace-on binary built with stride 2, a 32,768-record ring, and
+250-Hz nominal sampling.
+
+The retained run is
+[`attempt11`](../artifacts/crazysim_first_divergence_trace_20261020_attempt11_seed0_trace_stride2/REPORT.md).
+It received firmware ACK result 0 for takeoff to 2.4 m and landing to 2.015 m.
+Gazebo odometry rose to 2.508 m, returned to 2.015 m, and measured maximum
+tilt of 0.0675 degrees. The plugin captured 28,634 firmware motor packets with
+zero drops, including 9,802 packets with nonzero ratios. The firmware retained
+16,061 trace records and skipped 16,062 stabilizer iterations. It nevertheless
+reported a 421-Hz stabilizer rate and `Landing timeout, disarming`; the strict
+paired checker failed on aggregate RTF 0.890 (required 0.95–1.05) and firmware
+estimator/rate/crash diagnostics. The disconnected-control negative capture
+passed its checks. Thus stride 2 produced a non-crashing rise-and-return
+diagnostic, but it did not make the trace overhead-neutral or pass flight
+acceptance.
+
+The main first-divergence bead remains open. Follow-up recorder work is tracked
+in bead `ncs-bq2`. The attempt11 manifest and per-file hashes are retained. No
+Nano-C-SLAM STM32 application, ToF/UWB adapter, or mapping output was exercised
+in this Crazyflie reference flight.
