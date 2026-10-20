@@ -1312,3 +1312,39 @@ FreeRTOS POSIX port's tick and semaphore timing against Gazebo simulation time,
 and instrument the first non-finite odometry timestamp alongside the
 firmware's estimator state. The shutdown fix is independent of flight
 behavior; Nano-C-SLAM execution and mapping validation remain open.
+
+## Matched-rate instability retest and rejected 510-Hz experiment (2026-10-20)
+
+I tried 510-Hz IMU output to compensate for wall-clock scheduling jitter. That
+was an invalid experiment: the local Gazebo Harmonic `gz-sensors` checkout
+converts `1 / update_rate` to integer milliseconds in
+[`Sensor.cc`](../../gz-macOS/gz-sensors/src/Sensor.cc#L521). At 510 Hz,
+1.96 ms truncates to 1 ms, and the captured topic ran at 1 kHz. The CrazySim
+generator only supports 500 or 1,000 Hz; use those exact values. The sampled
+510-Hz world and 1-kHz result are in `/tmp/ncs-imu510-*` and were not counted as
+a flight retest.
+
+I then reran with a 500-Hz firmware build, a 500-Hz IMU, the `aeafa64` PWM to
+thrust conversion, and the `b256950` odometry publisher patch. Firmware was
+started before Gazebo. TAKEOFF_2 to 2.315 m and LAND_2 to 2.015 m both received
+ACK result 0. Gazebo delivered 500.03 IMU samples/s with 2-ms maximum gaps and
+200-Hz odometry with 5-ms maximum gaps. The vehicle climbed to 3.497 m, flipped,
+and fell off the platform to 0.015 m. It remained in the registered 2.4-m hover
+envelope for 0.175 s. Firmware reported a 483/500-Hz stabilizer rate, 95–98-Hz
+Kalman predictions, estimator resets, and `SUP: Crashed, recovery required`.
+Aggregate RTF was 0.9513, narrowly inside the configured [0.95, 1.05] band;
+world-stat coverage was 94.1%, below its 95% threshold. Firmware shutdown
+returned 0; Gazebo was interrupted and returned 1. This positive-only run did
+not receive a strict paired-gate result because there was no fresh negative
+capture. Details and hashes are in
+[`artifacts/crazysim_motor_mapping_20261020_attempt11`](../artifacts/crazysim_motor_mapping_20261020_attempt11/manifest.json).
+
+The firmware-control source differs from attempt09 only by the signal-shutdown
+change, yet attempt09 held within the 2.315-m band for 5.255 s while attempt11
+flipped before completing its hold. The reference flight is therefore not
+repeatable from the archived configuration alone. Compare time-correlated
+IMU arrival, estimator reset, attitude, thrust, per-motor ratios, and rotor
+speeds around the first attitude divergence before changing gains or relaxing
+the flight gate. A single successful hover interval is not repeatable-flight
+acceptance. Even repeatable CrazySim reference flight would not run the
+Nano-C-SLAM STM32 application or validate its map.

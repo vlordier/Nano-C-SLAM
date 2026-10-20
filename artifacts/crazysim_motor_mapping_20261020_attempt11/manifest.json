@@ -1,0 +1,62 @@
+{
+  "attempt": "Matched-rate CrazySim flight instability retest",
+  "date": "2026-10-20",
+  "valid_for_flight_acceptance": false,
+  "scope": "Positive-only upstream Crazyflie SITL reference run; not Nano-C-SLAM firmware, mapping, swarm, or hardware validation.",
+  "source_revisions": {
+    "firmware": "e06abd11",
+    "crazysim_plugin": "aeafa64",
+    "odometry_plugin_patch": "b256950"
+  },
+  "firmware_binary_sha256": "739fa18e50737e61de8858528d21af06925bb213031e667add01a338756dbe4f",
+  "configuration": {
+    "stabilizer_rate_hz": 500,
+    "gazebo_imu_rate_hz": 500,
+    "physics_step_s": 0.001,
+    "kalman_task_priority": 2,
+    "gazebo_version": "8.14.0",
+    "engine": "gz-physics-bullet-featherstone-plugin",
+    "firmware_started_before_gazebo": true,
+    "partition": "ncs-flight500-ordered-20261020"
+  },
+  "commands": {
+    "takeoff_target_z_m": 2.315,
+    "takeoff_duration_s": 8.0,
+    "takeoff_ack_result": 0,
+    "land_target_z_m": 2.015,
+    "land_duration_s": 4.0,
+    "land_ack_result": 0,
+    "land_sent_s_after_takeoff_ack": 21.0
+  },
+  "capture": {
+    "odometry_samples": 7064,
+    "odometry_span_s": 35.315,
+    "odometry_max_gap_s": 0.005,
+    "imu_samples": 16664,
+    "imu_rate_hz": 500.03,
+    "imu_max_gap_s": 0.002,
+    "motor_messages": 33329,
+    "world_stats_samples": 266,
+    "world_stats_coverage": 0.941,
+    "aggregate_real_time_factor": 0.9513,
+    "start_altitude_m": 2.014994,
+    "max_altitude_m": 3.496851,
+    "end_altitude_m": 0.01499998,
+    "hover_duration_at_2_4m_s": 0.175,
+    "max_tilt_rad": 3.141593,
+    "max_absolute_angular_rate_rad_s": 593.48
+  },
+  "firmware_findings": {
+    "ready_to_fly": true,
+    "stabilizer_warning_hz": 483,
+    "kalman_prediction_warnings_hz": [95, 98],
+    "estimator_bounds_resets": 16,
+    "supervisor_crash_marker": true,
+    "firmware_exit_code": 0,
+    "clean_shutdown_marker": true
+  },
+  "gazebo_exit_code": 1,
+  "paired_negative_control": null,
+  "strict_checker": null,
+  "interpretation": "Matched 500-Hz sensor delivery and the intended PWM-to-thrust conversion did not yield stable flight. The vehicle flipped before completing the requested hold and fell off the platform. The known successful attempt09 remains non-reproducible; diagnose the first attitude divergence and time correlation before changing controller gains or acceptance thresholds."
+}

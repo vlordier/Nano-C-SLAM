@@ -1,0 +1,24 @@
+Positive-only diagnostic run. Host macOS, Gazebo Harmonic 8.14.0; Crazyflie
+firmware ran in Lima guest `ncs-sitl`.
+
+Firmware binary:
+  path: /home/vincent.guest/ncs-cf-build-hover/cf2
+  SHA-256: 739fa18e50737e61de8858528d21af06925bb213031e667add01a338756dbe4f
+  source: vlordier/crazyflie-firmware commit e06abd11
+  CRAZYSIM_RATE_MAIN_LOOP=500, CRAZYSIM_DIAGNOSTICS=ON, KALMAN_TASK_PRI=2
+
+Gazebo world:
+  `world.sdf`; IMU update_rate=500, physics step=1 ms, Bullet Featherstone
+  engine. The world/model was already loaded before the firmware handshake.
+  GZ_PARTITION=ncs-flight500-ordered-20261020, GZ_IP=127.0.0.1
+  NCS_CRAZYSIM_TRACE_MOTOR=1
+
+Bridge:
+  CrazySim `aeafa64`; odometry publisher patch `b256950`.
+  The firmware was started first, followed by Gazebo. After `SUP: Ready to fly`,
+  the sampler ran for 35 seconds. TAKEOFF_2 target=2.315 m duration=8 s;
+  LAND_2 target=2.015 m duration=4 s was sent 21 seconds after takeoff ACK.
+  Firmware SIGTERM shutdown returned 0. Gazebo Ctrl-C shutdown returned 1.
+
+This was not a paired test and did not record a synchronized firmware-process
+count. Do not use it as a strict-gate result.
