@@ -35,6 +35,10 @@
 static int receiver_fd = -1;
 static struct sockaddr_in bridge_address;
 static int16_t latest_frame[TOF_SENSOR_COUNT][TOF_SIDE][TOF_SIDE];
+/* The provider is polled by tof_task only. Keep its 540-byte packet and
+ * 512-byte candidate off the task's limited stack. */
+static uint8_t receive_packet[TOF_FRAME_SIZE];
+static int16_t candidate_frame[TOF_SENSOR_COUNT][TOF_SIDE][TOF_SIDE];
 static uint32_t latest_sequence;
 static uint64_t latest_sim_time_ns;
 static TickType_t latest_receive_tick;
@@ -204,7 +208,6 @@ tof_err_code_e config_sensors(VL53L5CX_Configuration *device,
 }
 
 static void receive_latest_frame(void) {
-    uint8_t packet[TOF_FRAME_SIZE];
     const TickType_t now = xTaskGetTickCount();
     if ((TickType_t)(now - last_registration_tick) >=
         M2T(TOF_REGISTRATION_INTERVAL_MS)) {
@@ -214,7 +217,8 @@ static void receive_latest_frame(void) {
         struct sockaddr_in sender;
         socklen_t sender_length = (socklen_t)sizeof(sender);
         const ssize_t received = recvfrom(
-            receiver_fd, packet, sizeof(packet), MSG_DONTWAIT | MSG_TRUNC,
+            receiver_fd, receive_packet, sizeof(receive_packet),
+            MSG_DONTWAIT | MSG_TRUNC,
             (struct sockaddr *)&sender, &sender_length);
         if (received < 0) {
             if (errno != EAGAIN && errno != EWOULDBLOCK && errno != EINTR) {
@@ -222,7 +226,7 @@ static void receive_latest_frame(void) {
             }
             return;
         }
-        if ((size_t)received != sizeof(packet)) {
+        if ((size_t)received != sizeof(receive_packet)) {
             continue;
         }
         if (sender.sin_family != AF_INET ||
@@ -230,11 +234,11 @@ static void receive_latest_frame(void) {
             sender.sin_port != bridge_address.sin_port) {
             continue;
         }
-        int16_t candidate[TOF_SENSOR_COUNT][TOF_SIDE][TOF_SIDE];
         uint32_t sequence;
         uint64_t sim_time_ns;
-        if (tof_matrix_sitl_decode(packet, sizeof(packet), &sequence,
-                                   &sim_time_ns, candidate) != 0) {
+        if (tof_matrix_sitl_decode(receive_packet, sizeof(receive_packet),
+                                   &sequence, &sim_time_ns,
+                                   candidate_frame) != 0) {
             continue;
         }
         const uint32_t sequence_delta = sequence - latest_sequence;
@@ -243,7 +247,7 @@ static void receive_latest_frame(void) {
              sim_time_ns <= latest_sim_time_ns)) {
             continue;
         }
-        memcpy(latest_frame, candidate, sizeof(latest_frame));
+        memcpy(latest_frame, candidate_frame, sizeof(latest_frame));
         latest_sequence = sequence;
         latest_sim_time_ns = sim_time_ns;
         latest_receive_tick = xTaskGetTickCount();
