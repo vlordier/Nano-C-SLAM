@@ -268,8 +268,10 @@ tof_err_code_e get_tof_matrix(uint8_t sensor_id, int16_t matrix[][8]) {
     if (receiver_fd < 0) {
         return TOF_NOT_READY;
     }
-    /* Poll once at sensor zero so all four reads observe one coherent frame. */
-    if (sensor_id == 0U) {
+    /* Keep one coherent frame for the normal four-sensor pass. If a later
+     * sensor observes that frame as stale, refresh here so the DAQ task can
+     * recover instead of retrying the nonzero sensor without draining UDP. */
+    if (sensor_id == 0U || !frame_is_fresh()) {
         receive_latest_frame();
     }
     if (!frame_is_fresh()) {

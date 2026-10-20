@@ -75,7 +75,7 @@ static int expect_rejected(uint8_t packet[FRAME_SIZE], size_t length) {
                                   matrix) != 0;
 }
 
-static int test_udp_provider(const uint8_t packet[FRAME_SIZE]) {
+static int test_udp_provider(uint8_t packet[FRAME_SIZE]) {
     const int sender = socket(AF_INET, SOCK_DGRAM, 0);
     struct sockaddr_in source;
     memset(&source, 0, sizeof(source));
@@ -123,6 +123,28 @@ static int test_udp_provider(const uint8_t packet[FRAME_SIZE]) {
     task_tick = 501U;
     if (get_tof_matrix(0U, sensor) != 1) {
         fputs("UDP provider stale frame accepted\n", stderr);
+        close(sender);
+        return 1;
+    }
+    write_be32(packet + 8U, 43U);
+    write_be64(packet + 12U, UINT64_C(123456790));
+    finalize(packet);
+    if (sendto(sender, packet, FRAME_SIZE, 0,
+               (struct sockaddr *)&destination, sizeof(destination)) !=
+        (ssize_t)FRAME_SIZE) {
+        perror("UDP provider recovery send");
+        close(sender);
+        return 1;
+    }
+    int recovered_result = 1;
+    for (unsigned attempt = 0U; attempt < 20U && recovered_result != 0;
+         ++attempt) {
+        usleep(1000U);
+        recovered_result = get_tof_matrix(1U, sensor);
+    }
+    if (recovered_result != 0 || sensor[0][0] != 64) {
+        fprintf(stderr, "UDP provider failed to refresh stale frame: %d\n",
+                recovered_result);
         close(sender);
         return 1;
     }
