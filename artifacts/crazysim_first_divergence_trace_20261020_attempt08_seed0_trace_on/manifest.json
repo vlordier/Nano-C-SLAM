@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "date": "2026-10-20",
+  "classification": "seed 0; full-rate trace on; firmware crash",
+  "firmware_trace_enabled": true,
+  "firmware_stabilizer_warning_hz": 450,
+  "firmware_crash_marker": true,
+  "firmware_landing_timeout_marker": false,
+  "odometry_records": 12034,
+  "odometry_z_min_m": 2.0142367,
+  "odometry_z_max_m": 2.5034195,
+  "odometry_z_end_m": 2.0149999,
+  "odometry_max_tilt_deg": 180.0,
+  "world_stats_records": 490,
+  "rtf_mean": 0.89383,
+  "rtf_median": 0.94766,
+  "plugin_trace_records": 29503,
+  "files": [
+    {
+      "path": "REPORT.md",
+      "bytes": 1142,
+      "sha256": "3fd028a82615c81fecfd891c24258ea3a454e4f9695ba76d4e4ff8947cbad267"
+    },
+    {
+      "path": "capture/imu.jsonl.gz",
+      "bytes": 3097328,
+      "sha256": "65dc26b1d790f5425a72e21a7df4850d52270159bda16bbfa8313d4f72a669c4"
+    },
+    {
+      "path": "capture/joint-state.jsonl.gz",
+      "bytes": 3110776,
+      "sha256": "155ae1ce5a3f30770c9aae7b42aabf3b7fd612500c26f1ebc3b8b9601d9f24e9"
+    },
+    {
+      "path": "capture/motors.jsonl.gz",
+      "bytes": 684264,
+      "sha256": "5692c00ad90c70b11ab751d2619142e01af4422a2306d4a649856ed436b126f9"
+    },
+    {
+      "path": "capture/odometry.jsonl.gz",
+      "bytes": 684215,
+      "sha256": "b7343f80ad8ba182bc3540991dd5546a2268e6f2e876565bd51f40c004032858"
+    },
+    {
+      "path": "capture/plugin-motors.jsonl.gz",
+      "bytes": 400119,
+      "sha256": "03edd9a82fa81f3dec273db52f2b98e86fe4d504f359327cf882c3168aec8a1a"
+    },
+    {
+      "path": "capture/world-stats.jsonl.gz",
+      "bytes": 20099,
+      "sha256": "699cc0776c088c0ff94d8f0058446bb31ef4ca1c7a80d3ddc8e16fddf5e2d79a"
+    },
+    {
+      "path": "firmware.log.gz",
+      "bytes": 548203,
+      "sha256": "621c810c9f6a44bc30e7c640afdb6f8e8de6227b1d902cfded504fe42aac83ef"
+    },
+    {
+      "path": "gazebo.log",
+      "bytes": 371,
+      "sha256": "d3302311c4193342bfb5d6dfd38547c72a21dfa402f2a572915c03dd30149eb0"
+    },
+    {
+      "path": "land-ack.json",
+      "bytes": 140,
+      "sha256": "a8cf515b51e74388208fb0095c655b35ffb1e1f62a7bf8f17e93776227459a71"
+    },
+    {
+      "path": "takeoff-ack.json",
+      "bytes": 141,
+      "sha256": "528657ddabbdc72a3637ee2faa97f2b38cb055b9d356efbfb686fff55c078a9d"
+    },
+    {
+      "path": "world.sdf",
+      "bytes": 14193,
+      "sha256": "e2172e5ff88e174f5f63781acef079c35ebb2a8a999db087a58e45cac3383ab9"
+    }
+  ],
+  "process_exit_codes_verified": false,
+  "note": "Console wrapper return codes were not retained; process exit acceptance is unverified."
+}

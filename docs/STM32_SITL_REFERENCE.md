@@ -1628,3 +1628,15 @@ The main first-divergence bead remains open. Follow-up recorder work is tracked
 in bead `ncs-bq2`. The attempt11 manifest and per-file hashes are retained. No
 Nano-C-SLAM STM32 application, ToF/UWB adapter, or mapping output was exercised
 in this Crazyflie reference flight.
+
+The earlier comparison captures are archived in
+[`attempt05_trace_off`](../artifacts/crazysim_first_divergence_trace_20261020_attempt05_trace_off/REPORT.md),
+[`attempt06_trace_on`](../artifacts/crazysim_first_divergence_trace_20261020_attempt06_trace_on/REPORT.md),
+[`attempt07_seed0_trace_off`](../artifacts/crazysim_first_divergence_trace_20261020_attempt07_seed0_trace_off/REPORT.md),
+and
+[`attempt08_seed0_trace_on`](../artifacts/crazysim_first_divergence_trace_20261020_attempt08_seed0_trace_on/REPORT.md).
+The first pair was unseeded and had different RTF, so it cannot establish trace
+causality. The seed-0 pair demonstrates that the full-rate observer run crashed
+while the trace-off run returned to the pad, though both retained rate/landing
+warnings and neither proves accepted flight. These are diagnostics, not a
+hardware-equivalent validation.

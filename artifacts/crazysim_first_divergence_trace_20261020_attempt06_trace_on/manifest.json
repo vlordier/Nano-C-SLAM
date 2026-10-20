@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "date": "2026-10-20",
+  "classification": "unseeded; full-rate trace on; diagnostic gate failed",
+  "firmware_trace_enabled": true,
+  "firmware_stabilizer_warning_hz": 467,
+  "firmware_crash_marker": true,
+  "firmware_landing_timeout_marker": false,
+  "odometry_records": 13000,
+  "odometry_z_min_m": 2.0143882,
+  "odometry_z_max_m": 2.5058984,
+  "odometry_z_end_m": 2.015,
+  "odometry_max_tilt_deg": 180.0,
+  "world_stats_records": 497,
+  "rtf_mean": 0.97086,
+  "rtf_median": 0.97915,
+  "plugin_trace_records": 28188,
+  "files": [
+    {
+      "path": "CHECKER_EXIT_CODE.txt",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "CHECKER_OUTPUT.json",
+      "bytes": 143,
+      "sha256": "41c20f07a3d84c1df772b2ba5b4eece7ef324513dc42d4f64d3d94ee4ae27073"
+    },
+    {
+      "path": "REPORT.md",
+      "bytes": 974,
+      "sha256": "e4d43b40f0a823ba83b45849dbab8c4cc672b38006ba09f85ab387180a17f830"
+    },
+    {
+      "path": "capture/imu.jsonl.gz",
+      "bytes": 3306819,
+      "sha256": "128cb8cf6f484c380b3b04ab67eefe0d494c3ef0deb1bd64f3b0b93d203886d9"
+    },
+    {
+      "path": "capture/joint-state.jsonl.gz",
+      "bytes": 3309585,
+      "sha256": "4b7aa70d94d41739eb86e3d60fcf121f39e8b93b6dfdba72c200a2b8a37ebfe5"
+    },
+    {
+      "path": "capture/motors.jsonl.gz",
+      "bytes": 784911,
+      "sha256": "e8578a8932990f105fa18989ebce4b783dbd0e6d784c236983f1067244025b52"
+    },
+    {
+      "path": "capture/odometry.jsonl.gz",
+      "bytes": 697998,
+      "sha256": "c62a0726e053ca085c468d36a161020af01d7584c07a137254817d853198897b"
+    },
+    {
+      "path": "capture/plugin-motors.jsonl.gz",
+      "bytes": 483275,
+      "sha256": "d24b4b174bfba4195978b530dd326133376b04d95cf16e2ba735eb22527e1875"
+    },
+    {
+      "path": "capture/world-stats.jsonl.gz",
+      "bytes": 20225,
+      "sha256": "e3294a45d7708ba13b86b74ddbdbb021ea2d35d3442d8809f74365a45e546ded"
+    },
+    {
+      "path": "firmware.log.gz",
+      "bytes": 724759,
+      "sha256": "70990e68d0b6e796daddb83049bedb3eb20f4354d09237c0d11e18545dbae652"
+    },
+    {
+      "path": "gazebo.log",
+      "bytes": 359,
+      "sha256": "2e3c7f16a8f3fdfccc6dec3afe7e934a157a14395e3e84a2549de5eacd0af630"
+    },
+    {
+      "path": "world.sdf",
+      "bytes": 14193,
+      "sha256": "e2172e5ff88e174f5f63781acef079c35ebb2a8a999db087a58e45cac3383ab9"
+    }
+  ],
+  "process_exit_codes_verified": false,
+  "note": "Console wrapper return codes were not retained; process exit acceptance is unverified."
+}

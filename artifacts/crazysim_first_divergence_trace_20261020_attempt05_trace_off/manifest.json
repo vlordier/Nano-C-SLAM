@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "date": "2026-10-20",
+  "classification": "unseeded; trace off; invalid for overhead attribution",
+  "firmware_trace_enabled": false,
+  "firmware_stabilizer_warning_hz": 495,
+  "firmware_crash_marker": false,
+  "firmware_landing_timeout_marker": true,
+  "odometry_records": 12786,
+  "odometry_z_min_m": 2.0149049,
+  "odometry_z_max_m": 2.506202,
+  "odometry_z_end_m": 2.0149992,
+  "odometry_max_tilt_deg": 13.2553,
+  "world_stats_records": 512,
+  "rtf_mean": 0.87585,
+  "rtf_median": 0.94238,
+  "plugin_trace_records": 0,
+  "files": [
+    {
+      "path": "REPORT.md",
+      "bytes": 871,
+      "sha256": "c0aaf640c648500d380bc2ba2cabbf42697baab28600fcd7bc87e6737fe79eb6"
+    },
+    {
+      "path": "capture/imu.jsonl.gz",
+      "bytes": 3760113,
+      "sha256": "a05f9cfcd545878871662a57e818e5f118e40b7b01b0b9e1ef33a9c0b3f00e39"
+    },
+    {
+      "path": "capture/joint-state.jsonl.gz",
+      "bytes": 3620034,
+      "sha256": "6896112fd063db52da074db49c8a970c1cb1f93c1bd06a7cd69b2c40a1e606cb"
+    },
+    {
+      "path": "capture/motors.jsonl.gz",
+      "bytes": 779964,
+      "sha256": "801bd7144e35e9b9f86ebcf660a420781b3b670975bdeaac35c43eea421e07ef"
+    },
+    {
+      "path": "capture/odometry.jsonl.gz",
+      "bytes": 823190,
+      "sha256": "382b77689761bc2c6b5701f2a7646401c38f3cbcf4880d64282ef6d1d11e911a"
+    },
+    {
+      "path": "capture/world-stats.jsonl.gz",
+      "bytes": 21038,
+      "sha256": "af3de74c570b93c1d19fe006a881dc43c3985af7deb9ff3b84a705d77b1fee88"
+    },
+    {
+      "path": "firmware.log.gz",
+      "bytes": 49273,
+      "sha256": "0fcafde269b427d597813d26b2eecc3829cf7c11228575562fb8fc281de1d431"
+    },
+    {
+      "path": "gazebo.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "world.sdf",
+      "bytes": 14193,
+      "sha256": "e2172e5ff88e174f5f63781acef079c35ebb2a8a999db087a58e45cac3383ab9"
+    }
+  ],
+  "process_exit_codes_verified": false,
+  "note": "Console wrapper return codes were not retained; process exit acceptance is unverified."
+}

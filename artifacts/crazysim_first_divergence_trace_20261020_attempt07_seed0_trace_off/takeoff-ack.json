@@ -1,0 +1,1 @@
+{"command": "takeoff", "duration_s": 8.0, "event": "firmware_ack", "firmware_result": 0, "packet_hex": "8c07009a00", "target_height_m": 2.4}

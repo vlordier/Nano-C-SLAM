@@ -1,0 +1,7 @@
+{
+  "passed": false,
+  "errors": [
+    "firmware reported estimator/rate/crash failure",
+    "stable hover lasted 2.80s; requires 5.00s"
+  ]
+}
