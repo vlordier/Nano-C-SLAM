@@ -98,12 +98,14 @@ and are addressed to the requesting node.
 
 Run the broker on the native Gazebo host with `uv run --locked python -m
 scripts.uwb_sitl_broker --node-ids 0,1 --bind-address 0.0.0.0 --bind-port
-19952`. The Linux Lima firmware defaults to the Lima host gateway
+19952`. For Gazebo Harmonic's `crazysim_default` world, add
+`--clock-topic /world/crazysim_default/clock`; the broker default remains
+`/clock` for worlds publishing an unscoped clock. The Linux Lima firmware defaults to the Lima host gateway
 `192.168.5.2`; set `NCS_SITL_UWB_BROKER_HOST` explicitly when the guest uses a
 different gateway. The firmware process must also receive the gateway as its
 second positional argument (`cf2 <firmware-port> 192.168.5.2`) so CrazySim
 publishes IMU packets to the host. The broker subscribes through
-`gz topic -e --json-output` to `/clock` and
+`gz topic -e --json-output` to the configured clock topic and
 `/cf_<id>/odom`, then sends UWB datagrams to each registered firmware IP and
 port. Host tests cover the broker state machine, local UDP registration/ranging
 and two independent C firmware-provider processes exchanging ACK2 and a

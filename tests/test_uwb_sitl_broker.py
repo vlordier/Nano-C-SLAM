@@ -8,9 +8,12 @@ import socket
 import struct
 import time
 import unittest
+from collections.abc import Callable
+from unittest.mock import patch
 
 from scripts.uwb_sitl_broker import (
     BrokerError,
+    CrazySimUwbBroker,
     UwbBrokerCore,
     _BrokerDatagramProtocol,
     parse_gazebo_clock,
@@ -193,6 +196,40 @@ class UwbSitlBrokerTests(unittest.TestCase):
 
 
 class UwbSitlBrokerUdpTests(unittest.IsolatedAsyncioTestCase):
+    async def test_broker_subscribes_to_configured_gazebo_clock_topic(self) -> None:
+        probe = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        probe.bind(("127.0.0.1", 0))
+        bind_port = probe.getsockname()[1]
+        probe.close()
+        broker = CrazySimUwbBroker(
+            gz_command="gz",
+            node_ids=(0, 1),
+            topic_prefix="/cf",
+            clock_topic="/world/crazysim_default/clock",
+            bind_address="127.0.0.1",
+            bind_port=bind_port,
+        )
+        subscribed_topics: list[str] = []
+        clock_topic_seen = asyncio.Event()
+
+        async def record_subscription(
+            topic: str, _handler: Callable[[bytes, int], None]
+        ) -> None:
+            subscribed_topics.append(topic)
+            if topic == broker.clock_topic:
+                clock_topic_seen.set()
+            await asyncio.Event().wait()
+
+        with patch.object(broker, "_consume_topic", side_effect=record_subscription):
+            running = asyncio.create_task(broker.run())
+            try:
+                await asyncio.wait_for(clock_topic_seen.wait(), timeout=1.0)
+                self.assertIn("/world/crazysim_default/clock", subscribed_topics)
+            finally:
+                running.cancel()
+                with self.assertRaises(asyncio.CancelledError):
+                    await running
+
     async def test_registration_and_range_exchange_cross_real_udp_sockets(self) -> None:
         core = UwbBrokerCore()
         wall_now_ns = time.monotonic_ns()

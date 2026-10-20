@@ -520,6 +520,7 @@ class CrazySimUwbBroker:
         gz_command: str,
         node_ids: tuple[int, ...],
         topic_prefix: str,
+        clock_topic: str,
         bind_address: str,
         bind_port: int,
     ) -> None:
@@ -529,11 +530,14 @@ class CrazySimUwbBroker:
             raise ValueError("node IDs must be in 0..5")
         if not topic_prefix.startswith("/") or topic_prefix.endswith("/"):
             raise ValueError("topic prefix must be absolute without trailing slash")
+        if not clock_topic.startswith("/") or clock_topic.endswith("/"):
+            raise ValueError("clock topic must be absolute without trailing slash")
         if not 1 <= bind_port <= 65535:
             raise ValueError("UDP bind port must be in 1..65535")
         self.gz_command = gz_command
         self.node_ids = node_ids
         self.topic_prefix = topic_prefix
+        self.clock_topic = clock_topic
         self.bind_address = bind_address
         self.bind_port = bind_port
         self.core = UwbBrokerCore()
@@ -597,7 +601,9 @@ class CrazySimUwbBroker:
         )
         self.protocol = protocol  # type: ignore[assignment]
         topics = [
-            asyncio.create_task(self._consume_topic("/clock", self._clock_sample)),
+            asyncio.create_task(
+                self._consume_topic(self.clock_topic, self._clock_sample)
+            ),
             *(
                 asyncio.create_task(
                     self._consume_topic(
@@ -610,9 +616,10 @@ class CrazySimUwbBroker:
             asyncio.create_task(self._clock_sync_loop()),
         ]
         LOGGER.info(
-            "UWB broker listening on %s:%d; clock=/clock; odometry=%s",
+            "UWB broker listening on %s:%d; clock=%s; odometry=%s",
             self.bind_address,
             self.bind_port,
+            self.clock_topic,
             ",".join(
                 f"{self.topic_prefix}_{node_id}/odom" for node_id in self.node_ids
             ),
@@ -647,6 +654,7 @@ async def _run_cli(arguments: argparse.Namespace) -> None:
         gz_command=arguments.gz_command,
         node_ids=arguments.node_ids,
         topic_prefix=arguments.topic_prefix,
+        clock_topic=arguments.clock_topic,
         bind_address=arguments.bind_address,
         bind_port=arguments.bind_port,
     )
@@ -658,6 +666,7 @@ def main() -> None:
     parser.add_argument("--gz-command", default="gz")
     parser.add_argument("--node-ids", type=_parse_node_ids, default=(0, 1))
     parser.add_argument("--topic-prefix", default="/cf")
+    parser.add_argument("--clock-topic", default="/clock")
     parser.add_argument("--bind-address", default="0.0.0.0")  # noqa: S104
     parser.add_argument("--bind-port", type=int, default=19952)
     parser.add_argument("--verbose", action="store_true")
