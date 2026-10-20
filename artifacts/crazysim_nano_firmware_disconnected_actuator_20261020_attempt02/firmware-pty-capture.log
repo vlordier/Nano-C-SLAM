@@ -1,0 +1,151 @@
+Script started on 2026-10-20 17:48:07+02:00 [COMMAND="NCS_SITL_TOF_BRIDGE_PORT=21951 CF2_SIM_MODEL=gz_crazysim ./cf2 21950 192.168.5.2" <not executed on terminal>]
+address : 192.168.5.2 , port : 21950 
+SOCKET_LINK: Create socket succeed 
+SOCKET_LINK: Binding succeed 
+SOCKET_LINK: Waiting for connection with gazebo ... 
+SOCKET_LINK: Connection established with gazebo 
+SYS: ----------------------------
+SYS: Software-in-the-Loop Simulator is up and running!
+SYS: Build 0:717aca7a30d1 (NA) CLEAN
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=1
+ESTKALMANUNSCENTED: Sigma Points chosen
+SENSORS: Forcing sensors to SensorImplementation_sitl
+AK8963 I2C connection [OK].
+LPS25H I2C connection [OK].
+Entering sensorsTask() 
+ESTIMATOR: Using Kalman (2) estimator
+CONTROLLER: Using PID (1) controller
+SYS: About to run tests in system.c.
+SENSORS TEST PASSED [OK].
+SYS: Self test passed!
+STAB: Wait for sensor calibration...
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=257
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=513
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=769
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=1025
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=1281
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=1537
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=1793
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=2049
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=2305
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=2561
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=2817
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=3073
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=3329
+NCS_SITL_DEVICE_READY device=uwb node=0 port=19953
+NCS_APP_INIT_STAGE stage=uwb_ready node=0
+NCS_APP_INIT_STAGE stage=queues_ready
+NCS_SITL_DEVICE_READY device=tof_matrix port=19951
+ToF sensor matrix configured; waiting for first data
+NCS_APP_INIT_STAGE stage=tof_task_created
+Waiting for ToF sensor matrix...
+NCS_APP_INIT_STAGE stage=mission_task_created
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=3585
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=3841
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=4097
+NCS_APP_INIT_STAGE stage=tasks_ready
+DRONE ID: 0
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=4353
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=4609
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=4865
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=5121
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=5377
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=5633
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=5889
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=6145
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=6401
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=6657
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=6913
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=7169
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=7425
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=7681
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=7937
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=8193
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=8449
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=8705
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=8961
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=9217
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=9473
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=9729
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=9985
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=10241
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=10497
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=10753
+ToF sensor matrix ready with fresh data
+ToF ready; waiting for ready command, fresh frames, and heartbeat...
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=11009
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=11265
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=11521
+UWB token handoff exhausted; requesting landing
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=11777
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=12033
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=12289
+GYro Bias found 
+STAB: Starting stabilizer loop
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=12545
+SUP: Can not fly
+SUP: Ready to fly
+ESTKALMAN: WARNING: Kalman prediction rate off (90)
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=12801
+STAB: WARNING: stabilizer loop rate is off (298)
+ESTKALMAN: WARNING: Kalman prediction rate off (92)
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=13057
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=13313
+ESTKALMAN: WARNING: Kalman prediction rate off (94)
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=13569
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=13825
+ESTKALMAN: WARNING: Kalman prediction rate off (92)
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=14081
+ESTKALMAN: WARNING: Kalman prediction rate off (98)
+ESTKALMAN: WARNING: Kalman prediction rate off (89)
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=14337
+ESTKALMAN: WARNING: Kalman prediction rate off (97)
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=14593
+ESTKALMAN: WARNING: Kalman prediction rate off (98)
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=14849
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=15105
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=15361
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=15617
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=15873
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=16129
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=16385
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=16641
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=16897
+ESTKALMAN: WARNING: Kalman prediction rate off (96)
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=17153
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=17409
+ESTKALMAN: WARNING: Kalman prediction rate off (98)
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=17665
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=17921
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=18177
+ESTKALMAN: WARNING: Kalman prediction rate off (98)
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=18433
+ESTKALMAN: WARNING: Kalman prediction rate off (96)
+ESTKALMAN: WARNING: Kalman prediction rate off (89)
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=18689
+ESTKALMAN: WARNING: Kalman prediction rate off (90)
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=18945
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=19201
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=19457
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=19713
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=19969
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=20225
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=20481
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=20737
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=20993
+ESTKALMAN: WARNING: Kalman prediction rate off (98)
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=21249
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=21505
+ESTKALMAN: WARNING: Kalman prediction rate off (97)
+ESTKALMAN: WARNING: Kalman prediction rate off (97)
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=21761
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=22017
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=22273
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=22529
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=22785
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=23041
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=23297
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=23553
+ESTKALMAN: WARNING: Kalman prediction rate off (97)
+SOCKET_LINK: Coalesced CRTP UDP state packets; count=23809
+SOCKET_LINK: Coalesced CRTP UDP state packets

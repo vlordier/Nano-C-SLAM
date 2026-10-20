@@ -1,0 +1,66 @@
+{
+  "active": {
+    "motors": {
+      "count": 20030,
+      "all_zero": true,
+      "nonzero_records": 0
+    },
+    "world-stats": {
+      "count": 152,
+      "mean_reported_rtf": 0.9995387155067208
+    },
+    "imu": {
+      "count": 10015
+    },
+    "joint-state": {
+      "count": 20027,
+      "max_abs_rotor_velocity_rad_s": 1.9838841680552832e-09
+    },
+    "odometry": {
+      "count": 4414,
+      "z_min_m": 0.01499909907579422,
+      "z_max_m": 0.01499909907579422,
+      "x_min_m": 8.318188520206604e-06,
+      "x_max_m": 8.318188520206604e-06
+    }
+  },
+  "post-stop": {
+    "motors": {
+      "count": 18004,
+      "all_zero": true,
+      "nonzero_records": 0
+    },
+    "world-stats": {
+      "count": 138,
+      "mean_reported_rtf": 0.9978429562247196
+    },
+    "imu": {
+      "count": 9004
+    },
+    "joint-state": {
+      "count": 18004,
+      "max_abs_rotor_velocity_rad_s": 1.9838868325905423e-09
+    },
+    "odometry": {
+      "count": 3817,
+      "z_min_m": 0.01499909907579422,
+      "z_max_m": 0.01499909907579422,
+      "x_min_m": 8.318188520206604e-06,
+      "x_max_m": 8.318188520206604e-06
+    }
+  },
+  "firmware_motor_packets": {
+    "trace_records": 7810,
+    "nonzero_records": 2207,
+    "max_requested_omega_rad_s": 2774.98
+  },
+  "nano_pose_packets": 379,
+  "persisted_firmware_pty": {
+    "tasks_ready": true,
+    "tof_fresh": true,
+    "uwb_missing_peer": true,
+    "takeoff_line_persisted": false,
+    "landing_line_persisted": false,
+    "rate_warnings": 19
+  }
+}
