@@ -30,7 +30,30 @@ int main(int argc, char **argv) {
         puts("missing peer returned UWB_RX_TIMEOUT");
         return 0;
     }
-    const uint8_t node_id = (uint8_t)strtoul(argv[1], NULL, 10);
+    if (strcmp(argv[1], "range-failure") == 0 || strcmp(argv[1], "stale-range") == 0) {
+        if (uwb_api_init(0U) != UWB_SUCCESS)
+            return 3;
+        if (strcmp(argv[1], "stale-range") == 0)
+            pause_ms(350L);
+        uint32_t range_mm = 123U;
+        if (uwb_do_4way_ranging_with_node(1U, (uwb_node_coordinates_t){0}, &range_mm) !=
+                UWB_RX_TIMEOUT ||
+            range_mm != 0U) {
+            fputs("invalid range did not fail closed\n", stderr);
+            return 10;
+        }
+        puts("invalid range returned UWB_RX_TIMEOUT with zero range");
+        return 0;
+    }
+    if (strcmp(argv[1], "idle-peer") == 0) {
+        if (uwb_api_init(1U) != UWB_SUCCESS)
+            return 3;
+        pause_ms(1500L);
+        return 0;
+    }
+    const int wrong_destination = strcmp(argv[1], "wrong-dest") == 0;
+    const uint8_t node_id =
+        wrong_destination ? 0U : (uint8_t)strtoul(argv[1], NULL, 10);
     if (uwb_api_init(node_id) != UWB_SUCCESS) {
         fputs("init failed\n", stderr);
         return 3;
@@ -53,9 +76,17 @@ int main(int argc, char **argv) {
             return 4;
         }
         uint32_t range_mm = 0U;
-        if (uwb_do_4way_ranging_with_node(1U, (uwb_node_coordinates_t){0}, &range_mm) !=
-                UWB_SUCCESS ||
-            range_mm != 1000U) {
+        const uwb_err_code_e range_status =
+            uwb_do_4way_ranging_with_node(1U, (uwb_node_coordinates_t){0}, &range_mm);
+        if (wrong_destination) {
+            if (range_status != UWB_RX_TIMEOUT || range_mm != 0U) {
+                fputs("wrong-destination range did not fail closed\n", stderr);
+                return 11;
+            }
+            puts("wrong-destination range returned timeout and zero");
+            return 0;
+        }
+        if (range_status != UWB_SUCCESS || range_mm != 1000U) {
             fputs("range exchange failed\n", stderr);
             return 5;
         }
