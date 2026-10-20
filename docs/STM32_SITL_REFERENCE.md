@@ -1821,3 +1821,49 @@ subscription is repaired, but a fully retained positive and disconnected-
 actuator pair passing the unchanged strict checker is still required. This is
 Crazyflie reference SITL evidence only; Nano-C-SLAM firmware flight and mapping
 remain unvalidated.
+
+### Provenance-enabled positive and disconnected bridge pair (2026-10-20)
+
+The retained pair in
+[`attempt05`](../artifacts/crazysim_provenance_flight_20261020_attempt05/REPORT.md)
+and
+[`attempt06`](../artifacts/crazysim_provenance_flight_20261020_attempt06/REPORT.md)
+uses the Crazyflie reference SITL firmware, not Nano-C-SLAM. Both runs use the
+same CrazySim combined plugin, Gazebo Harmonic world, 500-Hz firmware loop,
+Lima AArch64 binary, and telemetry sampler. The generated `cf2` binary is from
+the local snapshot of firmware commit `a0e6faba30d3d73bb2838b9034aeee1b756ca3e5`
+with the combined plugin at `02429e8e3385d88ef62a7954df491681795000bd`;
+the isolated guest build changes the SITL CMake optimization from `-O0` to
+`-O2`. Binary SHA-256 is
+`6a3c3463571e24da5a27024d07c1fb4458ad5eb43c232fda0799ff657b9653cb`.
+Plugin SHA-256 is
+`2e70696d11235be4053cb72b65992b6ef2a01af30fd089c300ba2809d67e55e5`; sampler
+SHA-256 is
+`7a302dff29bb617d2c3899dcdb97cc6191559bcf4dea6cac906c316f96a8eaf8`.
+
+The positive run captured 7,030 odometry samples, 17,576 IMU messages, and
+35,062 motor messages (140,248 motor components). Altitude rose from 2.01499 m to 2.50816 m and returned
+to 2.014999 m; measured stable hover was 7.99 s. TAKEOFF_2 and LAND_2 both
+received firmware result 0. The disconnected-bridge run captured 6,576
+odometry samples and 32,829 motor messages (131,316 motor components); altitude remained at 2.014999 m,
+while the firmware still sent nonzero motor packets to the plugin trace. The
+plugin marked the bridge disconnected and published zero actuator velocities.
+Both firmware and Gazebo exited 0, and the retained per-run process receipts
+show one firmware process per run. The strict paired checker was not run
+against attempt06 as a positive/negative pair; its bridge behavior was checked
+from raw motor topics and the explicit plugin motor packet trace.
+
+The unchanged strict gate fails the positive run for one reason:
+`firmware reported estimator/rate/crash failure`. The runtime log reports a
+503/500-Hz stabilizer window and 96–98/100-Hz Kalman prediction windows; the
+negative run reports 453/500 Hz and 97–98/100 Hz. The gate is intentionally
+unchanged. Although `-O2` allows the positive case to satisfy the registered
+height and hover envelope, cadence is still not qualified, and these runs do
+not establish Nano firmware flight or mapping. See the per-run reports and
+hash manifests for exact captures and commands.
+
+The next diagnostic should compare this instrumented `-O2` pair against an
+otherwise identical trace-disabled and diagnostics-disabled pair, while
+retaining the strict cadence gate and process/timing evidence. If the loop is
+still slow, profile the POSIX FreeRTOS tick source and Gazebo-to-firmware
+transport scheduling; do not widen the rate thresholds to make the run pass.

@@ -1,0 +1,184 @@
+{
+  "attempt": "05",
+  "claim_boundary": "Crazyflie reference SITL only; not Nano-C-SLAM firmware, mapping, swarm, or hardware validation.",
+  "crazyflie_simulation_plugin_commit": "02429e8e3385d88ef62a7954df491681795000bd",
+  "files": {
+    "REPORT.md": {
+      "bytes": 2345,
+      "sha256": "6f9fb2b814e728a48f03679c2760d8b8ca434cf33804b55a6fd149266e1d7437",
+      "uncompressed_bytes": 2345,
+      "uncompressed_sha256": "6f9fb2b814e728a48f03679c2760d8b8ca434cf33804b55a6fd149266e1d7437"
+    },
+    "capture/imu.jsonl.gz": {
+      "bytes": 2102133,
+      "sha256": "6177b6041887a01f786f2ca26373bca606390b4b532f5416d849c596122ceb01",
+      "uncompressed_bytes": 13766967,
+      "uncompressed_sha256": "b1d34e1856303a944705b3db209d4c3f3423d5f0c3a80047676b9dd700aae188"
+    },
+    "capture/motors.jsonl.gz": {
+      "bytes": 434773,
+      "sha256": "4a768d759498b1c10f7d435e789d21c58729e2dec8ca67e36876477a58659abb",
+      "uncompressed_bytes": 5012938,
+      "uncompressed_sha256": "d52827ebab34c79cfabdb9b16f1fcc782be0e2a3f92e38b0760111c548320335"
+    },
+    "capture/odometry.jsonl.gz": {
+      "bytes": 567742,
+      "sha256": "7505ae2a4868d1524eb2b384aa3ac7839be5f882bcdc689f7c2a5176843b211c",
+      "uncompressed_bytes": 4432690,
+      "uncompressed_sha256": "c98cf7d4d14330ef1f84d9b5521f9446c95596ca4573656379a463d3fd19f8b2"
+    },
+    "capture/world-stats.jsonl.gz": {
+      "bytes": 10861,
+      "sha256": "9548c1ee02b9d32fb12a11a4f6ad6495570d89dc1a31020cd357c0024f94059e",
+      "uncompressed_bytes": 66790,
+      "uncompressed_sha256": "5e4a671abbde0d3aa687ce6141c4e31903bf90fe0cc335b5920fa1329f550650"
+    },
+    "firmware-client.pid": {
+      "bytes": 6,
+      "sha256": "154bd3a9a3da0b09afa3aa3e9a8f41b21a9d43c48eb56820bc4b6d98ab1f26d5",
+      "uncompressed_bytes": 6,
+      "uncompressed_sha256": "154bd3a9a3da0b09afa3aa3e9a8f41b21a9d43c48eb56820bc4b6d98ab1f26d5"
+    },
+    "firmware-kill.exit": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "uncompressed_bytes": 2,
+      "uncompressed_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "firmware-ready.txt": {
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "uncompressed_bytes": 2,
+      "uncompressed_sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    "firmware.exit": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "uncompressed_bytes": 2,
+      "uncompressed_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "firmware.log.gz": {
+      "bytes": 22037,
+      "sha256": "5c2e72a23aaa7b9107a6588e9ac16fe4978b15a1e99c3132febed546926a15c4",
+      "uncompressed_bytes": 133146,
+      "uncompressed_sha256": "f3ac040a930887fb16957145c68d08c98a94702b46424d20482ebf2a7529417d"
+    },
+    "gazebo.exit": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "uncompressed_bytes": 2,
+      "uncompressed_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "gazebo.log.gz": {
+      "bytes": 1140,
+      "sha256": "fe1d33565eb60e2c46984edea47ad0d9bc90eb56cd6f15032cb444c210986bc8",
+      "uncompressed_bytes": 7680,
+      "uncompressed_sha256": "31366e41b47078a4195294c06479923516470ad31889be6a53e3f2d756d6063d"
+    },
+    "gazebo.pid": {
+      "bytes": 6,
+      "sha256": "40cb7c86439137a01c680bc61685ccc9d5e7f87c7abec9c768bc9fa5dd24476f",
+      "uncompressed_bytes": 6,
+      "uncompressed_sha256": "40cb7c86439137a01c680bc61685ccc9d5e7f87c7abec9c768bc9fa5dd24476f"
+    },
+    "imu-send.csv.gz": {
+      "bytes": 311001,
+      "sha256": "12b94a95a60e9c6f22c11853e66235db338f2691b7c7082d22656673d05b5f2c",
+      "uncompressed_bytes": 1548017,
+      "uncompressed_sha256": "7cc76795e2cd73eb1af757601f5f652bd80ed3844e2daa0a1d85ee7a7af10685"
+    },
+    "land-ack.json": {
+      "bytes": 140,
+      "sha256": "a8cf515b51e74388208fb0095c655b35ffb1e1f62a7bf8f17e93776227459a71",
+      "uncompressed_bytes": 140,
+      "uncompressed_sha256": "a8cf515b51e74388208fb0095c655b35ffb1e1f62a7bf8f17e93776227459a71"
+    },
+    "land.exit": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "uncompressed_bytes": 2,
+      "uncompressed_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "land.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uncompressed_bytes": 0,
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "plugin-motors.csv.gz": {
+      "bytes": 212081,
+      "sha256": "5badcb79e807e89f2c6b905ba186084dfbafb4765f7c82ce9d0d754091b1c079",
+      "uncompressed_bytes": 1654151,
+      "uncompressed_sha256": "15a604bfeb1c2d487e23a2458f8b5846950e76cca407c13cae9edef781eefb1d"
+    },
+    "sampler.exit": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "uncompressed_bytes": 2,
+      "uncompressed_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "sampler.log": {
+      "bytes": 1023,
+      "sha256": "d90a57f45ceffb7f9df40459750883ccca5258db153119e2ceed8d36c7de1285",
+      "uncompressed_bytes": 1023,
+      "uncompressed_sha256": "d90a57f45ceffb7f9df40459750883ccca5258db153119e2ceed8d36c7de1285"
+    },
+    "sampler.pid": {
+      "bytes": 6,
+      "sha256": "5a561c22f4933f9ca3ea4ea9e1d13d0678340313d908768d4824c6551cc70a18",
+      "uncompressed_bytes": 6,
+      "uncompressed_sha256": "5a561c22f4933f9ca3ea4ea9e1d13d0678340313d908768d4824c6551cc70a18"
+    },
+    "strict-check.exit": {
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "uncompressed_bytes": 2,
+      "uncompressed_sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    "strict-check.json": {
+      "bytes": 94,
+      "sha256": "563cf37739bb255644fc89cbfaa283985ffd1898e9bb1fc89151aedbdcc001cf",
+      "uncompressed_bytes": 94,
+      "uncompressed_sha256": "563cf37739bb255644fc89cbfaa283985ffd1898e9bb1fc89151aedbdcc001cf"
+    },
+    "takeoff-ack.json": {
+      "bytes": 141,
+      "sha256": "528657ddabbdc72a3637ee2faa97f2b38cb055b9d356efbfb686fff55c078a9d",
+      "uncompressed_bytes": 141,
+      "uncompressed_sha256": "528657ddabbdc72a3637ee2faa97f2b38cb055b9d356efbfb686fff55c078a9d"
+    },
+    "takeoff.exit": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "uncompressed_bytes": 2,
+      "uncompressed_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "takeoff.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uncompressed_bytes": 0,
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "world.sdf": {
+      "bytes": 14346,
+      "sha256": "e227700ab4b496ff3994ec0f9bd9fac45b98d692935cb48a2eb02ab9ab8384f3",
+      "uncompressed_bytes": 14346,
+      "uncompressed_sha256": "e227700ab4b496ff3994ec0f9bd9fac45b98d692935cb48a2eb02ab9ab8384f3"
+    }
+  },
+  "firmware_binary_sha256": "6a3c3463571e24da5a27024d07c1fb4458ad5eb43c232fda0799ff657b9653cb",
+  "firmware_build": "Lima Ubuntu 24.04 AArch64; 500-Hz loop; isolated snapshot CMake -O0 changed to -O2; stride-32 bounded trace; IMU provenance enabled.",
+  "firmware_source_commit": "a0e6faba30d3d73bb2838b9034aeee1b756ca3e5",
+  "pair": "positive",
+  "plugin_sha256": "2e70696d11235be4053cb72b65992b6ef2a01af30fd089c300ba2809d67e55e5",
+  "sampler_sha256": "7a302dff29bb617d2c3899dcdb97cc6191559bcf4dea6cac906c316f96a8eaf8",
+  "schema_version": 1,
+  "strict_gate": "positive strict checker failed with only firmware estimator/rate/crash warning; negative run preserved as raw paired control and evaluated from firmware trace, zero motor topic and stationary odometry.",
+  "strict_gate_result": {
+    "errors": [
+      "firmware reported estimator/rate/crash failure"
+    ],
+    "note": "Unchanged scripts/check_crazysim_flight.py result; all other positive/negative checks passed.",
+    "passed": false
+  }
+}
