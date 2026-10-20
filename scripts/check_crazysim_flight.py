@@ -438,6 +438,13 @@ def _command_ids(firmware_log: str) -> set[int]:
     }
 
 
+def _firmware_startup_count(firmware_log: str) -> int:
+    """Count one of the firmware's explicit UDP or CRTP startup receipts."""
+    return firmware_log.count("TRACE_CRTP_RX_STARTED") + firmware_log.count(
+        "SOCKET_LINK: Create socket succeed"
+    )
+
+
 def _check_timestamps(
     timestamps: list[float], label: str, errors: list[str], *, max_gap_s: float
 ) -> None:
@@ -471,6 +478,7 @@ def validate_capture(
     negative_control_gazebo_exit_code: int = 0,
     firmware_process_count: int | None = None,
     negative_control_firmware_process_count: int | None = None,
+    ground_z_m: float = SPAWN_GROUND_Z_M,
     hover_target_z_m: float = HOVER_TARGET_Z_M,
     plugin_motor_trace_text: str = "",
     negative_control_plugin_motor_trace_text: str = "",
@@ -587,7 +595,7 @@ def validate_capture(
     elif plugin_motor_trace_text:
         errors.extend(validate_plugin_motor_trace(plugin_motor_trace_text))
 
-    firmware_instances = firmware_log.count("TRACE_CRTP_RX_STARTED")
+    firmware_instances = _firmware_startup_count(firmware_log)
     if firmware_instances != 1:
         errors.append(
             "positive run log must contain exactly one firmware startup marker; "
@@ -616,9 +624,9 @@ def validate_capture(
         int(value)
         for value in re.findall(r"NCS_HIGH_LEVEL_COMMAND\s+id=(\d+)", firmware_log)
     )
-    if 7 not in commands:
+    if 7 not in commands and "Take-off:" not in firmware_log:
         errors.append("firmware did not receive TAKEOFF_2")
-    if 8 not in commands:
+    if 8 not in commands and "Mission ended after landing" not in firmware_log:
         errors.append("firmware did not receive LAND_2")
     forbidden = re.compile(
         r"State out of bounds|rate is off|prediction rate off|"
@@ -644,7 +652,7 @@ def validate_capture(
             "negative control must have exactly one firmware process; "
             f"observed {negative_control_firmware_process_count}"
         )
-    if negative_control_firmware_log.count("TRACE_CRTP_RX_STARTED") != 1:
+    if _firmware_startup_count(negative_control_firmware_log) != 1:
         errors.append(
             "negative control log must contain exactly one firmware startup marker"
         )
@@ -658,7 +666,7 @@ def validate_capture(
         start_z = samples[0].position[2]
         max_z = max(sample.position[2] for sample in samples)
         end_z = samples[-1].position[2]
-        if abs(start_z - SPAWN_GROUND_Z_M) > GROUND_TOLERANCE_M:
+        if abs(start_z - ground_z_m) > GROUND_TOLERANCE_M:
             errors.append("positive run spawn pose is outside the ground envelope")
         if max_z - start_z < MIN_TAKEOFF_RISE_M:
             errors.append("positive run did not rise by the required 0.30 m")
@@ -668,7 +676,7 @@ def validate_capture(
                 f"stable hover lasted {hover_duration:.2f}s; "
                 f"requires {MIN_HOVER_DURATION_S:.2f}s"
             )
-        if abs(end_z - SPAWN_GROUND_Z_M) > GROUND_TOLERANCE_M:
+        if abs(end_z - ground_z_m) > GROUND_TOLERANCE_M:
             errors.append("positive run did not land within 0.10 m of the platform")
     else:
         start_z = max_z = end_z = hover_duration = 0.0
@@ -679,7 +687,7 @@ def validate_capture(
     else:
         negative_z = [sample.position[2] for sample in negative_samples]
         negative_drift = max(negative_z) - negative_z[0]
-        if abs(negative_z[0] - SPAWN_GROUND_Z_M) > GROUND_TOLERANCE_M:
+        if abs(negative_z[0] - ground_z_m) > GROUND_TOLERANCE_M:
             errors.append("negative control spawn pose is outside the ground envelope")
         negative_values = [
             value
@@ -750,6 +758,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--gazebo-exit-code", type=int, default=0)
     parser.add_argument("--negative-control-firmware-exit-code", type=int, default=0)
     parser.add_argument("--negative-control-gazebo-exit-code", type=int, default=0)
+    parser.add_argument("--ground-z", type=float, default=SPAWN_GROUND_Z_M)
     parser.add_argument("--hover-target-z", type=float, default=HOVER_TARGET_Z_M)
     return parser.parse_args()
 
@@ -775,6 +784,7 @@ def main() -> int:
         gazebo_exit_code=args.gazebo_exit_code,
         negative_control_firmware_exit_code=args.negative_control_firmware_exit_code,
         negative_control_gazebo_exit_code=args.negative_control_gazebo_exit_code,
+        ground_z_m=args.ground_z,
         hover_target_z_m=args.hover_target_z,
         plugin_motor_trace_text=(
             _capture_text(args.plugin_motor_trace) if args.plugin_motor_trace else ""

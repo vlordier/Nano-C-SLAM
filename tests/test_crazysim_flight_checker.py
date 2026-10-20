@@ -89,7 +89,7 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
             validate_plugin_motor_trace(json.dumps(excessive_speed)),
         )
 
-    def _validate(self, **overrides: object) -> list[str]:
+    def _validate(self, *, ground_z_m: float = 2.04, **overrides: object) -> list[str]:
         capture = replace(passing_capture(), **overrides)
         _, errors = validate_capture(
             odometry_text=capture.odometry,
@@ -106,6 +106,7 @@ class CrazySimFlightCheckerTests(unittest.TestCase):
             negative_control_firmware_process_count=(
                 capture.negative_firmware_process_count
             ),
+            ground_z_m=ground_z_m,
         )
         return errors
 
@@ -288,6 +289,14 @@ real_time_factor: 1.0
         self.assertEqual(summary.negative_control_drift_m, 0.0)
         self.assertAlmostEqual(summary.aggregate_real_time_factor, 1.0)
 
+    def test_custom_ground_height_is_applied_to_both_flight_runs(self) -> None:
+        errors = self._validate(ground_z_m=0.015)
+
+        self.assertIn("positive run spawn pose is outside the ground envelope", errors)
+        self.assertIn(
+            "negative control spawn pose is outside the ground envelope", errors
+        )
+
     def test_nonfinite_odometry_is_rejected(self) -> None:
         capture = passing_capture()
         errors = self._validate(
@@ -450,6 +459,24 @@ real_time_factor: 1.0
         )
         self.assertNotIn(
             "negative control lacks explicit disconnected-actuator marker", errors
+        )
+
+    def test_nano_console_startup_and_mission_receipts_satisfy_command_gate(
+        self,
+    ) -> None:
+        capture = passing_capture()
+        nano_log = (
+            capture.firmware_log.replace("TRACE_CRTP_RX_STARTED link=0x1234\n", "")
+            .replace("TRACE_HL_RX header=8c size=15 data=07 00 00 00\n", "")
+            .replace("TRACE_HL_RX header=8c size=15 data=08 00 00 00\n", "")
+            + "SOCKET_LINK: Create socket succeed\n"
+            + "Start\nTake-off: 0.00 0.00 0.00\n"
+            + "Mission ended after landing\n"
+        )
+        errors = self._validate(firmware_log=nano_log)
+
+        self.assertFalse(
+            any("firmware did not receive" in error for error in errors), errors
         )
 
 
