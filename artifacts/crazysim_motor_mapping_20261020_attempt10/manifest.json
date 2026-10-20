@@ -1,0 +1,75 @@
+{
+  "attempt": "SITL Kalman priority 5 regression with paired disconnected-actuator control",
+  "date": "2026-10-20",
+  "valid_for_flight_acceptance": false,
+  "scope": "Upstream Crazyflie SITL firmware reference under Gazebo Harmonic; excludes Nano-C-SLAM firmware, mapping, swarm, and hardware validation.",
+  "firmware": {
+    "source_commit": "e06abd11",
+    "configuration": "Experimental CONFIG_PLATFORM_SITL KALMAN_TASK_PRI=STABILIZER_TASK_PRI=5; patch in priority5-experiment.patch",
+    "rebuilt_candidate_sha256": "f098b9506faf8e7f915639e41adfe4154b1277750ce3ff7c732399636cfb888e",
+    "candidate_binary_archived": "bin/cf2-priority5",
+    "process_count_positive": 1,
+    "process_count_negative": 1,
+    "positive_exit_code": 0,
+    "negative_exit_code": 0,
+    "shutdown": "Both candidate sessions handled SIGTERM through the SITL shutdown monitor and returned zero."
+  },
+  "simulator": {
+    "version": "Gazebo Sim 8.14.0",
+    "physics": "Bullet Featherstone",
+    "positive_partition": "ncs-priority4-20261020",
+    "negative_partition": "ncs-priority5-neg-20261020",
+    "crazyflie_plugin_sha256": "336dd721753026ec92192acdb7fa306a1132e64d54df844cdab10d6e154fd727",
+    "odometry_plugin_sha256": "835697dc773c6e8b2c063ec117a21298614bcac2c3b498e5792cdfc5a0e98fe6",
+    "sampler_sha256": "9791eb3e96cf39a2b28dc16c54ac0f88b4e09d4e76d9f450d04a3db22955827"
+  },
+  "positive": {
+    "takeoff_ack_result": 0,
+    "land_ack_result": 0,
+    "odometry_samples": 9881,
+    "odometry_span_s": 49.4,
+    "odometry_max_gap_s": 0.005,
+    "nonfinite_odometry_samples": 1536,
+    "imu_samples": 24704,
+    "imu_max_gap_s": 0.002,
+    "motor_components": 197568,
+    "nonzero_motor_components": 83208,
+    "min_altitude_m": 2.014,
+    "max_altitude_m": 2.704,
+    "end_altitude_m": 2.015,
+    "longest_hover_at_2_315m_s": 0.315,
+    "max_tilt_deg": 180.0,
+    "aggregate_rtf": 0.9868,
+    "warnings": [
+      "stabilizer rate 481/500 Hz",
+      "Kalman prediction 97-98/100 Hz",
+      "SUP: Crashed, recovery required"
+    ],
+    "positive_plugin_attribution_log": "Not captured from Gazebo process stdout; the flight gate rejects missing TRACE_MOTOR_NONZERO attribution."
+  },
+  "negative_control": {
+    "actuator_bridge_disabled_before_spawn": true,
+    "plugin_marker": "NCS_SITL actuator_bridge=disconnected",
+    "odometry_samples": 3580,
+    "odometry_span_s": 17.895,
+    "odometry_max_gap_s": 0.005,
+    "nonfinite_odometry_samples": 0,
+    "imu_samples": 8950,
+    "motor_components": 71436,
+    "nonzero_motor_components": 0,
+    "start_altitude_m": 2.01499,
+    "max_altitude_m": 2.014994,
+    "end_altitude_m": 2.014994,
+    "aggregate_rtf": 0.987
+  },
+  "strict_checker": {
+    "command_exit_code": 1,
+    "failures": [
+      "positive run contains NaN or infinite state/actuator values",
+      "Gazebo plugin log does not attribute motor output to firmware",
+      "firmware reported estimator/rate/crash failure",
+      "stable hover lasted 0.32s; requires 5.00s"
+    ]
+  },
+  "interpretation": "Raising Kalman priority did not restore cadence and caused a 180-degree flip plus non-finite odometry. The candidate is rejected. The disconnected-actuator control remained grounded with exactly zero motor output. Priority 2 is restored in the active firmware worktree."
+}

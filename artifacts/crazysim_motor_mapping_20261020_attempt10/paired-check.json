@@ -1,0 +1,9 @@
+{
+  "passed": false,
+  "errors": [
+    "positive run contains NaN or infinite state/actuator values",
+    "Gazebo plugin log does not attribute motor output to firmware",
+    "firmware reported estimator/rate/crash failure",
+    "stable hover lasted 0.32s; requires 5.00s"
+  ]
+}

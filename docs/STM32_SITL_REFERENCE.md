@@ -655,7 +655,8 @@ uv run --locked python scripts/check_crazysim_flight.py \
   --plugin-log flight-gazebo.log \
   --negative-control-odometry disconnected-odometry.txt \
   --negative-control-motors disconnected-motors.txt \
-  --negative-control-log disconnected-run.log \
+  --negative-control-firmware-log disconnected-firmware.log \
+  --negative-control-plugin-log disconnected-plugin.log \
   --firmware-process-count 1 \
   --negative-control-firmware-process-count 1
 ```
@@ -1258,9 +1259,11 @@ This is the first captured 5-second hover interval with a same-configuration
 actuator-isolation control. It still fails the strict flight gate: the
 firmware warned at 502 Hz for the 500-Hz stabilizer and at 95–98 Hz for the
 100-Hz Kalman prediction task; it also logged `Landing timeout, disarming`.
-Both firmware sessions were interrupted after bounded captures (exit 255),
-and the negative plugin log omitted the firmware startup marker. The unchanged
-checker therefore exits 1 with those four failures. Full captures, logs, SDFs,
+Both firmware sessions were interrupted after bounded captures (exit 255).
+The first checker invocation passed only the negative plugin log for its
+startup-marker check, although the separate firmware log contains the marker.
+After separating those inputs, the checker still exits 1 for the rate warning
+and two nonzero process exits. Full captures, logs, SDFs,
 commands and hashes are in
 [`artifacts/crazysim_motor_mapping_20261020_attempt09`](../artifacts/crazysim_motor_mapping_20261020_attempt09/manifest.json).
 
@@ -1274,3 +1277,38 @@ per-window firmware rate warnings. Firmware-driven movement and the
 disconnected-actuator negative control are demonstrated, while clean strict
 flight acceptance, Nano-C-SLAM firmware, mapping, and swarm validation remain
 open.
+
+## SITL shutdown and rejected Kalman-priority experiment (2026-10-20)
+
+The reference SITL process previously ran an unconditional loop after starting
+FreeRTOS and had no signal handling, so bounded Gazebo captures could only
+terminate it forcibly. Firmware fork commit `e06abd11` adds SIGINT/SIGTERM
+handling through a low-priority monitor task. A live probe sent SIGTERM before
+Gazebo connected; the firmware printed `SITL: Scheduler stopped cleanly` and
+returned exit code 0. The full-flight attempts below also exited zero after
+SIGTERM. This makes process shutdown measurable by the flight gate.
+
+I tested raising the SITL Kalman task from priority 2 to the stabilizer's
+priority 5, on the theory that the Kalman task was missing its binary-semaphore
+wakeups. The paired positive/negative captures use the same experimental
+binary. The positive run accepted TAKEOFF_2 and LAND_2 and ran at aggregate RTF
+0.987, but the stabilizer warned at 481/500 Hz and Kalman at 97–98/100 Hz.
+The supervisor reported `Crashed, recovery required`; the model flipped to a
+180-degree attitude, produced 1,536 non-finite odometry records, and remained
+within the registered hover envelope for only 0.315 s. This experiment is
+rejected, and the checked-out firmware config has priority 2 restored.
+
+With its actuator bridge disabled, the same priority-5 binary kept the model
+at z=2.014990–2.014994 m and published zero nonzero motor components across
+17.895 simulation seconds. The negative control passes its isolation behavior,
+but it does not rescue the positive flight. The strict paired checker exits 1
+for non-finite positive telemetry, missing positive plugin attribution,
+firmware cadence/crash warnings and insufficient hover. Raw captures, both
+logs, the candidate binary, configuration patch, hashes and gate output are in
+[`artifacts/crazysim_motor_mapping_20261020_attempt10`](../artifacts/crazysim_motor_mapping_20261020_attempt10/manifest.json).
+
+The experiment rules out task priority as the cadence fix. Next trace the
+FreeRTOS POSIX port's tick and semaphore timing against Gazebo simulation time,
+and instrument the first non-finite odometry timestamp alongside the
+firmware's estimator state. The shutdown fix is independent of flight
+behavior; Nano-C-SLAM execution and mapping validation remain open.

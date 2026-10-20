@@ -3,7 +3,6 @@
   "errors": [
     "firmware reported estimator/rate/crash failure",
     "firmware exited with status 255",
-    "negative-control firmware exited with status 255",
-    "negative control log must contain exactly one firmware startup marker"
+    "negative-control firmware exited with status 255"
   ]
 }

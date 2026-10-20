@@ -1,0 +1,13 @@
+Positive run:
+  Firmware binary configuration: experimental SITL KALMAN_TASK_PRI=STABILIZER_TASK_PRI=5 (candidate build later reproduced as SHA-256 f098b9506faf8e7f915639e41adfe4154b1277750ce3ff7c732399636cfb888e)
+  TAKEOFF_2 target z=2.315 m over 8 s: firmware ACK result 0
+  LAND_2 target z=2.015 m over 5 s: firmware ACK result 0
+  Shutdown: SIGTERM handled by SITL monitor, process exit 0
+
+Negative control:
+  Same candidate binary f098b9506faf8e7f915639e41adfe4154b1277750ce3ff7c732399636cfb888e
+  NCS_CRAZYSIM_DISABLE_ACTUATORS=1 before model spawn; no flight commands
+  Plugin logged actuator_bridge=disconnected
+  Shutdown: SIGTERM handled by SITL monitor, process exit 0
+
+The positive Gazebo process stdout was not persisted, so explicit plugin-side motor attribution is absent from the archived positive log.

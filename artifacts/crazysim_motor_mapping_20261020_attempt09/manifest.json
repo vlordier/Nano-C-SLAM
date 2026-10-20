@@ -47,7 +47,7 @@
     "odometry_samples": 3013,
     "imu_samples": 7507,
     "aggregate_real_time_factor": 0.9963,
-    "start_altitude_m": 2.014990,
+    "start_altitude_m": 2.01499,
     "max_altitude_m": 2.014994,
     "end_altitude_m": 2.014994,
     "motor_components": 15014,
@@ -55,14 +55,15 @@
     "disconnected_bridge_marker": true
   },
   "strict_checker": {
-    "command": "uv run --locked python scripts/check_crazysim_flight.py",
+    "command": "uv run --locked python scripts/check_crazysim_flight.py with separate --negative-control-firmware-log and --negative-control-plugin-log inputs",
     "exit_code": 1,
     "failures": [
       "firmware reported estimator/rate/crash failure",
       "firmware exited with status 255",
-      "negative-control firmware exited with status 255",
-      "negative control log must contain exactly one firmware startup marker"
-    ]
+      "negative-control firmware exited with status 255"
+    ],
+    "command_exit_code": 1,
+    "note": "The initial checker interface incorrectly combined firmware-startup and plugin-disconnection markers into one log. The checker was fixed in the root repository and rerun against the separately archived logs; the missing-marker false failure is removed."
   },
   "interpretation": "Firmware-attributed takeoff, sustained hover interval, landing, and disconnected-actuator behavior are observed. Registered paired flight acceptance fails due to firmware rate warnings and process/log evidence requirements."
 }

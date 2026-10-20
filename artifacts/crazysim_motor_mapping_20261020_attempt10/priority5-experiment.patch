@@ -1,0 +1,15 @@
+diff --git a/src/config/config.h b/src/config/config.h
+--- a/src/config/config.h
++++ b/src/config/config.h
+@@ -104,7 +104,11 @@
+ #define OA_DECK_TASK_PRI        3
+ #define UART1_TEST_TASK_PRI     1
+ #define UART2_TEST_TASK_PRI     1
++#ifdef CONFIG_PLATFORM_SITL
++#define KALMAN_TASK_PRI         STABILIZER_TASK_PRI
++#else
+ #define KALMAN_TASK_PRI         2
++#endif
+ #define ERROR_UKF_TASK_PRI      2
+ #define LEDSEQCMD_TASK_PRI      1
+ #define FLAPPERDECK_TASK_PRI    2
