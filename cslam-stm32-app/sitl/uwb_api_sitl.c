@@ -8,8 +8,12 @@
 
 #include <string.h>
 
+#include "FreeRTOS.h"
 #include "debug.h"
+#include "task.h"
 #include "uwb_api.h"
+
+TaskHandle_t uwbTaskHandle = NULL;
 
 uwb_err_code_e uwb_api_init(uint8_t node_id) {
     DEBUG_PRINT(

@@ -27,6 +27,13 @@ firmware `cf2` target builds under Lima Ubuntu 24.04 AArch64. The most recent
 trace-validation binary SHA-256 is
 `d5b1127507500e93e1ca731aaf357a2e8a6ade294fa26b255ab80a07b4ab094d`.
 
+Nano SITL integration is carried by the pushed fork branch
+[`codex/nano-app-sitl-integration`](https://github.com/vlordier/crazyflie-firmware/tree/codex/nano-app-sitl-integration),
+currently at commit [`e8e26f4f`](https://github.com/vlordier/crazyflie-firmware/commit/e8e26f4f),
+based on the reference baseline above. It adds the opt-in app source manifest,
+enables `CONFIG_APP_ENABLE`, supplies Nano's bounded Kalman pose-init entry
+point, and accepts an explicit SITL node ID.
+
 Build the firmware with `sitl_make` target `cf2`, then add the Nano app sources
 through an explicit `NCS_NANO_APP_DIR` CMake input. The SITL build must include
 and start `appMain()` from a statically allocated FreeRTOS task. Source
@@ -49,7 +56,7 @@ of application logic.
 
 | Candidate | Evidence and compatibility | Decision |
 | --- | --- | --- |
-| `gtfactslab/CrazySim` and the current `vlordier` fork | The fork's Linux `cf2` target builds in Lima; the matching native Gazebo 8.14 plugin loads and exchanges IMU/odometry with firmware, and the actuator topic is fed by firmware motor packets. A stationary corrected-trace session reached `Ready to fly`. The full Nano app is not yet linked, and rate/flight acceptance remains open. Gazebo Garden is upstream's documented baseline; the fork plugin also built and ran against the local Harmonic stack. | Choose as the smallest tested firmware-driven path while retaining native macOS Gazebo. |
+| `gtfactslab/CrazySim` and the current `vlordier` fork | The fork's Linux `cf2` target builds in Lima; the matching native Gazebo 8.15 plugin loads, handshakes and exchanges IMU/odometry with firmware. The Nano app now links and reaches `appMain()`, then exits at its intentionally unconfigured UWB provider before mission tasks; its trace has zero motor ratios. Flight acceptance remains open. Gazebo Garden is upstream's documented baseline; the fork plugin also builds and runs on the local Harmonic stack. | Choose as the smallest tested firmware-driven path while retaining native macOS Gazebo. |
 | CrazyflieTHI `sim_cf2` | Linux SITL/FreeRTOS is a relevant reference, but this machine has no reproduced checkout/build/flight for it. The documented ROS 2 Humble / Gazebo 11 / Ubuntu 22.04 stack differs from the installed native Jazzy / Harmonic stack. Switching stacks would discard the working local Gazebo plugin boundary without evidence of a benefit for Nano task integration. | Keep as a fallback/reference only; do not migrate the simulator now. |
 | `prakash-aryan/crazyswarm2_gazebo` at local checkout `5f2e4cc8e9687fb4c05e9e4be40a20370a022f9e` | Local README states Ubuntu 24.04, ROS 2 Jazzy and Gazebo Harmonic, and describes a Python-bound firmware backend plus PD conversion to `/cmd_vel`. Its demonstrated flight path is not Nano app execution and motor-ratio actuation. The checkout also contains unrelated dirty submodule/untracked changes and is left untouched. | Retain for synthetic geometry, sensor and mapping experiments; reject as the firmware flight path. |
 | Run the normal ARM `cf2` hardware image directly | `cslam-stm32-app` and the hardware `cf2` image build on macOS, but they target STM32F405 and embedded peripherals. Gazebo cannot execute that ARM image as a host process. Instruction-accurate execution would require a Cortex-M emulator and peripheral model that has not been reproduced here. | Do not claim binary-equivalent STM32 execution. The initial SITL validates the same owned C app sources under Linux FreeRTOS plus the Crazyflie SITL flight stack. |
@@ -63,10 +70,12 @@ app-source manifest must be recorded on every run. The POSIX FreeRTOS port
 does not establish MCU timing, interrupt behavior, memory fit, or hardware
 peripheral behavior.
 
-The first implementation milestone is not “the firmware flies.” It is a
-clean `cf2` build containing the owned app sources, a boot test proving the
-required tasks initialize, and failing closed when each virtual device is
-missing. Flight acceptance then requires firmware-originated motor output,
+The first implementation milestone is not “the firmware flies.” The opt-in
+and default `cf2` builds pass, and a live boot proves handshake, self-test,
+`appInit()`/`appMain()` and explicit fail-closed behavior at missing UWB. The
+mission, ToF and UWB task graph is not yet reached; current boot evidence is in
+[`nano_app_boot_sitl_20261020_attempt01`](../../artifacts/nano_app_boot_sitl_20261020_attempt01/REPORT.md).
+Flight acceptance requires firmware-originated motor output,
 Gazebo sensor input, a successful takeoff/hover/land positive run and a
 disconnected-actuator negative control. Mapping acceptance additionally
 requires live GVSOC SPI processing and an independent geometry comparison.

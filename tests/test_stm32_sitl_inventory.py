@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import gzip
+import hashlib
+import json
 import re
 import unittest
 from pathlib import Path
@@ -10,6 +13,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 APP_ROOT = REPOSITORY_ROOT / "cslam-stm32-app"
 INVENTORY = REPOSITORY_ROOT / "docs/STM32_SITL_INVENTORY.md"
 DECISION = REPOSITORY_ROOT / "docs/decisions/ADR-0001-nano-stm32-gazebo-sitl.md"
+BOOT_EVIDENCE = REPOSITORY_ROOT / "artifacts/nano_app_boot_sitl_20261020_attempt01"
 
 
 def _listed_task_symbols(document: str) -> set[str]:
@@ -62,6 +66,26 @@ def _sitl_manifest_source_paths() -> set[str]:
     return set(re.findall(r"^\s+([^\s#]+\.c)\s*$", manifest, re.MULTILINE))
 
 
+def _application_log_name_overflows() -> list[tuple[str, str, int]]:
+    failures: list[tuple[str, str, int]] = []
+    sources = [APP_ROOT / "app_main.c"] + [
+        APP_ROOT / path for path in _kbuild_source_paths()
+    ]
+    for source in sources:
+        group = ""
+        for line in source.read_text(encoding="utf-8").splitlines():
+            group_match = re.search(r"LOG_GROUP_START\(\s*(\w+)\s*\)", line)
+            if group_match:
+                group = group_match.group(1)
+            field_match = re.search(r"LOG_ADD\([^,]+,\s*(\w+)", line)
+            if field_match and group:
+                field = field_match.group(1)
+                encoded_length = len(group) + len(field) + 2
+                if encoded_length > 26:
+                    failures.append((group, field, encoded_length))
+    return failures
+
+
 def _listed_source_paths(document: str) -> set[str]:
     module_list = document.split(
         "## Owned modules selected by the app Kbuild files\n", 1
@@ -106,6 +130,33 @@ class Stm32SitlInventoryTests(unittest.TestCase):
             "app_main.c",
         }
         self.assertEqual(kbuild_sources - physical_tof, _sitl_manifest_source_paths())
+
+    def test_application_log_names_fit_crtp_log_toc_limit(self) -> None:
+        self.assertEqual(_application_log_name_overflows(), [])
+
+    def test_sitl_node_identity_is_explicit_and_bounded(self) -> None:
+        app_main = (APP_ROOT / "app_main.c").read_text(encoding="utf-8")
+        self.assertIn("NCS_SITL_NANO_NODE_ID", app_main)
+        self.assertIn("radio_node > FIRST_NODE_RADIO + 5U", app_main)
+
+    def test_retained_boot_evidence_hash_and_claim_boundary(self) -> None:
+        manifest = json.loads(
+            (BOOT_EVIDENCE / "manifest.json").read_text(encoding="utf-8")
+        )
+        log_bytes = gzip.decompress((BOOT_EVIDENCE / "firmware.log.gz").read_bytes())
+        self.assertEqual(
+            hashlib.sha256(log_bytes).hexdigest(),
+            manifest["firmware_log"]["sha256"],
+        )
+        self.assertTrue(manifest["observed"]["app_init_and_main_reached"])
+        self.assertFalse(manifest["observed"]["flight_validated"])
+        self.assertFalse(manifest["observed"]["mapping_validated"])
+        for relative_path, expected_hash in manifest["nano_app_sources"].items():
+            source_bytes = (APP_ROOT / relative_path).read_bytes()
+            with self.subTest(source=relative_path):
+                self.assertEqual(
+                    hashlib.sha256(source_bytes).hexdigest(), expected_hash
+                )
 
     def test_architecture_decision_names_the_pinned_runtime_and_claim_limit(
         self,

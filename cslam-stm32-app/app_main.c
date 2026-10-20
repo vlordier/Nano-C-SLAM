@@ -80,8 +80,19 @@ void appMain() {
     // Fail before allocating queues or starting mission/acquisition tasks if
     // the ranging device is unavailable. SITL providers must never fake
     // successful initialization without a connected simulator endpoint.
-    NODE_ID = (uint8_t)(((configblockGetRadioAddress()) & 0x000000000f) -
-                        FIRST_NODE_RADIO);
+#ifdef NCS_SITL_NANO_APP
+    NODE_ID = (uint8_t)NCS_SITL_NANO_NODE_ID;
+#else
+    uint8_t radio_node =
+        (uint8_t)(configblockGetRadioAddress() & UINT64_C(0x0f));
+    if (radio_node < FIRST_NODE_RADIO || radio_node > FIRST_NODE_RADIO + 5U) {
+        DEBUG_PRINT("NCS_APP_INIT_FAILED device=config operation=node_id "
+                    "radio_node=%u\n",
+                    (unsigned int)radio_node);
+        return;
+    }
+    NODE_ID = (uint8_t)(radio_node - FIRST_NODE_RADIO);
+#endif
     uwb_err_code_e uwb_init_error = uwb_api_init(NODE_ID);
     if (uwb_init_error != UWB_SUCCESS) {
         DEBUG_PRINT("NCS_APP_INIT_FAILED device=uwb operation=init error=%d\n",

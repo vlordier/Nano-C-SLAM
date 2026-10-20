@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "attempt": "nano_app_boot_sitl_20261020_attempt01",
+  "captured_at": "2026-10-20T09:32:23+02:00",
+  "result": "app_entry_verified_uwb_fail_closed_no_flight",
+  "host": {
+    "os": "macOS arm64",
+    "gazebo_sim": "8.15.0",
+    "physics_plugin": "gz-physics-bullet-featherstone-plugin"
+  },
+  "guest": {
+    "os": "Lima Ubuntu 24.04 ARM64",
+    "firmware_source_base": "662a7916bbd4454bad117a39aa324000bdb0c004",
+    "nano_sitl_integration_commit": "e8e26f4f",
+    "firmware_binary_sha256": "082b3a279501aac7df78f4e0452f36cda748e13e01b4497d2773850ad84957de",
+    "node_id": 0,
+    "command": "CF2_SIM_MODEL=gz_crazyflie timeout --signal=INT --kill-after=2s 4s ./cf2 19950 192.168.5.2"
+  },
+  "nano_app_sources": {
+    "app_main.c": "2daedb71d9c9a35cefbfd9de428ee8293bb7bc0e398a77899dca1cb59721e123",
+    "src/uwb_ranging.c": "c6c5d17c83f957974ecf53deceac524383ed0c27069597ee877d04af6b392356",
+    "sitl/uwb_api_sitl.c": "97de88f29ce225cb28883d124c9d9b31f8b51b8bbe272ea1e186181a0dbfe7cd"
+  },
+  "gazebo": {
+    "crazyflie_simulation_plugin_commit": "30a6177ff5c14f0782a72a50c27a90a955d1b7b8",
+    "plugin_sha256": "2467036a17270fd600b9b6803d4c07fbd99b9c8be37a828a56597adf9aecd472",
+    "model": "nano_cf0",
+    "model_sdf_sha256": "88cc3fcde0980e904b954f1092512ec207bd703b95e8fbe1ad126a7bd675fec8"
+  },
+  "observed": {
+    "udp_handshake": true,
+    "firmware_self_test": true,
+    "app_init_and_main_reached": true,
+    "uwb_provider_initialized": false,
+    "mission_tof_uwb_tasks_created": false,
+    "motor_ratios_nonzero": false,
+    "flight_validated": false,
+    "mapping_validated": false
+  },
+  "firmware_log": {
+    "path": "firmware.log.gz",
+    "sha256": "296531c6c19c09a0dba9577d6b7691d256014ca4b97f18a17ae2c8f94d62649b"
+  }
+}

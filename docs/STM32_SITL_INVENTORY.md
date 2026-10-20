@@ -99,15 +99,20 @@ and linkage, not that its device calls have a functioning simulator peer.
 The classifier is guarded by
 [`tests/test_stm32_sitl_inventory.py`](../tests/test_stm32_sitl_inventory.py).
 The opt-in CrazySim `cf2` target has successfully linked this source manifest
-against the pinned POSIX FreeRTOS port. The binary waits for the Gazebo socket
-connection before system startup; a four-second isolated boot probe timed out
-at that wait, so it did not observe `appInit()` or `appMain()`. The target
-consumes the checked-in
+against the pinned POSIX FreeRTOS port. The target consumes the checked-in
 [`nano_sources.cmake`](../cslam-stm32-app/sitl/nano_sources.cmake) manifest.
 The Python test expands nested Kbuild directory entries and asserts the
 manifest equals the complete app source set minus `app_main.c` (listed
 separately in the CMake target) and the four physical ToF/I²C units replaced
 by `tof_matrix_sitl.c`.
+
+The live boot attempt in
+[`nano_app_boot_sitl_20261020_attempt01`](../artifacts/nano_app_boot_sitl_20261020_attempt01/REPORT.md)
+proves the Gazebo UDP handshake, firmware self-test, and entry into the Nano
+`appMain()`. It then logs `NCS_APP_INIT_FAILED` because the UWB SITL provider is
+unconfigured, and returns before mission, ToF, or UWB tasks start. The trace
+shows zero motor ratios. This validates app startup and fail-closed behavior;
+it is not a flight or mapping result.
 
 ## Host-portability boundary
 
@@ -128,8 +133,9 @@ including unused UWB library variables and newlib stubs for `_read`, `_write`,
 and `_lseek`; it exits successfully. This proves the regular embedded image
 still compiles, not that it was flashed, flown, or ported to Linux SITL.
 
-After fail-closed UWB initialization was moved ahead of task creation, the
-2026-10-20 rebuild reports Flash `363,716 / 1,032,192` bytes (35%), unchanged
+After fail-closed UWB initialization was moved ahead of task creation and the
+UWB log field was shortened to fit the CRTP log TOC, the 2026-10-20 rebuild
+reports Flash `363,788 / 1,032,192` bytes (35%), unchanged
 RAM `115,988 / 131,072` bytes (88%) and CCM `47,740 / 65,536` bytes (73%).
 The opt-in CrazySim app target and Nano-disabled default target both compile
 and link in the Lima Ubuntu guest. The app target is source-level POSIX

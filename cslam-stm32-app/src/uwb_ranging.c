@@ -650,5 +650,5 @@ void uwb_ranging_task(void *parameters) {
 
 LOG_GROUP_START(UWB)
 LOG_ADD(LOG_UINT32, packet_loss, &uwb_pkt_loss)
-LOG_ADD(LOG_UINT32, token_lease_expirations, &uwb_token_lease_expirations)
+LOG_ADD(LOG_UINT32, token_lease_exp, &uwb_token_lease_expirations)
 LOG_GROUP_STOP(UWB)
