@@ -10,7 +10,6 @@
 
 #include "FreeRTOS.h"
 #include "debug.h"
-#include "pm.h"
 #include "semphr.h"
 #include "task.h"
 #include "tof_freshness.h"

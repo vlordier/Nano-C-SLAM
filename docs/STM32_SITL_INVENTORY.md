@@ -60,6 +60,55 @@ The app Kbuild also links ../uwb-software-library/, a separate submodule. Its
 Decawave driver and radio protocol are not owned app modules and cannot be
 treated as a simulator implementation without an explicit device adapter.
 
+### Source readiness matrix for the Linux `cf2` target
+
+All 23 translation units below are selected by the recursive app Kbuilds for
+the normal STM32 `cf2` OOT build.
+`SITL-linked` means the owned translation unit was linked into the opt-in
+CrazySim `cf2` target against its FreeRTOS POSIX port. This proves compilation
+and linkage, not that its device calls have a functioning simulator peer.
+`ARM-build only` marks physical I²C/VL53 units excluded from SITL.
+
+| Owned source | Current evidence | Linux SITL dependency or boundary |
+| --- | --- | --- |
+| `app_main.c` | SITL-linked | Linked with CrazySim `app_handler.c`; UWB init is checked and currently fails closed through the unconfigured SITL provider. |
+| `src/bounded_batch.c` | SITL-linked | FreeRTOS-independent bounded batch behavior is included unchanged. |
+| `src/exploration/exploration.c` | SITL-linked | Nano exploration code links against the real CrazySim estimator/commander; no valid matrix is available yet. |
+| `src/exploration/limit_actuation.c` | SITL-linked | Included unchanged before commander handoff; existing finite-value and physical-bound checks remain. |
+| `src/exploration/line_detector.c` | SITL-linked | Compiled unchanged; no Gazebo matrix provider feeds its orientation/order contract yet. |
+| `src/flight_commander.c` | SITL-linked | Uses CrazySim FreeRTOS, estimator and high-level commander; physical flight remains unverified. |
+| `src/mission_timeout.c` | SITL-linked | Uses the SITL FreeRTOS tick; host fixture tests cover wrap-safe expiry. |
+| `src/operator_heartbeat.c` | SITL-linked | Compiled, but no operator CRTP input bridge is configured. |
+| `src/radio_comm.c` | SITL-linked | Compiled, but no operator command bridge is configured. |
+| `src/scan.c` | SITL-linked | Existing matrix shape and scan serialization compile unchanged. |
+| `src/scan_manager.c` | SITL-linked | Queue and timeout logic compile; actual GAP9/GVSOC SPI result exchange is absent. |
+| `src/spi_comm/spi_comm.c` | SITL-linked | Packet encoding is unchanged; SITL calls a fail-closed GAP9 transport seam until a socket/GVSOC bridge exists. |
+| `src/spi_comm/spi_wait.c` | SITL-linked | Bounded wait logic compiles; no live host transport state exists yet. |
+| `src/tof-matrix/drivers/i2c_expander.c` | ARM-build only | Hardware-only GPIO/I²C address-selection driver; excluded from SITL build. |
+| `src/tof-matrix/drivers/vl53l5cx_api.c` | ARM-build only | Physical sensor API; excluded from SITL build; simulator must preserve public matrix units/range/invalid-cell semantics. |
+| `src/tof-matrix/i2c_platform.c` | ARM-build only | Hardware-only I²C implementation; excluded from SITL build. |
+| `src/tof-matrix/tof_matrix.c` | ARM-build only | Physical sensor orchestrator; replaced by fail-closed SITL provider until Gazebo matrix transport exists. |
+| `src/tof-matrix/tof_matrix.h` | ARM-build only | Shared public API/data contract; do not fork struct layout between targets. |
+| `src/tof_daq.c` | SITL-linked | Acquisition/freshness task compiles against the same public API and remains blocked until matrix init/data succeed. |
+| `src/tof_freshness.c` | SITL-linked | Freshness logic compiles unchanged and retains timeout/fault behavior. |
+| `src/uwb_collision_det.c` | SITL-linked | Nano policy compiles; timestamped simulated neighbor/range input is absent. |
+| `src/uwb_ranging.c` | SITL-linked | Token/pose logic compiles against fail-closed UWB/SPI providers; no simulated ranging occurs. |
+| `src/uwb_token_handoff.c` | SITL-linked | Compiles under the real FreeRTOS queue/task API; runtime task behavior is not yet observed. |
+| `src/uwb_token_lease.c` | SITL-linked | Compiles unchanged; runtime stale/lost-token behavior remains unvalidated. |
+
+The classifier is guarded by
+[`tests/test_stm32_sitl_inventory.py`](../tests/test_stm32_sitl_inventory.py).
+The opt-in CrazySim `cf2` target has successfully linked this source manifest
+against the pinned POSIX FreeRTOS port. The binary waits for the Gazebo socket
+connection before system startup; a four-second isolated boot probe timed out
+at that wait, so it did not observe `appInit()` or `appMain()`. The target
+consumes the checked-in
+[`nano_sources.cmake`](../cslam-stm32-app/sitl/nano_sources.cmake) manifest.
+The Python test expands nested Kbuild directory entries and asserts the
+manifest equals the complete app source set minus `app_main.c` (listed
+separately in the CMake target) and the four physical ToF/I²C units replaced
+by `tof_matrix_sitl.c`.
+
 ## Host-portability boundary
 
 ## Hardware-image build baseline (2026-10-19)
@@ -72,12 +121,21 @@ cd cslam-stm32-app
 make -j8
 ```
 
-The resulting image reports Flash `363,556 / 1,032,192` bytes (35%), RAM
+The earlier baseline reports Flash `363,556 / 1,032,192` bytes (35%), RAM
 `115,988 / 131,072` bytes (88%, 15,084 free), and CCM `47,740 / 65,536` bytes
 (73%, 17,796 free). The build emits existing upstream/toolchain warnings,
 including unused UWB library variables and newlib stubs for `_read`, `_write`,
 and `_lseek`; it exits successfully. This proves the regular embedded image
 still compiles, not that it was flashed, flown, or ported to Linux SITL.
+
+After fail-closed UWB initialization was moved ahead of task creation, the
+2026-10-20 rebuild reports Flash `363,716 / 1,032,192` bytes (35%), unchanged
+RAM `115,988 / 131,072` bytes (88%) and CCM `47,740 / 65,536` bytes (73%).
+The opt-in CrazySim app target and Nano-disabled default target both compile
+and link in the Lima Ubuntu guest. The app target is source-level POSIX
+FreeRTOS execution, and its ToF, UWB and GAP9 SPI providers deliberately fail
+closed. The boot probe stopped at CrazySim's Gazebo socket wait; it did not
+reach Nano app startup. No Nano-controlled flight or mapping result is claimed.
 
 The host C suite currently compiles and exercises pure timeout, heartbeat,
 token-handoff/lease, bounded-batch, ToF freshness, packet encoding, SPI wait,
@@ -130,25 +188,20 @@ negative control and output-to-state causal link are required.
 
 ## Evidence-backed SITL direction
 
-The local crazyflie-firmware checkout is pinned by this repository; it
-contains no sim_cf2 platform or SITL launch scripts. The current Crazyswarm2
-Gazebo overlay is therefore not a firmware SITL. The upstream
-CrazyflieTHI/sim_cf2 reference runs modified Crazyflie firmware with the
-FreeRTOS Linux port and documents ROS 2 Humble/Gazebo 11 on Ubuntu 22.04.
-gtfactslab/CrazySim also runs a modified Linux SITL firmware with Gazebo
-Garden or MuJoCo, but its README warns that its firmware fork is for SITL, not
-hardware. Neither reference is a drop-in for the installed native macOS ROS 2
-Jazzy/Gazebo Harmonic stack. Treat them as architecture references until their
-source revisions, build, motor/sensor interface, and compatibility are
-reproduced.
+Architecture decision: [ADR-0001](decisions/ADR-0001-nano-stm32-gazebo-sitl.md)
+selects CrazySim's Linux `cf2` / FreeRTOS-POSIX target with the native macOS
+Gazebo 8.14 plugin. The corrected trace-enabled firmware build and plugin
+exchange simulated IMU data and firmware motor packets, but those runs use
+upstream Crazyflie firmware only. They do not include this repository's app
+tasks or prove Nano firmware flight.
 
-The next experiment should reproduce the smallest one-vehicle firmware loop
-from a pinned reference on its documented Linux toolchain, then compare its
-Gazebo-version and host-OS requirements with the local native stack. Only
-after that should the project choose between adapting that firmware interface,
-migrating the simulator environment, or implementing a narrower native
-FreeRTOS/device port. Do not call the existing ROS-controlled flight firmware
-validation.
+The next port is source-level: compile and start the owned `cslam-stm32-app`
+task graph in the pinned CrazySim `cf2` process. Preserve the app logic and
+name every simulator-backed device adapter. The normal `cf2` ARM image remains
+the hardware build; Linux SITL is not an instruction-equivalent execution of
+the STM32 binary. The selected target and comparisons with CrazyflieTHI
+`sim_cf2` and `crazyswarm2_gazebo` are recorded in ADR-0001. Do not call the
+existing ROS-controlled flight path Nano firmware validation.
 
 ## Additional ToF source
 

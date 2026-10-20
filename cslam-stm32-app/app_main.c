@@ -77,6 +77,26 @@ uint8_t NODE_ID;
 static uint8_t broadcast_scan = 0;
 
 void appMain() {
+    // Fail before allocating queues or starting mission/acquisition tasks if
+    // the ranging device is unavailable. SITL providers must never fake
+    // successful initialization without a connected simulator endpoint.
+    NODE_ID = (uint8_t)(((configblockGetRadioAddress()) & 0x000000000f) -
+                        FIRST_NODE_RADIO);
+    uwb_err_code_e uwb_init_error = uwb_api_init(NODE_ID);
+    if (uwb_init_error != UWB_SUCCESS) {
+        DEBUG_PRINT("NCS_APP_INIT_FAILED device=uwb operation=init error=%d\n",
+                    (int)uwb_init_error);
+        return;
+    }
+    uwb_err_code_e uwb_responder_error = uwb_responder_off();
+    if (uwb_responder_error != UWB_SUCCESS) {
+        DEBUG_PRINT(
+            "NCS_APP_INIT_FAILED device=uwb operation=disable_responder "
+            "error=%d\n",
+            (int)uwb_responder_error);
+        return;
+    }
+
     vSemaphoreCreateBinary(tofSemaphore0);
     vSemaphoreCreateBinary(tofSemaphore1);
     xSemaphoreTake(tofSemaphore0, 0);
@@ -88,11 +108,6 @@ void appMain() {
     STATIC_MEM_TASK_CREATE(mission_task, mission_task, "mission", NULL, 2);
     STATIC_MEM_TASK_CREATE(tof_task, tof_task, "tof", NULL, 3);
 
-    // Declare UWB part
-    NODE_ID = (uint8_t)(((configblockGetRadioAddress()) & 0x000000000f) -
-                        FIRST_NODE_RADIO);
-    uwb_api_init(NODE_ID);
-    uwb_responder_off();
     xTaskCreate(uwb_ranging_task, "uwb_task", 5 * configMINIMAL_STACK_SIZE,
                 NULL, 4, &uwbTaskHandle);
     DEBUG_PRINT("DRONE ID: %d\n", NODE_ID);

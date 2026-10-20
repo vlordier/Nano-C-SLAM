@@ -11,19 +11,31 @@
 #include "spi_comm.h"
 #include "FreeRTOS.h"
 #include "debug.h"
-#include "deck.h"
 #include "scan.h"
 #include "spi_wait.h"
 #include "task.h"
 #include <stddef.h>
 #include <string.h>
-
+#ifdef NCS_SITL_NANO_APP
+#include "spi_comm_sitl.h"
 #define MAX_PKT_SIZE (97)
 #define POSE_RESPONSE_CAPACITY 50
 #define SPI_TRANSFER_TIMEOUT_TICKS M2T(100)
 #define GAP9_RESPONSE_READY_TIMEOUT_TICKS M2T(100)
 #define GAP9_BUSY_TIMEOUT_TICKS M2T(10000)
 #define GPIO_POLL_TICKS M2T(1)
+#else
+#include "deck.h"
+#endif
+
+#ifndef MAX_PKT_SIZE
+#define MAX_PKT_SIZE (97)
+#define POSE_RESPONSE_CAPACITY 50
+#define SPI_TRANSFER_TIMEOUT_TICKS M2T(100)
+#define GAP9_RESPONSE_READY_TIMEOUT_TICKS M2T(100)
+#define GAP9_BUSY_TIMEOUT_TICKS M2T(10000)
+#define GPIO_POLL_TICKS M2T(1)
+#endif
 
 typedef enum {
     POSE_CMD = 0,
@@ -40,6 +52,10 @@ static uint8_t to_recv[601];
 
 static bool spi_exchange_transaction(size_t length, const uint8_t *tx,
                                      uint8_t *rx, bool select_gap9) {
+#ifdef NCS_SITL_NANO_APP
+    (void)select_gap9;
+    return ncs_sitl_spi_exchange(length, tx, rx);
+#else
     if (!spiBeginTransactionTimeout(SPI_BAUDRATE_2MHZ,
                                     SPI_TRANSFER_TIMEOUT_TICKS))
         return false;
@@ -52,11 +68,16 @@ static bool spi_exchange_transaction(size_t length, const uint8_t *tx,
         digitalWrite(DECK_GPIO_IO1, 1);
     spiEndTransaction();
     return exchanged;
+#endif
 }
 
 static int read_gap9_busy(void *context) {
     (void)context;
+#ifdef NCS_SITL_NANO_APP
+    return ncs_sitl_gap9_busy();
+#else
     return digitalRead(DECK_GPIO_IO2);
+#endif
 }
 
 static uint32_t get_freertos_ticks(void *context) {
